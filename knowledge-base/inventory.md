@@ -4,34 +4,45 @@ Version: 1.0
 
 Status: LOCKED
 
-Last Sprint: SPRINT-008
+Last Sprint: SPRINT-023
 
 ---
 
 # Objetivo
 
-Definir o funcionamento oficial do sistema de inventário do Project-Victory.
+Definir o funcionamento oficial do sistema de Inventário do Project-Victory.
 
-O InventoryService é responsável pelo armazenamento, movimentação e segurança dos itens do personagem.
+O inventário representa o patrimônio conquistado pelo jogador.
 
 ---
 
 # Filosofia
 
-No Project-Victory, o inventário representa segurança e exclusividade.
+No Project-Victory, um inventário representa exclusividade e riqueza.
 
-O inventário representa as conquistas obtidas pelo jogador.
+Também representa:
 
-Itens importantes devem possuir identidade própria e permanecer protegidos.
+- segurança;
+- patrimônio;
+- coleção;
+- progresso.
 
 ---
 
-# Estrutura Base
+# Papel do Inventário
 
-Cada personagem possui:
+O inventário conecta:
 
-```text
-Character
+```
+Monster
+
+↓
+
+Loot
+
+↓
+
+Item
 
 ↓
 
@@ -39,285 +50,336 @@ Inventory
 
 ↓
 
-Slots
-```
-
----
-
-# Capacidade
-
-O Project-Victory não possui:
-
-- Capacity;
-- Peso;
-- Limitação por massa.
-
-A limitação ocorre através de Slots.
-
----
-
-# Slots
-
-Inventário inicial:
-
-```text
-50 Slots
-```
-
-A quantidade poderá ser expandida futuramente através de sistemas aprovados.
-
----
-
-# Containers
-
-O Project-Victory não possui mochilas funcionais.
-
-Não existe:
-
-- Backpack dentro de Backpack;
-- Containers internos;
-- Árvore de inventário.
-
-O personagem possui apenas seu inventário principal.
-
----
-
-# Backpack Visual
-
-Existe um slot visual de Backpack.
-
-Função:
-
-- aparência;
-- personalização;
-- cosméticos.
-
-Não aumenta espaço do inventário.
-
----
-
-# Organização
-
-O inventário possui abas:
-
-## Recent Loot
-
-Exibe itens recebidos recentemente.
-
-Características:
-
-- ordem cronológica;
-- não permite reorganização manual.
-
----
-
-## All Container
-
-Exibe todos os itens armazenados.
-
-Possui organização automática por tipo.
-
----
-
-# Stack
-
-Itens empilháveis:
-
-- Rune;
-- Food;
-- Material;
-- Resource;
-- Flechas;
-- Poções.
-
-Itens não empilháveis:
-
-- Weapons;
-- Shields;
-- Equipamentos;
-- Itens únicos.
-
----
-
-# Limite de Stack
-
-Valor padrão:
-
-```text
-666 unidades
-```
-
-O valor deve permanecer configurável.
-
----
-
-# Item Architecture
-
-O inventário trabalha com:
-
-```text
-Item Template
+Equipment
 
 ↓
 
-Item Instance
+Market
 ```
-
----
-
-# Item Template
-
-Representa o item base.
-
-Exemplo:
-
-```text
-Fire Sword
-```
-
-Contém:
-
-- categoria;
-- atributos base;
-- regras do item.
-
----
-
-# Item Instance
-
-Representa uma existência específica do item.
-
-Exemplo:
-
-```text
-Fire Sword
-
-Rare
-
-+14
-
-Critical
-
-Life Leech
-
-3 Imbuement Slots
-
-Durability 90%
-```
-
-Cada Item Instance pertence a um jogador até ser transferido.
-
----
-
-# Movimentação
-
-Toda movimentação deve passar pelo InventoryService.
-
-Exemplos:
-
-- Loot;
-- Trade;
-- Market;
-- Equipamento;
-- Venda NPC;
-- Descarte.
-
----
-
-# Salvamento
-
-O inventário utiliza salvamento contínuo.
-
-Eventos importantes devem ser persistidos:
-
-- receber item;
-- remover item;
-- equipar;
-- transferir;
-- vender;
-- descartar.
-
----
-
-# Descarte
-
-Fluxo:
-
-```text
-Selecionar item
-
-↓
-
-Arrastar para fora do inventário
-
-↓
-
-Confirmação
-
-↓
-
-Excluir item
-```
-
----
-
-# Segurança
-
-O servidor deve validar:
-
-- propriedade do item;
-- quantidade;
-- espaço disponível;
-- bloqueios;
-- Market;
-- Trade.
-
-Nenhuma alteração de item deve ser confiada ao cliente.
-
----
-
-# Integrações
-
-InventoryService se comunica com:
-
-- LootService;
-- ItemService;
-- EquipmentService;
-- MarketService;
-- TradeService;
-- EconomyService;
-- CharacterService.
 
 ---
 
 # Arquitetura
 
-Modelo:
+O inventário é um sistema independente.
 
-```text
+Estrutura:
+
+```
+Character
+
+↓
+
 InventoryService
 
 ↓
 
-InventoryContainer
-
-↓
-
-Slot
-
-↓
-
-ItemInstance
+InventoryEntity
 ```
 
 ---
 
-# Pendências
+# Estrutura Expansível
 
-Definir futuramente:
+O inventário possui:
 
-- Interface visual;
-- Expansão de slots;
-- Sistema de filtros;
-- Histórico de movimentação;
-- Proteção de itens favoritos.
+```
+Backpack inicial
+
+↓
+
+Expansões futuras
+```
+
+A quantidade de slots deve ser configurável.
+
+---
+
+# Interface Visual
+
+Modelo:
+
+```
+Slot System
+```
+
+Exemplo:
+
+```
+[ ][ ][ ][ ]
+
+[ ][ ][ ][ ]
+```
+
+---
+
+# Organização
+
+O jogador pode:
+
+- mover itens;
+- organizar;
+- visualizar;
+- filtrar;
+- pesquisar.
+
+---
+
+# Recent Loot
+
+Existe uma visualização de itens recebidos recentemente.
+
+Objetivo:
+
+Facilitar acompanhamento do Loot.
+
+---
+
+# Stack
+
+Itens iguais podem ser agrupados.
+
+Exemplo:
+
+```
+Dragon Leather x50
+```
+
+---
+
+# Limite de Stack
+
+Limite inicial:
+
+```
+666 unidades
+```
+
+por item stackável.
+
+Valor configurável.
+
+---
+
+# Item Template
+
+ItemTemplate representa a definição base.
+
+Exemplo:
+
+```
+Fire Sword
+```
+
+Contém:
+
+- nome;
+- categoria;
+- tipo;
+- propriedades base.
+
+---
+
+# Item Instance
+
+ItemInstance representa o item real do jogador.
+
+Exemplo:
+
+```
+Fire Sword #001
+
+Rare
+
+Upgrade +10
+
+Affixes
+```
+
+Cada instância possui identidade própria.
+
+---
+
+# Equipamentos
+
+Equipamentos passam pelo inventário.
+
+Fluxo:
+
+```
+Loot
+
+↓
+
+Inventory
+
+↓
+
+Equip
+
+↓
+
+Equipment Slot
+```
+
+---
+
+# Negociação
+
+Todos os itens são negociáveis inicialmente.
+
+Não existem:
+
+- itens vinculados à conta;
+- itens vinculados ao personagem.
+
+---
+
+# Peso
+
+Não existe sistema de peso inicialmente.
+
+Motivo:
+
+Priorizar:
+
+- progressão;
+- loot;
+- economia;
+- experiência idle.
+
+---
+
+# Segurança
+
+Todo ItemInstance possui:
+
+```
+Unique Item ID
+```
+
+Regra:
+
+Uma instância nunca pode existir duplicada.
+
+---
+
+# Exclusão
+
+Itens destruídos não possuem histórico inicialmente.
+
+Exemplo:
+
+```
+Fire Sword
+
+↓
+
+Destruída
+
+↓
+
+Removida
+```
+
+---
+
+# Integrações
+
+InventoryService comunica com:
+
+```
+LootService
+
+↓
+
+EquipmentService
+
+↓
+
+MarketService
+
+↓
+
+TradeService
+```
+
+---
+
+# Fluxos principais
+
+## Receber Item
+
+```
+Loot
+
+↓
+
+Inventory Validation
+
+↓
+
+Create ItemInstance
+
+↓
+
+Adicionar ao Inventário
+```
+
+---
+
+## Equipar Item
+
+```
+Inventory
+
+↓
+
+Equipment Validation
+
+↓
+
+Equipment Slot
+```
+
+---
+
+## Transferir Item
+
+```
+Trade
+
+↓
+
+Validation
+
+↓
+
+Novo proprietário
+```
+
+---
+
+# Regras Futuras Preparadas
+
+O sistema suporta futuramente:
+
+- Soulbound;
+- Account Bound;
+- Character Bound;
+- Peso;
+- Expansões;
+- Categorias avançadas.
+
+---
+
+# Pendências futuras
+
+Definir:
+
+- quantidade inicial de slots;
+- filtros;
+- interface;
+- categorias;
+- regras de organização;
+- sistema de busca.

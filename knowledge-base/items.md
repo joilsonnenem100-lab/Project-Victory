@@ -1,230 +1,461 @@
-# Progression System
+# Item System
 
-> Status: EM DESENVOLVIMENTO
+Version: 1.0
+
+Status: LOCKED
+
+Last Sprint: SPRINT-024
 
 ---
 
 # Objetivo
 
-Definir as regras oficiais da progressão do personagem dentro do Project-Victory.
+Definir o funcionamento oficial dos itens no Project-Victory.
 
-Este documento contém apenas decisões aprovadas.
+Os itens são uma das principais formas de progressão e economia do jogador.
 
 ---
 
 # Filosofia
 
-A progressão deve transmitir ao jogador uma sensação constante de evolução.
+No Project-Victory, um item representa história.
 
-O jogador nunca deverá sentir que perdeu tempo investido no personagem.
+Um item representa:
 
-A evolução principal acontece através da caça aos monstros.
-
----
-
-# Evolução do Personagem
-
-A principal forma de evolução é através da experiência obtida ao derrotar monstros.
-
-Também existe obtenção de experiência através de:
-
-- Bosses
-- Quests
-- Eventos
-
-Nenhum outro sistema concede experiência oficialmente neste momento.
+- conquista;
+- evolução;
+- investimento;
+- valor econômico;
+- memória da jornada.
 
 ---
 
-# Level
+# Estrutura Fundamental
 
-O personagem não possui Level máximo.
+Todo item possui duas camadas:
 
-Entretanto, existe o sistema de Ascension.
+```
+ItemTemplate
 
-Cada Ascension possui limite de Level 500.
+↓
 
-Após atingir este limite o jogador poderá evoluir gratuitamente para a próxima Ascension.
-
----
-
-# Perda de Progressão
-
-Ao morrer o personagem:
-
-- Não perde experiência.
-- Não perde Level.
-
-A progressão permanente nunca diminui.
+ItemInstance
+```
 
 ---
 
-# Ascension
+# ItemTemplate
 
-Cada Ascension representa uma nova etapa do personagem.
+Representa a definição base do item.
 
-Ao realizar uma Ascension:
+Exemplo:
 
-- O Level retorna para 1.
-- Os atributos permanentes são mantidos.
-- Novas regiões são desbloqueadas.
-- Novos monstros tornam-se disponíveis.
-- Novos equipamentos podem ser obtidos.
+```
+Fire Sword
+```
 
-O jogador continua podendo acessar todas as regiões anteriores.
+Contém:
 
-O acesso às novas regiões é opcional.
-
----
-
-# HP
-
-HP inicial:
-
-Knight = 100
-
-Paladin = 100
-
-Monk = 100
-
-Druid = 100
-
-Sorcerer = 100
-
-Crescimento por Level:
-
-Knight = +0.75
-
-Paladin = +0.50
-
-Monk = +0.65
-
-Druid = +0.25
-
-Sorcerer = +0.25
-
-Não existem bônus permanentes adicionais de HP.
+- ID interno;
+- nome;
+- categoria;
+- tipo;
+- atributos base;
+- requisitos;
+- regras de geração.
 
 ---
 
-# Mana
+# ItemInstance
 
-Mana inicial:
+Representa o item real existente no servidor.
 
-Knight = 50
+Exemplo:
 
-Paladin = 60
+```
+Fire Sword #58291
 
-Monk = 55
+Rare
 
-Druid = 100
+Upgrade +10
 
-Sorcerer = 100
+Affixes
+```
 
-Crescimento por Level:
+Contém:
 
-Knight = +0.25
-
-Paladin = +0.40
-
-Monk = +0.55
-
-Druid = +0.75
-
-Sorcerer = +0.75
-
-Não existem bônus permanentes adicionais de Mana.
+- Unique Item ID;
+- dono atual;
+- raridade;
+- tier;
+- upgrade;
+- afixos;
+- imbuements.
 
 ---
 
-# Skills
+# Criação de Item
 
-Skills oficiais:
+Itens são criados através do Loot.
 
-- Sword
-- Club
-- Axe
-- Distance
-- Shield
-- Magic
-- First Fighting
+Fluxo:
 
-As Skills evoluem através do uso da categoria correspondente durante a obtenção de experiência.
+```
+Monster Death
 
-Também podem ser evoluídas utilizando o Trainer.
+↓
 
-Cada vocação possui penalidades naturais ao evoluir Skills que não pertencem à sua especialidade.
+Loot Calculation
 
----
+↓
 
-# Trainer
+ItemInstance Factory
 
-O Trainer funciona apenas online.
+↓
 
-Não consome Gold.
+Item criado
 
-Consome o item específico utilizado para treinamento.
+↓
 
-Não utiliza sistema de Stamina.
+Inventory
+```
 
 ---
 
-# Boost de Experiência
+# Categorias
 
-O jogo suporta múltiplas fontes de Boost.
+Categorias iniciais:
 
-Premium.
+## Equipment
 
-Scrolls.
+Equipamentos:
 
-Eventos.
-
-Outras fontes futuras.
-
-O tempo dos Boosts temporários é acumulado.
-
-O tempo somente começa a ser consumido após o personagem obter experiência.
+- armas;
+- armaduras;
+- capacetes;
+- escudos;
+- acessórios.
 
 ---
 
-# Premium
+## Material
 
-Premium fornece pequena vantagem de experiência.
+Exemplo:
 
-Valor atual aprovado:
+```
+Dragon Leather
+```
 
-+10%
+Utilizado em:
 
-Este valor deverá ser configurável pelo servidor.
-
----
-
-# Filosofia de Balanceamento
-
-O jogo não força o jogador a seguir uma rota específica de evolução.
-
-Entretanto, a Ascension atual sempre tende a oferecer o melhor equilíbrio entre risco e recompensa.
+- craft;
+- collections;
+- sistemas futuros.
 
 ---
 
-# Pendências
+## Consumable
 
-Ainda precisam ser definidas:
+Exemplo:
 
-- Fórmula matemática da experiência.
-- Curva de experiência por Level.
-- Fórmula do dano base.
-- Escalonamento matemático por faixas de Level.
-- Fórmula completa das Skills.
+- poções;
+- runas;
+- itens temporários.
 
 ---
 
-# Decisões Relacionadas
+## Quest Item
 
-DEC-0005
+Itens relacionados a sistemas específicos.
 
-DEC-0006
+---
 
-DEC-0007
+## Currency
 
-DEC-0008
+Exemplo:
+
+- Gold;
+- VC Points.
+
+---
+
+# Raridade
+
+Ordem:
+
+```
+Normal
+
+↓
+
+Magic
+
+↓
+
+Rare
+
+↓
+
+Unique
+```
+
+---
+
+# Tier
+
+Tier representa a qualidade e potencial do item.
+
+Influencia:
+
+- geração de afixos;
+- qualidade;
+- potencial máximo.
+
+---
+
+# Afixos
+
+Afixos existem em:
+
+```
+Magic
+
+Rare
+```
+
+Não existem em:
+
+```
+Normal
+```
+
+---
+
+# Craft Affix
+
+Sistema especial de upgrade.
+
+Após:
+
+```
+Upgrade +9
+```
+
+existe chance de desbloquear:
+
+```
+Craft Affix
+```
+
+Limite inicial:
+
+```
+2 Craft Affixes
+```
+
+---
+
+# Upgrade
+
+Upgrade aumenta:
+
+```
+Atributo Base
+```
+
+Não altera:
+
+- afixos;
+- propriedades existentes.
+
+Fluxo:
+
+```
++0
+
+↓
+
++9
+
+↓
+
+Possibilidade especial
+
+↓
+
+Craft Affix
+```
+
+---
+
+# Imbuement
+
+Itens podem possuir:
+
+```
+Imbuement Slots
+```
+
+Características:
+
+- podem nascer no drop;
+- são permanentes;
+- efeito possui duração;
+- slot fica vazio após expirar.
+
+---
+
+# Unique Items
+
+Unique possui tabela própria.
+
+Exemplo:
+
+```
+Dragon Slayer
+
+Chance controlada pela Unique Table
+```
+
+---
+
+# Item Level
+
+Não existe inicialmente.
+
+O poder do item vem de:
+
+```
+Tier
+
++
+
+Rarity
+
++
+
+Upgrade
+
++
+
+Affixes
+
++
+
+Imbuements
+```
+
+---
+
+# Proprietário
+
+Item mantém:
+
+```
+Dono atual
+```
+
+Não existe inicialmente:
+
+- histórico de donos;
+- rastreamento de transferências.
+
+---
+
+# Trade
+
+Todos os itens são negociáveis inicialmente.
+
+Não existem:
+
+- Soulbound;
+- Account Bound;
+- Character Bound.
+
+---
+
+# Stack
+
+Itens stackáveis:
+
+Exemplo:
+
+```
+Dragon Leather x666
+```
+
+Equipamentos:
+
+```
+Não stackam
+```
+
+---
+
+# Segurança
+
+Todo ItemInstance possui:
+
+```
+Unique Item ID
+```
+
+Regra:
+
+Uma instância nunca pode existir duplicada.
+
+---
+
+# Durabilidade
+
+Equipamentos possuem:
+
+- durabilidade;
+- repair.
+
+---
+
+# Arquitetura
+
+```
+ItemService
+
+↓
+
+ItemTemplateRepository
+
+↓
+
+ItemInstanceFactory
+
+↓
+
+ItemInstance
+```
+
+---
+
+# Integrações
+
+ItemService comunica com:
+
+- LootService;
+- InventoryService;
+- EquipmentService;
+- MarketService;
+- TradeService;
+- CraftService.
+
+---
+
+# Pendências futuras
+
+Definir:
+
+- tabela completa de raridade;
+- atributos base;
+- categorias completas;
+- fórmula de afixos;
+- fórmula de upgrade;
+- sistema de craft;
+- tabela Unique.
