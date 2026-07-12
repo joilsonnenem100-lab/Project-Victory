@@ -1,145 +1,414 @@
 # Monster System
 
-Version: 1.1
+Version: 1.0
 
-Status: EM DESENVOLVIMENTO
+Status: LOCKED
 
-Last Sprint: SPRINT-004
+Last Sprint: SPRINT-016
 
 ---
 
 # Objetivo
 
-Definir o funcionamento oficial dos monstros do Project-Victory.
+Definir o funcionamento oficial do sistema de monstros do Project-Victory.
 
-Este documento contém apenas decisões aprovadas.
+Monstros são o núcleo do ciclo:
+
+```
+Hunt
+
+↓
+
+Monster
+
+↓
+
+Combat
+
+↓
+
+EXP
+
+↓
+
+Loot
+
+↓
+
+Progressão
+```
 
 ---
 
 # Filosofia
 
-No Project-Victory, um monstro representa uma nova oportunidade de conseguir um item raro, um recurso importante ou evoluir o personagem.
+No Project-Victory, um monstro representa desafio.
 
-Todo monstro existe para sustentar a progressão do jogador.
+O monstro existe para gerar:
 
----
-
-# Classificações Oficiais
-
-- Normal
-- Magic
-- Elite
-- Boss
-- World Boss
+- desafio;
+- EXP;
+- Loot;
+- evolução do personagem.
 
 ---
 
-# Normal
+# Estrutura de Hunt
 
-Monstro padrão das Hunts.
+A Hunt funciona através de Packs.
 
-Representa a maior parte da Monster Pool.
+Modelo inicial:
 
----
+```
+Pack
 
-# Magic
-
-Versão fortalecida do monstro comum.
-
-Possui atributos superiores.
-
-Mantém o comportamento do monstro original.
+├── Monster Instance 1
+├── Monster Instance 2
+└── Monster Instance 3
+```
 
 ---
 
-# Elite
+# Pack System
 
-Versão rara do monstro.
+Regra inicial:
 
-Pode aparecer através da Monster Pool da Hunt.
+Cada Pack possui:
 
-Características:
+```
+3 monstros
+```
 
-- Mantém o mesmo visual do monstro original.
-- Possui atributos superiores.
-- Possui chance própria de Spawn.
-- Inicialmente apenas um Elite pode existir por Pack.
+A arquitetura permite alterar esse valor futuramente.
+
+---
+
+# Monster Individual
+
+Cada monstro dentro do Pack é independente.
+
+Cada Monster Instance possui:
+
+- HP próprio;
+- dano próprio;
+- defesa própria;
+- morte própria;
+- EXP própria;
+- Loot próprio.
+
+---
+
+# Ataques
+
+## Single Target
+
+Ataque comum:
+
+Afeta:
+
+```
+1 Monster Instance
+```
+
+---
+
+## Area Damage
+
+Magias de área:
+
+Afetam:
+
+```
+Todos os monstros do Pack
+```
+
+---
+
+# Arquitetura
+
+Separação:
+
+```
+MonsterTemplate
+
+↓
+
+MonsterInstance
+```
+
+---
+
+# MonsterTemplate
+
+Representa o modelo do monstro.
 
 Exemplo:
 
-Pack
+```
+Dragon
 
-- Dragon
-- Dragon
-- Dragon Elite
+HP Base:
+Damage Base:
+Defense Base:
+EXP:
+Loot Table:
+```
+
+---
+
+# MonsterInstance
+
+Representa uma criatura criada durante uma Hunt.
+
+Exemplo:
+
+```
+Dragon Instance #92831
+```
+
+Possui:
+
+- estado atual;
+- HP atual;
+- combate ativo;
+- resultado de loot.
+
+---
+
+# Tipos de Monstros
+
+Tipos oficiais:
+
+- Normal;
+- Magic;
+- Elite;
+- Boss;
+- World Boss.
+
+---
+
+# Normal Monster
+
+Monstro padrão.
+
+Possui:
+
+- atributos base;
+- loot comum;
+- EXP.
+
+---
+
+# Magic Monster
+
+Versão especial.
+
+Possui modificadores superiores.
+
+---
+
+# Elite Monster
+
+Elite é uma variação mais rara.
+
+Características:
+
+- maior dificuldade;
+- maior recompensa;
+- maior chance de loot raro.
+
+---
+
+# Elite Spawn
+
+Cada Hunt possui:
+
+```
+Elite Spawn Chance
+```
+
+---
+
+# Regra Elite
+
+Máximo:
+
+```
+1 Elite por Pack
+```
+
+Exemplo permitido:
+
+```
+Dragon
+
+Dragon
+
+Dragon Elite
+```
+
+Exemplo não permitido inicialmente:
+
+```
+Dragon Elite
+
+Dragon Elite
+
+Dragon
+```
 
 ---
 
 # Boss
 
-Bosses não aparecem naturalmente nas Hunts.
+Boss possui:
 
-Cada Boss possui:
+- acesso próprio;
+- portal;
+- chave específica.
 
-- Boss Room própria;
-- Boss Key específica;
-- Loot exclusivo;
-- Skills próprias.
+Boss não aparece na Hunt normal.
 
 ---
 
 # World Boss
 
-World Bosses aparecem apenas durante eventos oficiais do servidor.
+World Boss ocorre através de eventos do servidor.
 
-Nunca fazem parte da Monster Pool das Hunts.
+Possui:
+
+- escala especial;
+- participação global;
+- recompensas especiais.
 
 ---
 
-# Monster Pool
+# Monster Attributes
 
-Cada Hunt possui sua própria Monster Pool.
+Todo monstro pode possuir:
+
+## Base
+
+- HP;
+- Damage;
+- Defense;
+- EXP;
+- Loot Table.
+
+---
+
+## Avançados
+
+- Resistências;
+- Fraquezas;
+- Modificadores.
+
+---
+
+# Monster Level
+
+Monstros não possuem Level tradicional.
+
+A dificuldade vem através de:
+
+- atributos internos;
+- raridade;
+- versões de Ascension.
+
+---
+
+# Resistências
+
+Alguns monstros possuem:
+
+- Fire Resistance;
+- Ice Resistance;
+- Earth Resistance;
+- Death Resistance;
+- Holy Resistance.
+
+---
+
+# Fraquezas
+
+Alguns monstros possuem fraquezas elementais.
 
 Exemplo:
 
-Dragon Lair South
+```
+Ice Dragon
 
-Monster Pool
++50% Fire Damage
 
-- Dragon
-- Dragon Elite
-
-A Monster Pool pode ser modificada temporariamente durante eventos.
-
-Essa alteração não exige criação de uma nova Hunt.
+-80% Ice Damage
+```
 
 ---
 
-# Loot
+# Monster Skills
 
-O Loot pertence exclusivamente ao Monstro.
+Somente Bosses possuem Skills especiais.
 
-Cada monstro possui sua própria Loot Table.
-
-As Hunts não possuem Loot próprio.
+Monstros comuns utilizam comportamento simples.
 
 ---
 
-# Spawn
+# Monster AI
 
-O Spawn ocorre através do Spawn Controller da Hunt.
+Modelo:
+
+```
+Spawn
+
+↓
+
+Combate automático
+
+↓
+
+Morte
+```
+
+Não existe IA complexa inicialmente.
+
+---
+
+# Movimento
+
+Monstros não possuem movimentação real.
+
+O foco é:
+
+- dados;
+- combate;
+- progressão.
+
+---
+
+# Spawn Controller
+
+Responsável por:
+
+- criar Packs;
+- controlar respawn;
+- aplicar Elite Chance.
 
 Fluxo:
 
-Monster Pool
+```
+Player inicia Hunt
 
 ↓
 
-Pack
+Spawn Pack
 
 ↓
 
-Todos derrotados
+Combate
+
+↓
+
+Todos monstros mortos
 
 ↓
 
@@ -148,91 +417,86 @@ Todos derrotados
 ↓
 
 Novo Pack
+```
 
 ---
 
-# IA
+# EXP
 
-O Project-Victory utiliza uma arquitetura simplificada.
+Ao morrer:
 
-Os monstros não possuem IA complexa.
+```
+Monster Death Event
 
-Não existe:
+↓
 
-- patrulha;
-- retorno ao spawn;
-- navegação;
-- perseguição complexa.
-
-Os monstros existem apenas para sustentar o combate da Hunt.
+ExperienceService
+```
 
 ---
 
-# Resistências
+# Loot
 
-Alguns monstros podem possuir:
+Cada Monster Instance possui cálculo independente.
 
-- Resistências Elementais;
-- Fraquezas Elementais.
+Exemplo:
 
-Essas propriedades dependem do monstro.
+Pack:
 
----
+```
+Dragon
 
-# Skills
+Dragon
 
-Apenas Bosses possuem Skills exclusivas.
+Dragon Elite
+```
 
-Monstros comuns utilizam apenas atributos básicos de combate.
+Resultado:
 
----
+```
+Dragon #1
 
-# Progressão
+↓
 
-Versões mais fortes de monstros poderão aparecer em Ascensions superiores.
+Loot Calculation
 
-O comportamento permanece o mesmo.
 
-Mudam apenas:
+Dragon #2
 
-- atributos;
-- drops;
-- resistências;
-- habilidades especiais (quando aplicável).
+↓
 
----
+Loot Calculation
 
-# Filosofia Idle
 
-O sistema de monstros foi projetado para minimizar processamento.
+Dragon Elite
 
-A prioridade está em:
+↓
 
-- estabilidade;
-- simplicidade;
-- escalabilidade.
+Loot Calculation
+```
 
 ---
 
-# Pendências
+# Integrações
 
-Ainda precisam ser definidos:
+MonsterService comunica com:
 
-- atributos base;
-- fórmula de HP;
-- fórmula de dano;
-- velocidade de ataque;
-- tabela oficial de resistências;
-- Magic Monsters.
+- HuntService;
+- CombatService;
+- ExperienceService;
+- LootService;
+- CollectionService;
+- AchievementService.
 
 ---
 
-# Decisões Relacionadas
+# Pendências futuras
 
-DEC-0018
+Definir:
 
-DEC-0019
-
-DEC-0020
-
-DEC-0021
+- atributos exatos;
+- fórmula de EXP;
+- escala por Ascension;
+- tabelas de monstros;
+- resistências específicas;
+- bosses.

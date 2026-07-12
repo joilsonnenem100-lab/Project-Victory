@@ -1,119 +1,74 @@
 # Combat System
 
-> Status: EM DESENVOLVIMENTO
+Version: 1.0
+
+Status: LOCKED
+
+Last Sprint: SPRINT-017
 
 ---
 
 # Objetivo
 
-Definir as regras oficiais do combate.
+Definir o funcionamento oficial do sistema de combate do Project-Victory.
+
+O combate é o núcleo matemático entre:
+
+```
+Character
+
+↓
+
+Combat
+
+↓
+
+Monster
+
+↓
+
+EXP
+
+↓
+
+Loot
+```
 
 ---
 
 # Filosofia
 
-O combate deve recompensar preparação.
+No Project-Victory, um combate representa desafio.
 
-Equipamentos representam uma das maiores fontes de poder do personagem.
+O combate representa:
 
----
-
-# Poder do Personagem
-
-A força do personagem é determinada principalmente por:
-
-- Equipamentos
-- Skills
-- Level
-
-Cada vocação utiliza prioridades diferentes.
+- evolução;
+- preparação;
+- equipamentos;
+- escolhas de build;
+- estratégia.
 
 ---
 
-# Knight
+# Modelo
 
-Prioridade de dano.
+O combate utiliza:
 
-1. Level
-2. Sword Skill
-3. Arma
+```
+Turnos fixos
+```
 
----
+Não existe inicialmente:
 
-# Sorcerer
-
-Prioridade de dano.
-
-1. Level
-2. Magic Level
-3. Equipamento
-4. Spell
+- Attack Speed;
+- Cast Speed.
 
 ---
 
-# Defesa
+# Fluxo de Turno
 
-A defesa é composta por:
-
-- Level
-- Equipamentos
-- Shield
-
----
-
-# Regeneração
-
-Toda regeneração depende de Food.
-
-Não existe regeneração natural.
-
----
-
-# Equipamentos
-
-Itens Rare totalmente evoluídos representam uma grande vantagem sobre equipamentos comuns.
-
----
-
-# Pendências
-
-Ainda precisam ser definidos.
-
-- Fórmula de dano.
-- Fórmula de defesa.
-- Fórmula de crítico.
-- Fórmula de resistência.
-- Dano elemental.
-- Ordem dos cálculos.
-
----
-
-# Decisões Relacionadas
-
-DEC-0007
-
-DEC-0011
-
-DEC-0012
-
-DEC-0013
----
-
-# Sistema de Turnos
-
-O combate utiliza turnos fixos.
-
-Fluxo:
-
-Jogador entra na Hunt
-
-↓
-
-Pack criado
-
-↓
-
-Combate inicia
+```
+Turno inicia
 
 ↓
 
@@ -121,72 +76,402 @@ Jogador ataca
 
 ↓
 
-Monstros sobreviventes atacam
+Monstros atacam
 
 ↓
 
-Novo turno
+Calcula dano
 
 ↓
 
-Continua até:
+Atualiza HP
 
-- morte do jogador;
-- encerramento da Hunt;
-- conclusão do combate.
+↓
+
+Próximo turno
+```
+
+---
+
+# Ordem do Turno
+
+Prioridade:
+
+```
+1. Jogador
+
+2. Monstros
+```
 
 ---
 
 # Seleção de Alvo
 
-O jogador sempre ataca o primeiro monstro da Pack List.
+Ataque Single Target:
 
-Quando o alvo é derrotado:
+Afeta:
 
-O próximo monstro da lista torna-se o alvo automaticamente.
-
----
-
-# Attack Speed e Cast Speed
-
-Não existem inicialmente.
-
-Todos os personagens utilizam velocidade fixa de combate.
-
-A arquitetura deverá permitir inclusão futura desses atributos sem reconstrução do CombatService.
+```
+Primeiro monstro da Pack List
+```
 
 ---
 
-# Skills em Área
+# Troca de Alvo
 
-Skills possuem comportamento próprio.
+Quando um monstro morre:
 
-Cada Skill define:
-
-- quantidade de alvos;
-- se atinge todos os monstros do Pack;
-- regras específicas.
+```
+Novo alvo selecionado instantaneamente
+```
 
 ---
 
-# Estrutura Técnica
+# Packs
 
-CombatService será dividido em:
+O combate acontece dentro de Packs.
 
-- TargetService
-- DamageCalculator
-- CriticalCalculator
-- DeathService
+Modelo:
+
+```
+Pack
+
+├── Monster 1
+├── Monster 2
+└── Monster 3
+```
 
 ---
 
-# Pendências atualizadas
+# Ataques
 
-Ainda precisam ser definidos:
+## Single Target
 
-- Fórmula de dano.
-- Fórmula de defesa.
-- Fórmula de crítico.
-- Resistências.
-- Elementos.
-- Valores matemáticos das Skills.
+Afeta:
+
+```
+1 Monster Instance
+```
+
+---
+
+## Area Damage
+
+Depende da Spell.
+
+Pode afetar:
+
+```
+Todos os monstros do Pack
+```
+
+ou quantidade específica.
+
+---
+
+# Dano Físico
+
+Ordem de importância:
+
+```
+Weapon
+
+↓
+
+Skill
+
+↓
+
+Level
+```
+
+---
+
+# Dano Mágico
+
+Ordem de importância:
+
+```
+Level
+
+↓
+
+Magic Level
+
+↓
+
+Equipment
+
+↓
+
+Spell
+```
+
+---
+
+# Spell Upgrade
+
+Spells podem possuir evolução.
+
+Objetivo:
+
+Permitir diferentes estilos de jogo.
+
+Exemplo:
+
+Jogador pode investir em uma Spell favorita.
+
+---
+
+# Variação de Dano
+
+Todo ataque acerta.
+
+Não existe Miss.
+
+Existe variação:
+
+```
+Dano mínimo
+
+↓
+
+Dano calculado
+
+↓
+
+Dano máximo
+```
+
+---
+
+# Cálculo Elemental
+
+Ordem:
+
+```
+Dano Calculado
+
+↓
+
+Defesa
+
+↓
+
+Resistência
+
+↓
+
+Fraqueza
+
+↓
+
+Critical
+```
+
+---
+
+# Defesa
+
+Cada tipo de dano possui defesa própria.
+
+Exemplos:
+
+- Physical Defense;
+- Fire Defense;
+- Ice Defense;
+- Death Defense.
+
+---
+
+# Critical
+
+Critical é calculado no final.
+
+Fluxo:
+
+```
+Dano final
+
+↓
+
+Critical
+
+↓
+
+Resultado final
+```
+
+Critical representa grandes picos de dano.
+
+---
+
+# Morte do Personagem
+
+Quando:
+
+```
+HP <= 0
+```
+
+Fluxo:
+
+```
+Morte
+
+↓
+
+Cidade Principal
+
+↓
+
+HP cheio
+
+↓
+
+MP cheio
+```
+
+---
+
+# Morte do Monstro
+
+Fluxo:
+
+```
+Monster Death
+
+↓
+
+EXP
+
+↓
+
+Loot
+
+↓
+
+Collection
+
+↓
+
+Achievement
+```
+
+---
+
+# Vocação e Dano
+
+## Knight
+
+Fonte principal:
+
+```
+Weapon
+
++
+
+Sword/Club/Axe Skill
+```
+
+---
+
+## Paladin
+
+Fonte principal:
+
+```
+Distance Weapon
+
++
+
+Distance Skill
+```
+
+---
+
+## Monk
+
+Fonte principal:
+
+```
+Weapon
+
++
+
+Combat Skill
+```
+
+---
+
+## Sorcerer / Druid
+
+Fonte principal:
+
+```
+Spell
+
++
+
+Magic Level
+```
+
+---
+
+# Arquitetura
+
+```
+CombatService
+
+↓
+
+DamageCalculator
+
+↓
+
+DefenseCalculator
+
+↓
+
+ResistanceCalculator
+
+↓
+
+CriticalCalculator
+```
+
+---
+
+# Objetivo da Arquitetura
+
+Permitir:
+
+- balanceamento independente;
+- ajustes sem quebrar sistemas;
+- criação de novas mecânicas futuramente.
+
+---
+
+# Integrações
+
+CombatService comunica com:
+
+- CharacterService;
+- EquipmentService;
+- SkillService;
+- MonsterService;
+- ExperienceService;
+- LootService.
+
+---
+
+# Pendências futuras
+
+Definir:
+
+- fórmulas matemáticas;
+- valores iniciais;
+- dano base das armas;
+- multiplicadores das skills;
+- cálculo de resistência;
+- cálculo de critical.

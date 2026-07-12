@@ -2256,3 +2256,2212 @@ WalletComponent
 AchievementComponent
 
 GuildComponent
+
+---
+
+# DEC-0085
+
+## Título
+
+Filosofia da Guild.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, uma Guild representa união e conquista.
+
+Guilds são responsáveis por criar vínculos sociais e conquistas coletivas.
+
+---
+
+# DEC-0086
+
+## Título
+
+Criação de Guild.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Requisitos para criar Guild:
+
+- Level mínimo 250;
+- Ascension 1.
+
+---
+
+# DEC-0087
+
+## Título
+
+Participação em Guild.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Cada personagem pode participar de apenas uma Guild.
+
+---
+
+# DEC-0088
+
+## Título
+
+Hierarquia da Guild.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Estrutura:
+
+Leader
+
+↓
+
+Vice Leader (máximo 5)
+
+↓
+
+Members
+
+Quantidade de membros é definida pelo Guild Level.
+
+---
+
+# DEC-0089
+
+## Título
+
+Guild Progression.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Guild Level evolui através de:
+
+- Doações;
+- Quests;
+- Bosses;
+- Eventos;
+- Region War.
+
+---
+
+# DEC-0090
+
+## Título
+
+Guild Donations.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Jogadores podem doar:
+
+- Gold;
+- Resources;
+- Materiais;
+- Itens.
+
+---
+
+# DEC-0091
+
+## Título
+
+Guild Benefits.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Guild Level desbloqueia:
+
+- Mais membros;
+- Loja;
+- Bosses.
+
+---
+
+# DEC-0092
+
+## Título
+
+Guild Bank.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Guild possui banco completo de itens.
+
+Capacidade aumenta conforme Guild Level.
+
+---
+
+# DEC-0093
+
+## Título
+
+Guild Application System.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Entrada em Guild ocorre através de aplicação.
+
+Fluxo:
+
+Jogador pesquisa Guild
+
+↓
+
+Visualiza perfil
+
+↓
+
+Envia aplicação
+
+↓
+
+Leader/Vice Leader analisam
+
+↓
+
+Aceitar ou recusar
+
+---
+
+# DEC-0094
+
+## Título
+
+Guild Territory System.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Guilds poderão controlar futuramente:
+
+- Cidades;
+- Regiões;
+- Fortalezas.
+
+---
+
+# DEC-0095
+
+## Título
+
+Guild Member Limit.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Limite inicial:
+
+10 membros.
+
+O limite aumenta conforme Guild Level até um máximo futuro definido.
+
+---
+
+# DEC-0096
+
+## Título
+
+Guild Architecture.
+
+## Origem
+
+GS-001 — GuildService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+GuildService
+
+↓
+
+GuildEntity
+
+↓
+
+GuildMemberComponent
+
+↓
+
+GuildBankComponent
+
+↓
+
+GuildLevelComponent
+
+↓
+
+GuildLogComponent
+
+↓
+
+GuildQuestComponent
+
+↓
+
+GuildWarComponent
+
+---
+
+# DEC-0097
+
+## Título
+
+Filosofia dos Achievements.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, um Achievement representa história do jogador.
+
+Achievements registram momentos importantes da jornada.
+
+---
+
+# DEC-0098
+
+## Título
+
+Categorias de Achievement.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Categorias oficiais:
+
+- Progressão;
+- Exploração;
+- Combate;
+- Economia;
+- Coleção;
+- Social.
+
+---
+
+# DEC-0099
+
+## Título
+
+Visibilidade de Achievements.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O jogador controla quais Achievements serão exibidos publicamente.
+
+---
+
+# DEC-0100
+
+## Título
+
+Achievement Points.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O sistema possui:
+
+- Achievements;
+- Achievement Points;
+- Rankings.
+
+---
+
+# DEC-0101
+
+## Título
+
+Recompensas de Achievement.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Achievements podem recompensar:
+
+- Títulos;
+- Cosméticos;
+- Mounts;
+- Itens;
+- Gold.
+
+---
+
+# DEC-0102
+
+## Título
+
+Sistema de Títulos.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Títulos podem ser apenas visuais ou possuir efeitos especiais futuramente.
+
+---
+
+# DEC-0103
+
+## Título
+
+Achievements únicos do servidor.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Primeiros eventos históricos possuem registro único.
+
+Exemplos:
+
+- Primeiro Level 100;
+- Primeiro Boss derrotado;
+- Primeiro Unique Item obtido.
+
+Esses registros existem uma única vez no servidor.
+
+---
+
+# DEC-0104
+
+## Título
+
+Achievements Secretos.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O sistema suporta Achievements secretos.
+
+O jogador pode descobrir conquistas ocultas.
+
+---
+
+# DEC-0105
+
+## Título
+
+Persistência dos Achievements.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Achievements nunca são resetados por Ascension.
+
+Eles fazem parte da história permanente do personagem.
+
+---
+
+# DEC-0106
+
+## Título
+
+Collections separado de Achievement.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Collections e Achievements são sistemas independentes.
+
+---
+
+# DEC-0107
+
+## Título
+
+Exposição pública do personagem.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Informações públicas:
+
+- Level;
+- Ascension;
+- Títulos;
+- Guild.
+
+Informações configuráveis:
+
+- Achievements;
+- Equipamentos.
+
+---
+
+# DEC-0108
+
+## Título
+
+Arquitetura AchievementService.
+
+## Origem
+
+AS-001 — AchievementService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+AchievementService
+
+↓
+
+AchievementEntity
+
+↓
+
+AchievementProgress
+
+↓
+
+RewardService
+
+↓
+
+TitleService
+---
+
+# DEC-0109
+
+## Título
+
+Filosofia das Collections.
+
+## Origem
+
+COL-001 — CollectionService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, uma Collection representa diversão e opção de diversão.
+
+Collections são sistemas opcionais de objetivos paralelos.
+
+---
+
+# DEC-0110
+
+## Título
+
+Collection como sistema de progressão.
+
+## Origem
+
+COL-001 — CollectionService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Collections são sistemas completos de progressão.
+
+Podem possuir:
+
+- objetivos;
+- progresso;
+- recompensas.
+
+---
+
+# DEC-0111
+
+## Título
+
+Categorias iniciais de Collection.
+
+## Origem
+
+COL-001 — CollectionService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Categorias oficiais:
+
+- Monstros;
+- Itens;
+- Equipamentos;
+- Recursos;
+- Bosses.
+
+---
+
+# DEC-0112
+
+## Título
+
+Collection de Monstros.
+
+## Origem
+
+COL-001 — CollectionService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Collections de monstros são completadas automaticamente.
+
+O jogador progride ao derrotar criaturas.
+
+---
+
+# DEC-0113
+
+## Título
+
+Collection de Entrega.
+
+## Origem
+
+COL-001 — CollectionService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Collections que solicitam itens ou recursos exigem entrega.
+
+Os itens entregues são destruídos como oferenda.
+
+---
+
+# DEC-0114
+
+## Título
+
+Raridade em Collections.
+
+## Origem
+
+COL-001 — CollectionService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Itens com raridades diferentes contam para a mesma Collection base.
+
+Exemplo:
+
+Fire Sword Rare
+
+conta como:
+
+Fire Sword.
+
+---
+
+# DEC-0115
+
+## Título
+
+Recompensas de Collection.
+
+## Origem
+
+COL-001 — CollectionService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Collections podem recompensar:
+
+- Gold;
+- XP;
+- Títulos;
+- Cosméticos;
+- Bônus temporários;
+- Atributos permanentes.
+
+---
+
+# DEC-0116
+
+## Título
+
+Collections únicas do servidor.
+
+## Origem
+
+COL-001 — CollectionService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Podem existir Collections únicas.
+
+Exemplo:
+
+Primeiro jogador a completar determinada Collection.
+
+---
+
+# DEC-0117
+
+## Título
+
+Visibilidade das Collections.
+
+## Origem
+
+COL-001 — CollectionService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O jogador controla a exposição pública das Collections.
+
+---
+
+# DEC-0118
+
+## Título
+
+Arquitetura CollectionService.
+
+## Origem
+
+COL-001 — CollectionService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+CollectionService
+
+↓
+
+CollectionEntity
+
+↓
+
+CollectionProgress
+
+↓
+
+RewardService
+---
+
+# DEC-0119
+
+## Título
+
+Filosofia das Quests.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, uma Quest representa esforço e interesse.
+
+Quest é um sistema complementar.
+
+A principal fonte de progressão continua sendo Hunt.
+
+---
+
+# DEC-0120
+
+## Título
+
+Importância das Quests.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Quests não são o centro do jogo.
+
+Responsabilidades:
+
+- apresentar sistemas;
+- criar objetivos paralelos;
+- recompensar exploração;
+- liberar conteúdos.
+
+---
+
+# DEC-0121
+
+## Título
+
+Tipos de Quest.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Tipos oficiais:
+
+- História;
+- Caça;
+- Coleta;
+- Evento.
+
+---
+
+# DEC-0122
+
+## Título
+
+Quest Principal.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Existe uma linha inicial simples.
+
+Objetivo:
+
+Apresentar:
+
+- cidade;
+- primeira hunt;
+- primeiro loot;
+- sistemas básicos.
+
+---
+
+# DEC-0123
+
+## Título
+
+Obrigatoriedade de Quest.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Somente progressões principais podem exigir Quest.
+
+Quests comuns são opcionais.
+
+---
+
+# DEC-0124
+
+## Título
+
+Repetição de Quest.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Repetição depende do tipo da Quest.
+
+Exemplos:
+
+História:
+uma vez.
+
+Caça:
+repetível.
+
+Evento:
+definido pelo evento.
+
+---
+
+# DEC-0125
+
+## Título
+
+Daily Quest.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Daily Quest não faz parte da versão inicial.
+
+Motivo:
+
+Evitar obrigação diária.
+
+---
+
+# DEC-0126
+
+## Título
+
+Quest Tracker.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O jogador visualiza objetivos ativos.
+
+O sistema não revela todo conteúdo existente.
+
+---
+
+# DEC-0127
+
+## Título
+
+Entrega de Quests.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Quests podem ser iniciadas através de:
+
+- NPCs;
+- sistemas automáticos.
+
+---
+
+# DEC-0128
+
+## Título
+
+Escolhas narrativas.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Sistema de escolhas narrativas não faz parte da versão inicial.
+
+---
+
+# DEC-0129
+
+## Título
+
+Recompensas de Quest.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Quests podem recompensar:
+
+- EXP;
+- Gold;
+- Items;
+- Acesso a conteúdo;
+- Títulos.
+
+---
+
+# DEC-0130
+
+## Título
+
+Quest de Ascension.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Existem quests relacionadas a Ascension.
+
+Objetivo:
+
+liberar progressões importantes.
+
+---
+
+# DEC-0131
+
+## Título
+
+Quest de Boss.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Bosses podem possuir quests relacionadas.
+
+---
+
+# DEC-0132
+
+## Título
+
+Quest Global.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Eventos globais podem utilizar sistema de Quest Global.
+
+---
+
+# DEC-0133
+
+## Título
+
+Falha de Quest.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Quests inicialmente não possuem falha permanente.
+
+---
+
+# DEC-0134
+
+## Título
+
+Histórico de Quest.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Personagem registra:
+
+- Quests completas;
+- Primeira conclusão.
+
+---
+
+# DEC-0135
+
+## Título
+
+Arquitetura QuestService.
+
+## Origem
+
+QST-001 — QuestService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+QuestService
+
+↓
+
+QuestEntity
+
+↓
+
+QuestProgress
+
+↓
+
+RewardComponent
+engineering/decision-log.md
+---
+
+# DEC-0146
+
+## Título
+
+Filosofia dos Monstros.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, um monstro representa desafio.
+
+Monstros existem como fonte de:
+
+- desafio;
+- EXP;
+- Loot;
+- progressão.
+
+---
+
+# DEC-0147
+
+## Título
+
+Estrutura de Packs.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Hunts utilizam sistema de Packs.
+
+Configuração inicial:
+
+3 monstros por Pack.
+
+A arquitetura permite alteração futura.
+
+---
+
+# DEC-0148
+
+## Título
+
+Monster Individual.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Cada monstro dentro do Pack é uma entidade independente.
+
+Cada um possui:
+
+- HP próprio;
+- dano próprio;
+- morte própria;
+- EXP própria;
+- Loot próprio.
+
+---
+
+# DEC-0149
+
+## Título
+
+Monster Template e Monster Instance.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura utiliza separação:
+
+MonsterTemplate:
+
+Define o modelo do monstro.
+
+MonsterInstance:
+
+Representa a criatura criada durante a Hunt.
+
+---
+
+# DEC-0150
+
+## Título
+
+Sistema de Combate em Pack.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Ataques:
+
+Single Target:
+
+Afeta um monstro.
+
+Area:
+
+Afeta todos os monstros do Pack.
+
+---
+
+# DEC-0151
+
+## Título
+
+Tipos de Monstro.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Tipos oficiais:
+
+- Normal;
+- Magic;
+- Elite;
+- Boss;
+- World Boss.
+
+---
+
+# DEC-0152
+
+## Título
+
+Sistema Elite.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Elite possui chance configurável por Hunt.
+
+Regra inicial:
+
+Máximo de 1 Elite por Pack.
+
+Exemplo permitido:
+
+Dragon
+
+Dragon
+
+Dragon Elite
+
+---
+
+# DEC-0153
+
+## Título
+
+Boss System.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Boss:
+
+- não aparece em Hunt normal;
+- possui acesso próprio;
+- utiliza portal/chave específica.
+
+---
+
+# DEC-0154
+
+## Título
+
+World Boss.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+World Boss ocorre através de eventos do servidor.
+
+---
+
+# DEC-0155
+
+## Título
+
+Monster Attributes.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Monstros possuem:
+
+- HP;
+- Damage;
+- Defense;
+- EXP;
+- Loot Table;
+- Resistências;
+- Fraquezas.
+
+---
+
+# DEC-0156
+
+## Título
+
+Monster Level.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Monstros não possuem Level tradicional.
+
+Possuem:
+
+- atributos internos;
+- raridade;
+- versões de Ascension.
+
+---
+
+# DEC-0157
+
+## Título
+
+Monster Skills.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Somente Bosses possuem Skills especiais.
+
+---
+
+# DEC-0158
+
+## Título
+
+Monster AI.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+IA simplificada.
+
+Fluxo:
+
+Spawn
+
+↓
+
+Combate automático
+
+↓
+
+Morte
+
+---
+
+# DEC-0159
+
+## Título
+
+Loot independente.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Cada MonsterInstance possui cálculo próprio de Loot.
+
+Exemplo:
+
+Pack:
+
+Dragon
+
+Dragon
+
+Dragon Elite
+
+
+Cada criatura executa:
+
+Loot Calculation individual.
+
+---
+
+# DEC-0160
+
+## Título
+
+Arquitetura MonsterService.
+
+## Origem
+
+MON-001 — MonsterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+MonsterService
+
+↓
+
+MonsterTemplate
+
+↓
+
+MonsterInstance
+
+↓
+
+SpawnController
+
+↓
+
+LootTable
+
+↓
+
+CombatComponent
+---
+
+# DEC-0161
+
+## Título
+
+Filosofia do Combate.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, um combate representa desafio.
+
+O combate é baseado em:
+
+- estratégia;
+- evolução;
+- equipamentos;
+- builds;
+- cálculos.
+
+---
+
+# DEC-0162
+
+## Título
+
+Modelo de Combate.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Combate utiliza sistema de turnos.
+
+Fluxo:
+
+Jogador ataca
+
+↓
+
+Monstros atacam
+
+↓
+
+Calcula dano
+
+↓
+
+Atualiza HP
+
+↓
+
+Próximo turno
+
+---
+
+# DEC-0163
+
+## Título
+
+Velocidade de Combate.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Não existem inicialmente:
+
+- Attack Speed;
+- Cast Speed.
+
+Todos possuem turno fixo.
+
+---
+
+# DEC-0164
+
+## Título
+
+Prioridade do Turno.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Ordem:
+
+1. Jogador;
+2. Monstros.
+
+---
+
+# DEC-0165
+
+## Título
+
+Seleção de Alvo.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Ataques Single Target atingem o primeiro monstro da Pack List.
+
+---
+
+# DEC-0166
+
+## Título
+
+Troca de Alvo.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Ao morrer:
+
+Novo alvo é selecionado instantaneamente.
+
+---
+
+# DEC-0167
+
+## Título
+
+Dano Físico.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Prioridade:
+
+Weapon
+
+↓
+
+Skill
+
+↓
+
+Level
+
+---
+
+# DEC-0168
+
+## Título
+
+Dano Mágico.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Prioridade:
+
+Level
+
+↓
+
+Magic Level
+
+↓
+
+Equipment
+
+↓
+
+Spell
+
+---
+
+# DEC-0169
+
+## Título
+
+Spell Upgrade.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Spells podem receber upgrades.
+
+O jogador pode especializar uma Spell favorita.
+
+---
+
+# DEC-0170
+
+## Título
+
+Variação de Dano.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Todo ataque acerta.
+
+Existe apenas variação entre dano mínimo e máximo.
+
+---
+
+# DEC-0171
+
+## Título
+
+Critical Damage.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Critical é calculado após defesa e resistência.
+
+Fluxo:
+
+Dano Final
+
+↓
+
+Critical
+
+↓
+
+Resultado
+
+---
+
+# DEC-0172
+
+## Título
+
+Elemental Calculation.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Fluxo:
+
+Dano Calculado
+
+↓
+
+Resistência
+
+↓
+
+Fraqueza
+
+↓
+
+Critical
+
+---
+
+# DEC-0173
+
+## Título
+
+Defesas Elementais.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Cada elemento possui defesa própria.
+
+Exemplos:
+
+- Physical Defense;
+- Fire Defense;
+- Ice Defense;
+- Death Defense.
+
+---
+
+# DEC-0174
+
+## Título
+
+Morte do Personagem.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Fluxo:
+
+HP = 0
+
+↓
+
+Cidade Principal
+
+↓
+
+HP cheio
+
+↓
+
+MP cheio
+
+---
+
+# DEC-0175
+
+## Título
+
+Morte do Monstro.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Fluxo:
+
+Monster Death
+
+↓
+
+EXP
+
+↓
+
+Loot
+
+↓
+
+Collection
+
+↓
+
+Achievement
+
+---
+
+# DEC-0176
+
+## Título
+
+Magias em Área.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Área depende da Spell.
+
+Uma Spell pode atingir:
+
+- todos os monstros do Pack;
+- quantidade específica definida pela Spell.
+
+---
+
+# DEC-0177
+
+## Título
+
+Arquitetura CombatService.
+
+## Origem
+
+COM-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+CombatService
+
+↓
+
+DamageCalculator
+
+↓
+
+DefenseCalculator
+
+↓
+
+ResistanceCalculator
+
+↓
+
+CriticalCalculator
