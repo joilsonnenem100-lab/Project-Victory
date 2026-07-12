@@ -1,104 +1,239 @@
 # World System
 
-> Status: EM DESENVOLVIMENTO
+Version: 1.1
+
+Status: EM DESENVOLVIMENTO
+
+Last Sprint: SPRINT-004
 
 ---
 
 # Objetivo
 
-Definir a estrutura oficial do mundo do Project-Victory.
+Definir a arquitetura oficial do mundo do Project-Victory.
+
+Este documento contém apenas decisões aprovadas.
 
 ---
 
 # Filosofia
 
-O Project-Victory não busca reproduzir um MMORPG tradicional.
+O Project-Victory é um Idle MMORPG.
 
-O mundo existe para sustentar a progressão do jogador.
+O mundo existe para suportar a progressão do jogador.
 
-O foco principal está na eficiência da jogabilidade Idle.
+As Hunts representam o principal conteúdo do jogo.
+
+O desenvolvimento do mundo prioriza:
+
+- simplicidade;
+- escalabilidade;
+- desempenho;
+- expansão futura.
 
 ---
 
-# Estrutura do Mundo
+# Estrutura Oficial
 
-O mundo é dividido em regiões.
+Servidor
 
-Cada região possui suas próprias Hunts.
+↓
 
-Novas regiões são desbloqueadas através do sistema de Ascension.
+Continentes
+
+↓
+
+Regiões
+
+↓
+
+Hunts
+
+↓
+
+Packs
+
+↓
+
+Monstros
+
+---
+
+# Continentes
+
+Cada Continente possui uma Ascension mínima para acesso.
+
+O bloqueio acontece no Continente.
+
+As Hunts apenas possuem uma Ascension recomendada.
+
+---
+
+# Regiões
+
+Cada Continente é composto por diversas Regiões.
+
+Cada Região possui:
+
+- Hunts;
+- Boss relacionado;
+- recursos próprios;
+- identidade temática.
 
 ---
 
 # Hunts
 
-Cada Hunt possui seu próprio conjunto de monstros.
+Uma Hunt representa uma experiência contínua de evolução.
 
-Cada Hunt possui seu próprio Loot.
+Cada Hunt possui:
 
-Cada Hunt possui seu próprio objetivo.
+- ID interno;
+- Nome interno;
+- Nome exibido;
+- Ascension recomendada;
+- Monster Pool;
+- Loot obtido através dos monstros;
+- Boss relacionado;
+- Eventos possíveis.
 
-Algumas Hunts possuem foco em:
+A Hunt não possui Tier.
 
-- Experiência
-- Recursos
-- Craft
-- Itens específicos
+Tier pertence exclusivamente aos itens.
+
+---
+
+# Instâncias
+
+Cada jogador possui sua própria instância de Hunt.
+
+A instância é criada quando o jogador entra.
+
+A instância é destruída quando:
+
+- o jogador sai;
+- o jogador morre;
+- a sessão termina.
 
 ---
 
 # Sistema de Waves
 
-Os monstros surgem através de Waves.
+Cada Hunt gera Packs continuamente.
 
-Cada Wave possui Packs de monstros.
+O funcionamento oficial é:
 
-O comportamento das Waves será definido em documento específico.
+Pack
+
+↓
+
+Todos os monstros derrotados
+
+↓
+
+Espera de 1 segundo
+
+↓
+
+Novo Pack
+
+↓
+
+Repetição infinita
+
+O tempo de respawn deverá permanecer configurável.
 
 ---
 
-# Progressão
+# Packs
 
-O jogador é livre para permanecer em Hunts antigas.
+Valor padrão aprovado:
 
-Nenhuma Hunt se torna obrigatória.
+Pack Size = 3
 
-As Hunts da Ascension atual tendem a oferecer a melhor eficiência.
+O tamanho do Pack nunca deverá ser fixado no código.
 
----
-
-# Ascension
-
-Cada Ascension desbloqueia novas regiões.
-
-O acesso às regiões anteriores permanece disponível.
+Cada Hunt poderá possuir configurações próprias no futuro.
 
 ---
 
-# Filosofia Idle
+# Monster Pool
 
-O mundo foi projetado para minimizar complexidade visual.
+Cada Hunt possui sua própria Monster Pool.
 
-As decisões de engenharia priorizam:
+Exemplo:
 
-- estabilidade
-- backend
-- progressão
-- economia
+Dragon
+
+Dragon Elite
+
+Cada monstro possui sua própria chance de Spawn.
+
+Monstros Elite possuem limite inicial de um exemplar por Pack.
+
+Eventos poderão alterar temporariamente a Monster Pool.
+
+---
+
+# Bosses
+
+Bosses nunca aparecem dentro das Hunts.
+
+Cada Boss possui sua própria Boss Room.
+
+O acesso ocorre através da Boss Key correspondente.
+
+---
+
+# Objetivo das Hunts
+
+Cada Hunt pode possuir um ou mais objetivos.
+
+Exemplos:
+
+- Evolução
+- Recursos
+- Craft
+- Itens específicos
+
+O sistema não informa automaticamente qual Hunt é a mais eficiente.
+
+A descoberta faz parte da experiência do jogador.
+
+---
+
+# Interface
+
+A interface da Hunt possui prioridade mínima de desenvolvimento.
+
+O foco principal está nas informações úteis ao jogador.
+
+Representações visuais servem apenas como contextualização da região.
+
+---
+
+# Troca de Hunt
+
+O jogador pode trocar livremente de Hunt.
+
+Cooldown inicial:
+
+5 segundos.
+
+O servidor poderá aumentar temporariamente este tempo como mecanismo de proteção.
 
 ---
 
 # Pendências
 
-Ainda precisam ser definidos.
+Ainda precisam ser definidos:
 
-- Estrutura completa das Hunts.
-- Funcionamento das Waves.
-- Packs de monstros.
-- Capitais.
-- Regiões.
-- Portais.
+- Estrutura completa dos Continentes.
+- Estrutura das Regiões.
 - Boss Rooms.
+- Eventos de Hunt.
+- Interface visual das Hunts.
+- Algoritmo de Spawn Controller.
 
 ---
 
@@ -107,3 +242,17 @@ Ainda precisam ser definidos.
 DEC-0006
 
 DEC-0014
+
+DEC-0016
+
+DEC-0017
+
+DEC-0018
+
+DEC-0020
+
+DEC-0021
+
+DEC-0022
+
+DEC-0024

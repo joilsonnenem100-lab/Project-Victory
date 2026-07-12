@@ -1,8 +1,10 @@
 # Project-Victory Engineering Architecture
 
-> Status: LOCKED
->
-> Última atualização: 2026-07-12
+Version: 1.1
+
+Status: LOCKED
+
+Last Sprint: SPRINT-004
 
 ---
 
@@ -10,23 +12,23 @@
 
 Este documento define como o Project-Victory deve ser desenvolvido.
 
-Ele não contém regras do jogo.
+Ele não define regras do jogo.
 
-Ele contém apenas regras de engenharia, organização e desenvolvimento do projeto.
+Ele define regras de engenharia, organização e desenvolvimento.
 
 ---
 
 # Filosofia
 
-O conhecimento do Project-Victory é produzido através de reuniões de engenharia.
+O conhecimento do Project-Victory nasce durante reuniões de engenharia.
 
-Nenhuma regra oficial do jogo deve existir apenas na conversa.
+Nenhuma regra oficial do jogo deverá existir apenas na conversa.
 
-Toda decisão aprovada deverá ser registrada no repositório oficial do projeto.
+Toda decisão aprovada deverá ser registrada no GitHub.
 
 ---
 
-# Estrutura Oficial do Projeto
+# Estrutura Oficial
 
 Project-Victory/
 
@@ -42,11 +44,11 @@ Project-Victory/
 
 ---
 
-# Função de cada diretório
+# Responsabilidade de cada diretório
 
 ## docs/
 
-Documentação auxiliar do projeto.
+Documentação auxiliar.
 
 Não representa a fonte oficial das regras do jogo.
 
@@ -54,37 +56,37 @@ Não representa a fonte oficial das regras do jogo.
 
 ## VC-LAB/
 
-Ambiente de implementação e experimentação.
+Ambiente de implementação.
 
-Todo código deverá respeitar as decisões registradas na Knowledge Base.
+Todo código deverá respeitar a Knowledge Base.
 
 ---
 
 ## knowledge-base/
 
-Representa a fonte oficial das regras do jogo.
+Fonte oficial das regras do jogo.
 
-Todos os sistemas aprovados deverão ser registrados aqui.
-
-Nenhuma informação deste diretório poderá ser baseada em suposição.
+Nenhuma informação poderá ser baseada em hipótese ou dedução.
 
 ---
 
 ## engineering/
 
-Contém as decisões de engenharia do projeto.
+Arquitetura do projeto.
 
-Também registra arquitetura e histórico das decisões oficiais.
+Decisões oficiais.
+
+Histórico de engenharia.
 
 ---
 
 ## source/
 
-Código-fonte oficial do Project-Victory.
+Código-fonte oficial.
 
 ---
 
-# Fluxo Oficial de Desenvolvimento
+# Fluxo Oficial
 
 Reunião
 
@@ -114,11 +116,11 @@ Nova reunião
 
 ---
 
-# Regras Oficiais de Engenharia
+# Regras de Engenharia
 
 ## ENG-001
 
-Nenhum código poderá implementar uma mecânica que ainda não tenha sido aprovada durante as reuniões de engenharia.
+Nenhum código poderá implementar uma mecânica que ainda não tenha sido aprovada.
 
 ---
 
@@ -132,7 +134,7 @@ A Knowledge Base representa a fonte oficial das regras do jogo.
 
 O GitHub representa a fonte oficial de conhecimento do projeto.
 
-A conversa serve apenas para produzir conhecimento.
+A conversa existe para produzir conhecimento.
 
 ---
 
@@ -140,13 +142,13 @@ A conversa serve apenas para produzir conhecimento.
 
 Nenhuma decisão oficial permanecerá apenas na conversa.
 
-Toda decisão aprovada deverá ser registrada no GitHub.
+Toda decisão deverá ser registrada no GitHub.
 
 ---
 
 ## ENG-005
 
-Nenhuma informação será adicionada à Knowledge Base baseada em dedução, criatividade ou conhecimento externo.
+Nenhuma regra do jogo poderá ser criada por dedução, criatividade ou conhecimento externo.
 
 Toda regra deverá surgir exclusivamente das reuniões oficiais do Project-Victory.
 
@@ -156,15 +158,92 @@ Caso uma informação ainda não tenha sido discutida, ela deverá permanecer co
 
 ## ENG-006
 
-Meu papel (ChatGPT) é transformar as decisões do projeto em engenharia, arquitetura, documentação técnica e implementação.
+Função do ChatGPT.
 
-Meu papel não é criar regras do jogo.
+Transformar decisões aprovadas em:
+
+- Engenharia
+- Arquitetura
+- Modelagem
+- Banco de Dados
+- Documentação
+- Código
+
+O ChatGPT não define gameplay por iniciativa própria.
 
 ---
 
-# Situação Atual
+## ENG-007
 
-Projeto em fase de Engenharia.
+Sempre que existirem duas soluções que entreguem exatamente a mesma experiência ao jogador, deverá ser escolhida a solução que apresentar:
+
+- menor custo computacional;
+- menor consumo de memória;
+- maior facilidade de manutenção;
+- maior escalabilidade;
+- maior facilidade de expansão.
+
+Alterações de gameplay continuam dependendo de aprovação do Game Design.
+
+---
+
+# Filosofia Idle
+
+O Project-Victory é um Idle MMORPG.
+
+As prioridades de desenvolvimento são:
+
+1. Backend
+2. Progressão
+3. Economia
+4. Estabilidade
+5. Escalabilidade
+
+O desenvolvimento visual deve permanecer simples sempre que possível.
+
+---
+
+# Princípios do Projeto
+
+## O jogador deve descobrir.
+
+O sistema não deverá revelar automaticamente todas as melhores estratégias.
+
+A descoberta faz parte da experiência.
+
+---
+
+## O tempo do jogador possui valor.
+
+Nenhuma mecânica deverá desperdiçar tempo do jogador sem oferecer algum tipo de progresso.
+
+---
+
+## Backend acima do Visual.
+
+Sempre que houver conflito entre investimento visual e investimento em sistemas, deverá ser priorizado o desenvolvimento dos sistemas.
+
+---
+
+## Escalabilidade.
+
+Toda arquitetura deverá ser preparada para futuras expansões.
+
+Valores nunca devem ser fixados diretamente no código quando puderem ser parametrizados.
+
+Exemplos:
+
+- Pack Size
+- Respawn
+- Chances
+- Multiplicadores
+- Cooldowns
+
+---
+
+# Estado Atual
+
+O projeto encontra-se na fase de Engenharia.
 
 Objetivo atual:
 
@@ -172,18 +251,28 @@ Construção da base necessária para iniciar o desenvolvimento do VC-LAB.
 
 ---
 
-# Status
+# Serviços em Engenharia
 
 CharacterService
-Em definição avançada.
 
 InventoryService
-Em definição avançada.
 
 ItemService
-Em definição avançada.
 
 EquipmentService
-Em definição avançada.
 
-Demais sistemas permanecem em engenharia.
+WorldService
+
+HuntService
+
+MonsterService
+
+CombatService
+
+LootService
+
+EconomyService
+
+MarketService
+
+SessionService

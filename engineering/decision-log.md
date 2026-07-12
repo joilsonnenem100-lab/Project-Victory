@@ -394,3 +394,275 @@ Toda decisão deverá ser registrada no GitHub.
 ## Impacto
 
 Projeto inteiro.
+
+---
+
+# DEC-0016
+
+## Título
+
+Prioridade visual das Hunts.
+
+## Origem
+
+HS-001 — HuntService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+As Hunts possuem prioridade mínima de desenvolvimento visual.
+
+O foco principal do Project-Victory está em:
+
+- Backend
+- Progressão
+- Economia
+- Estabilidade
+
+Elementos visuais servem apenas para contextualizar a Hunt.
+
+---
+
+# DEC-0017
+
+## Título
+
+Pack Size configurável.
+
+## Origem
+
+HS-001 — HuntService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Toda Hunt possui um Pack Size configurável.
+
+Valor padrão aprovado:
+
+Pack Size = 3
+
+O valor nunca deverá ser fixo no código.
+
+---
+
+# DEC-0018
+
+## Título
+
+Monster Pool.
+
+## Origem
+
+HS-001 — HuntService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Cada Hunt possui uma Monster Pool própria.
+
+Exemplo:
+
+Dragon
+
+Dragon Elite
+
+Cada entrada possui sua própria Chance de Spawn.
+
+Monstros Elite possuem limite inicial de um exemplar por Pack.
+
+Eventos poderão alterar temporariamente a Monster Pool sem necessidade de criar novas Hunts.
+
+---
+
+# DEC-0019
+
+## Título
+
+Loot pertence ao Monstro.
+
+## Origem
+
+HS-001 — HuntService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O Loot pertence exclusivamente ao Monstro.
+
+As Hunts não possuem Loot próprio.
+
+---
+
+# DEC-0020
+
+## Título
+
+Respawn das Waves.
+
+## Origem
+
+HS-001 — HuntService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Após a morte do último monstro do Pack.
+
+O servidor aguarda:
+
+1 segundo
+
+Então gera um novo Pack completo.
+
+O tempo deverá ser configurável.
+
+---
+
+# DEC-0021
+
+## Título
+
+Instâncias de Hunt.
+
+## Origem
+
+HS-001 — HuntService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Cada jogador possui sua própria instância de Hunt.
+
+A instância é criada ao entrar na Hunt.
+
+A instância é destruída quando:
+
+- jogador sai;
+- jogador morre;
+- sessão é encerrada.
+
+---
+
+# DEC-0022
+
+## Título
+
+Troca de Hunt.
+
+## Origem
+
+HS-001 — HuntService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O jogador pode trocar livremente de Hunt.
+
+Cooldown inicial:
+
+5 segundos.
+
+O servidor poderá aumentar temporariamente este tempo como mecanismo de proteção contra abuso.
+
+---
+
+# DEC-0023
+
+## Título
+
+Modo Offline.
+
+## Origem
+
+HS-001 — HuntService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Ao fechar o navegador ou perder a conexão.
+
+O personagem entra em modo Offline.
+
+Durante o modo Offline:
+
+- Não recebe Loot.
+- Recebe EXP reduzida.
+- Recebe Gold reduzido.
+
+Os valores deverão permanecer configuráveis pelo servidor.
+
+---
+
+# DEC-0024
+
+## Título
+
+Filosofia de Descoberta.
+
+## Origem
+
+HS-001 — HuntService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O jogo não deverá informar automaticamente quais Hunts são melhores para:
+
+- EXP
+- Loot
+- Recursos
+
+Essas informações deverão ser descobertas pela comunidade.
+
+---
+
+# ENG-007
+
+## Título
+
+Escalabilidade acima da implementação imediata.
+
+## Status
+
+LOCKED
+
+## Regra
+
+Sempre que existirem duas soluções que entreguem a mesma experiência ao jogador.
+
+Deverá ser escolhida a arquitetura:
+
+- mais escalável;
+- menor custo computacional;
+- menor consumo de memória;
+- preparada para futuras expansões.
+
+Qualquer alteração de gameplay continua dependendo de aprovação do Game Design.

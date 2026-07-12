@@ -1,108 +1,193 @@
 # Gameplay Philosophy
 
-> Status: LOCKED
+Version: 1.1
+
+Status: LOCKED
+
+Last Sprint: SPRINT-004
 
 ---
 
 # Objetivo
 
-Registrar a filosofia oficial do Project-Victory.
+Definir a filosofia oficial de gameplay do Project-Victory.
+
+Este documento representa a identidade do jogo.
+
+Não contém fórmulas de engenharia.
+
+Contém apenas a visão oficial do Game Design.
 
 ---
 
 # Filosofia Principal
 
-O jogador nunca deve sentir que está ficando para trás.
+O jogador nunca deverá sentir que está ficando para trás.
 
 O progresso deve acontecer naturalmente.
 
-O tempo investido sempre deve representar algum tipo de evolução.
+Todo tempo investido deve gerar algum tipo de evolução.
 
 ---
 
-# Socialização
+# Idle MMORPG
 
-O jogo incentiva interação social.
+Project-Victory é um Idle MMORPG.
 
-A cidade principal representa o centro da comunidade.
+O foco principal está na evolução do personagem e na tomada de decisões.
 
-Guildas possuem papel importante.
+O jogador não precisa permanecer observando a tela durante o combate.
 
-Eventos aproximam jogadores.
+O desenvolvimento do jogo prioriza sistemas em vez de animações complexas.
 
 ---
 
-# Sessão de Jogo
+# Progressão
 
-Uma sessão normalmente segue:
+O personagem evolui principalmente através das Hunts.
 
-- Login
-- Recompensa diária
-- Conversa
-- Organização do inventário
-- Market
-- Guild
-- Preparação
-- Hunt
-- Evolução
+Cada sessão deve transmitir a sensação de progresso.
+
+O jogador nunca perde EXP ou Level ao morrer.
 
 ---
 
 # Liberdade
 
-O jogador escolhe seus próprios objetivos.
+O jogador possui liberdade para escolher como deseja evoluir.
 
-Pode:
+Pode dedicar seu tempo para:
 
-- evoluir;
-- farmar;
-- conversar;
-- negociar;
-- completar Collections;
-- ajudar amigos.
+- Evoluir Level;
+- Evoluir Skills;
+- Melhorar Equipamentos;
+- Farmar Recursos;
+- Completar Collections;
+- Concluir Achievements;
+- Evoluir sua Guild;
+- Construir sua Economia;
+- Ajudar outros jogadores.
+
+---
+
+# Descoberta
+
+O jogo não revela automaticamente todas as melhores estratégias.
+
+O jogador deverá descobrir:
+
+- melhores Hunts;
+- melhores Rotas;
+- melhores Farms;
+- melhores Combinações.
+
+Essa descoberta incentiva:
+
+- interação social;
+- compartilhamento de conhecimento;
+- economia;
+- comunidade.
+
+---
+
+# Cidade Principal
+
+A Cidade Principal representa o centro social do servidor.
+
+O jogador normalmente inicia sua sessão nela.
+
+Exemplos de atividades:
+
+- Recompensa diária;
+- Conversar com jogadores;
+- Organizar inventário;
+- Consultar Market;
+- Gerenciar Guild;
+- Preparar Equipamentos;
+- Entrar em Hunts.
+
+---
+
+# Hunts
+
+As Hunts representam o principal conteúdo do jogo.
+
+Cada Hunt pode favorecer objetivos diferentes.
+
+Exemplos:
+
+- Evolução;
+- Recursos;
+- Craft;
+- Itens específicos.
+
+O jogo não informa automaticamente qual Hunt é a melhor.
 
 ---
 
 # Longo Prazo
 
-O jogo foi projetado para durar muitos anos.
+O Project-Victory foi projetado para durar muitos anos.
 
-Sempre existirão novos objetivos.
+Sempre deverão existir novos objetivos.
+
+Não existe um estado definitivo de conclusão do jogo.
 
 ---
 
-# Riqueza
+# Reconhecimento
 
-Existem diversas formas de ser reconhecido.
+Cada jogador poderá construir sua própria história.
 
-- Economia
-- Equipamentos
-- Collections
-- Achievements
-- Guild
-- World Boss
-- Eventos
+Exemplos:
+
+- Primeiro Level elevado;
+- Grande Comerciante;
+- Grande Colecionador;
+- Líder de Guild;
+- Especialista em Craft;
+- Caçador de Bosses;
+- Colecionador de Achievements;
+- Dono de Equipamentos raros.
+
+Não existe apenas um caminho para tornar-se uma lenda.
 
 ---
 
 # Lenda
 
-Uma Lenda representa um jogador que conseguiu construir uma história relevante dentro do servidor.
+Uma Lenda representa um jogador que construiu uma história marcante dentro do servidor.
 
-Não existe apenas um caminho para isso.
+Esse reconhecimento pode acontecer por diferentes motivos.
 
 ---
 
-# Filosofia Idle
+# Princípios Oficiais
 
-O foco principal do desenvolvimento está nos sistemas.
+O tempo do jogador possui valor.
 
-A apresentação visual deve ser simples.
+A descoberta faz parte da diversão.
 
-O backend representa a prioridade máxima da engenharia.
+A economia deve permanecer relevante.
+
+A interação social deve ser incentivada.
+
+O backend possui prioridade sobre efeitos visuais.
+
+O jogo deve transmitir tranquilidade e sensação constante de progresso.
+
+---
+
+# Pendências
+
+Nenhuma pendência registrada.
 
 ---
 
 # Decisões Relacionadas
 
 DEC-0014
+
+DEC-0016
+
+DEC-0024
