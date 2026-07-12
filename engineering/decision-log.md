@@ -4465,3 +4465,1011 @@ ResistanceCalculator
 ↓
 
 CriticalCalculator
+---
+
+# DEC-0178
+
+## Título
+
+Filosofia das Skills.
+
+## Origem
+
+SKL-001 — SkillService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, uma Skill representa poder.
+
+Skills representam a evolução permanente das capacidades do personagem.
+
+---
+
+# DEC-0179
+
+## Título
+
+Skills oficiais.
+
+## Origem
+
+SKL-001 — SkillService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Skills oficiais:
+
+- Sword;
+- Club;
+- Axe;
+- Distance;
+- Shielding;
+- First Fighting;
+- Magic Level.
+
+Não existem outras Skills inicialmente.
+
+---
+
+# DEC-0180
+
+## Título
+
+Evolução das Skills.
+
+## Origem
+
+SKL-001 — SkillService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Skills evoluem através de:
+
+- utilização durante gameplay;
+- treinamento.
+
+---
+
+# DEC-0181
+
+## Título
+
+Magic Level.
+
+## Origem
+
+SKL-001 — SkillService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Magic Level evolui através de:
+
+- uso de magias;
+- treinamento.
+
+---
+
+# DEC-0182
+
+## Título
+
+Reset de Skill.
+
+## Origem
+
+SKL-001 — SkillService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Skills não possuem reset.
+
+A evolução da Skill é permanente.
+
+---
+
+# DEC-0183
+
+## Título
+
+Spell Upgrade separado.
+
+## Origem
+
+SKL-001 — SkillService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Spell Upgrade é separado de Skill.
+
+Spell Upgrade pode possuir reset futuramente.
+
+Skill não.
+
+---
+
+# DEC-0184
+
+## Título
+
+Influência das Skills.
+
+## Origem
+
+SKL-001 — SkillService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Skills influenciam:
+
+- dano;
+- eficiência.
+
+---
+
+# DEC-0185
+
+## Título
+
+Limite das Skills.
+
+## Origem
+
+SKL-001 — SkillService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Skills não possuem limite máximo.
+
+A progressão é livre.
+
+O custo de evolução aumenta exponencialmente.
+
+---
+
+# DEC-0186
+
+## Título
+
+Arquitetura SkillService.
+
+## Origem
+
+SKL-001 — SkillService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+SkillService
+
+↓
+
+SkillEntity
+
+↓
+
+SkillProgression
+
+↓
+
+CharacterComponent
+---
+
+# DEC-0187
+
+## Título
+
+Filosofia das Spells.
+
+## Origem
+
+SPELL-001 — SpellService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, uma Spell representa força.
+
+Spells representam a expressão do poder do personagem.
+
+---
+
+# DEC-0188
+
+## Título
+
+Tipos de Spell.
+
+## Origem
+
+SPELL-001 — SpellService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Tipos:
+
+- Attack Spell;
+- Area Spell;
+- Support Spell;
+- Instance Spell.
+
+---
+
+# DEC-0189
+
+## Título
+
+Instance Spell.
+
+## Origem
+
+SPELL-001 — SpellService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Instance Spell é uma postura permanente da vocação.
+
+Características:
+
+- não consome Mana;
+- efeito permanente;
+- exclusiva por vocação.
+
+---
+
+# DEC-0190
+
+## Título
+
+Aprendizado de Spell.
+
+## Origem
+
+SPELL-001 — SpellService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Spell é desbloqueada automaticamente ao atingir requisito de Level.
+
+---
+
+# DEC-0191
+
+## Título
+
+Requisitos de Spell.
+
+## Origem
+
+SPELL-001 — SpellService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Requisitos:
+
+- Level;
+- Vocação;
+- Ascension.
+
+---
+
+# DEC-0192
+
+## Título
+
+Spell Upgrade.
+
+## Origem
+
+SPELL-001 — SpellService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Cada Spell possui upgrade individual.
+
+Limite inicial:
+
+10 níveis.
+
+---
+
+# DEC-0193
+
+## Título
+
+Spell Forge.
+
+## Origem
+
+SPELL-001 — SpellService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Spell Forge é o sistema responsável pelo upgrade de Spells.
+
+---
+
+# DEC-0194
+
+## Título
+
+Cooldown de Spell.
+
+## Origem
+
+SPELL-001 — SpellService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Cada Spell possui cooldown próprio verificado por turno.
+
+---
+
+# DEC-0195
+
+## Título
+
+Prioridade de Spell.
+
+## Origem
+
+SPELL-001 — SpellService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Jogador define prioridade de utilização.
+
+Heal possui prioridade inicial.
+
+---
+
+# DEC-0196
+
+## Título
+
+Arquitetura SpellService.
+
+## Origem
+
+SPELL-001 — SpellService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+SpellService
+
+↓
+
+SpellTemplate
+
+↓
+
+CharacterSpell
+
+↓
+
+SpellUpgrade
+
+↓
+
+DamageCalculator
+---
+
+# DEC-0197
+
+## Título
+
+Filosofia do Training.
+
+## Origem
+
+TRAIN-001 — TrainingService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, um Training representa poder.
+
+Training representa evolução passiva controlada.
+
+---
+
+# DEC-0198
+
+## Título
+
+Objetivo do Training.
+
+## Origem
+
+TRAIN-001 — TrainingService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Training permite evolução de:
+
+- Skills;
+- Magic Level.
+
+Não gera:
+
+- EXP;
+- Loot;
+- Gold.
+
+---
+
+# DEC-0199
+
+## Título
+
+Modelo Online e Offline.
+
+## Origem
+
+TRAIN-001 — TrainingService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Training possui o mesmo funcionamento online e offline.
+
+Não existe vantagem por permanecer conectado.
+
+---
+
+# DEC-0200
+
+## Título
+
+Item de Training.
+
+## Origem
+
+TRAIN-001 — TrainingService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Cada treinamento utiliza item específico.
+
+O item possui cargas.
+
+As cargas determinam duração do treinamento.
+
+---
+
+# DEC-0201
+
+## Título
+
+Bloqueio durante Training.
+
+## Origem
+
+TRAIN-001 — TrainingService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Durante Training:
+
+- personagem não caça;
+- personagem não recebe EXP;
+- personagem não participa de combate.
+
+---
+
+# DEC-0202
+
+## Título
+
+Training Progression.
+
+## Origem
+
+TRAIN-001 — TrainingService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Training é mais lento que Hunt.
+
+Hunt continua sendo a principal fonte de evolução.
+
+---
+
+# DEC-0203
+
+## Título
+
+Training Session.
+
+## Origem
+
+TRAIN-001 — TrainingService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+TrainingService
+
+↓
+
+TrainingSession
+
+↓
+
+SkillProgression
+
+↓
+
+Character
+
+---
+
+# DEC-0204
+
+## Título
+
+Training Charge System.
+
+## Origem
+
+TRAIN-001 — TrainingService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Carga do item controla duração do Training.
+
+Ao finalizar as cargas:
+
+Training é encerrado.
+
+---
+
+# DEC-0205
+
+## Título
+
+Filosofia da Account.
+
+## Origem
+
+ACC-001 — AccountService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, uma Account representa identidade.
+
+A Account é a camada permanente do jogador.
+
+---
+
+# DEC-0206
+
+## Título
+
+Slots de Personagem.
+
+## Origem
+
+ACC-001 — AccountService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Cada conta inicia com:
+
+3 slots de personagem.
+
+Pode expandir através de VC Points.
+
+Limite máximo inicial:
+
+10 personagens.
+
+---
+
+# DEC-0207
+
+## Título
+
+Separação Account e Character.
+
+## Origem
+
+ACC-001 — AccountService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Account e Character são entidades separadas.
+
+Account representa jogador.
+
+Character representa história dentro do mundo.
+
+---
+
+# DEC-0208
+
+## Título
+
+Wallet da Conta.
+
+## Origem
+
+ACC-001 — AccountService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Wallet pertence à Account.
+
+Gold pertence à história econômica do jogador.
+
+---
+
+# DEC-0209
+
+## Título
+
+VC Points.
+
+## Origem
+
+ACC-001 — AccountService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+VC Points pertencem à Account.
+
+---
+
+# DEC-0210
+
+## Título
+
+Exclusão de Conta.
+
+## Origem
+
+ACC-001 — AccountService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Conta não pode ser excluída inicialmente.
+
+Personagens podem solicitar exclusão.
+
+Prazo:
+
+30 dias.
+
+---
+
+# DEC-0211
+
+## Título
+
+Arquitetura AccountService.
+
+## Origem
+
+ACC-001 — AccountService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+AccountService
+
+↓
+
+AccountEntity
+
+↓
+
+CharacterEntity
+
+↓
+
+PersistenceLayer
+---
+
+# DEC-0212
+
+## Título
+
+Filosofia do Character.
+
+## Origem
+
+CHAR-001 — CharacterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+No Project-Victory, um personagem representa identidade.
+
+O personagem representa a história permanente do jogador.
+
+---
+
+# DEC-0213
+
+## Título
+
+Vocação permanente.
+
+## Origem
+
+CHAR-001 — CharacterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+A vocação é escolhida na criação e não pode ser alterada inicialmente.
+
+---
+
+# DEC-0214
+
+## Título
+
+EXP do personagem.
+
+## Origem
+
+CHAR-001 — CharacterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+EXP pode ser obtida através de:
+
+- Hunts;
+- Quests;
+- Eventos;
+- Sistemas futuros.
+
+Hunt permanece como principal fonte.
+
+---
+
+# DEC-0215
+
+## Título
+
+Sistema de atributos.
+
+## Origem
+
+CHAR-001 — CharacterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Não existem atributos tradicionais.
+
+O poder vem de:
+
+- Skills;
+- Equipamentos;
+- Spells.
+
+---
+
+# DEC-0216
+
+## Título
+
+Penalidade de morte.
+
+## Origem
+
+CHAR-001 — CharacterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Morte não remove:
+
+- EXP;
+- Gold;
+- itens.
+
+---
+
+# DEC-0217
+
+## Título
+
+Persistência de Buff após morte.
+
+## Origem
+
+CHAR-001 — CharacterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Buffs ativos permanecem após morte.
+
+---
+
+# DEC-0218
+
+## Título
+
+Arquitetura CharacterService.
+
+## Origem
+
+CHAR-001 — CharacterService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Arquitetura:
+
+CharacterService
+
+↓
+
+CharacterEntity
+
+↓
+
+Components

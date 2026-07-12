@@ -4,118 +4,48 @@ Version: 1.0
 
 Status: LOCKED
 
-Last Sprint: SPRINT-010
+Last Sprint: SPRINT-022
 
 ---
 
 # Objetivo
 
-Definir a estrutura oficial do personagem do Project-Victory.
+Definir o funcionamento oficial do sistema de personagem do Project-Victory.
 
-O Character é a entidade principal do jogador.
-
-Todos os sistemas importantes se conectam ao personagem.
+O Character representa a identidade e história do jogador dentro do mundo.
 
 ---
 
 # Filosofia
 
-No Project-Victory, um personagem representa identidade e poder.
+No Project-Victory, um personagem representa identidade.
 
-O personagem representa:
+O personagem registra:
 
-- história;
 - evolução;
 - escolhas;
 - conquistas;
-- reconhecimento.
+- equipamentos;
+- habilidades;
+- história.
 
 ---
 
-# Arquitetura
+# Relação com Account
 
-O personagem não será uma classe única gigante.
-
-Modelo:
+Estrutura:
 
 ```
-CharacterEntity
+Account
 
 ↓
 
-Components
+Character
 ```
 
----
+A Account representa o jogador.
 
-# Componentes
-
-## IdentityComponent
-
-Responsável por:
-
-- Nome;
-- Sexo;
-- Histórico;
-- Informações públicas.
-
----
-
-## ProgressionComponent
-
-Responsável por:
-
-- Level;
-- Experience;
-- Ascension.
-
----
-
-## SkillComponent
-
-Responsável por:
-
-- Sword;
-- Club;
-- Axe;
-- Distance;
-- Magic Level;
-- Shield;
-- First Fighting.
-
----
-
-## InventoryComponent
-
-Responsável pelo inventário.
-
----
-
-## EquipmentComponent
-
-Responsável pelos equipamentos equipados.
-
----
-
-## WalletComponent
-
-Responsável pelas moedas.
-
----
-
-## AchievementComponent
-
-Responsável por:
-
-- Achievements;
-- Títulos;
-- Reconhecimento.
-
----
-
-## GuildComponent
-
-Responsável pela integração com Guilds.
+O Character representa a jornada dentro do mundo.
 
 ---
 
@@ -123,57 +53,82 @@ Responsável pela integração com Guilds.
 
 Ao criar um personagem:
 
-Jogador define:
+Possui:
 
 - Nome;
+- Vocação;
 - Sexo;
-- Vocação.
+- Aparência padrão;
+- Cidade inicial.
 
 ---
 
-# Aparência Inicial
+# Aparência
 
-Todos os personagens iniciam com preset padrão.
+Não existe customização avançada inicialmente.
 
-Customização avançada será definida futuramente.
+Todos iniciam utilizando:
+
+```
+Preset padrão
+```
+
+---
+
+# Identidade Visual
+
+O personagem possui:
+
+## Outfit
+
+Pode ser alterado.
+
+---
+
+## Mount
+
+Sistema futuro.
+
+Características:
+
+- não customizável inicialmente.
+
+---
+
+# Nome
+
+O nome do personagem possui:
+
+- unicidade no servidor;
+- regras de caracteres;
+- proteção contra nomes proibidos.
 
 ---
 
 # Vocação
 
-Vocação é escolhida no momento da criação.
-
-Vocação inicial:
-
-- Knight;
-- Paladin;
-- Druid;
-- Sorcerer;
-- Monk.
-
----
-
-# Mudança de Vocação
-
-Pode existir futuramente.
+A vocação é escolhida na criação.
 
 Regra:
 
-- Apenas uma vez na vida do personagem;
-- Custo extremamente elevado.
+```
+Vocação
+
+=
+
+Permanente
+```
 
 ---
 
-# Vocação Define
+# Vocação Inicial
 
-A vocação influencia:
+Vocação define:
 
-- HP;
-- MP;
-- Ganho por nível;
-- Skills principais;
-- Equipamentos permitidos;
-- Estilo de combate.
+- Skills;
+- Spells;
+- Equipamentos;
+- estilo de combate.
 
 ---
 
@@ -181,40 +136,12 @@ A vocação influencia:
 
 O personagem evolui através de:
 
-- Monstros;
-- Bosses;
-- Quests;
-- Eventos.
-
----
-
-# Level
-
-O Level influencia:
-
-- HP;
-- MP;
-- Dano através das regras da vocação.
-
-Não influencia:
-
-- Capacidade;
-- Regeneração permanente.
-
----
-
-# Ascension
-
-Sistema de progressão avançada.
-
-Fluxo:
-
 ```
-Level 500
+EXP
 
 ↓
 
-Rei da Cidade
+Level
 
 ↓
 
@@ -222,97 +149,118 @@ Ascension
 
 ↓
 
-Level retorna para 1
-
-↓
-
-Atributos permanecem
+Legend
 ```
 
 ---
 
-# Ascensions
+# EXP
 
-Existem:
+EXP pode ser obtida através de:
+
+- Hunts;
+- Quests;
+- Eventos;
+- Sistemas futuros.
+
+A principal fonte é:
 
 ```
-Ascension 1
+Hunt
+```
 
-Ascension 2
+---
 
-Ascension 3
+# Level
 
-Ascension 4
+O Level é baseado na EXP acumulada.
 
-Ascension 5
+---
+
+# Ascension
+
+O personagem possui:
+
+```
+5 Ascensions
 ```
 
 ---
 
 # Legend
 
-Após:
+Ao alcançar:
 
 ```
-Ascension 5
-
-↓
-
 Level 500
+
++
+
+Ascension 5
 ```
 
-O personagem torna-se:
+O personagem se torna:
 
 ```
 Legend
 ```
 
-A partir deste ponto:
+Após Legend:
 
-- Level não possui limite máximo;
-- Progressão continua indefinidamente.
-
----
-
-# Skills
-
-Skills oficiais:
-
-- Sword;
-- Club;
-- Axe;
-- Distance;
-- Magic Level;
-- Shield;
-- First Fighting.
+```
+Level sem limite máximo
+```
 
 ---
 
-# Training
+# Sistema de Poder
 
-Existe:
+O personagem não possui atributos tradicionais.
 
-- Training Online;
-- Training Offline.
+Não existem inicialmente:
 
-Regras de acesso serão definidas futuramente.
+- Strength;
+- Intelligence;
+- Dexterity;
+- Vitality.
 
-Podem existir diferenças entre:
+O poder vem de:
 
-- Free Account;
-- Premium Account;
-- Sistemas especiais.
+```
+Skills
+
++
+
+Equipment
+
++
+
+Spells
+```
+
+---
+
+# HP e Mana
+
+Todo personagem possui:
+
+- HP;
+- Mana.
 
 ---
 
 # Morte
 
-Ao morrer:
+Quando:
+
+```
+HP <= 0
+```
 
 Fluxo:
 
 ```
-Character
+Morte
 
 ↓
 
@@ -324,77 +272,104 @@ HP cheio
 
 ↓
 
-MP cheio
+Mana cheia
 ```
 
 ---
 
-# Buffs após morte
+# Penalidade de Morte
 
-Mantidos:
+Não existe perda.
 
-- Food;
-- XP Boost;
-- Imbuements;
-- Buffs ativos.
+O jogador não perde:
+
+- EXP;
+- Gold;
+- Items.
 
 ---
 
-# Identidade
+# Buff Após Morte
 
-O personagem possui histórico completo.
+Buffs ativos permanecem.
 
-Exemplos:
+Exemplo:
 
-- Primeiros feitos;
+```
+Buff de dano ativo
+
+↓
+
+Morte
+
+↓
+
+Retorno à cidade
+
+↓
+
+Buff continua ativo
+```
+
+---
+
+# Informações Públicas
+
+Outros jogadores podem visualizar:
+
+- Level;
+- Ascension;
+- Guild;
+- Títulos.
+
+---
+
+# Controle do Jogador
+
+O jogador controla exposição de:
+
 - Achievements;
-- Títulos;
+- Equipamentos.
+
+---
+
+# Dados Persistentes
+
+Character salva:
+
+- Progressão;
+- Inventário;
+- Skills;
+- Spells;
+- Equipamentos;
+- Histórico;
 - Conquistas.
 
 ---
 
-# Exposição Pública
+# Arquitetura
 
-Nem todas as informações serão exibidas para outros jogadores.
+```
+CharacterService
 
-A visualização pública será controlada pelo sistema.
+↓
 
----
+CharacterEntity
 
-# Nome
+├── IdentityComponent
 
-Mudança de nome:
+├── ProgressionComponent
 
-- Permitida;
-- Possui custo crescente;
-- Histórico protegido.
+├── SkillComponent
 
----
+├── SpellComponent
 
-# Sexo
+├── EquipmentComponent
 
-Mudança de sexo:
+├── InventoryComponent
 
-- Permitida uma vez por personagem.
-
----
-
-# Mount
-
-Sistema futuro.
-
-Regras:
-
-- Mounts não serão customizáveis;
-- Outfits possuem sistema separado.
-
----
-
-# Salvamento
-
-Character utiliza salvamento contínuo.
-
-Eventos importantes devem ser persistidos imediatamente.
+└── AchievementComponent
+```
 
 ---
 
@@ -402,10 +377,24 @@ Eventos importantes devem ser persistidos imediatamente.
 
 CharacterService comunica com:
 
-- InventoryService;
-- EquipmentService;
-- WalletService;
+- AccountService;
 - SkillService;
+- SpellService;
+- EquipmentService;
+- InventoryService;
 - CombatService;
-- GuildService;
 - AchievementService.
+
+---
+
+# Pendências futuras
+
+Definir:
+
+- atributos internos;
+- fórmula de EXP;
+- tabela de Level;
+- Ascension detalhada;
+- cidades iniciais;
+- aparência;
+- títulos.
