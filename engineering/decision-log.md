@@ -666,3 +666,155 @@ Deverá ser escolhida a arquitetura:
 - preparada para futuras expansões.
 
 Qualquer alteração de gameplay continua dependendo de aprovação do Game Design.
+---
+
+# DEC-0025
+
+## Título
+
+Combat baseado em turnos fixos.
+
+## Origem
+
+CS-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O combate utiliza turnos fixos.
+
+Attack Speed e Cast Speed não existem inicialmente.
+
+A velocidade de ataque não influencia o combate.
+
+O balanceamento será realizado através de:
+
+- Level;
+- Skills;
+- Equipamentos;
+- Afixos;
+- Imbuements;
+- Spells.
+
+---
+
+# DEC-0026
+
+## Título
+
+Ordem do turno de combate.
+
+## Origem
+
+CS-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O ciclo de combate segue:
+
+1. Jogador realiza ação.
+2. Jogador causa dano.
+3. Monstros sobreviventes realizam ataque.
+4. Novo turno inicia.
+
+O jogador sempre possui prioridade de ação.
+
+---
+
+# DEC-0027
+
+## Título
+
+Seleção de alvo.
+
+## Origem
+
+CS-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O personagem ataca sempre o primeiro monstro da Pack List.
+
+Quando o monstro é derrotado, o próximo monstro da lista torna-se o alvo automaticamente.
+
+---
+
+# DEC-0028
+
+## Título
+
+Área das Skills.
+
+## Origem
+
+CS-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Skills de área possuem comportamento definido individualmente.
+
+Cada Skill determina sua quantidade de alvos atingidos.
+
+Uma Skill pode atingir:
+
+- quantidade fixa de monstros;
+- todos os monstros do Pack.
+
+---
+
+# DEC-0029
+
+## Título
+
+Estrutura do CombatService.
+
+## Origem
+
+CS-001 — CombatService
+
+## Status
+
+LOCKED
+
+## Decisão
+
+O CombatService será dividido em responsabilidades menores.
+
+Arquitetura:
+
+CombatService
+
+↓
+
+TargetService
+
+↓
+
+DamageCalculator
+
+↓
+
+CriticalCalculator
+
+↓
+
+DeathService
+
+↓
+
+LootService
