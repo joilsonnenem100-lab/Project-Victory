@@ -34,13 +34,13 @@ Project-Victory/
 
 ├── docs/
 
-├── VC-LAB/
+├── vc-lab/
 
 ├── knowledge-base/
 
 ├── engineering/
 
-└── source/
+└── src/
 
 ---
 
@@ -54,7 +54,7 @@ Não representa a fonte oficial das regras do jogo.
 
 ---
 
-## VC-LAB/
+## vc-lab/
 
 Ambiente de implementação.
 
@@ -80,7 +80,7 @@ Histórico de engenharia.
 
 ---
 
-## source/
+## src/
 
 Código-fonte oficial.
 
@@ -104,7 +104,7 @@ Knowledge Base
 
 ↓
 
-VC-LAB
+vc-lab
 
 ↓
 
@@ -247,7 +247,7 @@ O projeto encontra-se na fase de Engenharia.
 
 Objetivo atual:
 
-Construção da base necessária para iniciar o desenvolvimento do VC-LAB.
+Construção da base necessária para iniciar o desenvolvimento do vc-lab.
 
 ---
 
