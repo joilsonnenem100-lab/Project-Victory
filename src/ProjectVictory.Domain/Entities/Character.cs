@@ -1,4 +1,3 @@
-using System;
 using ProjectVictory.Domain.Primitives;
 using ProjectVictory.Domain.ValueObjects;
 
@@ -6,7 +5,7 @@ namespace ProjectVictory.Domain.Entities
 {
     public sealed class Character : AggregateRoot
     {
-        public Health Health { get; }
+        public Health Health { get; private set; }
 
         public Mana Mana { get; }
 
@@ -19,12 +18,18 @@ namespace ProjectVictory.Domain.Entities
             Health health,
             Mana mana,
             Experience experience,
-            Level level) : base(id)
+            Level level)
+            : base(id)
         {
             Health = health;
             Mana = mana;
             Experience = experience;
             Level = level;
+        }
+
+        public void Heal(Health health)
+        {
+            Health = health;
         }
     }
 }
