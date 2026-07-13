@@ -8,9 +8,12 @@ public sealed class Character : AggregateRoot
 {
     public Health Health { get; }
 
-    public Character(Guid id, Health health)
+    public Mana Mana { get; }
+
+    public Character(Guid id, Health health, Mana mana)
         : base(id)
     {
         Health = health;
+        Mana = mana;
     }
 }
