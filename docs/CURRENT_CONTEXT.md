@@ -37,6 +37,27 @@ O objetivo é preparar a Solution para receber as implementações futuras.
 
 ---
 
+# Progresso Atual
+
+## Concluído
+
+- ProjectVictory.sln criada
+- Projetos da pasta src/ criados
+- Projetos de testes criados
+- Referências arquiteturais configuradas
+
+## Pendente
+
+- Directory.Build.props
+- .editorconfig
+- .gitignore
+- README.md
+- Primeiro Build
+- Validação da Solution
+- Atualização final da documentação
+
+---
+
 # Arquitetura
 
 Seguir obrigatoriamente:
@@ -70,14 +91,18 @@ Todas as DEC vigentes do projeto.
 
 # Status
 
-Em Desenvolvimento
+Sprint parcialmente implementada.
+
+A implementação foi interrompida por limite de uso da conversa.
+
+A próxima conversa deverá continuar exatamente deste ponto.
 
 ---
 
 # Próxima Sprint
 
-Sprint 055
+Continuação da Sprint 054
 
-Objetivo previsto:
+Objetivo:
 
-Criar a estrutura inicial da Domain.
+Finalizar o Bootstrap da Solution.
