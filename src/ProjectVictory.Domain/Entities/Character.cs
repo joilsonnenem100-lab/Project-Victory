@@ -37,12 +37,22 @@ namespace ProjectVictory.Domain.Entities
         {
             ArgumentNullException.ThrowIfNull(health);
 
+            if (Health == health)
+            {
+                return;
+            }
+
             Health = health;
         }
 
         public void SpendMana(Mana mana)
         {
             ArgumentNullException.ThrowIfNull(mana);
+
+            if (Mana == mana)
+            {
+                return;
+            }
 
             Mana = mana;
         }
@@ -51,12 +61,22 @@ namespace ProjectVictory.Domain.Entities
         {
             ArgumentNullException.ThrowIfNull(experience);
 
+            if (Experience == experience)
+            {
+                return;
+            }
+
             Experience = experience;
         }
 
         public void LevelUp(Level level)
         {
             ArgumentNullException.ThrowIfNull(level);
+
+            if (Level == level)
+            {
+                return;
+            }
 
             Level = level;
         }
