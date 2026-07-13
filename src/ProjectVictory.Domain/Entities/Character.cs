@@ -10,7 +10,7 @@ namespace ProjectVictory.Domain.Entities
 
         public Mana Mana { get; private set; }
 
-        public Experience Experience { get; }
+        public Experience Experience { get; private set; }
 
         public Level Level { get; }
 
@@ -36,6 +36,11 @@ namespace ProjectVictory.Domain.Entities
         public void SpendMana(Mana mana)
         {
             Mana = mana;
+        }
+
+        public void GainExperience(Experience experience)
+        {
+            Experience = experience;
         }
     }
 }
