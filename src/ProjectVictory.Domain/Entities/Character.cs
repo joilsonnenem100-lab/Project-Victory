@@ -14,6 +14,8 @@ namespace ProjectVictory.Domain.Entities
 
         public Level Level { get; private set; }
 
+        public Inventory Inventory { get; }
+
         public Character(
             Guid id,
             Health health,
@@ -31,6 +33,7 @@ namespace ProjectVictory.Domain.Entities
             Mana = mana;
             Experience = experience;
             Level = level;
+            Inventory = new Inventory();
         }
 
         public void Heal(Health health)
