@@ -1,4 +1,12 @@
 # ROADMAP
+# Regra Principal
+
+O objetivo do Project-Victory é entregar um MVP jogável.
+
+Toda decisão deve aproximar o projeto desse objetivo.
+
+Evitar mudanças de processo e arquitetura sem necessidade real.
+
 
 Status: ACTIVE
 
