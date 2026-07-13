@@ -35,21 +35,29 @@ namespace ProjectVictory.Domain.Entities
 
         public void Heal(Health health)
         {
+            ArgumentNullException.ThrowIfNull(health);
+
             Health = health;
         }
 
         public void SpendMana(Mana mana)
         {
+            ArgumentNullException.ThrowIfNull(mana);
+
             Mana = mana;
         }
 
         public void GainExperience(Experience experience)
         {
+            ArgumentNullException.ThrowIfNull(experience);
+
             Experience = experience;
         }
 
         public void LevelUp(Level level)
         {
+            ArgumentNullException.ThrowIfNull(level);
+
             Level = level;
         }
     }
