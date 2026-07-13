@@ -2,21 +2,29 @@ using System;
 using ProjectVictory.Domain.Primitives;
 using ProjectVictory.Domain.ValueObjects;
 
-namespace ProjectVictory.Domain.Entities;
-
-public sealed class Character : AggregateRoot
+namespace ProjectVictory.Domain.Entities
 {
-    public Health Health { get; }
-
-    public Mana Mana { get; }
-
-    public Experience Experience { get; }
-
-    public Character(Guid id, Health health, Mana mana, Experience experience)
-        : base(id)
+    public sealed class Character : AggregateRoot
     {
-        Health = health;
-        Mana = mana;
-        Experience = experience;
+        public Health Health { get; }
+
+        public Mana Mana { get; }
+
+        public Experience Experience { get; }
+
+        public Level Level { get; }
+
+        public Character(
+            Guid id,
+            Health health,
+            Mana mana,
+            Experience experience,
+            Level level) : base(id)
+        {
+            Health = health;
+            Mana = mana;
+            Experience = experience;
+            Level = level;
+        }
     }
 }
