@@ -164,3 +164,37 @@ LOCKED
 ## Decisão
 
 Todos os projetos da Solution devem compartilhar a mesma configuração de compilação.
+---
+
+# DEC-0334
+
+## Título
+
+Bootstrap Before Business
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Nenhuma funcionalidade de negócio será implementada antes da infraestrutura básica da Solution estar operacional.
+
+---
+
+# DEC-0335
+
+## Título
+
+Build Is Always Green
+
+## Status
+
+LOCKED
+
+## Decisão
+
+A branch principal deve permanecer compilando e com testes aprovados durante todo o desenvolvimento do projeto.
+
+
+
