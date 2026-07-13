@@ -12,7 +12,7 @@ namespace ProjectVictory.Domain.Entities
 
         public Experience Experience { get; private set; }
 
-        public Level Level { get; }
+        public Level Level { get; private set; }
 
         public Character(
             Guid id,
@@ -41,6 +41,11 @@ namespace ProjectVictory.Domain.Entities
         public void GainExperience(Experience experience)
         {
             Experience = experience;
+        }
+
+        public void LevelUp(Level level)
+        {
+            Level = level;
         }
     }
 }
