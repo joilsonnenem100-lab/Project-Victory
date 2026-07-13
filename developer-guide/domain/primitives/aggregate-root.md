@@ -1,4 +1,4 @@
-# Aggregate Roots
+# Aggregate Root
 
 Status: LOCKED
 
@@ -8,146 +8,70 @@ Version: 1.0
 
 # Objetivo
 
-Este documento define oficialmente os Aggregate Roots do domínio do Project-Victory.
+Definir o contrato arquitetural da classe base `AggregateRoot`.
 
-Um Aggregate Root representa o único ponto de entrada para alterações em um conjunto consistente de objetos.
-
-Toda modificação em um Aggregate deve ocorrer através do seu Aggregate Root.
+Todo Aggregate Root do Project-Victory deverá herdar desta classe.
 
 ---
 
-# Aggregate Root: Account
+# Responsabilidade
 
-Responsável pelo gerenciamento da conta do jogador.
+Um Aggregate Root é uma Entity responsável por proteger a consistência de um Aggregate.
 
-Contém:
-
-- informações da conta;
-- personagens pertencentes à conta;
-- configurações do usuário.
-
-Não contém regras de gameplay.
+Toda alteração em objetos internos deverá ocorrer através dele.
 
 ---
 
-# Aggregate Root: Character
+# Contrato
 
-Principal Aggregate Root do domínio.
+Todo Aggregate Root deve:
 
-É responsável por controlar todo o estado do personagem.
-
-Contém:
-
-- Attributes;
-- Health;
-- Mana;
-- Experience;
-- Level;
-- Inventory;
-- Equipment;
-- Skills;
-- Quest Progress;
-- Status Effects;
-- Character Flags.
-
-Nenhum desses objetos poderá ser alterado diretamente.
-
-Toda alteração deve ocorrer através do Character.
+- Herdar de Entity.
+- Controlar as invariantes do Aggregate.
+- Registrar Domain Events.
+- Expor os Domain Events apenas para leitura.
+- Permitir limpar os Domain Events após sua publicação.
 
 ---
 
-# Aggregate Root: World
+# Domain Events
 
-Representa o estado persistente do mundo.
+Todo Aggregate Root poderá registrar eventos do domínio.
 
-Contém:
-
-- Regions;
-- Maps;
-- Spawn Definitions;
-- World Configuration.
-
-O Runtime nunca altera diretamente o World.
+Os eventos pertencem ao Aggregate até serem publicados.
 
 ---
 
-# Aggregate Root: Quest
+# Encapsulamento
 
-Representa uma Quest completa.
+Objetos internos nunca poderão ser alterados diretamente.
 
-Contém:
-
-- Objectives;
-- Rewards;
-- Requirements;
-- States.
+Toda modificação deverá passar pelo Aggregate Root.
 
 ---
 
-# Aggregate Root: Guild (Futuro)
+# Dependências
 
-Reservado.
+AggregateRoot depende apenas de:
 
-Não será implementado no MVP.
-
----
-
-# Aggregate Root: Marketplace (Futuro)
-
-Reservado.
-
-Não será implementado no MVP.
+- Entity
+- IDomainEvent
 
 ---
 
-# Objetos que NÃO são Aggregate Roots
+# Proibições
 
-Os seguintes objetos pertencem a outros Aggregates:
+É proibido:
 
-Inventory
-
-Equipment
-
-Skill
-
-Health
-
-Mana
-
-Experience
-
-Position
-
-Loot
-
-Item
-
-Monster
-
-NPC
-
-Spawn
-
-Combat
-
-Region
-
-Map
-
----
-
-# Regras
-
-É proibido modificar diretamente qualquer objeto pertencente a um Aggregate.
-
-Toda alteração deve passar obrigatoriamente pelo Aggregate Root.
+- acessar infraestrutura;
+- acessar banco de dados;
+- conhecer Runtime;
+- conhecer Application.
 
 ---
 
 # Filosofia
 
-O Aggregate Root protege a consistência do domínio.
+Aggregate Roots representam a fronteira de consistência do domínio.
 
-Ele é o único responsável por manter as invariantes do seu conjunto de objetos.
-
-Essa regra deve permanecer válida durante toda a vida do Project-Victory.
+Toda alteração relevante deve passar por eles.

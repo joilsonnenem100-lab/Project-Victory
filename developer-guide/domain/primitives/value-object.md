@@ -1,4 +1,4 @@
-# Aggregate Roots
+# Value Object
 
 Status: LOCKED
 
@@ -8,146 +8,55 @@ Version: 1.0
 
 # Objetivo
 
-Este documento define oficialmente os Aggregate Roots do domínio do Project-Victory.
+Definir o contrato arquitetural da classe base `ValueObject`.
 
-Um Aggregate Root representa o único ponto de entrada para alterações em um conjunto consistente de objetos.
-
-Toda modificação em um Aggregate deve ocorrer através do seu Aggregate Root.
+Todo Value Object do Project-Victory deverá herdar desta classe.
 
 ---
 
-# Aggregate Root: Account
+# Responsabilidade
 
-Responsável pelo gerenciamento da conta do jogador.
-
-Contém:
-
-- informações da conta;
-- personagens pertencentes à conta;
-- configurações do usuário.
-
-Não contém regras de gameplay.
+Representar um conceito do domínio sem identidade própria.
 
 ---
 
-# Aggregate Root: Character
+# Contrato
 
-Principal Aggregate Root do domínio.
+Todo Value Object deve:
 
-É responsável por controlar todo o estado do personagem.
-
-Contém:
-
-- Attributes;
-- Health;
-- Mana;
-- Experience;
-- Level;
-- Inventory;
-- Equipment;
-- Skills;
-- Quest Progress;
-- Status Effects;
-- Character Flags.
-
-Nenhum desses objetos poderá ser alterado diretamente.
-
-Toda alteração deve ocorrer através do Character.
+- Ser imutável.
+- Não possuir Id.
+- Implementar igualdade por valor.
+- Não possuir estado mutável.
 
 ---
 
-# Aggregate Root: World
+# Igualdade
 
-Representa o estado persistente do mundo.
-
-Contém:
-
-- Regions;
-- Maps;
-- Spawn Definitions;
-- World Configuration.
-
-O Runtime nunca altera diretamente o World.
+Dois Value Objects são iguais quando todos os seus valores internos são iguais.
 
 ---
 
-# Aggregate Root: Quest
+# Dependências
 
-Representa uma Quest completa.
-
-Contém:
-
-- Objectives;
-- Rewards;
-- Requirements;
-- States.
+Nenhuma.
 
 ---
 
-# Aggregate Root: Guild (Futuro)
+# Proibições
 
-Reservado.
+É proibido:
 
-Não será implementado no MVP.
-
----
-
-# Aggregate Root: Marketplace (Futuro)
-
-Reservado.
-
-Não será implementado no MVP.
-
----
-
-# Objetos que NÃO são Aggregate Roots
-
-Os seguintes objetos pertencem a outros Aggregates:
-
-Inventory
-
-Equipment
-
-Skill
-
-Health
-
-Mana
-
-Experience
-
-Position
-
-Loot
-
-Item
-
-Monster
-
-NPC
-
-Spawn
-
-Combat
-
-Region
-
-Map
-
----
-
-# Regras
-
-É proibido modificar diretamente qualquer objeto pertencente a um Aggregate.
-
-Toda alteração deve passar obrigatoriamente pelo Aggregate Root.
+- acessar banco de dados;
+- conhecer infraestrutura;
+- conhecer Runtime;
+- possuir Guid;
+- possuir identidade.
 
 ---
 
 # Filosofia
 
-O Aggregate Root protege a consistência do domínio.
+Value Objects representam conceitos.
 
-Ele é o único responsável por manter as invariantes do seu conjunto de objetos.
-
-Essa regra deve permanecer válida durante toda a vida do Project-Victory.
+São definidos exclusivamente pelos seus valores.

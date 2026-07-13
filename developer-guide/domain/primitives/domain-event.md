@@ -1,4 +1,4 @@
-# Aggregate Roots
+# Domain Event
 
 Status: LOCKED
 
@@ -8,146 +8,47 @@ Version: 1.0
 
 # Objetivo
 
-Este documento define oficialmente os Aggregate Roots do domínio do Project-Victory.
+Definir o contrato arquitetural da interface `IDomainEvent`.
 
-Um Aggregate Root representa o único ponto de entrada para alterações em um conjunto consistente de objetos.
-
-Toda modificação em um Aggregate deve ocorrer através do seu Aggregate Root.
+Todo Domain Event do Project-Victory deverá implementar esta interface.
 
 ---
 
-# Aggregate Root: Account
+# Responsabilidade
 
-Responsável pelo gerenciamento da conta do jogador.
-
-Contém:
-
-- informações da conta;
-- personagens pertencentes à conta;
-- configurações do usuário.
-
-Não contém regras de gameplay.
+Representar um fato ocorrido dentro do domínio.
 
 ---
 
-# Aggregate Root: Character
+# Contrato
 
-Principal Aggregate Root do domínio.
+Todo Domain Event deve:
 
-É responsável por controlar todo o estado do personagem.
-
-Contém:
-
-- Attributes;
-- Health;
-- Mana;
-- Experience;
-- Level;
-- Inventory;
-- Equipment;
-- Skills;
-- Quest Progress;
-- Status Effects;
-- Character Flags.
-
-Nenhum desses objetos poderá ser alterado diretamente.
-
-Toda alteração deve ocorrer através do Character.
+- Ser imutável.
+- Representar um acontecimento passado.
+- Não conter lógica de negócio.
 
 ---
 
-# Aggregate Root: World
+# Dependências
 
-Representa o estado persistente do mundo.
-
-Contém:
-
-- Regions;
-- Maps;
-- Spawn Definitions;
-- World Configuration.
-
-O Runtime nunca altera diretamente o World.
+Nenhuma.
 
 ---
 
-# Aggregate Root: Quest
+# Proibições
 
-Representa uma Quest completa.
+É proibido:
 
-Contém:
-
-- Objectives;
-- Rewards;
-- Requirements;
-- States.
-
----
-
-# Aggregate Root: Guild (Futuro)
-
-Reservado.
-
-Não será implementado no MVP.
-
----
-
-# Aggregate Root: Marketplace (Futuro)
-
-Reservado.
-
-Não será implementado no MVP.
-
----
-
-# Objetos que NÃO são Aggregate Roots
-
-Os seguintes objetos pertencem a outros Aggregates:
-
-Inventory
-
-Equipment
-
-Skill
-
-Health
-
-Mana
-
-Experience
-
-Position
-
-Loot
-
-Item
-
-Monster
-
-NPC
-
-Spawn
-
-Combat
-
-Region
-
-Map
-
----
-
-# Regras
-
-É proibido modificar diretamente qualquer objeto pertencente a um Aggregate.
-
-Toda alteração deve passar obrigatoriamente pelo Aggregate Root.
+- acessar banco de dados;
+- conhecer infraestrutura;
+- conhecer Runtime;
+- modificar o domínio.
 
 ---
 
 # Filosofia
 
-O Aggregate Root protege a consistência do domínio.
+Domain Events representam fatos consumados do domínio.
 
-Ele é o único responsável por manter as invariantes do seu conjunto de objetos.
-
-Essa regra deve permanecer válida durante toda a vida do Project-Victory.
+Seu único objetivo é comunicar acontecimentos relevantes.
