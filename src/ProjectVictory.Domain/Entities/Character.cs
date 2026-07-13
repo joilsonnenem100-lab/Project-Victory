@@ -1,3 +1,4 @@
+using System;
 using ProjectVictory.Domain.Primitives;
 using ProjectVictory.Domain.ValueObjects;
 
@@ -7,7 +8,7 @@ namespace ProjectVictory.Domain.Entities
     {
         public Health Health { get; private set; }
 
-        public Mana Mana { get; }
+        public Mana Mana { get; private set; }
 
         public Experience Experience { get; }
 
@@ -30,6 +31,11 @@ namespace ProjectVictory.Domain.Entities
         public void Heal(Health health)
         {
             Health = health;
+        }
+
+        public void SpendMana(Mana mana)
+        {
+            Mana = mana;
         }
     }
 }
