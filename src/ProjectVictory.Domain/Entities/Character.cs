@@ -18,6 +18,8 @@ namespace ProjectVictory.Domain.Entities
 
         public Equipment Equipment { get; }
 
+        public Attributes Attributes { get; }
+
         public Character(
             Guid id,
             Health health,
@@ -37,6 +39,7 @@ namespace ProjectVictory.Domain.Entities
             Level = level;
             Inventory = new Inventory();
             Equipment = new Equipment();
+            Attributes = new Attributes();
         }
 
         public void Heal(Health health)
