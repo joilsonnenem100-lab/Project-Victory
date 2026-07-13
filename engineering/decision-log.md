@@ -196,5 +196,21 @@ LOCKED
 
 A branch principal deve permanecer compilando e com testes aprovados durante todo o desenvolvimento do projeto.
 
+# DEC-0336
 
+## Título
+
+Technology Baseline
+
+## Status
+
+LOCKED
+
+## Decisão
+
+Target Framework: .NET 10
+
+Test Framework: xUnit
+
+Todos os projetos da Solution devem utilizar essa baseline tecnológica.
 
