@@ -9,6 +9,8 @@ namespace ProjectVictory.Domain.Entities
 
         public IReadOnlyCollection<string> Items => _items;
 
+        public int Count => _items.Count;
+
         public Inventory()
         {
             _items = new HashSet<string>();
@@ -48,6 +50,21 @@ namespace ProjectVictory.Domain.Entities
             }
 
             return _items.Contains(item);
+        }
+
+        public void Clear()
+        {
+            _items.Clear();
+        }
+
+        public bool IsEmpty()
+        {
+            return _items.Count == 0;
+        }
+
+        public IReadOnlyCollection<string> GetItems()
+        {
+            return _items;
         }
     }
 }
