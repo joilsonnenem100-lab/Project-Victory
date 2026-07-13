@@ -10,10 +10,13 @@ public sealed class Character : AggregateRoot
 
     public Mana Mana { get; }
 
-    public Character(Guid id, Health health, Mana mana)
+    public Experience Experience { get; }
+
+    public Character(Guid id, Health health, Mana mana, Experience experience)
         : base(id)
     {
         Health = health;
         Mana = mana;
+        Experience = experience;
     }
 }
