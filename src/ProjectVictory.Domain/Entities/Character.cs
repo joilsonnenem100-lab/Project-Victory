@@ -22,6 +22,11 @@ namespace ProjectVictory.Domain.Entities
             Level level)
             : base(id)
         {
+            ArgumentNullException.ThrowIfNull(health);
+            ArgumentNullException.ThrowIfNull(mana);
+            ArgumentNullException.ThrowIfNull(experience);
+            ArgumentNullException.ThrowIfNull(level);
+
             Health = health;
             Mana = mana;
             Experience = experience;
