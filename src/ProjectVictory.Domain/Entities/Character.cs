@@ -20,6 +20,8 @@ namespace ProjectVictory.Domain.Entities
 
         public Attributes Attributes { get; }
 
+        public Skills Skills { get; }
+
         public Character(
             Guid id,
             Health health,
@@ -40,6 +42,7 @@ namespace ProjectVictory.Domain.Entities
             Inventory = new Inventory();
             Equipment = new Equipment();
             Attributes = new Attributes();
+            Skills = new Skills();
         }
 
         public void Heal(Health health)
