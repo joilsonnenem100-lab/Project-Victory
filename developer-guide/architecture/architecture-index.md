@@ -2,7 +2,7 @@
 
 # Architecture Index
 
-Versão: 1.0
+Versão: 1.1
 
 Status: Oficial
 
@@ -87,9 +87,10 @@ Nenhum documento deverá existir fora desta estrutura sem justificativa arquitet
 
 ## Gameplay
 
+- monsters.md
+
 Planejado
 
-- monsters.md
 - monster-ai.md
 - spawn.md
 - experience-distribution.md
@@ -138,6 +139,15 @@ Planejado
 - raids.md
 - events.md
 - seasons.md
+
+---
+
+## Architecture Decision Records (ADR)
+
+- ADR-001-engine-composition.md
+- ADR-002-engine-presentation-separation.md
+- ADR-003-single-monster-definition.md
+- ADR-004-hunt-independent-from-client.md
 
 ---
 

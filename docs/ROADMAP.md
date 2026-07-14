@@ -1,79 +1,44 @@
-# ROADMAP
-# Regra Principal
+# Documento Histórico
 
-O objetivo do Project-Victory é entregar um MVP jogável.
+## Status
 
-Toda decisão deve aproximar o projeto desse objetivo.
+Histórico.
 
-Evitar mudanças de processo e arquitetura sem necessidade real.
+Este documento foi utilizado durante as fases iniciais do desenvolvimento do Project-Victory.
 
-
-Status: ACTIVE
+Ele permanece no projeto apenas para fins de consulta histórica e rastreabilidade da evolução do projeto.
 
 ---
 
-# Progresso Geral
+# Fonte Oficial
 
-✅ Filosofia do Projeto
+Este documento NÃO representa mais o Roadmap oficial.
 
-✅ Gameplay
+O Roadmap oficial do Project-Victory encontra-se em:
 
-✅ Arquitetura
+developer-guide/architecture/roadmap.md
 
-✅ Banco de Dados
-
-✅ Runtime
-
-✅ Domain
-
-✅ Developer Guide
-
-✅ Workflow de Desenvolvimento
-
-🔄 Bootstrap da Solution
-
-⬜ Implementação da Domain
-
-⬜ Runtime
-
-⬜ Persistence
-
-⬜ API
-
-⬜ Interface
-
-⬜ MVP
-
-⬜ Alpha
-
-⬜ Beta
-
-⬜ Release
+Toda decisão relacionada ao desenvolvimento deverá utilizar exclusivamente o Roadmap oficial.
 
 ---
 
-# Sprint Atual
+# Histórico
 
-Sprint 054
+O conteúdo deste documento representa uma fotografia de uma etapa anterior do projeto.
 
-Solution Bootstrap
+Ele não deve ser utilizado para:
 
-Status:
-
-Em desenvolvimento
-
----
-
-# Próxima Sprint
-
-Sprint 055
-
-Objetivo previsto:
-
-Criar a estrutura inicial da Domain.
+- determinar a Sprint atual;
+- determinar o próximo módulo;
+- validar estados da arquitetura;
+- iniciar novos Work Items.
 
 ---
 
-# Objetivo Final
+# Utilização
 
-Entregar o Project-Victory totalmente funcional, seguindo toda a arquitetura definida durante a fase de planejamento.
+Este documento poderá ser consultado apenas para fins históricos.
+
+Toda evolução futura deverá seguir exclusivamente a documentação oficial localizada em:
+
+developer-guide/architecture/

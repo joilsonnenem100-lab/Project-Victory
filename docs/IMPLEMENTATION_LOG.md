@@ -1,42 +1,53 @@
-Projeto
+# Documento Histórico
 
-Project Victory
+## Status
 
-Arquitetura
+Histórico.
 
-Clean Architecture
+Este documento foi utilizado durante fases anteriores do desenvolvimento do Project-Victory para registrar implementações realizadas durante cada Sprint.
 
-Engine First
+Após a consolidação da arquitetura, este arquivo deixou de representar o processo oficial de desenvolvimento.
 
-Domain First
+---
 
-Template → Factory → Instance
+# Fonte Oficial
 
-ECS Lite
+Este documento NÃO representa mais o registro oficial de evolução do projeto.
 
-Runtime Isolation
+A evolução oficial do Project-Victory passa a ser registrada através da documentação localizada em:
 
-Documentação Oficial
+developer-guide/architecture/
 
-developer-guide/
+Principalmente:
 
-engineering/
+- roadmap.md
+- project-state.md
+- decision-log.md
 
-knowledge-base/
+---
 
-vc-lab/
+# Histórico
 
-Fluxo
+O conteúdo anteriormente registrado neste documento representa apenas uma fotografia de uma etapa anterior do projeto.
 
-Arquitetura
+Ele não deve ser utilizado para:
+
+- determinar o estado atual do projeto;
+- validar implementações futuras;
+- definir prioridades;
+- determinar o próximo Work Item.
+
+---
+
+# Registro Oficial
+
+A partir desta versão do projeto, toda evolução deverá seguir obrigatoriamente o fluxo oficial:
+
+Roadmap
 
 ↓
 
-Código
-
-↓
-
-Testes
+Verificação de Dependências
 
 ↓
 
@@ -44,8 +55,30 @@ Documentação
 
 ↓
 
-Commit
+Revisão Arquitetural
 
-IMPORTANTE
+↓
 
-CURRENT_CONTEXT.md representa sempre o estado atual da Sprint.
+LOCKED
+
+↓
+
+Implementação
+
+↓
+
+Testes
+
+↓
+
+Atualização da Documentação
+
+---
+
+# Utilização
+
+Este documento permanece apenas para consulta histórica e rastreabilidade da evolução do projeto.
+
+Toda evolução futura deverá utilizar exclusivamente a documentação oficial localizada em:
+
+developer-guide/architecture/

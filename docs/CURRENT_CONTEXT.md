@@ -1,88 +1,54 @@
-# CURRENT CONTEXT
+# Documento Histórico
 
-Status: ACTIVE
+## Status
 
----
+Histórico.
 
-# Sprint Atual
+Este documento foi utilizado durante fases anteriores do desenvolvimento do Project-Victory para registrar o contexto da conversa em andamento.
 
-Sprint: 054
-
-Nome:
-
-Bootstrap da Solution
+Com a consolidação da arquitetura e da documentação oficial, este arquivo deixou de representar o estado atual do projeto.
 
 ---
 
-# Status
+# Fonte Oficial
 
-CONCLUÍDA
+Este documento NÃO representa mais o estado oficial do Project-Victory.
 
----
+O estado oficial do projeto encontra-se em:
 
-# Objetivo
+developer-guide/architecture/project-state.md
 
-Preparar a infraestrutura base do Project-Victory.
-
----
-
-# Entregas
-
-## Solution
-
-- ProjectVictory.sln
-
-## Estrutura
-
-- src/
-- tests/
-- tools/
-
-## Projetos
-
-- ProjectVictory.API
-- ProjectVictory.Application
-- ProjectVictory.Domain
-- ProjectVictory.Infrastructure
-- ProjectVictory.Persistence
-- ProjectVictory.Runtime
-- ProjectVictory.Shared
-
-## Testes
-
-- ProjectVictory.Application.Tests
-- ProjectVictory.Domain.Tests
-- ProjectVictory.Runtime.Tests
-
-## Configuração
-
-- Directory.Build.props
-- .editorconfig
-- .gitignore
-- README.md
+Toda decisão relacionada ao desenvolvimento deverá utilizar exclusivamente o Project State oficial.
 
 ---
 
-# Validação
+# Histórico
 
-Build:
+O conteúdo deste documento representa apenas uma fotografia de uma etapa anterior do projeto.
 
-✅ Verde
+Ele não deve ser utilizado para:
 
-Testes:
-
-✅ Projetos de testes criados
-
-Observação:
-
-Ainda não existem testes implementados.
+- identificar a Sprint atual;
+- identificar o estado atual da arquitetura;
+- identificar módulos LOCKED;
+- determinar o próximo Work Item;
+- validar o progresso do projeto.
 
 ---
 
-# Próxima Etapa
+# Utilização
 
-Encerramento da Sprint 054.
+Este documento poderá ser consultado apenas para fins históricos.
 
-Preparação para adoção do novo fluxo baseado em Work Items (PV-XXXX).
+Toda evolução futura deverá seguir exclusivamente a documentação oficial localizada em:
 
-A próxima implementação utilizará o novo processo definido pela Arquitetura.
+developer-guide/architecture/
+
+---
+
+# Estado Atual
+
+Para obter o estado atual do projeto consulte:
+
+- developer-guide/architecture/project-state.md
+- developer-guide/architecture/roadmap.md

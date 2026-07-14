@@ -30,15 +30,19 @@ Cada módulo deve possuir exatamente um dos seguintes estados:
 Definições:
 
 Planned
+
 O módulo ainda não foi iniciado.
 
 In Progress
+
 O módulo está em discussão e documentação.
 
 Review
+
 O módulo está em revisão arquitetural.
 
 Locked
+
 O módulo foi aprovado e passa a fazer parte da arquitetura oficial do Project-Victory.
 
 Após um módulo ser marcado como Locked, alterações somente poderão ocorrer através de uma revisão arquitetural documentada.
@@ -130,14 +134,14 @@ Módulos:
 
 # Fase 6 — Gameplay Foundation
 
-Status: PLANNED
+Status: IN PROGRESS
 
 Módulos:
 
-- Monsters
-- Monster AI
-- Experience Distribution
-- Spawn System
+- Monsters (LOCKED)
+- Monster AI (PLANNED)
+- Experience Distribution (PLANNED)
+- Spawn System (PLANNED)
 
 ---
 
@@ -226,14 +230,12 @@ Caso seja identificado um problema estrutural durante o desenvolvimento:
 
 Sprint Atual:
 
-Sprint de Consolidação para Transição de Conversa.
+Gameplay Foundation
 
 Objetivo:
 
-Transformar toda a documentação produzida até o momento na única fonte oficial de verdade do Project-Victory.
+Consolidar a documentação oficial do módulo Monsters, finalizar sua revisão arquitetural e prosseguir para os próximos módulos da Gameplay Foundation.
 
-Desenvolvimento da Engine temporariamente pausado.
+Próximo módulo:
 
-Próximo módulo após a conclusão desta Sprint:
-
-Monsters.
+Monster AI

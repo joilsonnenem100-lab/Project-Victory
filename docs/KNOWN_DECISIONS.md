@@ -1,51 +1,54 @@
-Projeto
+# Documento Histórico
 
-Project Victory
+## Status
 
-Arquitetura
+Histórico.
 
-Clean Architecture
+Este documento foi utilizado durante as fases iniciais do desenvolvimento do Project-Victory para registrar decisões de arquitetura e engenharia.
 
-Engine First
+Após a consolidação da arquitetura, este arquivo deixou de representar o registro oficial das decisões do projeto.
 
-Domain First
+---
 
-Template → Factory → Instance
+# Fonte Oficial
 
-ECS Lite
+Este documento NÃO representa mais o registro oficial das decisões arquiteturais.
 
-Runtime Isolation
+As decisões oficiais do Project-Victory encontram-se em:
 
-Documentação Oficial
+developer-guide/architecture/decision-log.md
 
-developer-guide/
+Toda decisão permanente deverá ser registrada exclusivamente nesse documento.
 
-engineering/
+---
 
-knowledge-base/
+# Histórico
 
-vc-lab/
+O conteúdo anteriormente registrado neste documento representa apenas uma fotografia de uma etapa anterior do projeto.
 
-Fluxo
+Ele não deve ser utilizado para:
 
-Arquitetura
+- validar arquitetura atual;
+- determinar regras oficiais;
+- justificar novas implementações;
+- substituir a documentação oficial.
 
-↓
+---
 
-Código
+# Registro Oficial
 
-↓
+A partir desta versão do projeto:
 
-Testes
+- Toda decisão arquitetural permanente deverá ser registrada no Decision Log.
+- Toda alteração estrutural deverá passar por revisão arquitetural.
+- Toda documentação oficial prevalece sobre documentos históricos.
 
-↓
+---
 
-Documentação
+# Utilização
 
-↓
+Este documento permanece apenas para consulta histórica e rastreabilidade da evolução do Project-Victory.
 
-Commit
+Toda evolução futura deverá utilizar exclusivamente a documentação oficial localizada em:
 
-IMPORTANTE
-
-CURRENT_CONTEXT.md representa sempre o estado atual da Sprint.
+developer-guide/architecture/

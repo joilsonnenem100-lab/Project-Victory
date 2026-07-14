@@ -2,7 +2,7 @@
 
 # Project State
 
-Versão do Documento: 1.0
+Versão do Documento: 1.2
 
 Status: Oficial
 
@@ -26,7 +26,7 @@ Este documento deve ser atualizado ao final de cada Sprint.
 
 # Fonte de Verdade
 
-O Project State nunca substitui a documentação oficial.
+Este documento não substitui a documentação oficial.
 
 Sua responsabilidade é apenas consolidar o estado atual do projeto.
 
@@ -38,15 +38,18 @@ A documentação oficial permanece sendo a única fonte de verdade.
 
 Nome:
 
-Sprint de Consolidação para Transição de Conversa
+Gameplay Foundation
 
 Status:
 
-Em andamento
+EM ANDAMENTO
 
 Objetivo:
 
-Transformar toda a documentação produzida em uma base suficiente para permitir a continuidade do projeto em uma nova conversa sem perda significativa de contexto.
+- Consolidar a arquitetura do módulo Monsters.
+- Produzir a documentação oficial do módulo.
+- Consolidar as decisões arquiteturais (ADRs).
+- Prosseguir para os próximos módulos da Gameplay Foundation.
 
 ---
 
@@ -54,30 +57,36 @@ Transformar toda a documentação produzida em uma base suficiente para permitir
 
 Fase Atual:
 
-Sprint de Consolidação
+Gameplay Foundation
 
-Desenvolvimento da Engine:
+Status:
 
-PAUSADO
+EM ANDAMENTO
 
-Motivo:
+---
 
-Consolidação da documentação.
+# Próximo Sprint
 
-Após a conclusão desta Sprint o Roadmap continuará normalmente.
+Nome:
+
+Gameplay Foundation
+
+Próximo módulo:
+
+Monster AI
 
 ---
 
 # Módulos LOCKED
 
-Foundation
+## Foundation
 
 - Aggregate Root
 - Value Objects
 - Entities
 - Character
 
-Character Domain
+## Character Domain
 
 - Health
 - Mana
@@ -87,13 +96,13 @@ Character Domain
 - Equipment
 - Skills
 
-Progression
+## Progression
 
 - Skill Progression
 - Trainer
 - Offline Training
 
-Item System
+## Item System
 
 - Items
 - Item Template
@@ -104,98 +113,71 @@ Item System
 - Affixes
 - Imbuements
 
-Loot
+## Loot
 
 - Loot
 - Loot Tables
 - Loot Entries
 
-Engine Foundation
+## Engine Foundation
 
 - Vocations
 - Resources
 - Combat Architecture
 
+## Gameplay Foundation
+
+- Monsters
+
 ---
 
 # Módulos em Desenvolvimento
 
-Nenhum.
+## Gameplay Foundation
 
-O desenvolvimento encontra-se oficialmente pausado durante esta Sprint.
+- Monster AI
+- Experience Distribution
+- Spawn System
 
 ---
 
 # Próximo Módulo
 
-Após o encerramento desta Sprint:
-
-Monsters
-
-Nenhum outro módulo deverá ser iniciado antes de Monsters sem uma revisão arquitetural documentada.
+Monster AI
 
 ---
 
 # Revisões Arquiteturais Pendentes
 
-No momento não existe nenhuma revisão arquitetural bloqueando o Roadmap.
-
-Melhorias identificadas durante a Sprint serão incorporadas normalmente na documentação.
-
----
-
-# Decisões Consolidadas
-
-Até o momento encontram-se consolidados:
-
-- Character como Aggregate Root.
-- Skills permanentes.
-- Progressão baseada em uso.
-- Weapon Categories.
-- Item Template separado de Item Instance.
-- Affixes permanentes.
-- Imbuements temporários.
-- Loot independente de Character.
-- Combat Engine desacoplada.
-- Combat Context imutável.
-- Combat Result como saída única.
-- Combat Pipeline determinístico.
-- Vocation como perfil de configuração.
-- Resources desacoplados da Combat Engine.
-
----
-
-# Regras do Projeto
-
-Durante o desenvolvimento:
-
-- Nunca assumir decisões de Game Design.
-- Nunca assumir comportamento não documentado.
-- Toda dúvida relacionada à experiência do jogador deverá ser transformada em questionário.
-- Toda implementação deverá consultar o Roadmap.
-- Toda implementação deverá consultar este documento.
-- Toda implementação deverá consultar a documentação oficial correspondente ao módulo.
+Nenhuma.
 
 ---
 
 # Estado da Documentação
 
-Situação atual:
+Atualizada.
 
-Em consolidação.
+O módulo Monsters possui documentação oficial e decisões arquiteturais registradas.
 
-Objetivo da Sprint:
-
-Preparar o projeto para transição segura entre conversas.
+A documentação permanece como a única fonte oficial de verdade do Project-Victory.
 
 ---
 
-# Critério para Encerramento desta Sprint
+# Regras Permanentes
 
-Esta Sprint será considerada concluída quando:
+Durante o desenvolvimento:
 
-- toda a documentação estrutural estiver organizada;
-- o índice da arquitetura estiver concluído;
-- o glossário oficial existir;
-- o log de decisões estiver consolidado;
-- o prompt oficial de transição estiver finalizado.
+- A documentação oficial representa a única fonte de verdade.
+- Todo novo módulo deverá consultar o Roadmap.
+- Todo novo módulo deverá consultar este documento.
+- Nenhum módulo LOCKED poderá ser alterado sem revisão arquitetural.
+- Toda decisão permanente deverá ser documentada.
+- Toda Sprint deverá atualizar este documento.
+
+---
+
+# Próximo Objetivo
+
+Iniciar a arquitetura e documentação do módulo:
+
+Monster AI.
