@@ -1,0 +1,137 @@
+# Events
+
+Status: DRAFT
+
+Version: 1.0
+
+---
+
+# Objetivo
+
+Definir o contrato arquitetural do módulo Events.
+
+---
+
+# Responsabilidade
+
+O módulo Events é responsável exclusivamente pela publicação e distribuição de Domain Events entre os módulos da Engine.
+
+---
+
+# Responsabilidades
+
+- publicar Domain Events;
+- distribuir Domain Events;
+- registrar Subscribers;
+- executar Subscribers;
+- manter contratos tipados.
+
+---
+
+# Dependências
+
+O módulo Events não depende de módulos de domínio.
+
+---
+
+# Proibições
+
+O módulo Events nunca poderá:
+
+- conhecer Character;
+- conhecer Combat;
+- conhecer Hunt;
+- conhecer Inventory;
+- conhecer Loot;
+- conhecer Quest;
+- conhecer qualquer regra de negócio.
+
+---
+
+# Engine Event
+
+Todo Domain Event:
+
+- deriva de EngineEvent;
+- possui EventId;
+- possui Timestamp;
+- pode possuir CorrelationId;
+- pode possuir CausationId;
+- é imutável.
+
+---
+
+# Event Bus
+
+O Event Bus:
+
+- é síncrono;
+- fortemente tipado;
+- stateless;
+- executa Subscribers registrados.
+
+---
+
+# Subscribers
+
+Subscribers:
+
+- registram interesse por tipos específicos;
+- nunca são obrigatórios;
+- nunca são conhecidos pelos Publishers.
+
+---
+
+# Publicação
+
+Toda publicação ocorre de forma síncrona.
+
+O Publisher somente continua sua execução após todos os Subscribers concluírem.
+
+---
+
+# Granularidade
+
+Cada Event representa exatamente um fato de negócio.
+
+---
+
+# Escopo
+
+O Event Bus transporta exclusivamente Domain Events.
+
+Eventos de infraestrutura utilizam mecanismos próprios.
+
+---
+
+# Filosofia
+
+Publishers publicam.
+
+Subscribers reagem.
+
+O Event Bus conecta ambos.
+
+---
+
+# Fluxo
+
+Publisher
+
+↓
+
+Event Bus
+
+↓
+
+Subscribers
+
+---
+
+# Referências
+
+Ver também:
+
+- hunt.md
+- combat.md
+- spawn.md
