@@ -1,3 +1,4 @@
+using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Entities;
 
@@ -20,8 +21,18 @@ public sealed class CharacterRepository : ICharacterRepository
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        var character = _characters.FirstOrDefault(
-            x => x.Id == id);
+        var character = _characters
+            .FirstOrDefault(x => x.Id == id);
+
+        return Task.FromResult(character);
+    }
+
+    public Task<Character?> GetByAccountIdAsync(
+        AccountId accountId,
+        CancellationToken cancellationToken = default)
+    {
+        var character = _characters
+            .FirstOrDefault(x => x.AccountId == accountId);
 
         return Task.FromResult(character);
     }
