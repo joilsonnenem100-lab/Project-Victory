@@ -41,6 +41,14 @@ public sealed class CharacterRepository : ICharacterRepository
         Character character,
         CancellationToken cancellationToken = default)
     {
+        var index = _characters.FindIndex(
+            x => x.Id == character.Id);
+
+        if (index >= 0)
+        {
+            _characters[index] = character;
+        }
+
         return Task.CompletedTask;
     }
 }
