@@ -1,4 +1,5 @@
 using System;
+using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Primitives;
 using ProjectVictory.Domain.ValueObjects;
 
@@ -6,6 +7,8 @@ namespace ProjectVictory.Domain.Entities
 {
     public sealed class Character : AggregateRoot
     {
+        public AccountId AccountId { get; private set; }
+
         public Health Health { get; private set; }
 
         public Mana Mana { get; private set; }
@@ -24,21 +27,26 @@ namespace ProjectVictory.Domain.Entities
 
         public Character(
             Guid id,
+            AccountId accountId,
             Health health,
             Mana mana,
             Experience experience,
             Level level)
             : base(id)
         {
+            ArgumentNullException.ThrowIfNull(accountId);
             ArgumentNullException.ThrowIfNull(health);
             ArgumentNullException.ThrowIfNull(mana);
             ArgumentNullException.ThrowIfNull(experience);
             ArgumentNullException.ThrowIfNull(level);
 
+            AccountId = accountId;
+
             Health = health;
             Mana = mana;
             Experience = experience;
             Level = level;
+
             Inventory = new Inventory();
             Equipment = new Equipment();
             Attributes = new Attributes();
@@ -79,18 +87,6 @@ namespace ProjectVictory.Domain.Entities
             }
 
             Experience = experience;
-        }
-
-        public void LevelUp(Level level)
-        {
-            ArgumentNullException.ThrowIfNull(level);
-
-            if (Level == level)
-            {
-                return;
-            }
-
-            Level = level;
         }
     }
 }
