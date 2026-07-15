@@ -1,5 +1,4 @@
 using ProjectVictory.Domain.Account;
-using ProjectVictory.Domain.Entities;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.ValueObjects;
 
@@ -19,11 +18,14 @@ public sealed class CreateCharacterHandler
         CreateCharacterCommand command,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(command);
+
         var accountId = new AccountId(command.AccountId);
 
         var character = new Domain.Entities.Character(
             Guid.NewGuid(),
             accountId,
+            command.Name,
             new Health(100),
             new Mana(50),
             new Experience(0),

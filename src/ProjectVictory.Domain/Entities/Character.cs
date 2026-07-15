@@ -9,6 +9,8 @@ namespace ProjectVictory.Domain.Entities
     {
         public AccountId AccountId { get; private set; }
 
+        public string Name { get; private set; }
+
         public Health Health { get; private set; }
 
         public Mana Mana { get; private set; }
@@ -28,6 +30,7 @@ namespace ProjectVictory.Domain.Entities
         public Character(
             Guid id,
             AccountId accountId,
+            string name,
             Health health,
             Mana mana,
             Experience experience,
@@ -40,7 +43,15 @@ namespace ProjectVictory.Domain.Entities
             ArgumentNullException.ThrowIfNull(experience);
             ArgumentNullException.ThrowIfNull(level);
 
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(
+                    "Character name is required.",
+                    nameof(name));
+            }
+
             AccountId = accountId;
+            Name = name;
 
             Health = health;
             Mana = mana;
