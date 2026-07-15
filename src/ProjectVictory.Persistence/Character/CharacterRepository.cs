@@ -36,4 +36,11 @@ public sealed class CharacterRepository : ICharacterRepository
 
         return Task.FromResult(character);
     }
+
+    public Task UpdateAsync(
+        Character character,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
 }

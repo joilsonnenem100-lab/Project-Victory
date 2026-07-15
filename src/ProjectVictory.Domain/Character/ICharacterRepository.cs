@@ -1,21 +1,25 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ProjectVictory.Domain.Entities;
+using CharacterEntity = ProjectVictory.Domain.Entities.Character;
 
 namespace ProjectVictory.Domain.Character;
 
 public interface ICharacterRepository
 {
     Task AddAsync(
-        Entities.Character character,
+        CharacterEntity character,
         CancellationToken cancellationToken = default);
 
-    Task<Entities.Character?> GetByIdAsync(
+    Task<CharacterEntity?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default);
 
-    Task<Entities.Character?> GetByAccountIdAsync(
+    Task<CharacterEntity?> GetByAccountIdAsync(
         Guid accountId,
+        CancellationToken cancellationToken = default);
+
+    Task UpdateAsync(
+        CharacterEntity character,
         CancellationToken cancellationToken = default);
 }
