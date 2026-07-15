@@ -1,6 +1,4 @@
-using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
-using ProjectVictory.Domain.Game;
 
 namespace ProjectVictory.Application.Game;
 
@@ -20,23 +18,21 @@ public sealed class EnterGameHandler
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var accountId = new AccountId(command.AccountId);
+        var accountId = new ProjectVictory.Domain.Account.AccountId(
+            command.AccountId);
 
-        var character = await _characterRepository
-            .GetByAccountIdAsync(
-                accountId,
-                cancellationToken);
+        var character = await _characterRepository.GetByAccountIdAsync(
+            accountId.Value,
+            cancellationToken);
 
         if (character is null)
         {
             throw new InvalidOperationException(
-                "No character available for account.");
+                "No character found for account.");
         }
 
-        var session = new GameSession(accountId);
-
         return new EnterGameResult(
-            session.AccountId.Value,
+            command.AccountId,
             character.Id);
     }
 }

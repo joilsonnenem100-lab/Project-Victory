@@ -1,4 +1,6 @@
-using ProjectVictory.Domain.Account;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using ProjectVictory.Domain.Entities;
 
 namespace ProjectVictory.Domain.Character;
@@ -6,14 +8,14 @@ namespace ProjectVictory.Domain.Character;
 public interface ICharacterRepository
 {
     Task AddAsync(
-        Character character,
+        Entities.Character character,
         CancellationToken cancellationToken = default);
 
-    Task<Character?> GetByIdAsync(
+    Task<Entities.Character?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default);
 
-    Task<Character?> GetByAccountIdAsync(
-        AccountId accountId,
+    Task<Entities.Character?> GetByAccountIdAsync(
+        Guid accountId,
         CancellationToken cancellationToken = default);
 }
