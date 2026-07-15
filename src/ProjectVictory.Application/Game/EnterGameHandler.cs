@@ -33,6 +33,8 @@ public sealed class EnterGameHandler
 
         return new EnterGameResult(
             command.AccountId,
-            character.Id);
+            character.Id,
+            character.Level.Value,
+            character.Experience.Value);
     }
 }
