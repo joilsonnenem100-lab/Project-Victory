@@ -12,13 +12,13 @@ Adicionar ao Project-Victory a fundação arquitetural oficial do domínio **Acc
 
 Esta Foundation Task não implementa funcionalidades de negócio.
 
-Seu objetivo é apenas estabelecer a estrutura arquitetural permanente que permitirá a evolução do domínio através dos futuros Contratos PV-VS.
+Seu objetivo é estabelecer apenas a estrutura arquitetural permanente que permitirá a evolução do domínio através dos futuros Contratos PV-VS.
 
 ---
 
 # Escopo
 
-Esta FT define exclusivamente:
+Esta Foundation Task define exclusivamente:
 
 - Responsabilidade do domínio.
 - Aggregate Root.
@@ -32,15 +32,16 @@ Esta FT define exclusivamente:
 
 # Responsabilidade
 
-O domínio **Account** representa a identidade de autenticação do jogador.
+O domínio **Account** representa a identidade de autenticação de um jogador dentro do Project-Victory.
 
 Sua responsabilidade limita-se ao gerenciamento do ciclo de vida da conta.
 
-Não possui responsabilidades relacionadas a:
+O domínio não possui responsabilidades relacionadas a:
 
 - Character
 - Gameplay
 - Inventory
+- Equipment
 - Quest
 - Economia
 - Mundo
@@ -55,19 +56,20 @@ O Aggregate Root oficial do domínio é:
 Account
 ```
 
-Toda modificação do domínio deverá ocorrer através deste Aggregate.
+Toda alteração do domínio deverá ocorrer através deste Aggregate.
 
 ---
 
-# Estrutura mínima do domínio
+# Estrutura Física
 
-A fundação do domínio deverá conter apenas:
+O domínio deverá possuir a seguinte estrutura mínima:
 
 ```
-Account/
-├── Account.cs
-├── AccountId.cs
-└── IAccountRepository.cs
+ProjectVictory.Domain
+└── Account
+    ├── Account.cs
+    ├── AccountId.cs
+    └── IAccountRepository.cs
 ```
 
 Nenhum outro componente faz parte desta Foundation Task.
@@ -80,30 +82,31 @@ O domínio Account:
 
 Pode depender de:
 
-- Shared Kernel
-- Domain Base
+- ProjectVictory.Shared
+- Componentes base do Domain
 
 Não pode depender de:
 
-- Application
-- Infrastructure
-- Persistence
-- API
+- ProjectVictory.Application
+- ProjectVictory.Infrastructure
+- ProjectVictory.Persistence
+- ProjectVictory.API
 - Character
 - Inventory
+- Equipment
 - Gameplay
 
 ---
 
 # Persistência
 
-O domínio expõe exclusivamente:
+O domínio expõe exclusivamente o contrato:
 
 ```
 IAccountRepository
 ```
 
-A implementação pertence à camada Persistence.
+A implementação da persistência pertence à camada **ProjectVictory.Persistence**.
 
 ---
 
@@ -115,37 +118,55 @@ Nenhum evento específico faz parte desta Foundation Task.
 
 ---
 
+# Evolução
+
+Novos componentes poderão ser adicionados posteriormente através de Contratos PV-VS, como por exemplo:
+
+- Email
+- Password
+- PasswordHash
+- Policies
+- Domain Services
+- Domain Events
+
+A inclusão desses componentes não altera a arquitetura definida nesta Foundation Task.
+
+---
+
 # Fora do Escopo
 
-Esta FT não implementa:
+Esta Foundation Task não implementa:
 
 - Criar Conta
 - Login
+- Autenticação
 - Email
 - Password
 - Password Hash
 - JWT
 - Sessão
 - Casos de Uso
-- APIs
+- API
 - Persistência funcional
-
-Esses comportamentos serão implementados pelos futuros Contratos PV-VS.
+- Regras de negócio
 
 ---
 
 # Critério de Aceite
 
-Será considerada concluída quando:
+Esta Foundation Task será considerada concluída quando:
 
-- O domínio Account possuir arquitetura oficialmente definida.
-- A Engenharia puder implementar o domínio sem assumir decisões arquiteturais.
-- O Vertical Slice puder iniciar o PV-VS-001 sem novos bloqueios arquiteturais.
+- O domínio Account existir oficialmente na solução.
+- A estrutura mínima do domínio estiver implementada.
+- A arquitetura do domínio estiver alinhada à arquitetura oficial do Project-Victory.
+- Os próximos Contratos PV-VS puderem evoluir o domínio sem necessidade de novas decisões arquiteturais.
 
 ---
 
 # Resultado Esperado
 
-Após esta FT o domínio Account estará oficialmente preparado para evolução.
+Após a conclusão desta Foundation Task:
 
-Os próximos contratos poderão implementar exclusivamente funcionalidades de negócio sem necessidade de novas decisões arquiteturais.
+- O domínio Account passa a existir oficialmente no Project-Victory.
+- A Engenharia possui uma fundação arquitetural permanente para evolução do domínio.
+- O Vertical Slice pode prosseguir com o PV-VS-001 sem bloqueios arquiteturais.
