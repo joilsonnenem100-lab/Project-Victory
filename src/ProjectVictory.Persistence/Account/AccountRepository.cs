@@ -14,4 +14,14 @@ public sealed class AccountRepository : IAccountRepository
 
         return Task.CompletedTask;
     }
+
+    public Task<Domain.Account.Account?> GetByEmailAsync(
+        Email email,
+        CancellationToken cancellationToken = default)
+    {
+        var account = _accounts.FirstOrDefault(
+            x => x.Email.Equals(email));
+
+        return Task.FromResult(account);
+    }
 }
