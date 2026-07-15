@@ -23,7 +23,7 @@ public sealed class CreateAccountHandler
 
         var passwordHash = _passwordHasher.Hash(command.Password);
 
-        var account = Account.Create(
+        var account = ProjectVictory.Domain.Account.Account.Create(
             AccountId.New(),
             email,
             passwordHash);
