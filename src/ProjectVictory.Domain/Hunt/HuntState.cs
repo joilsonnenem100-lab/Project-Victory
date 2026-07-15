@@ -5,5 +5,6 @@ public enum HuntState
     Created,
     Running,
     Completed,
-    Failed
+    Failed,
+    Cancelled
 }

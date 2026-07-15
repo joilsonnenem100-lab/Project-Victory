@@ -33,4 +33,9 @@ public sealed class Hunt
     {
         State = HuntState.Failed;
     }
+
+    public void Cancel()
+    {
+        State = HuntState.Cancelled;
+    }
 }
