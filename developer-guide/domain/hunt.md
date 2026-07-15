@@ -16,23 +16,17 @@ Definir o contrato arquitetural do módulo Hunt.
 
 O módulo Hunt é responsável exclusivamente por orquestrar o ciclo de vida de uma Hunt.
 
-A Hunt não executa combate, não cria Monsters e não distribui recompensas.
-
-Sua responsabilidade é coordenar os módulos responsáveis durante toda a execução da Hunt.
+Não implementa regras de Combat, Loot, Experience, Inventory ou Progressão.
 
 ---
 
 # Responsabilidades
 
-O módulo Hunt é responsável por:
-
-- iniciar uma Hunt;
-- criar a Hunt Session;
-- controlar os estados da Hunt;
-- coordenar o Spawn System;
-- coordenar a Combat Engine;
-- coordenar o encerramento da Hunt;
-- destruir a Hunt Session.
+- iniciar Hunts;
+- finalizar Hunts;
+- controlar o ciclo de vida;
+- coordenar os módulos participantes;
+- consolidar o Hunt Result.
 
 ---
 
@@ -40,164 +34,153 @@ O módulo Hunt é responsável por:
 
 O módulo Hunt poderá depender apenas de:
 
-- Hunt Configuration;
-- Hunt Session;
-- Spawn System;
-- Combat Engine;
-- Reward Pipeline.
+- Hunt Service;
+- Hunt Context;
+- Hunt Instance;
+- Hunt Result;
+- Engine Events.
 
 ---
 
 # Proibições
 
-O módulo Hunt não poderá:
+O módulo Hunt nunca poderá:
 
-- executar combate;
-- controlar Monster AI;
-- distribuir Loot;
-- distribuir Experience;
-- calcular recompensas;
-- conhecer UI;
-- acessar banco de dados.
+- executar Combat;
+- gerar Loot;
+- conceder Experience;
+- modificar Inventory;
+- implementar regras de Skills;
+- implementar regras de Companions;
+- implementar regras de Pets.
 
----
-
-# Máquina de Estados
-
-Toda Hunt percorre obrigatoriamente os seguintes estados:
-
-Created
-
-↓
-
-Starting
-
-↓
-
-Active
-
-↓
-
-Ending
-
-↓
-
-Finished
-
-Não existem estados intermediários.
+Toda lógica pertence aos módulos especializados.
 
 ---
 
-# Hunt
+# Hunt Instance
 
-A Hunt representa a definição permanente do conteúdo.
+Cada execução de Hunt é representada por uma Hunt Instance.
 
-Ela define:
+Campos mínimos:
 
-- Monster Pool;
-- Pack Size;
-- Spawn Delay;
-- Elite Chance;
-- requisitos;
-- configurações futuras.
-
-A Hunt é imutável.
+- HuntInstanceId;
+- CharacterId;
+- CurrentState;
+- StartedAt;
+- FinishedAt.
 
 ---
 
-# Hunt Session
+# Hunt States
 
-A Hunt Session representa a execução temporária da Hunt.
+Toda Hunt percorre obrigatoriamente os estados:
 
-Ela existe apenas durante uma Hunt ativa.
+- Created;
+- Preparing;
+- Running;
+- Finishing;
+- Finished.
 
-Ao término da Hunt, a Hunt Session é destruída.
-
----
-
-# Regras
-
-Cada Character poderá possuir apenas uma Hunt ativa.
-
-Cada Hunt possui exatamente uma Hunt Session.
-
-Toda Hunt inicia na Cidade Principal.
-
-Toda Hunt termina na Cidade Principal.
-
-Toda Hunt encerrada destrói sua Hunt Session.
-
-Toda desconexão encerra imediatamente a Hunt.
-
-Toda saída manual utiliza o mesmo pipeline de encerramento.
-
-Toda morte utiliza o mesmo pipeline de encerramento.
-
-O Re-entry Cooldown é aplicado ao término da Hunt quando aplicável.
+As transições são controladas exclusivamente pelo Hunt Orchestrator.
 
 ---
 
-# Fluxo Oficial
+# Hunt Context
 
-Cidade Principal
+Toda execução utiliza um Hunt Context.
 
-↓
+O Hunt Orchestrator nunca consulta diretamente outros módulos.
 
-Selecionar Hunt
+---
 
-↓
+# Hunt Result
 
-Criar Hunt Session
+O Hunt Result representa a consolidação temporária dos resultados produzidos durante a Hunt.
 
-↓
+É um DTO sem comportamento de domínio.
 
-Spawn Inicial
+Cada módulo contribui apenas com suas próprias informações.
 
-↓
+---
 
-Combat
+# Hunt Service
 
-↓
+Toda operação relacionada à Hunt ocorre através do Hunt Service.
 
-Reward Pipeline
+Responsabilidades:
 
-↓
+- iniciar Hunt;
+- finalizar Hunt;
+- consultar Hunt ativa;
+- validar início da Hunt;
+- coordenar o Hunt Orchestrator.
 
-Novo Pack
+---
 
-↓
+# Character
 
-...
+O Character mantém apenas:
 
-↓
+- CurrentHuntInstanceId.
 
-Encerrar Hunt
+Essa referência é criada e removida exclusivamente pelo Hunt Service.
 
-↓
+---
 
-Destruir Hunt Session
+# Persistência
 
-↓
+Toda Hunt Instance é persistida ao término.
 
-Persistência
+O histórico utiliza uma Capacity Policy configurável.
 
-↓
+---
 
-Re-entry Cooldown
+# Eventos
 
-↓
+A Hunt publica Engine Events.
 
-Cidade Principal
+Eventos nunca alteram diretamente o estado da Hunt.
+
+O Hunt Orchestrator é o único responsável pelo encerramento da execução.
 
 ---
 
 # Filosofia
 
-A Hunt é a orquestradora do Gameplay.
+A Hunt coordena.
 
-Ela coordena os módulos da Gameplay Foundation sem assumir suas responsabilidades.
+Os demais módulos executam.
 
-Todo módulo especializado permanece independente.
+---
+
+# Fluxo
+
+Character
+
+↓
+
+Hunt Service
+
+↓
+
+Hunt Context
+
+↓
+
+Hunt Orchestrator
+
+↓
+
+Hunt Result
+
+↓
+
+Finished
+
+↓
+
+Persistência
 
 ---
 
@@ -205,8 +188,7 @@ Todo módulo especializado permanece independente.
 
 Ver também:
 
-- spawn-system.md
-- monster-ai.md
-- monsters.md
 - combat.md
-- experience-distribution.md
+- loot.md
+- inventory.md
+- experience.md

@@ -1,204 +1,162 @@
 # Skills
 
-## Objetivo
+Status: DRAFT
 
-Skills representam a proficiência permanente de um Character em uma determinada disciplina.
-
-Toda Skill pertence exclusivamente ao Character, evolui permanentemente e influencia diretamente a eficiência em combate, magias ou outras atividades do jogo.
-
-Skills são parte do domínio e não podem ser alteradas diretamente por sistemas externos.
+Version: 1.0
 
 ---
 
-# Skills Oficiais
+# Objetivo
 
-O Project-Victory possui as seguintes Skills oficiais:
-
-- Magic Level
-- Fist Fighting
-- Club Fighting
-- Sword Fighting
-- Axe Fighting
-- Distance Fighting
-- Shielding
-- Fishing
-
-Não existem Attributes tradicionais como Strength, Dexterity, Intelligence ou Vitality.
-
-Toda progressão permanente do personagem ocorre através dessas Skills.
+Definir o contrato arquitetural do módulo Skills.
 
 ---
 
-# Responsabilidade das Skills
+# Responsabilidade
 
-Cada Skill representa domínio sobre uma categoria específica.
+O módulo Skills é responsável exclusivamente por representar as habilidades permanentes do Character.
 
-## Magic Level
+Skills representam as capacidades disponíveis do Character.
 
-Representa a proficiência em magia.
-
-Influencia curas, dano mágico, suporte e demais efeitos relacionados à utilização de spells.
-
-Evolui através da utilização de magias.
+A execução dessas capacidades pertence ao módulo Effects.
 
 ---
 
-## Fist Fighting
+# Responsabilidades
 
-Representa a proficiência na utilização de armas da categoria Fist.
+O módulo Skills é responsável por:
 
-É a principal Skill da vocação Monk.
-
-Também pode evoluir nas demais vocações conforme seus multiplicadores.
-
----
-
-## Club Fighting
-
-Representa a proficiência na utilização de armas da categoria Club.
+- representar Skills;
+- representar Skill Tree;
+- representar Skill Progression;
+- representar Skill Loadout;
+- validar requisitos;
+- disponibilizar Skills ao Combat.
 
 ---
 
-## Sword Fighting
+# Dependências
 
-Representa a proficiência na utilização de armas da categoria Sword.
+Skills poderá depender apenas de:
 
----
-
-## Axe Fighting
-
-Representa a proficiência na utilização de armas da categoria Axe.
-
----
-
-## Distance Fighting
-
-Representa a proficiência na utilização de armas da categoria Distance.
-
-Inclui arcos, bestas, lanças e demais armas de ataque à distância.
+- Character;
+- Experience;
+- Ascension;
+- Skill Tree;
+- Skill Progression.
 
 ---
 
-## Shielding
+# Proibições
 
-Representa a proficiência defensiva utilizando equipamentos defensivos compatíveis.
+Skills não poderá:
+
+- executar dano;
+- executar cura;
+- aplicar Buffs;
+- aplicar Debuffs;
+- conhecer Combat;
+- conhecer Equipment;
+- conhecer Inventory.
 
 ---
 
-## Fishing
+# Estrutura
 
-Representa a proficiência na atividade de pesca.
+Cada Skill possui:
 
-Sua mecânica será definida futuramente.
-
----
-
-# Estrutura da Skill
-
-Toda Skill possui dois estados permanentes:
-
-- Level
-- Progress
-
-Level representa o nível atual da Skill.
-
-Progress representa o progresso acumulado dentro do nível atual.
-
-O progresso é persistente.
+- Id;
+- Version;
+- Definition;
+- Requirements;
+- Progression;
+- Cooldown;
+- Cost;
+- Tags;
+- Effects.
 
 ---
 
 # Progressão
 
-Toda evolução ocorre através da geração de Progress.
+A evolução das Skills é automática.
 
-Cada ação válida gera uma quantidade de Progress correspondente à Skill relacionada.
+O jogador nunca distribui pontos.
 
-Ao atingir o valor necessário para o próximo nível:
+A Engine resolve o nível efetivo utilizando:
 
-- o Level aumenta;
-- o Progress excedente permanece armazenado.
+Experience
 
-Progress nunca é perdido.
+↓
 
----
+Ascension
 
-# Skill Progress Policy
+↓
 
-A quantidade de Progress necessária para evoluir uma Skill é determinada por uma política de progressão baseada em curva exponencial parametrizável.
+Skill Progression
 
-A implementação da fórmula faz parte da Engine e permanece desacoplada do domínio.
+↓
 
----
-
-# Barra de Progressão
-
-Toda Skill possui barra de progresso.
-
-A barra representa exatamente o Progress persistido da Skill.
-
-Não se trata de um efeito visual independente.
+Effective Skill Level
 
 ---
 
-# Evolução das Skills
+# Loadout
 
-Cada Skill evolui exclusivamente através de sua fonte oficial.
+O Character pode possuir inúmeras Skills desbloqueadas.
 
-- Magic Level → utilização de magias.
-- Fist Fighting → utilização de armas Fist.
-- Club Fighting → utilização de armas Club.
-- Sword Fighting → utilização de armas Sword.
-- Axe Fighting → utilização de armas Axe.
-- Distance Fighting → utilização de armas Distance.
-- Shielding → utilização de equipamentos defensivos durante combate.
-- Fishing → atividade de pesca.
+Entretanto apenas o Skill Loadout participa do combate.
+
+O Loadout pode ser alterado apenas fora do estado de combate.
 
 ---
 
-# Trainer
+# Effects
 
-O Trainer nunca altera diretamente uma Skill.
+Skills nunca executam lógica diretamente.
 
-Ele apenas gera Progress.
-
-A evolução utiliza exatamente as mesmas regras do combate.
+Cada Skill apenas referencia uma coleção de Effects.
 
 ---
 
-# Offline Training
+# Filosofia
 
-Offline Training também gera apenas Progress.
+Progressão desbloqueia possibilidades.
 
-Toda evolução utiliza a mesma Skill Progress Policy.
-
----
-
-# Multiplicadores por Vocação
-
-Todas as vocações podem evoluir todas as Skills.
-
-Cada vocação possui multiplicadores próprios para determinar a velocidade de evolução de cada Skill.
-
-A diferença entre vocações está na velocidade de progressão, nunca na possibilidade de evolução.
+O jogador escolhe quais possibilidades permanecerão ativas.
 
 ---
 
-# Equipamentos
+# Fluxo
 
-Equipamentos nunca alteram permanentemente uma Skill.
+Class
 
-Eles fornecem apenas bônus temporários utilizados durante cálculos de combate.
+↓
 
-A Skill permanente do Character permanece inalterada.
+Skill Tree
+
+↓
+
+Unlocked Skills
+
+↓
+
+Skill Loadout
+
+↓
+
+Effects
+
+↓
+
+Combat
 
 ---
 
-# Princípios Arquiteturais
+# Referências
 
-- Skills pertencem exclusivamente ao Character.
-- Skills representam progresso permanente.
-- Skills nunca diminuem.
-- Progress nunca é perdido.
-- Equipamentos nunca modificam permanentemente uma Skill.
-- Trainer e Offline Training utilizam exatamente a mesma política de evolução do combate.
+Ver também:
+
+- character.md
+- attributes.md
+- combat.md
