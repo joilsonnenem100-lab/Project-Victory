@@ -1,24 +1,29 @@
 using ProjectVictory.Application.Combat;
 using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
+using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Hunt;
+using ProjectVictory.Domain.ValueObjects;
 
 namespace ProjectVictory.Application.Hunt;
 
 public sealed class ExecuteHuntHandler
 {
     private readonly IHuntRepository _huntRepository;
+    private readonly ICharacterRepository _characterRepository;
     private readonly ICombatResolver _combatResolver;
     private readonly IRewardProcessor _rewardProcessor;
     private readonly IProgressionProcessor _progressionProcessor;
 
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
+        ICharacterRepository characterRepository,
         ICombatResolver combatResolver,
         IRewardProcessor rewardProcessor,
         IProgressionProcessor progressionProcessor)
     {
         _huntRepository = huntRepository;
+        _characterRepository = characterRepository;
         _combatResolver = combatResolver;
         _rewardProcessor = rewardProcessor;
         _progressionProcessor = progressionProcessor;
@@ -28,9 +33,19 @@ public sealed class ExecuteHuntHandler
         ExecuteHuntCommand command,
         CancellationToken cancellationToken = default)
     {
+        var character = await _characterRepository.GetByIdAsync(
+            command.CharacterId,
+            cancellationToken);
+
+        if (character is null)
+        {
+            throw new InvalidOperationException(
+                "Character not found.");
+        }
+
         var hunt = new Domain.Hunt.Hunt(
             Guid.NewGuid(),
-            command.CharacterId);
+            character.Id);
 
         hunt.Start();
 
@@ -40,7 +55,7 @@ public sealed class ExecuteHuntHandler
 
         var combatResult = _combatResolver.Resolve(
             new CombatRequest(
-                command.CharacterId,
+                character.Id,
                 command.EnemyId));
 
         if (!combatResult.Completed)
@@ -52,18 +67,26 @@ public sealed class ExecuteHuntHandler
                 false,
                 0,
                 0,
-                0);
+                character.Level.Value);
         }
 
         var rewardResult = _rewardProcessor.Process(
             new RewardRequest(
-                command.CharacterId,
+                character.Id,
                 combatResult));
 
         var progressionResult = _progressionProcessor.Process(
             new ProgressionRequest(
-                command.CharacterId,
+                character.Id,
                 rewardResult.Experience));
+
+        character.GainExperience(
+            new Experience(
+                progressionResult.Experience));
+
+        await _characterRepository.UpdateAsync(
+            character,
+            cancellationToken);
 
         hunt.Complete();
 
