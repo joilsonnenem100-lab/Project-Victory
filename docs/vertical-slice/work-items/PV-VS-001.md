@@ -1,4 +1,3 @@
-# Project-Victory
 # PV-VS-001 — Criar Conta
 
 Status: Planned
@@ -11,66 +10,56 @@ Milestone: M0.1 — Conta Criada
 
 # Objetivo
 
-Permitir que um novo jogador crie uma conta válida no Project-Victory.
-
-Ao término deste contrato deverá existir a capacidade de registrar uma nova conta no sistema.
+Adicionar ao Project-Victory a capacidade de registrar uma nova conta utilizando email e senha.
 
 ---
 
 # Capacidade Entregue
 
-O sistema permite o cadastro de uma nova conta.
+Um novo jogador consegue criar uma conta válida para acessar o Project-Victory.
 
 ---
 
 # Critério de Aceite
 
-O contrato será considerado concluído quando for possível:
-
-- Criar uma nova conta utilizando um username e uma password.
-- Persistir a nova conta.
-- Garantir que a senha nunca seja armazenada em texto puro.
-- Impedir criação de contas inválidas conforme as regras definidas pelo domínio.
-- Retornar sucesso quando a operação for válida.
-- Retornar erro quando a operação for inválida.
+- É possível registrar uma conta utilizando email e senha.
+- A conta é persistida conforme a arquitetura oficial do Project-Victory.
+- A senha nunca é armazenada em texto puro.
+- Contas inválidas são rejeitadas conforme as regras do domínio Account.
+- Nenhuma funcionalidade fora do escopo deste contrato é implementada.
 
 ---
 
 # Fora do Escopo
 
-Este contrato NÃO deverá implementar:
-
 - Login.
 - Sessão.
 - Recuperação de senha.
 - Alteração de senha.
-- Confirmação por e-mail.
-- Criação automática de Character.
-- Qualquer funcionalidade relacionada ao gameplay.
+- Criação de Character.
+- Gameplay.
 
 ---
 
-# Referências Obrigatórias
+# Referências
 
-A implementação deverá respeitar integralmente a documentação oficial existente do Project-Victory, incluindo os documentos relacionados ao domínio Account, à arquitetura e ao PROJECT_COMPASS.
-
-Este contrato não substitui a documentação oficial.
+- PROJECT_COMPASS.md
+- Documentação oficial do domínio Account.
+- ADRs aplicáveis ao domínio Account.
+- ACCEPTANCE_CRITERIA.md
 
 ---
 
 # Validação Manual
 
-Executar o fluxo abaixo:
-
-1. Informar um username válido.
-2. Informar uma password válida.
-3. Solicitar a criação da conta.
-4. Confirmar que a conta foi persistida.
-5. Confirmar que a senha foi armazenada utilizando hash.
-6. Confirmar que entradas inválidas retornam erro.
+1. Registrar uma conta utilizando um email válido e uma senha válida.
+2. Confirmar que a conta foi persistida.
+3. Confirmar que a senha foi armazenada utilizando hash.
+4. Tentar registrar uma conta inválida.
+5. Confirmar que o sistema rejeita a operação conforme as regras do domínio.
 
 ---
 
 # Definição de Conclusão
 
-Este contrato estará concluído quando um novo jogador conseguir criar uma conta válida no sistema e essa capacidade puder ser demonstrada em uma execução funcional.
+A capacidade **Criar Conta** está disponível, atende aos critérios de aceite deste contrato e respeita integralmente a arquitetura oficial do Project-Victory.
