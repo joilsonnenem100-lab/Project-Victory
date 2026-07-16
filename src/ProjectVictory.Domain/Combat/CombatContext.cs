@@ -53,6 +53,22 @@ public sealed class CombatContext
             true);
     }
 
+    public CombatActionExecutionResult ExecuteAction(
+        CombatAction action)
+    {
+        if (State != CombatState.Active)
+        {
+            throw new InvalidOperationException(
+                "Combat context must be active.");
+        }
+
+        ArgumentNullException.ThrowIfNull(action);
+
+        return new CombatActionExecutionResult(
+            Guid.NewGuid(),
+            Id);
+    }
+
     public void Complete()
     {
         if (State != CombatState.Active)
