@@ -69,6 +69,17 @@ public sealed class CombatContext
             Id);
     }
 
+    public void ApplyResolution()
+    {
+        if (State != CombatState.Active)
+        {
+            throw new InvalidOperationException(
+                "Combat context must be active.");
+        }
+
+        State = CombatState.Completed;
+    }
+
     public void Complete()
     {
         if (State != CombatState.Active)
