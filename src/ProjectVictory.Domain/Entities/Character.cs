@@ -128,5 +128,16 @@ namespace ProjectVictory.Domain.Entities
                 Id,
                 true);
         }
+
+        public void ApplyEvolution()
+        {
+            var validation = ValidateEvolution();
+
+            if (!validation.Accepted)
+            {
+                throw new InvalidOperationException(
+                    "Character evolution validation failed.");
+            }
+        }
     }
 }
