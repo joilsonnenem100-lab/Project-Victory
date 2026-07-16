@@ -12,6 +12,8 @@ public sealed class CombatContext
 
     public bool IsFinalized { get; private set; }
 
+    public bool HasReturnedToHunt { get; private set; }
+
     public CombatContext(
         Guid id,
         Guid huntId)
@@ -27,6 +29,7 @@ public sealed class CombatContext
         HuntId = huntId;
         State = CombatState.Created;
         IsFinalized = false;
+        HasReturnedToHunt = false;
     }
 
     public void Activate()
@@ -92,6 +95,23 @@ public sealed class CombatContext
         }
 
         IsFinalized = true;
+    }
+
+    public void ReturnControlToHunt()
+    {
+        if (!IsFinalized)
+        {
+            throw new InvalidOperationException(
+                "Combat must be finalized before returning control.");
+        }
+
+        if (State != CombatState.Completed)
+        {
+            throw new InvalidOperationException(
+                "Only completed combat can return control to Hunt.");
+        }
+
+        HasReturnedToHunt = true;
     }
 
     public void Complete()
