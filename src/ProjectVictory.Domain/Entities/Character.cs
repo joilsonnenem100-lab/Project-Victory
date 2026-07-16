@@ -2,6 +2,7 @@ using System;
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Primitives;
 using ProjectVictory.Domain.ValueObjects;
+using ProjectVictory.Domain.Progression;
 
 namespace ProjectVictory.Domain.Entities
 {
@@ -98,6 +99,34 @@ namespace ProjectVictory.Domain.Entities
             }
 
             Experience = experience;
+        }
+
+        public EvolutionValidationResult ValidateEvolution()
+        {
+            if (Id == Guid.Empty)
+            {
+                return new EvolutionValidationResult(
+                    Id,
+                    false);
+            }
+
+            if (Experience is null)
+            {
+                return new EvolutionValidationResult(
+                    Id,
+                    false);
+            }
+
+            if (Level is null)
+            {
+                return new EvolutionValidationResult(
+                    Id,
+                    false);
+            }
+
+            return new EvolutionValidationResult(
+                Id,
+                true);
         }
     }
 }
