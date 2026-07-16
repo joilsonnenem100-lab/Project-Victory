@@ -10,6 +10,8 @@ public sealed class CombatContext
 
     public CombatState State { get; private set; }
 
+    public bool IsFinalized { get; private set; }
+
     public CombatContext(
         Guid id,
         Guid huntId)
@@ -24,6 +26,7 @@ public sealed class CombatContext
         Id = id;
         HuntId = huntId;
         State = CombatState.Created;
+        IsFinalized = false;
     }
 
     public void Activate()
@@ -87,6 +90,8 @@ public sealed class CombatContext
             throw new InvalidOperationException(
                 "Combat must be completed before finalization.");
         }
+
+        IsFinalized = true;
     }
 
     public void Complete()
