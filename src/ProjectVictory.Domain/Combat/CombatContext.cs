@@ -1,3 +1,5 @@
+using System;
+
 namespace ProjectVictory.Domain.Combat;
 
 public sealed class CombatContext
@@ -33,6 +35,22 @@ public sealed class CombatContext
         }
 
         State = CombatState.Active;
+    }
+
+    public CombatActionResult ProcessAction(
+        CombatAction action)
+    {
+        if (State != CombatState.Active)
+        {
+            throw new InvalidOperationException(
+                "Combat context must be active.");
+        }
+
+        ArgumentNullException.ThrowIfNull(action);
+
+        return new CombatActionResult(
+            Id,
+            true);
     }
 
     public void Complete()
