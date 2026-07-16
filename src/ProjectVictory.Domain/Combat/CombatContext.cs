@@ -1,0 +1,59 @@
+namespace ProjectVictory.Domain.Combat;
+
+public sealed class CombatContext
+{
+    public Guid Id { get; }
+
+    public Guid HuntId { get; }
+
+    public CombatState State { get; private set; }
+
+    public CombatContext(
+        Guid id,
+        Guid huntId)
+    {
+        if (huntId == Guid.Empty)
+        {
+            throw new ArgumentException(
+                "HuntId is required.",
+                nameof(huntId));
+        }
+
+        Id = id;
+        HuntId = huntId;
+        State = CombatState.Created;
+    }
+
+    public void Activate()
+    {
+        if (State != CombatState.Created)
+        {
+            throw new InvalidOperationException(
+                "Combat cannot be activated from current state.");
+        }
+
+        State = CombatState.Active;
+    }
+
+    public void Complete()
+    {
+        if (State != CombatState.Active)
+        {
+            throw new InvalidOperationException(
+                "Combat cannot be completed from current state.");
+        }
+
+        State = CombatState.Completed;
+    }
+
+    public void Cancel()
+    {
+        if (State != CombatState.Active)
+        {
+            throw new InvalidOperationException(
+                "Combat cannot be cancelled from current state.");
+        }
+
+        State = CombatState.Cancelled;
+    }
+}
