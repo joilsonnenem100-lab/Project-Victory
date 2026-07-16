@@ -3,6 +3,7 @@ using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Primitives;
 using ProjectVictory.Domain.ValueObjects;
 using CharacterExperience = ProjectVictory.Domain.ValueObjects.Experience;
+using CharacterLevel = ProjectVictory.Domain.ValueObjects.Level;
 
 namespace ProjectVictory.Domain.Entities
 {
@@ -18,7 +19,7 @@ namespace ProjectVictory.Domain.Entities
 
         public CharacterExperience Experience { get; private set; }
 
-        public Level Level { get; private set; }
+        public CharacterLevel Level { get; private set; }
 
         public Inventory Inventory { get; }
 
@@ -35,7 +36,7 @@ namespace ProjectVictory.Domain.Entities
             Health health,
             Mana mana,
             CharacterExperience experience,
-            Level level)
+            CharacterLevel level)
             : base(id)
         {
             ArgumentNullException.ThrowIfNull(accountId);
@@ -53,7 +54,6 @@ namespace ProjectVictory.Domain.Entities
 
             AccountId = accountId;
             Name = name;
-
             Health = health;
             Mana = mana;
             Experience = experience;
@@ -69,22 +69,12 @@ namespace ProjectVictory.Domain.Entities
         {
             ArgumentNullException.ThrowIfNull(health);
 
-            if (Health == health)
-            {
-                return;
-            }
-
             Health = health;
         }
 
         public void SpendMana(Mana mana)
         {
             ArgumentNullException.ThrowIfNull(mana);
-
-            if (Mana == mana)
-            {
-                return;
-            }
 
             Mana = mana;
         }
@@ -93,31 +83,14 @@ namespace ProjectVictory.Domain.Entities
         {
             ArgumentNullException.ThrowIfNull(experience);
 
-            if (Experience == experience)
-            {
-                return;
-            }
-
             Experience = experience;
         }
 
         public EvolutionValidationResult ValidateEvolution()
         {
-            if (Id == Guid.Empty)
-            {
-                return new EvolutionValidationResult(
-                    Id,
-                    false);
-            }
-
-            if (Experience is null)
-            {
-                return new EvolutionValidationResult(
-                    Id,
-                    false);
-            }
-
-            if (Level is null)
+            if (Id == Guid.Empty ||
+                Experience is null ||
+                Level is null)
             {
                 return new EvolutionValidationResult(
                     Id,
@@ -138,6 +111,51 @@ namespace ProjectVictory.Domain.Entities
                 throw new InvalidOperationException(
                     "Character evolution validation failed.");
             }
+        }
+
+        public LevelValidationResult ValidateLevel(
+            int requestedLevel)
+        {
+            if (Id == Guid.Empty)
+            {
+                return new LevelValidationResult(
+                    Id,
+                    false);
+            }
+
+            if (requestedLevel < 1)
+            {
+                return new LevelValidationResult(
+                    Id,
+                    false);
+            }
+
+            if (Level is null)
+            {
+                return new LevelValidationResult(
+                    Id,
+                    false);
+            }
+
+            return new LevelValidationResult(
+                Id,
+                true);
+        }
+
+        public void ApplyLevel(
+            int requestedLevel)
+        {
+            var validation = ValidateLevel(
+                requestedLevel);
+
+            if (!validation.Accepted)
+            {
+                throw new InvalidOperationException(
+                    "Character level validation failed.");
+            }
+
+            Level = new CharacterLevel(
+                requestedLevel);
         }
     }
 }
