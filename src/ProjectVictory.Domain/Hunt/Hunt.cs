@@ -21,21 +21,45 @@ public sealed class Hunt
 
     public void Start()
     {
+        if (State != HuntState.Created)
+        {
+            throw new InvalidOperationException(
+                "Hunt cannot start from current state.");
+        }
+
         State = HuntState.Running;
     }
 
     public void Complete()
     {
+        if (State != HuntState.Running)
+        {
+            throw new InvalidOperationException(
+                "Hunt cannot complete from current state.");
+        }
+
         State = HuntState.Completed;
     }
 
     public void Fail()
     {
+        if (State != HuntState.Running)
+        {
+            throw new InvalidOperationException(
+                "Hunt cannot fail from current state.");
+        }
+
         State = HuntState.Failed;
     }
 
     public void Cancel()
     {
+        if (State != HuntState.Running)
+        {
+            throw new InvalidOperationException(
+                "Hunt cannot cancel from current state.");
+        }
+
         State = HuntState.Cancelled;
     }
 }
