@@ -14,6 +14,13 @@ public sealed class Hunt
         Guid id,
         Guid characterId)
     {
+        if (characterId == Guid.Empty)
+        {
+            throw new ArgumentException(
+                "CharacterId is required.",
+                nameof(characterId));
+        }
+
         Id = id;
         CharacterId = characterId;
         State = HuntState.Created;
@@ -35,7 +42,18 @@ public sealed class Hunt
         if (State != HuntState.Running)
         {
             throw new InvalidOperationException(
-                "Hunt cannot complete from current state.");
+                "Only running hunts can be completed.");
+        }
+
+        State = HuntState.Completed;
+    }
+
+    public void CompleteAfterCombat()
+    {
+        if (State != HuntState.Running)
+        {
+            throw new InvalidOperationException(
+                "Only running hunts can be completed.");
         }
 
         State = HuntState.Completed;
@@ -46,7 +64,7 @@ public sealed class Hunt
         if (State != HuntState.Running)
         {
             throw new InvalidOperationException(
-                "Hunt cannot fail from current state.");
+                "Only running hunts can fail.");
         }
 
         State = HuntState.Failed;
@@ -57,7 +75,7 @@ public sealed class Hunt
         if (State != HuntState.Running)
         {
             throw new InvalidOperationException(
-                "Hunt cannot cancel from current state.");
+                "Only running hunts can be cancelled.");
         }
 
         State = HuntState.Cancelled;
