@@ -2,7 +2,7 @@ using System;
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Primitives;
 using ProjectVictory.Domain.ValueObjects;
-using ProjectVictory.Domain.Progression;
+using CharacterExperience = ProjectVictory.Domain.ValueObjects.Experience;
 
 namespace ProjectVictory.Domain.Entities
 {
@@ -16,7 +16,7 @@ namespace ProjectVictory.Domain.Entities
 
         public Mana Mana { get; private set; }
 
-        public Experience Experience { get; private set; }
+        public CharacterExperience Experience { get; private set; }
 
         public Level Level { get; private set; }
 
@@ -34,7 +34,7 @@ namespace ProjectVictory.Domain.Entities
             string name,
             Health health,
             Mana mana,
-            Experience experience,
+            CharacterExperience experience,
             Level level)
             : base(id)
         {
@@ -89,7 +89,7 @@ namespace ProjectVictory.Domain.Entities
             Mana = mana;
         }
 
-        public void GainExperience(Experience experience)
+        public void GainExperience(CharacterExperience experience)
         {
             ArgumentNullException.ThrowIfNull(experience);
 
