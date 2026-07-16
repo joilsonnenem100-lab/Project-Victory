@@ -80,6 +80,15 @@ public sealed class CombatContext
         State = CombatState.Completed;
     }
 
+    public void FinalizeCombat()
+    {
+        if (State != CombatState.Completed)
+        {
+            throw new InvalidOperationException(
+                "Combat must be completed before finalization.");
+        }
+    }
+
     public void Complete()
     {
         if (State != CombatState.Active)
