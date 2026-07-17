@@ -1,0 +1,3 @@
+namespace ProjectVictory.Application.VerticalSlice;
+
+public sealed record ValidateDomainFlowIntegrationCommand;
