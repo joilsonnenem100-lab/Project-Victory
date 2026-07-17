@@ -174,7 +174,7 @@ public sealed class Character : AggregateRoot
 
         return new EvolutionApplicationValidationResult(
             Id,
-            true);
+                true);
     }
 
 
@@ -189,5 +189,21 @@ public sealed class Character : AggregateRoot
             throw new InvalidOperationException(
                 "Composite evolution validation failed.");
         }
+    }
+
+
+    public void ApplyProgressionGrowth(
+        GrowthResult growthResult)
+    {
+        ArgumentNullException.ThrowIfNull(growthResult);
+
+        if (growthResult.CharacterId != Id)
+        {
+            throw new InvalidOperationException(
+                "Growth result does not belong to this Character.");
+        }
+
+        ApplyLevel(
+            growthResult.CurrentLevel);
     }
 }
