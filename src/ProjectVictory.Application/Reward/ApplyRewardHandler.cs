@@ -1,5 +1,6 @@
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.ValueObjects;
+using Experience = ProjectVictory.Domain.ValueObjects.Experience;
 
 namespace ProjectVictory.Application.Reward;
 
@@ -54,7 +55,7 @@ public sealed class ApplyRewardHandler
         if (reward.Experience > 0)
         {
             character.GainExperience(
-                new Experience(reward.Experience));
+                new global::ProjectVictory.Domain.ValueObjects.Experience(reward.Experience));
         }
 
         await _characterRepository.UpdateAsync(

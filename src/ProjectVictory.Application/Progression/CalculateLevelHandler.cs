@@ -31,7 +31,7 @@ public sealed class CalculateLevelHandler
             command.CharacterId,
             command.ExperienceAmount);
 
-        var experience = new Experience(
+        var experience = new global::ProjectVictory.Domain.Progression.Experience(
             context.ExperienceAmount);
 
         var level = _calculator.Calculate(

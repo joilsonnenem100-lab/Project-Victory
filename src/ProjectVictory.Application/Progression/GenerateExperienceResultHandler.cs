@@ -25,8 +25,9 @@ public sealed class GenerateExperienceResultHandler
             command.CharacterId,
             command.ExperienceAmount);
 
-        var experience = new Experience(
-            command.ExperienceAmount);
+        var experience =
+            new global::ProjectVictory.Domain.Progression.Experience(
+                command.ExperienceAmount);
 
         return _processor.Process(
             context,

@@ -81,7 +81,7 @@ public sealed class ExecuteNextHuntHandler
                 rewardResult.Experience));
 
         character.GainExperience(
-            new Experience(
+            new ProjectVictory.Domain.ValueObjects.Experience(
                 progressionResult.Experience));
 
         await _characterRepository.UpdateAsync(

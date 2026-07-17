@@ -28,7 +28,7 @@ public sealed class CreateCharacterHandler
             command.Name,
             new Health(100),
             new Mana(50),
-            new Experience(0),
+            new ProjectVictory.Domain.ValueObjects.Experience(0),
             new Level(1));
 
         await _characterRepository.AddAsync(

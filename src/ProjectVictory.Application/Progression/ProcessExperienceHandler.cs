@@ -25,7 +25,7 @@ public sealed class ProcessExperienceHandler
             command.CharacterId,
             command.ExperienceAmount);
 
-        var experience = new Experience(
+        var experience = new global::ProjectVictory.Domain.Progression.Experience(
             command.ExperienceAmount);
 
         var result = _processor.Process(
