@@ -19,7 +19,7 @@ builder.Services.AddControllers();
 
 // Persistence
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
+builder.Services.AddSingleton<ICharacterRepository, CharacterRepository>();
 builder.Services.AddScoped<IHuntRepository, HuntRepository>();
 
 // Infrastructure Services
