@@ -1,4 +1,3 @@
-using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
 using CharacterEntity = ProjectVictory.Domain.Entities.Character;
 
@@ -28,11 +27,11 @@ public sealed class CharacterRepository : ICharacterRepository
     }
 
     public Task<CharacterEntity?> GetByAccountIdAsync(
-        AccountId accountId,
+        Guid accountId,
         CancellationToken cancellationToken = default)
     {
         var character = _characters
-            .FirstOrDefault(x => x.AccountId == accountId);
+            .FirstOrDefault(x => x.AccountId.Value == accountId);
 
         return Task.FromResult(character);
     }
