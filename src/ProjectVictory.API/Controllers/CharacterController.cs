@@ -6,17 +6,36 @@ namespace ProjectVictory.API.Controllers;
 [Route("api/character")]
 public sealed class CharacterController : BaseApiController
 {
-    private readonly CreateCharacterHandler _handler;
+    private readonly CreateCharacterHandler _createHandler;
+    private readonly GetCharactersHandler _getHandler;
 
-    public CharacterController(CreateCharacterHandler handler)
+
+    public CharacterController(
+        CreateCharacterHandler createHandler,
+        GetCharactersHandler getHandler)
     {
-        _handler = handler;
+        _createHandler = createHandler;
+        _getHandler = getHandler;
     }
 
+
     [HttpPost]
-    public async Task<IActionResult> Create(CreateCharacterCommand command)
+    public async Task<IActionResult> Create(
+        CreateCharacterCommand command)
     {
-        var result = await _handler.Handle(command);
+        var result =
+            await _createHandler.Handle(command);
+
+        return Success(result);
+    }
+
+
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+        var result =
+            await _getHandler.Handle(
+                new GetCharactersQuery());
 
         return Success(result);
     }

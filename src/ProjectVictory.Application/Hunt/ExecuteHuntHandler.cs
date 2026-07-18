@@ -3,7 +3,6 @@ using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Hunt;
-using ProjectVictory.Domain.ValueObjects;
 
 namespace ProjectVictory.Application.Hunt;
 
@@ -43,20 +42,29 @@ public sealed class ExecuteHuntHandler
                 "Character not found.");
         }
 
+
         var hunt = new Domain.Hunt.Hunt(
             Guid.NewGuid(),
             character.Id);
 
         hunt.Start();
 
+
         await _huntRepository.AddAsync(
             hunt,
             cancellationToken);
 
-        var combatResult = _combatResolver.Resolve(
-            new CombatRequest(
-                character.Id,
-                command.EnemyId));
+
+        var encounterId =
+            Guid.NewGuid();
+
+
+        var combatResult =
+            _combatResolver.Resolve(
+                new CombatRequest(
+                    character.Id,
+                    encounterId));
+
 
         if (!combatResult.Completed)
         {
@@ -70,25 +78,33 @@ public sealed class ExecuteHuntHandler
                 character.Level.Value);
         }
 
-        var rewardResult = _rewardProcessor.Process(
-            new RewardRequest(
-                character.Id,
-                combatResult));
 
-        var progressionResult = _progressionProcessor.Process(
-            new ProgressionRequest(
-                character.Id,
-                rewardResult.Experience));
+        var rewardResult =
+            _rewardProcessor.Process(
+                new RewardRequest(
+                    character.Id,
+                    combatResult));
+
+
+        var progressionResult =
+            _progressionProcessor.Process(
+                new ProgressionRequest(
+                    character.Id,
+                    rewardResult.Experience));
+
 
         character.GainExperience(
             new ProjectVictory.Domain.ValueObjects.Experience(
                 progressionResult.Experience));
 
+
         await _characterRepository.UpdateAsync(
             character,
             cancellationToken);
 
+
         hunt.Complete();
+
 
         return new ExecuteHuntResult(
             hunt.Id,

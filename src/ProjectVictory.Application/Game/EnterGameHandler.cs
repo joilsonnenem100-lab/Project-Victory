@@ -1,3 +1,4 @@
+using ProjectVictory.Application.Session;
 using ProjectVictory.Domain.Character;
 
 namespace ProjectVictory.Application.Game;
@@ -5,12 +6,17 @@ namespace ProjectVictory.Application.Game;
 public sealed class EnterGameHandler
 {
     private readonly ICharacterRepository _characterRepository;
+    private readonly ICurrentPlayerContext _currentPlayerContext;
+
 
     public EnterGameHandler(
-        ICharacterRepository characterRepository)
+        ICharacterRepository characterRepository,
+        ICurrentPlayerContext currentPlayerContext)
     {
         _characterRepository = characterRepository;
+        _currentPlayerContext = currentPlayerContext;
     }
+
 
     public async Task<EnterGameResult> Handle(
         EnterGameCommand command,
@@ -18,12 +24,16 @@ public sealed class EnterGameHandler
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        var accountId = new ProjectVictory.Domain.Account.AccountId(
-            command.AccountId);
 
-        var character = await _characterRepository.GetByAccountIdAsync(
-            accountId.Value,
-            cancellationToken);
+        var accountId =
+            _currentPlayerContext.AccountId;
+
+
+        var character =
+            await _characterRepository.GetByAccountIdAsync(
+                accountId,
+                cancellationToken);
+
 
         if (character is null)
         {
@@ -31,8 +41,9 @@ public sealed class EnterGameHandler
                 "No character found for account.");
         }
 
+
         return new EnterGameResult(
-            command.AccountId,
+            accountId,
             character.Id,
             character.Level.Value,
             character.Experience.Value);

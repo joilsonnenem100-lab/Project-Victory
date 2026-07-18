@@ -1,45 +1,24 @@
-using ProjectVictory.Application.Hunt;
+using ProjectVictory.Application.Session;
 
 namespace ProjectVictory.Application.Game;
 
 public sealed class ExecuteGameplayLoopHandler
 {
     private readonly EnterGameHandler _enterGameHandler;
-    private readonly ExecuteHuntHandler _executeHuntHandler;
+
 
     public ExecuteGameplayLoopHandler(
-        EnterGameHandler enterGameHandler,
-        ExecuteHuntHandler executeHuntHandler)
+        EnterGameHandler enterGameHandler)
     {
         _enterGameHandler = enterGameHandler;
-        _executeHuntHandler = executeHuntHandler;
     }
 
-    public async Task<ExecuteGameplayLoopResult> Handle(
-        ExecuteGameplayLoopCommand command,
+
+    public async Task<EnterGameResult> Handle(
         CancellationToken cancellationToken = default)
     {
-        var entryResult = await _enterGameHandler.Handle(
-            new EnterGameCommand(command.AccountId),
+        return await _enterGameHandler.Handle(
+            new EnterGameCommand(),
             cancellationToken);
-
-        var huntResult = await _executeHuntHandler.Handle(
-            new ExecuteHuntCommand(
-                entryResult.CharacterId,
-                command.EnemyId),
-            cancellationToken);
-
-        if (!huntResult.Completed)
-        {
-            throw new InvalidOperationException(
-                "Gameplay loop hunt failed.");
-        }
-
-        return new ExecuteGameplayLoopResult(
-            entryResult.AccountId,
-            entryResult.CharacterId,
-            huntResult.HuntId,
-            huntResult.Experience,
-            huntResult.Level);
     }
 }

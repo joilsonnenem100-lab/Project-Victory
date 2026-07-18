@@ -1,0 +1,50 @@
+using ProjectVictory.Application.Session;
+using ProjectVictory.Domain.Character;
+
+namespace ProjectVictory.Application.Character;
+
+public sealed class GetCharactersHandler
+{
+    private readonly ICharacterRepository _characterRepository;
+    private readonly ICurrentPlayerContext _currentPlayerContext;
+
+
+    public GetCharactersHandler(
+        ICharacterRepository characterRepository,
+        ICurrentPlayerContext currentPlayerContext)
+    {
+        _characterRepository = characterRepository;
+        _currentPlayerContext = currentPlayerContext;
+    }
+
+
+    public async Task<IReadOnlyList<GetCharactersResult>> Handle(
+        GetCharactersQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(query);
+
+
+        var character =
+            await _characterRepository.GetByAccountIdAsync(
+                _currentPlayerContext.AccountId,
+                cancellationToken);
+
+
+        if (character is null)
+        {
+            return [];
+        }
+
+
+        return
+        [
+            new GetCharactersResult
+            {
+                CharacterId = character.Id,
+                Name = character.Name,
+                Level = character.Level.Value
+            }
+        ];
+    }
+}
