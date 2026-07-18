@@ -1,15 +1,15 @@
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
-using ProjectVictory.Domain.Entities;
+using CharacterEntity = ProjectVictory.Domain.Entities.Character;
 
 namespace ProjectVictory.Persistence.Character;
 
 public sealed class CharacterRepository : ICharacterRepository
 {
-    private readonly List<Character> _characters = [];
+    private readonly List<CharacterEntity> _characters = [];
 
     public Task AddAsync(
-        Character character,
+        CharacterEntity character,
         CancellationToken cancellationToken = default)
     {
         _characters.Add(character);
@@ -17,7 +17,7 @@ public sealed class CharacterRepository : ICharacterRepository
         return Task.CompletedTask;
     }
 
-    public Task<Character?> GetByIdAsync(
+    public Task<CharacterEntity?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default)
     {
@@ -27,7 +27,7 @@ public sealed class CharacterRepository : ICharacterRepository
         return Task.FromResult(character);
     }
 
-    public Task<Character?> GetByAccountIdAsync(
+    public Task<CharacterEntity?> GetByAccountIdAsync(
         AccountId accountId,
         CancellationToken cancellationToken = default)
     {
@@ -38,7 +38,7 @@ public sealed class CharacterRepository : ICharacterRepository
     }
 
     public Task UpdateAsync(
-        Character character,
+        CharacterEntity character,
         CancellationToken cancellationToken = default)
     {
         var index = _characters.FindIndex(
