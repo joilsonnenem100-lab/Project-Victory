@@ -1,27 +1,66 @@
+using Microsoft.EntityFrameworkCore;
 using ProjectVictory.Domain.Account;
+using ProjectVictory.Persistence.Database;
 
 namespace ProjectVictory.Persistence.Account;
 
 public sealed class AccountRepository : IAccountRepository
 {
-    private readonly List<Domain.Account.Account> _accounts = [];
+    private readonly ProjectVictoryDbContext _context;
 
-    public Task AddAsync(
+
+    public AccountRepository(
+        ProjectVictoryDbContext context)
+    {
+        _context = context;
+    }
+
+
+    public async Task AddAsync(
         Domain.Account.Account account,
         CancellationToken cancellationToken = default)
     {
-        _accounts.Add(account);
+        var state =
+            new PersistentAccountState
+            {
+                Id = account.Id,
 
-        return Task.CompletedTask;
+                Email = account.Email.Value,
+
+                PasswordHash = account.PasswordHash.Value
+            };
+
+
+        await _context.Accounts.AddAsync(
+            state,
+            cancellationToken);
+
+
+        await _context.SaveChangesAsync(
+            cancellationToken);
     }
 
-    public Task<Domain.Account.Account?> GetByEmailAsync(
+
+    public async Task<Domain.Account.Account?> GetByEmailAsync(
         Email email,
         CancellationToken cancellationToken = default)
     {
-        var account = _accounts.FirstOrDefault(
-            x => x.Email.Equals(email));
+        var state =
+            await _context.Accounts
+                .FirstOrDefaultAsync(
+                    x => x.Email == email.Value,
+                    cancellationToken);
 
-        return Task.FromResult(account);
+
+        if (state is null)
+        {
+            return null;
+        }
+
+
+        return Domain.Account.Account.Create(
+            new AccountId(state.Id),
+            new Email(state.Email),
+            new PasswordHash(state.PasswordHash));
     }
 }

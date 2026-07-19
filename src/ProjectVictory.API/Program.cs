@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjectVictory.API.Authentication;
 using ProjectVictory.API.Session;
@@ -16,6 +17,7 @@ using ProjectVictory.Domain.Hunt;
 using ProjectVictory.Infrastructure.Services;
 using ProjectVictory.Persistence.Account;
 using ProjectVictory.Persistence.Character;
+using ProjectVictory.Persistence.Database;
 using ProjectVictory.Persistence.Hunt;
 using System.Text;
 
@@ -86,7 +88,15 @@ builder.Services.AddAuthorization();
 
 // Persistence
 
-builder.Services.AddSingleton<
+builder.Services.AddDbContext<ProjectVictoryDbContext>(
+    options =>
+    {
+        options.UseSqlite(
+            "Data Source=projectvictory.db");
+    });
+
+
+builder.Services.AddScoped<
     IAccountRepository,
     AccountRepository>();
 
