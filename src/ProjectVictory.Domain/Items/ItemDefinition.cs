@@ -8,10 +8,13 @@ public sealed class ItemDefinition
 
     public string Name { get; }
 
+    public ItemCharacteristics Characteristics { get; }
+
 
     public ItemDefinition(
         Guid id,
-        string name)
+        string name,
+        ItemCharacteristics characteristics)
     {
         if (id == Guid.Empty)
         {
@@ -21,6 +24,9 @@ public sealed class ItemDefinition
         }
 
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        Characteristics = characteristics ??
+            throw new ArgumentNullException(nameof(characteristics));
 
         Id = id;
         Name = name;

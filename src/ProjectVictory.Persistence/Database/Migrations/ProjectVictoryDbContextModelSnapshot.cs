@@ -66,6 +66,25 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.ToTable("Characters");
                 });
 
+            modelBuilder.Entity("ProjectVictory.Persistence.Item.PersistentItemState", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Items");
+                });
+
             modelBuilder.Entity("ProjectVictory.Persistence.Monster.PersistentMonsterState", b =>
                 {
                     b.Property<Guid>("Id")
