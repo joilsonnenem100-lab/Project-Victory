@@ -39,20 +39,28 @@ public sealed class AccountController : BaseApiController
     public async Task<IActionResult> Login(
         LoginCommand command)
     {
-        var accountId =
-            await _loginHandler.Handle(command);
+        try
+        {
+            var accountId =
+                await _loginHandler.Handle(command);
 
 
-        var token =
-            _jwtTokenGenerator.Generate(
-                accountId);
+            var token =
+                _jwtTokenGenerator.Generate(
+                    accountId);
 
 
-        return Success(
-            new LoginResponse
-            {
-                AccountId = accountId,
-                Token = token
-            });
+            return Success(
+                new LoginResponse
+                {
+                    AccountId = accountId,
+                    Token = token
+                });
+        }
+        catch (InvalidOperationException exception)
+            when (exception.Message == "Invalid credentials.")
+        {
+            return Unauthorized();
+        }
     }
 }
