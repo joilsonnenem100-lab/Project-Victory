@@ -68,15 +68,16 @@ public sealed class ExecuteHuntHandler
             cancellationToken);
 
 
-        var encounterId =
+        var monsterId =
             Guid.NewGuid();
 
 
         var combatResult =
             _combatResolver.Resolve(
                 new CombatRequest(
+                    Guid.NewGuid(),
                     character.Id,
-                    encounterId));
+                    monsterId));
 
 
         if (!combatResult.Completed)

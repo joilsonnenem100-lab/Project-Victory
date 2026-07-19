@@ -4,7 +4,6 @@ using ProjectVictory.Application.Account;
 
 namespace ProjectVictory.API.Controllers;
 
-
 [Route("api/account")]
 public sealed class AccountController : BaseApiController
 {
@@ -39,28 +38,17 @@ public sealed class AccountController : BaseApiController
     public async Task<IActionResult> Login(
         LoginCommand command)
     {
-        try
-        {
-            var accountId =
-                await _loginHandler.Handle(command);
+        var accountId =
+            await _loginHandler.Handle(command);
 
+        var token =
+            _jwtTokenGenerator.Generate(accountId);
 
-            var token =
-                _jwtTokenGenerator.Generate(
-                    accountId);
-
-
-            return Success(
-                new LoginResponse
-                {
-                    AccountId = accountId,
-                    Token = token
-                });
-        }
-        catch (InvalidOperationException exception)
-            when (exception.Message == "Invalid credentials.")
-        {
-            return Unauthorized();
-        }
+        return Success(
+            new LoginResponse
+            {
+                AccountId = accountId,
+                Token = token
+            });
     }
 }

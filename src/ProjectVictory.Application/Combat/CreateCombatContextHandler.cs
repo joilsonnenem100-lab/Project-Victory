@@ -38,7 +38,9 @@ public sealed class CreateCombatContextHandler
 
         var combatContext = new CombatContext(
             Guid.NewGuid(),
-            hunt.Id);
+            hunt.Id,
+            command.AttackerId,
+            command.MonsterId);
 
         combatContext.Activate();
 

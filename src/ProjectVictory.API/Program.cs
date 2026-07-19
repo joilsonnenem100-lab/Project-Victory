@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjectVictory.API.Authentication;
+using ProjectVictory.API.Middleware;
 using ProjectVictory.API.Session;
 using ProjectVictory.Application.Account;
 using ProjectVictory.Application.Character;
@@ -55,6 +57,13 @@ builder.Services.AddScoped<
     JwtTokenGenerator>();
 
 
+// Exception Handler
+
+builder.Services.AddExceptionHandler<ApiExceptionHandler>();
+
+builder.Services.AddProblemDetails();
+
+
 // JWT
 
 var jwtKey =
@@ -100,7 +109,7 @@ builder.Services.AddScoped<
     IAccountRepository,
     AccountRepository>();
 
-builder.Services.AddSingleton<
+builder.Services.AddScoped<
     ICharacterRepository,
     CharacterRepository>();
 
@@ -150,6 +159,9 @@ builder.Services.AddScoped<
 
 
 var app = builder.Build();
+
+
+app.UseExceptionHandler();
 
 
 app.UseCors(

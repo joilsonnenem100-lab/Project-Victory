@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectVictory.Persistence.Account;
+using ProjectVictory.Persistence.Character;
+using ProjectVictory.Persistence.Monster;
 
 namespace ProjectVictory.Persistence.Database;
 
@@ -7,6 +9,12 @@ public sealed class ProjectVictoryDbContext : DbContext
 {
     public DbSet<PersistentAccountState> Accounts =>
         Set<PersistentAccountState>();
+
+    public DbSet<PersistentCharacterState> Characters =>
+        Set<PersistentCharacterState>();
+
+    public DbSet<PersistentMonsterState> Monsters =>
+        Set<PersistentMonsterState>();
 
 
     public ProjectVictoryDbContext(
@@ -39,6 +47,47 @@ public sealed class ProjectVictoryDbContext : DbContext
                 entity.HasIndex(
                     x => x.Email)
                     .IsUnique();
+            });
+
+
+        modelBuilder.Entity<PersistentCharacterState>(
+            entity =>
+            {
+                entity.HasKey(
+                    x => x.Id);
+
+
+                entity.Property(
+                    x => x.AccountId)
+                    .IsRequired();
+
+
+                entity.Property(
+                    x => x.Name)
+                    .IsRequired();
+
+
+                entity.HasIndex(
+                    x => x.AccountId)
+                    .IsUnique();
+            });
+
+
+        modelBuilder.Entity<PersistentMonsterState>(
+            entity =>
+            {
+                entity.HasKey(
+                    x => x.Id);
+
+
+                entity.Property(
+                    x => x.Name)
+                    .IsRequired();
+
+
+                entity.Property(
+                    x => x.State)
+                    .IsRequired();
             });
     }
 }

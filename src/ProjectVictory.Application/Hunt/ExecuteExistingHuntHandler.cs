@@ -34,6 +34,7 @@ public sealed class ExecuteExistingHuntHandler
 
         var result = _combatResolver.Resolve(
             new CombatRequest(
+                Guid.NewGuid(),
                 hunt.CharacterId,
                 command.EnemyId));
 

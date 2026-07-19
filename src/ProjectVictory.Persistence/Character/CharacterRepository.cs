@@ -1,53 +1,134 @@
+using Microsoft.EntityFrameworkCore;
+using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
-using CharacterEntity = ProjectVictory.Domain.Entities.Character;
+using DomainCharacter = ProjectVictory.Domain.Entities.Character;
+using ProjectVictory.Domain.ValueObjects;
+using ProjectVictory.Persistence.Database;
 
 namespace ProjectVictory.Persistence.Character;
 
 public sealed class CharacterRepository : ICharacterRepository
 {
-    private readonly List<CharacterEntity> _characters = [];
+    private readonly ProjectVictoryDbContext _context;
 
-    public Task AddAsync(
-        CharacterEntity character,
-        CancellationToken cancellationToken = default)
+
+    public CharacterRepository(
+        ProjectVictoryDbContext context)
     {
-        _characters.Add(character);
-
-        return Task.CompletedTask;
+        _context = context;
     }
 
-    public Task<CharacterEntity?> GetByIdAsync(
+
+    public async Task AddAsync(
+        DomainCharacter character,
+        CancellationToken cancellationToken = default)
+    {
+        var state = new PersistentCharacterState
+        {
+            Id = character.Id,
+
+            AccountId = character.AccountId.Value,
+
+            Name = character.Name,
+
+            Level = character.Level.Value,
+
+            Experience = character.Experience.Value
+        };
+
+
+        await _context.Characters.AddAsync(
+            state,
+            cancellationToken);
+
+
+        await _context.SaveChangesAsync(
+            cancellationToken);
+    }
+
+
+    public async Task<DomainCharacter?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        var character = _characters
-            .FirstOrDefault(x => x.Id == id);
+        var state =
+            await _context.Characters
+                .FirstOrDefaultAsync(
+                    x => x.Id == id,
+                    cancellationToken);
 
-        return Task.FromResult(character);
+
+        if (state is null)
+        {
+            return null;
+        }
+
+
+        return RestoreCharacter(state);
     }
 
-    public Task<CharacterEntity?> GetByAccountIdAsync(
+
+    public async Task<DomainCharacter?> GetByAccountIdAsync(
         Guid accountId,
         CancellationToken cancellationToken = default)
     {
-        var character = _characters
-            .FirstOrDefault(x => x.AccountId.Value == accountId);
+        var state =
+            await _context.Characters
+                .FirstOrDefaultAsync(
+                    x => x.AccountId == accountId,
+                    cancellationToken);
 
-        return Task.FromResult(character);
-    }
 
-    public Task UpdateAsync(
-        CharacterEntity character,
-        CancellationToken cancellationToken = default)
-    {
-        var index = _characters.FindIndex(
-            x => x.Id == character.Id);
-
-        if (index >= 0)
+        if (state is null)
         {
-            _characters[index] = character;
+            return null;
         }
 
-        return Task.CompletedTask;
+
+        return RestoreCharacter(state);
+    }
+
+
+    public async Task UpdateAsync(
+        DomainCharacter character,
+        CancellationToken cancellationToken = default)
+    {
+        var state =
+            await _context.Characters
+                .FirstOrDefaultAsync(
+                    x => x.Id == character.Id,
+                    cancellationToken);
+
+
+        if (state is null)
+        {
+            return;
+        }
+
+
+        state.Name = character.Name;
+
+        state.Level = character.Level.Value;
+
+        state.Experience =
+            character.Experience.Value;
+
+
+        await _context.SaveChangesAsync(
+            cancellationToken);
+    }
+
+
+    private static DomainCharacter RestoreCharacter(
+        PersistentCharacterState state)
+    {
+        return new DomainCharacter(
+            state.Id,
+            new AccountId(state.AccountId),
+            state.Name,
+            new Health(100),
+            new Mana(100),
+            new Experience(state.Experience),
+            new Level(state.Level));
     }
 }

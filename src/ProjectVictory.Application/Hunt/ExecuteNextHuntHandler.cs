@@ -3,7 +3,6 @@ using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Hunt;
-using ProjectVictory.Domain.ValueObjects;
 
 namespace ProjectVictory.Application.Hunt;
 
@@ -55,6 +54,7 @@ public sealed class ExecuteNextHuntHandler
 
         var combatResult = _combatResolver.Resolve(
             new CombatRequest(
+                Guid.NewGuid(),
                 character.Id,
                 command.EnemyId));
 

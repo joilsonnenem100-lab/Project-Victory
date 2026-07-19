@@ -8,6 +8,10 @@ public sealed class CombatContext
 
     public Guid HuntId { get; }
 
+    public Guid AttackerId { get; }
+
+    public Guid MonsterId { get; }
+
     public CombatState State { get; private set; }
 
     public bool IsFinalized { get; private set; }
@@ -16,7 +20,9 @@ public sealed class CombatContext
 
     public CombatContext(
         Guid id,
-        Guid huntId)
+        Guid huntId,
+        Guid attackerId,
+        Guid monsterId)
     {
         if (huntId == Guid.Empty)
         {
@@ -25,8 +31,25 @@ public sealed class CombatContext
                 nameof(huntId));
         }
 
+        if (attackerId == Guid.Empty)
+        {
+            throw new ArgumentException(
+                "AttackerId is required.",
+                nameof(attackerId));
+        }
+
+        if (monsterId == Guid.Empty)
+        {
+            throw new ArgumentException(
+                "MonsterId is required.",
+                nameof(monsterId));
+        }
+
         Id = id;
         HuntId = huntId;
+        AttackerId = attackerId;
+        MonsterId = monsterId;
+
         State = CombatState.Created;
         IsFinalized = false;
         HasReturnedToHunt = false;
