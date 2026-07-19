@@ -1,49 +1,63 @@
-# EXP-VS-208 — Reward Experience Presentation
+# EXP-VS-208 --- Reward Experience Presentation
 
 ## Tipo
 
 Client Experience Contract
 
----
+------------------------------------------------------------------------
 
 # Referência arquitetural
 
-Este contrato pertence ao:
+PV-MILESTONE-002 --- Player Experience Vertical Slice
 
-PV-MILESTONE-002 — Player Experience Vertical Slice
-
----
+------------------------------------------------------------------------
 
 # Dependências
 
-Este contrato depende de:
+EXP-VS-207 --- Combat Result Presentation
 
-EXP-VS-200 — Client Foundation
-
-↓
-
-EXP-VS-203 — Game Entry Experience
-
-↓
-
-EXP-VS-204 — First World Scene Foundation
-
-↓
-
-EXP-VS-205 — Player State Presentation
-
-↓
-
-EXP-VS-206 — Hunt Interaction Experience
-
-↓
-
-EXP-VS-207 — Combat Result Presentation
-
----
+------------------------------------------------------------------------
 
 # Objetivo
 
-Definir como as recompensas obtidas após uma Hunt serão apresentadas visualmente ao jogador através do Client.
+Definir a apresentação visual das recompensas recebidas após uma Hunt.
 
-O objetivo é concluir o primeiro ciclo visual de gameplay:
+------------------------------------------------------------------------
+
+# Responsabilidade do Client
+
+✅ Apresentar recompensas
+
+✅ Atualizar informações visuais
+
+✅ Exibir conclusão da ação
+
+------------------------------------------------------------------------
+
+# O Client não deve possuir
+
+❌ Cálculo de recompensa
+
+❌ Loot System
+
+❌ Economia
+
+❌ Persistência
+
+------------------------------------------------------------------------
+
+# Critérios de aceite
+
+✅ Recompensa recebida
+
+✅ Recompensa apresentada
+
+✅ Estado visual atualizado
+
+------------------------------------------------------------------------
+
+# Status
+
+EXP-VS-208 --- Reward Experience Presentation
+
+🟢 Liberado para implementação após aprovação arquitetural.

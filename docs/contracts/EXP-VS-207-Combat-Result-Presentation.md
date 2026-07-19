@@ -1,53 +1,62 @@
-# EXP-VS-207 — Combat Result Presentation
+# EXP-VS-207 --- Combat Result Presentation
 
 ## Tipo
 
 Client Experience Contract
 
----
+------------------------------------------------------------------------
 
 # Referência arquitetural
 
-Este contrato pertence ao:
+PV-MILESTONE-002 --- Player Experience Vertical Slice
 
-PV-MILESTONE-002 — Player Experience Vertical Slice
-
----
+------------------------------------------------------------------------
 
 # Dependências
 
-Este contrato depende de:
+EXP-VS-206 --- Hunt Interaction Experience
 
-EXP-VS-200 — Client Foundation
-
-↓
-
-EXP-VS-203 — Game Entry Experience
-
-↓
-
-EXP-VS-204 — First World Scene Foundation
-
-↓
-
-EXP-VS-205 — Player State Presentation
-
-↓
-
-EXP-VS-206 — Hunt Interaction Experience
-
----
+------------------------------------------------------------------------
 
 # Objetivo
 
-Definir como o resultado do processamento de combate será apresentado ao jogador através do Client.
+Definir a apresentação visual do resultado de combate recebido do
+Backend.
 
-O objetivo é permitir que o jogador compreenda o resultado da Hunt sem que o Client possua qualquer responsabilidade sobre regras de combate.
+------------------------------------------------------------------------
 
----
+# Responsabilidade do Client
 
-# Contexto
+✅ Apresentar resultado recebido
 
-O processamento de combate já existe no Backend.
+✅ Atualizar interface
 
-Fluxo oficial:
+✅ Informar conclusão da ação
+
+------------------------------------------------------------------------
+
+# O Client não deve possuir
+
+❌ Cálculo de dano
+
+❌ Regras de combate
+
+❌ Simulação de batalha
+
+------------------------------------------------------------------------
+
+# Critérios de aceite
+
+✅ Resultado recebido pelo Client
+
+✅ Resultado apresentado ao jogador
+
+✅ Regras permanecem no Backend
+
+------------------------------------------------------------------------
+
+# Status
+
+EXP-VS-207 --- Combat Result Presentation
+
+🟢 Liberado para implementação após aprovação arquitetural.

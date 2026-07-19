@@ -10,9 +10,7 @@ import CombatResultPanel from "../components/CombatResultPanel";
 import RewardPanel from "../components/RewardPanel";
 
 import {
-    startHunt,
-    getCombatResult,
-    getRewardResult
+    startHunt
 }
 from "../services/huntService";
 
@@ -61,24 +59,24 @@ export default function WorldScenePage(
             setError(null);
 
 
-            await startHunt();
-
-
-            const combat =
-                await getCombatResult();
+            const result =
+                await startHunt();
 
 
             setCombatResult(
-                combat
+                {
+                    combatId: result.huntId,
+                    characterId: "",
+                    victory: result.completed
+                }
             );
 
 
-            const reward =
-                await getRewardResult();
-
-
             setRewardResult(
-                reward
+                {
+                    experience: result.experience,
+                    gold: result.gold
+                }
             );
         }
         catch

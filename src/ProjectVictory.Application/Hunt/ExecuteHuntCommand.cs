@@ -1,4 +1,3 @@
 namespace ProjectVictory.Application.Hunt;
 
-public sealed record ExecuteHuntCommand(
-    Guid CharacterId);
+public sealed record ExecuteHuntCommand;

@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectVictory.Application.Character;
 
 namespace ProjectVictory.API.Controllers;
 
+[Authorize]
 [Route("api/character")]
 public sealed class CharacterController : BaseApiController
 {

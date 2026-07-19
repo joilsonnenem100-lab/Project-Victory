@@ -1,6 +1,7 @@
 using ProjectVictory.Application.Combat;
 using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
+using ProjectVictory.Application.Session;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Hunt;
 
@@ -10,31 +11,42 @@ public sealed class ExecuteHuntHandler
 {
     private readonly IHuntRepository _huntRepository;
     private readonly ICharacterRepository _characterRepository;
+    private readonly ICurrentPlayerContext _currentPlayerContext;
     private readonly ICombatResolver _combatResolver;
     private readonly IRewardProcessor _rewardProcessor;
     private readonly IProgressionProcessor _progressionProcessor;
 
+
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
         ICharacterRepository characterRepository,
+        ICurrentPlayerContext currentPlayerContext,
         ICombatResolver combatResolver,
         IRewardProcessor rewardProcessor,
         IProgressionProcessor progressionProcessor)
     {
         _huntRepository = huntRepository;
         _characterRepository = characterRepository;
+        _currentPlayerContext = currentPlayerContext;
         _combatResolver = combatResolver;
         _rewardProcessor = rewardProcessor;
         _progressionProcessor = progressionProcessor;
     }
 
+
     public async Task<ExecuteHuntResult> Handle(
         ExecuteHuntCommand command,
         CancellationToken cancellationToken = default)
     {
-        var character = await _characterRepository.GetByIdAsync(
-            command.CharacterId,
-            cancellationToken);
+        var accountId =
+            _currentPlayerContext.AccountId;
+
+
+        var character =
+            await _characterRepository.GetByAccountIdAsync(
+                accountId,
+                cancellationToken);
+
 
         if (character is null)
         {
@@ -46,6 +58,7 @@ public sealed class ExecuteHuntHandler
         var hunt = new Domain.Hunt.Hunt(
             Guid.NewGuid(),
             character.Id);
+
 
         hunt.Start();
 

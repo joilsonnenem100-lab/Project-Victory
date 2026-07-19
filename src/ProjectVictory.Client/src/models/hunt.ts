@@ -2,5 +2,11 @@ export interface HuntResult
 {
     huntId: string;
 
-    characterId: string;
+    completed: boolean;
+
+    experience: number;
+
+    gold: number;
+
+    level: number;
 }
