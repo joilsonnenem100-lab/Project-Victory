@@ -7,6 +7,10 @@ import {
 }
 from "../services/characterService";
 
+import Container from "../components/ui/Container";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+
 
 interface Props
 {
@@ -65,16 +69,16 @@ export default function CharacterSelectionPage(
 
 
     return (
-        <main>
+        <Container>
 
-            <h1>
-                Character
-            </h1>
+            <Card>
+
+                <h1>
+                    Character
+                </h1>
 
 
-            <section>
-
-                <button
+                <Button
                     onClick={
                         () =>
                         {
@@ -85,17 +89,17 @@ export default function CharacterSelectionPage(
                     }
                 >
                     Create Character
-                </button>
+                </Button>
 
 
-                <button
+                <Button
                     onClick={onEnterWorld}
                 >
                     Enter World
-                </button>
+                </Button>
 
-            </section>
+            </Card>
 
-        </main>
+        </Container>
     );
 }

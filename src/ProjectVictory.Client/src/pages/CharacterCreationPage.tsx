@@ -1,5 +1,10 @@
 import { useState } from "react";
 
+import Container from "../components/ui/Container";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import FeedbackMessage from "../components/ui/FeedbackMessage";
+
 
 interface Props
 {
@@ -24,6 +29,7 @@ export default function CharacterCreationPage(
 
     const [message, setMessage] =
         useState("");
+
 
 
     async function handleCreate()
@@ -60,15 +66,16 @@ export default function CharacterCreationPage(
     }
 
 
+
     return (
-        <main>
+        <Container>
 
-            <h1>
-                Create Character
-            </h1>
+            <Card>
 
+                <h1>
+                    Create Character
+                </h1>
 
-            <section>
 
                 <input
                     type="text"
@@ -83,32 +90,39 @@ export default function CharacterCreationPage(
                 />
 
 
-                <button
+                <Button
                     onClick={handleCreate}
                     disabled={
                         !name.trim()
                     }
                 >
                     Create Character
-                </button>
+                </Button>
 
 
-                <button
+                <Button
                     onClick={onBack}
                 >
                     Back
-                </button>
-
-            </section>
+                </Button>
 
 
-            {
-                message &&
-                <p>
-                    {message}
-                </p>
-            }
+                {
+                    message &&
+                    (
+                        <FeedbackMessage
+                            message={message}
+                            type={
+                                message.includes("successfully")
+                                    ? "success"
+                                    : "error"
+                            }
+                        />
+                    )
+                }
 
-        </main>
+            </Card>
+
+        </Container>
     );
 }

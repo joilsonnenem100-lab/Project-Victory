@@ -3,7 +3,10 @@ import { useState } from "react";
 import { login } from "../services/accountService";
 
 import PageContainer from "../components/layout/PageContainer";
-import Panel from "../components/layout/Panel";
+import Container from "../components/ui/Container";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import FeedbackMessage from "../components/ui/FeedbackMessage";
 import SectionTitle from "../components/layout/SectionTitle";
 
 
@@ -64,60 +67,65 @@ export default function LoginPage(
     return (
         <PageContainer>
 
-            <Panel>
+            <Container>
 
-                <h1>
-                    Project Victory
-                </h1>
+                <Card>
 
-
-                <SectionTitle>
-                    Login
-                </SectionTitle>
+                    <h1>
+                        Project Victory
+                    </h1>
 
 
-                <input
-                    placeholder="Email"
-                    value={email}
-                    onChange={
-                        e =>
-                            setEmail(
-                                e.target.value
-                            )
+                    <SectionTitle>
+                        Login
+                    </SectionTitle>
+
+
+                    <input
+                        placeholder="Email"
+                        value={email}
+                        onChange={
+                            e =>
+                                setEmail(
+                                    e.target.value
+                                )
+                        }
+                    />
+
+
+                    <input
+                        placeholder="Password"
+                        type="password"
+                        value={password}
+                        onChange={
+                            e =>
+                                setPassword(
+                                    e.target.value
+                                )
+                        }
+                    />
+
+
+                    <Button
+                        onClick={handleLogin}
+                    >
+                        Entrar
+                    </Button>
+
+
+                    {
+                        error &&
+                        (
+                            <FeedbackMessage
+                                message={error}
+                                type="error"
+                            />
+                        )
                     }
-                />
 
+                </Card>
 
-                <input
-                    placeholder="Password"
-                    type="password"
-                    value={password}
-                    onChange={
-                        e =>
-                            setPassword(
-                                e.target.value
-                            )
-                    }
-                />
-
-
-                <button
-                    onClick={handleLogin}
-                >
-                    Entrar
-                </button>
-
-
-                {
-                    error &&
-                    (
-                        <p>
-                            {error}
-                        </p>
-                    )
-                }
-
-            </Panel>
+            </Container>
 
         </PageContainer>
     );
