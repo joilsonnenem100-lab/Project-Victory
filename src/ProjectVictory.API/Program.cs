@@ -10,17 +10,21 @@ using ProjectVictory.Application.Character;
 using ProjectVictory.Application.Combat;
 using ProjectVictory.Application.Game;
 using ProjectVictory.Application.Hunt;
+using ProjectVictory.Application.Item;
 using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Application.Session;
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Hunt;
+using ProjectVictory.Domain.Items;
 using ProjectVictory.Infrastructure.Services;
 using ProjectVictory.Persistence.Account;
 using ProjectVictory.Persistence.Character;
 using ProjectVictory.Persistence.Database;
 using ProjectVictory.Persistence.Hunt;
+using ProjectVictory.Persistence.Item;
+using ProjectVictory.Persistence.Database.Seed;
 using System.Text;
 
 
@@ -57,14 +61,10 @@ builder.Services.AddScoped<
     JwtTokenGenerator>();
 
 
-// Exception Handler
-
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 
 builder.Services.AddProblemDetails();
 
-
-// JWT
 
 var jwtKey =
     builder.Configuration["Jwt:Key"]
@@ -95,8 +95,6 @@ builder.Services
 builder.Services.AddAuthorization();
 
 
-// Persistence
-
 builder.Services.AddDbContext<ProjectVictoryDbContext>(
     options =>
     {
@@ -117,8 +115,10 @@ builder.Services.AddScoped<
     IHuntRepository,
     HuntRepository>();
 
+builder.Services.AddScoped<
+    IItemDefinitionRepository,
+    ItemDefinitionRepository>();
 
-// Infrastructure
 
 builder.Services.AddScoped<
     IPasswordHasher,
@@ -136,8 +136,6 @@ builder.Services.AddScoped<
     IProgressionProcessor,
     ProgressionProcessor>();
 
-
-// Application
 
 builder.Services.AddScoped<
     CreateAccountHandler>();
@@ -157,16 +155,27 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     ExecuteHuntHandler>();
 
+builder.Services.AddScoped<
+    GetItemDefinitionHandler>();
+
 
 var app = builder.Build();
 
 
-app.UseExceptionHandler();
+using (var scope = app.Services.CreateScope())
+{
+    var context =
+        scope.ServiceProvider
+            .GetRequiredService<ProjectVictoryDbContext>();
 
+    await ItemDefinitionSeed.ExecuteAsync(context);
+}
+
+
+app.UseExceptionHandler();
 
 app.UseCors(
     "ProjectVictoryClient");
-
 
 app.UseAuthentication();
 

@@ -70,7 +70,8 @@ public sealed class Character : AggregateRoot
     {
         ArgumentNullException.ThrowIfNull(experience);
 
-        Experience = experience;
+        Experience = new CharacterExperience(
+            Experience.Value + experience.Value);
     }
 
 
@@ -162,19 +163,19 @@ public sealed class Character : AggregateRoot
     }
 
 
-    public EvolutionApplicationValidationResult ValidateCompositeEvolution(
+    public LevelValidationResult ValidateCompositeEvolution(
         IReadOnlyCollection<EvolutionEffect> effects)
     {
         if (effects is null || effects.Count == 0)
         {
-            return new EvolutionApplicationValidationResult(
+            return new LevelValidationResult(
                 Id,
                 false);
         }
 
-        return new EvolutionApplicationValidationResult(
+        return new LevelValidationResult(
             Id,
-                true);
+            true);
     }
 
 

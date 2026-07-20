@@ -2,16 +2,21 @@ import { useEffect, useState } from "react";
 
 import type { Character } from "../models/character";
 
-import { getCharacters } from "../services/characterService";
+import {
+    getCharacters,
+    createCharacter
+} from "../services/characterService";
 
 import { enterGame } from "../services/gameService";
 
 import GamePage from "./GamePage";
 
 
+
 interface Props
 {
 }
+
 
 
 export default function CharacterSelectionPage(
@@ -23,20 +28,74 @@ export default function CharacterSelectionPage(
         useState<Character[]>([]);
 
 
+    const [characterName, setCharacterName] =
+        useState("");
+
+
+    const [message, setMessage] =
+        useState("");
+
+
     const [gameState, setGameState] =
         useState(null);
+
+
+
+    async function loadCharacters()
+    {
+        const result =
+            await getCharacters();
+
+
+        setCharacters(
+            result
+        );
+    }
 
 
 
     useEffect(
         () =>
         {
-            getCharacters()
-                .then(setCharacters);
+            loadCharacters();
 
         },
         []
     );
+
+
+
+    async function handleCreateCharacter()
+    {
+        try
+        {
+            setMessage("");
+
+
+            await createCharacter(
+                characterName
+            );
+
+
+            setCharacterName("");
+
+
+            await loadCharacters();
+
+
+            setMessage(
+                "Character criado com sucesso."
+            );
+        }
+        catch(error)
+        {
+            setMessage(
+                error instanceof Error
+                    ? error.message
+                    : "Falha ao criar Character."
+            );
+        }
+    }
 
 
 
@@ -75,9 +134,38 @@ export default function CharacterSelectionPage(
             {
                 characters.length === 0 &&
                 (
-                    <p>
-                        Nenhum personagem encontrado.
-                    </p>
+                    <section>
+
+                        <p>
+                            Nenhum personagem encontrado.
+                        </p>
+
+
+                        <input
+                            type="text"
+                            placeholder="Nome do Character"
+                            value={characterName}
+                            onChange={
+                                event =>
+                                    setCharacterName(
+                                        event.target.value
+                                    )
+                            }
+                        />
+
+
+                        <button
+                            onClick={
+                                handleCreateCharacter
+                            }
+                            disabled={
+                                !characterName.trim()
+                            }
+                        >
+                            Criar Character
+                        </button>
+
+                    </section>
                 )
             }
 
@@ -87,7 +175,7 @@ export default function CharacterSelectionPage(
                     character =>
                     (
                         <button
-                            key={character.characterId}
+                            key={character.id}
                             onClick={selectCharacter}
                         >
                             {character.name}
@@ -96,6 +184,16 @@ export default function CharacterSelectionPage(
                             {character.level}
                         </button>
                     )
+                )
+            }
+
+
+            {
+                message &&
+                (
+                    <p>
+                        {message}
+                    </p>
                 )
             }
 

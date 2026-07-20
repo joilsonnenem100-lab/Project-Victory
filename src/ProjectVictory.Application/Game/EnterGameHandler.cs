@@ -45,6 +45,7 @@ public sealed class EnterGameHandler
         return new EnterGameResult(
             accountId,
             character.Id,
+            character.Name,
             character.Level.Value,
             character.Experience.Value);
     }

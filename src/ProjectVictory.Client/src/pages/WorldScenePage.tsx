@@ -1,10 +1,11 @@
 import { useState } from "react";
 
 import type { WorldState } from "../models/world";
+import type { GameState } from "../models/game";
 import type { CombatResult } from "../models/combat";
 import type { RewardResult } from "../models/reward";
 
-import PlayerStatePanel from "../components/PlayerStatePanel";
+import CharacterStatusPanel from "../components/Character/CharacterStatusPanel";
 import HuntPanel from "../components/HuntPanel";
 import CombatResultPanel from "../components/CombatResultPanel";
 import RewardPanel from "../components/RewardPanel";
@@ -27,6 +28,12 @@ export default function WorldScenePage(
     }: Props
 )
 {
+    const [player] =
+        useState<GameState>(
+            world.player
+        );
+
+
     const [combatResult, setCombatResult] =
         useState<CombatResult | null>(null);
 
@@ -66,7 +73,7 @@ export default function WorldScenePage(
             setCombatResult(
                 {
                     combatId: result.huntId,
-                    characterId: "",
+                    characterId: player.characterId,
                     victory: result.completed
                 }
             );
@@ -104,12 +111,12 @@ export default function WorldScenePage(
             <section>
 
                 <h2>
-                    First World Scene
+                    Player Entry Screen
                 </h2>
 
 
                 <p>
-                    Scene:
+                    World:
                     {" "}
                     {world.sceneName}
                 </p>
@@ -117,28 +124,23 @@ export default function WorldScenePage(
             </section>
 
 
-            <section
-                style={{
-                    width: "120px",
-                    height: "120px",
-                    border: "2px solid black",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                }}
-            >
-                Player
+            <CharacterStatusPanel
+                player={player}
+            />
+
+
+            <section>
+
+                <h2>
+                    Available Actions
+                </h2>
+
+
+                <HuntPanel
+                    onStart={executeHunt}
+                />
+
             </section>
-
-
-            <PlayerStatePanel
-                player={world.player}
-            />
-
-
-            <HuntPanel
-                onStart={executeHunt}
-            />
 
 
             {

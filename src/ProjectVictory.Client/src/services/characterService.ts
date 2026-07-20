@@ -26,3 +26,42 @@ export async function getCharacters()
 
     return await response.json();
 }
+
+
+
+export async function createCharacter(
+    name: string
+)
+: Promise<string>
+{
+    const response =
+        await apiRequest(
+            "/api/character",
+            {
+                method: "POST",
+
+                body:
+                    JSON.stringify(
+                        {
+                            name
+                        }
+                    )
+            }
+        );
+
+
+    if (!response.ok)
+    {
+        const message =
+            await response.text();
+
+
+        throw new Error(
+            message ||
+            "Failed creating character"
+        );
+    }
+
+
+    return await response.text();
+}

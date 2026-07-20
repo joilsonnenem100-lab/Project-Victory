@@ -1,5 +1,3 @@
-using System;
-
 namespace ProjectVictory.Persistence.Item;
 
 public sealed class PersistentItemState

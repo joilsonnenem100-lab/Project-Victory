@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectVictory.Persistence.Account;
 using ProjectVictory.Persistence.Character;
-using ProjectVictory.Persistence.Monster;
 using ProjectVictory.Persistence.Item;
+using ProjectVictory.Persistence.Monster;
 
 namespace ProjectVictory.Persistence.Database;
 
@@ -34,15 +34,19 @@ public sealed class ProjectVictoryDbContext : DbContext
         modelBuilder.Entity<PersistentAccountState>(
             entity =>
             {
-                entity.HasKey(x => x.Id);
+                entity.HasKey(
+                    x => x.Id);
 
-                entity.Property(x => x.Email)
+                entity.Property(
+                    x => x.Email)
                     .IsRequired();
 
-                entity.Property(x => x.PasswordHash)
+                entity.Property(
+                    x => x.PasswordHash)
                     .IsRequired();
 
-                entity.HasIndex(x => x.Email)
+                entity.HasIndex(
+                    x => x.Email)
                     .IsUnique();
             });
 
@@ -50,15 +54,27 @@ public sealed class ProjectVictoryDbContext : DbContext
         modelBuilder.Entity<PersistentCharacterState>(
             entity =>
             {
-                entity.HasKey(x => x.Id);
+                entity.HasKey(
+                    x => x.Id);
 
-                entity.Property(x => x.AccountId)
+                entity.Property(
+                    x => x.AccountId)
                     .IsRequired();
 
-                entity.Property(x => x.Name)
+                entity.Property(
+                    x => x.Name)
                     .IsRequired();
 
-                entity.HasIndex(x => x.AccountId)
+                entity.Property(
+                    x => x.Level)
+                    .IsRequired();
+
+                entity.Property(
+                    x => x.Experience)
+                    .IsRequired();
+
+                entity.HasIndex(
+                    x => x.AccountId)
                     .IsUnique();
             });
 
@@ -66,12 +82,19 @@ public sealed class ProjectVictoryDbContext : DbContext
         modelBuilder.Entity<PersistentMonsterState>(
             entity =>
             {
-                entity.HasKey(x => x.Id);
+                entity.HasKey(
+                    x => x.Id);
 
-                entity.Property(x => x.Name)
+                entity.Property(
+                    x => x.Name)
                     .IsRequired();
 
-                entity.Property(x => x.State)
+                entity.Property(
+                    x => x.Health)
+                    .IsRequired();
+
+                entity.Property(
+                    x => x.State)
                     .IsRequired();
             });
 
@@ -79,12 +102,15 @@ public sealed class ProjectVictoryDbContext : DbContext
         modelBuilder.Entity<PersistentItemState>(
             entity =>
             {
-                entity.HasKey(x => x.Id);
+                entity.HasKey(
+                    x => x.Id);
 
-                entity.Property(x => x.Name)
+                entity.Property(
+                    x => x.Name)
                     .IsRequired();
 
-                entity.Property(x => x.Description)
+                entity.Property(
+                    x => x.Description)
                     .IsRequired();
             });
     }

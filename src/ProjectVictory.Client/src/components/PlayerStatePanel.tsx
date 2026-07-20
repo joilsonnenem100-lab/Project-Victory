@@ -17,30 +17,55 @@ export default function PlayerStatePanel(
         <section>
 
             <h2>
-                Player Status
+                Character Status
             </h2>
 
 
-            <p>
-                Character ID:
-                {" "}
-                {player.characterId}
-            </p>
+            <section>
+
+                <h3>
+                    Identity
+                </h3>
 
 
-            <p>
-                Level:
-                {" "}
-                {player.level}
-            </p>
+                <p>
+                    Name:
+                    {" "}
+                    {player.characterName}
+                </p>
 
 
-            <p>
-                Experience:
-                {" "}
-                {player.experience}
-            </p>
+                <p>
+                    Character ID:
+                    {" "}
+                    {player.characterId}
+                </p>
 
+            </section>
+
+
+
+            <section>
+
+                <h3>
+                    Progression
+                </h3>
+
+
+                <p>
+                    Current Level:
+                    {" "}
+                    {player.level}
+                </p>
+
+
+                <p>
+                    Current Experience:
+                    {" "}
+                    {player.experience}
+                </p>
+
+            </section>
 
         </section>
     );

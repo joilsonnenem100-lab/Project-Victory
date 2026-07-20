@@ -4,6 +4,8 @@ export interface GameState
 
     characterId: string;
 
+    characterName: string;
+
     level: number;
 
     experience: number;
