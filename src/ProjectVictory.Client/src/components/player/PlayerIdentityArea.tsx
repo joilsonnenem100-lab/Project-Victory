@@ -1,19 +1,26 @@
+import type { GameState } from "../../models/game";
+
+import CharacterStatusPanel from "../character/CharacterStatusPanel";
+
+
 interface Props
 {
-    children: React.ReactNode;
+    player: GameState;
 }
 
 
 export default function PlayerIdentityArea(
     {
-        children
+        player
     }: Props
 )
 {
     return (
         <section>
 
-            {children}
+            <CharacterStatusPanel
+                player={player}
+            />
 
         </section>
     );
