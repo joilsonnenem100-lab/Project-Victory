@@ -1,9 +1,10 @@
-import { useState } from "react";
+import PlayerInterface from "../components/player/PlayerInterface";
 
-import type { WorldState } from "../models/world";
-import type { GameState } from "../models/game";
-import type { CombatResult } from "../models/combat";
-import type { RewardResult } from "../models/reward";
+import PlayerIdentityArea from "../components/player/PlayerIdentityArea";
+import PlayerActionsArea from "../components/player/PlayerActionsArea";
+import PlayerCombatArea from "../components/player/PlayerCombatArea";
+import PlayerRewardArea from "../components/player/PlayerRewardArea";
+
 
 import CharacterStatusPanel from "../components/character/CharacterStatusPanel";
 
@@ -11,164 +12,72 @@ import HuntPanel from "../components/gameplay/HuntPanel";
 import CombatResultPanel from "../components/gameplay/CombatResultPanel";
 import RewardPanel from "../components/gameplay/RewardPanel";
 
-import {
-    startHunt
-}
-from "../services/huntService";
-
 
 interface Props
 {
-    world: WorldState;
+    onStartHunt: () => void;
+
+    onExitHunt: () => void;
 }
+
 
 
 export default function WorldScenePage(
     {
-        world
+        onStartHunt,
+        onExitHunt
     }: Props
 )
 {
-    const [player] =
-        useState<GameState>(
-            world.player
-        );
-
-
-    const [combatResult, setCombatResult] =
-        useState<CombatResult | null>(null);
-
-
-    const [rewardResult, setRewardResult] =
-        useState<RewardResult | null>(null);
-
-
-    const [loading, setLoading] =
-        useState(false);
-
-
-    const [error, setError] =
-        useState<string | null>(null);
-
-
-
-    async function executeHunt()
-    {
-        if (loading)
-        {
-            return;
-        }
-
-
-        try
-        {
-            setLoading(true);
-
-            setError(null);
-
-
-            const result =
-                await startHunt();
-
-
-            setCombatResult(
-                {
-                    combatId: result.huntId,
-                    characterId: player.characterId,
-                    victory: result.completed
-                }
-            );
-
-
-            setRewardResult(
-                {
-                    experience: result.experience,
-                    gold: result.gold
-                }
-            );
-        }
-        catch
-        {
-            setError(
-                "Unable to complete hunt."
-            );
-        }
-        finally
-        {
-            setLoading(false);
-        }
-    }
-
-
-
     return (
-        <main>
-
-            <h1>
-                Project Victory World
-            </h1>
+        <PlayerInterface>
 
 
-            <section>
+            <PlayerIdentityArea>
 
-                <h2>
-                    Player Entry Screen
-                </h2>
+                <CharacterStatusPanel />
 
-
-                <p>
-                    World:
-                    {" "}
-                    {world.sceneName}
-                </p>
-
-            </section>
+            </PlayerIdentityArea>
 
 
-            <CharacterStatusPanel
-                player={player}
-            />
 
-
-            <section>
-
-                <h2>
-                    Available Actions
-                </h2>
-
+            <PlayerActionsArea>
 
                 <HuntPanel
-                    onStart={executeHunt}
+                    onStart={
+                        onStartHunt
+                    }
                 />
 
-            </section>
+            </PlayerActionsArea>
 
 
-            {
-                loading &&
-                <p>
-                    Executing Hunt...
-                </p>
-            }
+
+            <PlayerCombatArea>
+
+                <CombatResultPanel />
+
+            </PlayerCombatArea>
 
 
-            {
-                error &&
-                <p>
-                    {error}
-                </p>
-            }
+
+            <PlayerRewardArea>
+
+                <RewardPanel />
+
+            </PlayerRewardArea>
 
 
-            <CombatResultPanel
-                result={combatResult}
-            />
+
+            <button
+                onClick={
+                    onExitHunt
+                }
+            >
+                Exit
+            </button>
 
 
-            <RewardPanel
-                reward={rewardResult}
-            />
-
-        </main>
+        </PlayerInterface>
     );
 }
