@@ -1,7 +1,9 @@
 const API_URL = "http://localhost:5250";
 
 
-export function setToken(token: string)
+export function setToken(
+    token: string
+)
 {
     localStorage.setItem(
         "pv_token",
@@ -10,7 +12,8 @@ export function setToken(token: string)
 }
 
 
-export function getToken(): string | null
+export function getToken()
+: string | null
 {
     return localStorage.getItem(
         "pv_token"

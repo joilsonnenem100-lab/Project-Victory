@@ -42,10 +42,9 @@ export async function createCharacter(
 
                 body:
                     JSON.stringify(
-                        {
-                            name
-                        }
-                    )
+                    {
+                        name
+                    })
             }
         );
 

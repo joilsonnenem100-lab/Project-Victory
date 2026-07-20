@@ -1,122 +1,63 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import type { Character } from "../models/character";
+import CharacterCreationPage from "./CharacterCreationPage";
 
 import {
-    getCharacters,
     createCharacter
-} from "../services/characterService";
-
-import { enterGame } from "../services/gameService";
-
-import GamePage from "./GamePage";
-
+}
+from "../services/characterService";
 
 
 interface Props
 {
-}
+    onCharacterCreated: () => Promise<void>;
 
+    onEnterWorld: () => void;
+}
 
 
 export default function CharacterSelectionPage(
     {
+        onCharacterCreated,
+        onEnterWorld
     }: Props
 )
 {
-    const [characters, setCharacters] =
-        useState<Character[]>([]);
-
-
-    const [characterName, setCharacterName] =
-        useState("");
-
-
-    const [message, setMessage] =
-        useState("");
-
-
-    const [gameState, setGameState] =
-        useState(null);
+    const [creatingCharacter, setCreatingCharacter] =
+        useState(false);
 
 
 
-    async function loadCharacters()
+    async function handleCreateCharacter(
+        name: string
+    )
     {
-        const result =
-            await getCharacters();
-
-
-        setCharacters(
-            result
+        await createCharacter(
+            name
         );
+
+
+        await onCharacterCreated();
     }
 
 
 
-    useEffect(
-        () =>
-        {
-            loadCharacters();
-
-        },
-        []
-    );
-
-
-
-    async function handleCreateCharacter()
-    {
-        try
-        {
-            setMessage("");
-
-
-            await createCharacter(
-                characterName
-            );
-
-
-            setCharacterName("");
-
-
-            await loadCharacters();
-
-
-            setMessage(
-                "Character criado com sucesso."
-            );
-        }
-        catch(error)
-        {
-            setMessage(
-                error instanceof Error
-                    ? error.message
-                    : "Falha ao criar Character."
-            );
-        }
-    }
-
-
-
-    async function selectCharacter()
-    {
-        const result =
-            await enterGame();
-
-
-        setGameState(
-            result
-        );
-    }
-
-
-
-    if (gameState)
+    if (creatingCharacter)
     {
         return (
-            <GamePage
-                gameState={gameState}
+            <CharacterCreationPage
+                onCreate={
+                    handleCreateCharacter
+                }
+
+                onBack={
+                    async () =>
+                    {
+                        setCreatingCharacter(
+                            false
+                        );
+                    }
+                }
             />
         );
     }
@@ -127,75 +68,33 @@ export default function CharacterSelectionPage(
         <main>
 
             <h1>
-                Select Character
+                Character
             </h1>
 
 
-            {
-                characters.length === 0 &&
-                (
-                    <section>
+            <section>
 
-                        <p>
-                            Nenhum personagem encontrado.
-                        </p>
-
-
-                        <input
-                            type="text"
-                            placeholder="Nome do Character"
-                            value={characterName}
-                            onChange={
-                                event =>
-                                    setCharacterName(
-                                        event.target.value
-                                    )
-                            }
-                        />
+                <button
+                    onClick={
+                        () =>
+                        {
+                            setCreatingCharacter(
+                                true
+                            );
+                        }
+                    }
+                >
+                    Create Character
+                </button>
 
 
-                        <button
-                            onClick={
-                                handleCreateCharacter
-                            }
-                            disabled={
-                                !characterName.trim()
-                            }
-                        >
-                            Criar Character
-                        </button>
+                <button
+                    onClick={onEnterWorld}
+                >
+                    Enter World
+                </button>
 
-                    </section>
-                )
-            }
-
-
-            {
-                characters.map(
-                    character =>
-                    (
-                        <button
-                            key={character.id}
-                            onClick={selectCharacter}
-                        >
-                            {character.name}
-                            {" "}
-                            Lv.
-                            {character.level}
-                        </button>
-                    )
-                )
-            }
-
-
-            {
-                message &&
-                (
-                    <p>
-                        {message}
-                    </p>
-                )
-            }
+            </section>
 
         </main>
     );

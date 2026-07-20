@@ -5,10 +5,11 @@ import type { GameState } from "../models/game";
 import type { CombatResult } from "../models/combat";
 import type { RewardResult } from "../models/reward";
 
-import CharacterStatusPanel from "../components/Character/CharacterStatusPanel";
-import HuntPanel from "../components/HuntPanel";
-import CombatResultPanel from "../components/CombatResultPanel";
-import RewardPanel from "../components/RewardPanel";
+import CharacterStatusPanel from "../components/character/CharacterStatusPanel";
+
+import HuntPanel from "../components/gameplay/HuntPanel";
+import CombatResultPanel from "../components/gameplay/CombatResultPanel";
+import RewardPanel from "../components/gameplay/RewardPanel";
 
 import {
     startHunt

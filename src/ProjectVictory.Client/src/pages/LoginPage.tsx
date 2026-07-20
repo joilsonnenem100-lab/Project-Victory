@@ -2,6 +2,10 @@ import { useState } from "react";
 
 import { login } from "../services/accountService";
 
+import PageContainer from "../components/layout/PageContainer";
+import Panel from "../components/layout/Panel";
+import SectionTitle from "../components/layout/SectionTitle";
+
 
 interface Props
 {
@@ -19,8 +23,10 @@ export default function LoginPage(
     const [email, setEmail] =
         useState("");
 
+
     const [password, setPassword] =
         useState("");
+
 
     const [error, setError] =
         useState<string | null>(null);
@@ -56,57 +62,63 @@ export default function LoginPage(
 
 
     return (
-        <main>
+        <PageContainer>
 
-            <h1>
-                Project Victory
-            </h1>
+            <Panel>
 
-
-            <h2>
-                Login
-            </h2>
+                <h1>
+                    Project Victory
+                </h1>
 
 
-            <input
-                placeholder="Email"
-                value={email}
-                onChange={
-                    e => setEmail(
-                        e.target.value
+                <SectionTitle>
+                    Login
+                </SectionTitle>
+
+
+                <input
+                    placeholder="Email"
+                    value={email}
+                    onChange={
+                        e =>
+                            setEmail(
+                                e.target.value
+                            )
+                    }
+                />
+
+
+                <input
+                    placeholder="Password"
+                    type="password"
+                    value={password}
+                    onChange={
+                        e =>
+                            setPassword(
+                                e.target.value
+                            )
+                    }
+                />
+
+
+                <button
+                    onClick={handleLogin}
+                >
+                    Entrar
+                </button>
+
+
+                {
+                    error &&
+                    (
+                        <p>
+                            {error}
+                        </p>
                     )
                 }
-            />
 
+            </Panel>
 
-            <input
-                placeholder="Password"
-                type="password"
-                value={password}
-                onChange={
-                    e => setPassword(
-                        e.target.value
-                    )
-                }
-            />
-
-
-            <button
-                onClick={handleLogin}
-            >
-                Entrar
-            </button>
-
-
-            {
-                error &&
-                (
-                    <p>
-                        {error}
-                    </p>
-                )
-            }
-
-        </main>
+        </PageContainer>
     );
 }
