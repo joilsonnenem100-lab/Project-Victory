@@ -8,6 +8,7 @@ import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import FeedbackMessage from "../components/ui/FeedbackMessage";
 import SectionTitle from "../components/layout/SectionTitle";
+import LoginSection from "../components/sections/LoginSection";
 
 
 interface Props
@@ -67,65 +68,69 @@ export default function LoginPage(
     return (
         <PageContainer>
 
-            <Container>
+            <LoginSection>
 
-                <Card>
+                <Container>
 
-                    <h1>
-                        Project Victory
-                    </h1>
+                    <Card>
 
-
-                    <SectionTitle>
-                        Login
-                    </SectionTitle>
+                        <h1>
+                            Project Victory
+                        </h1>
 
 
-                    <input
-                        placeholder="Email"
-                        value={email}
-                        onChange={
-                            e =>
-                                setEmail(
-                                    e.target.value
-                                )
+                        <SectionTitle>
+                            Login
+                        </SectionTitle>
+
+
+                        <input
+                            placeholder="Email"
+                            value={email}
+                            onChange={
+                                e =>
+                                    setEmail(
+                                        e.target.value
+                                    )
+                            }
+                        />
+
+
+                        <input
+                            placeholder="Password"
+                            type="password"
+                            value={password}
+                            onChange={
+                                e =>
+                                    setPassword(
+                                        e.target.value
+                                    )
+                            }
+                        />
+
+
+                        <Button
+                            onClick={handleLogin}
+                        >
+                            Entrar
+                        </Button>
+
+
+                        {
+                            error &&
+                            (
+                                <FeedbackMessage
+                                    message={error}
+                                    type="error"
+                                />
+                            )
                         }
-                    />
 
+                    </Card>
 
-                    <input
-                        placeholder="Password"
-                        type="password"
-                        value={password}
-                        onChange={
-                            e =>
-                                setPassword(
-                                    e.target.value
-                                )
-                        }
-                    />
+                </Container>
 
-
-                    <Button
-                        onClick={handleLogin}
-                    >
-                        Entrar
-                    </Button>
-
-
-                    {
-                        error &&
-                        (
-                            <FeedbackMessage
-                                message={error}
-                                type="error"
-                            />
-                        )
-                    }
-
-                </Card>
-
-            </Container>
+            </LoginSection>
 
         </PageContainer>
     );

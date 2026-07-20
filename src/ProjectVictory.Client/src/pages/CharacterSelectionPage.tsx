@@ -10,6 +10,7 @@ from "../services/characterService";
 import Container from "../components/ui/Container";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
+import CharacterSection from "../components/sections/CharacterSection";
 
 
 interface Props
@@ -69,37 +70,41 @@ export default function CharacterSelectionPage(
 
 
     return (
-        <Container>
+        <CharacterSection>
 
-            <Card>
+            <Container>
 
-                <h1>
-                    Character
-                </h1>
+                <Card>
+
+                    <h1>
+                        Character
+                    </h1>
 
 
-                <Button
-                    onClick={
-                        () =>
-                        {
-                            setCreatingCharacter(
-                                true
-                            );
+                    <Button
+                        onClick={
+                            () =>
+                            {
+                                setCreatingCharacter(
+                                    true
+                                );
+                            }
                         }
-                    }
-                >
-                    Create Character
-                </Button>
+                    >
+                        Create Character
+                    </Button>
 
 
-                <Button
-                    onClick={onEnterWorld}
-                >
-                    Enter World
-                </Button>
+                    <Button
+                        onClick={onEnterWorld}
+                    >
+                        Enter World
+                    </Button>
 
-            </Card>
+                </Card>
 
-        </Container>
+            </Container>
+
+        </CharacterSection>
     );
 }

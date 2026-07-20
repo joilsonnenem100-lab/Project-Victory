@@ -1,5 +1,9 @@
-import PageContainer from "../components/layout/PageContainer";
-import Panel from "../components/layout/Panel";
+import Container from "../components/ui/Container";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+
+import EntrySection from "../components/sections/EntrySection";
+
 import SectionTitle from "../components/layout/SectionTitle";
 
 
@@ -9,6 +13,7 @@ interface Props
 }
 
 
+
 export default function EntryExperiencePage(
     {
         onContinue
@@ -16,33 +21,37 @@ export default function EntryExperiencePage(
 )
 {
     return (
-        <PageContainer>
+        <EntrySection>
 
-            <Panel>
+            <Container>
 
-                <h1>
-                    Welcome to Project Victory
-                </h1>
+                <Card>
 
-
-                <SectionTitle>
-                    Player Entry
-                </SectionTitle>
+                    <h1>
+                        Welcome to Project Victory
+                    </h1>
 
 
-                <p>
-                    Preparing your world entry...
-                </p>
+                    <SectionTitle>
+                        Player Entry
+                    </SectionTitle>
 
 
-                <button
-                    onClick={onContinue}
-                >
-                    Enter World
-                </button>
+                    <p>
+                        Preparing your world entry...
+                    </p>
 
-            </Panel>
 
-        </PageContainer>
+                    <Button
+                        onClick={onContinue}
+                    >
+                        Enter World
+                    </Button>
+
+                </Card>
+
+            </Container>
+
+        </EntrySection>
     );
 }
