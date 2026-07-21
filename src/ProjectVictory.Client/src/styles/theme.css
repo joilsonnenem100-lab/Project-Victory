@@ -1,0 +1,31 @@
+@import "./colors.css";
+@import "./typography.css";
+@import "./spacing.css";
+@import "./responsive.css";
+
+
+:root
+{
+    /*
+        PROJECT-VICTORY
+        Visual Identity System
+
+        Responsive Theme Foundation
+    */
+
+
+    background:
+        var(--pv-color-background-primary);
+
+
+    color:
+        var(--pv-color-text-primary);
+
+
+    font-family:
+        var(--pv-font-family-primary);
+
+
+    line-height:
+        var(--pv-line-height-normal);
+}

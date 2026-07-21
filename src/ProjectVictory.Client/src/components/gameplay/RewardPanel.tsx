@@ -1,4 +1,4 @@
-import type { RewardResult } from "../models/reward";
+import type { RewardResult } from "../../models/reward";
 
 
 interface Props

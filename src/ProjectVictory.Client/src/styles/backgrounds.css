@@ -1,0 +1,66 @@
+.pv-background-layer
+{
+    position: relative;
+
+    width: 100%;
+
+    min-height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+
+.pv-background-layer::before
+{
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        var(--pv-background-image, none);
+
+    background-size:
+        cover;
+
+    background-position:
+        center;
+
+    background-repeat:
+        no-repeat;
+
+    z-index: 0;
+}
+
+
+.pv-background-content
+{
+    position: relative;
+
+    z-index: 1;
+
+    width: 100%;
+}
+
+
+@media (max-width: 768px)
+{
+    .pv-background-layer
+    {
+        min-height: 100vh;
+    }
+
+
+    .pv-background-layer::before
+    {
+        background-position:
+            center top;
+    }
+}

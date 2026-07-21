@@ -1,0 +1,33 @@
+:root
+{
+    /*
+        PROJECT-VICTORY
+        Visual Identity System
+
+        Spacing Foundation
+    */
+
+
+    --pv-spacing-xs:
+        4px;
+
+
+    --pv-spacing-sm:
+        8px;
+
+
+    --pv-spacing-md:
+        16px;
+
+
+    --pv-spacing-lg:
+        24px;
+
+
+    --pv-spacing-xl:
+        32px;
+
+
+    --pv-spacing-xxl:
+        48px;
+}

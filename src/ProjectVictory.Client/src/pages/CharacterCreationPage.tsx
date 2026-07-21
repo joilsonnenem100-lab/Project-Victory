@@ -6,14 +6,16 @@ import Button from "../components/ui/Button";
 import FeedbackMessage from "../components/ui/FeedbackMessage";
 
 
+
 interface Props
 {
-    onCreate: (
+    onCreate(
         name: string
-    ) => Promise<void>;
+    ): Promise<void>;
 
-    onBack: () => void;
+    onBack(): void;
 }
+
 
 
 export default function CharacterCreationPage(
@@ -55,12 +57,10 @@ export default function CharacterCreationPage(
                 "Character created successfully."
             );
         }
-        catch(error)
+        catch
         {
             setMessage(
-                error instanceof Error
-                    ? error.message
-                    : "Character creation failed."
+                "Unable to create character."
             );
         }
     }
@@ -70,58 +70,158 @@ export default function CharacterCreationPage(
     return (
         <Container>
 
-            <Card>
+            <section
+                className="pv-background-layer"
+                style={{
+                    minHeight:
+                        "100vh"
+                }}
+            >
 
-                <h1>
-                    Create Character
-                </h1>
-
-
-                <input
-                    type="text"
-                    placeholder="Character Name"
-                    value={name}
-                    onChange={
-                        event =>
-                            setName(
-                                event.target.value
-                            )
-                    }
-                />
-
-
-                <Button
-                    onClick={handleCreate}
-                    disabled={
-                        !name.trim()
-                    }
+                <div
+                    className="pv-background-content"
                 >
-                    Create Character
-                </Button>
+
+                    <Card>
+
+                        <h1
+                            className="pv-title-decoration"
+                            style={{
+                                textAlign:
+                                    "center",
+
+                                fontSize:
+                                    "var(--pv-font-size-title)"
+                            }}
+                        >
+                            Character Creation
+                        </h1>
 
 
-                <Button
-                    onClick={onBack}
-                >
-                    Back
-                </Button>
+                        <p
+                            className="pv-content-decoration"
+                            style={{
+                                textAlign:
+                                    "center"
+                            }}
+                        >
+                            Create your identity in PROJECT-VICTORY.
+                        </p>
 
 
-                {
-                    message &&
-                    (
-                        <FeedbackMessage
-                            message={message}
-                            type={
-                                message.includes("successfully")
-                                    ? "success"
-                                    : "error"
+                        <section
+                            className="pv-panel-decoration"
+                            style={{
+                                display:
+                                    "flex",
+
+                                flexDirection:
+                                    "column",
+
+                                gap:
+                                    "var(--pv-spacing-sm)",
+
+                                padding:
+                                    "var(--pv-spacing-md)"
+                            }}
+                        >
+
+                            <strong>
+                                Character Identity
+                            </strong>
+
+
+                            <span>
+                                Name
+                            </span>
+
+
+                            <span>
+                                Character ID
+                            </span>
+
+
+                            <span>
+                                Level
+                            </span>
+
+
+                            <span>
+                                Experience
+                            </span>
+
+                        </section>
+
+
+                        <input
+                            value={
+                                name
                             }
-                        />
-                    )
-                }
 
-            </Card>
+                            placeholder="Character Name"
+
+                            onChange={
+                                event =>
+                                    setName(
+                                        event.target.value
+                                    )
+                            }
+
+                            style={{
+                                width:
+                                    "100%",
+
+                                boxSizing:
+                                    "border-box",
+
+                                padding:
+                                    "var(--pv-spacing-sm)"
+                            }}
+                        />
+
+
+                        <Button
+                            onClick={
+                                handleCreate
+                            }
+                        >
+                            Create Character
+                        </Button>
+
+
+                        <Button
+                            onClick={
+                                onBack
+                            }
+                        >
+                            Back
+                        </Button>
+
+
+                        {
+                            message &&
+                            (
+                                <FeedbackMessage
+                                    message={
+                                        message
+                                    }
+
+                                    type={
+                                        message.includes(
+                                            "successfully"
+                                        )
+                                            ? "success"
+                                            : "error"
+                                    }
+                                />
+                            )
+                        }
+
+                    </Card>
+
+                </div>
+
+            </section>
 
         </Container>
     );

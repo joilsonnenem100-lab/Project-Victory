@@ -18,8 +18,11 @@ export default function GamePage(
     return (
         <WorldScenePage
             world={{
-                player: gameState,
-                sceneName: "FirstWorld"
+                player:
+                    gameState,
+
+                sceneName:
+                    "FirstWorld"
             }}
         />
     );

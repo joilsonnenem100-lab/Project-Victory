@@ -1,0 +1,49 @@
+:root
+{
+    /*
+        PROJECT-VICTORY
+        Visual Identity System
+
+        Color Foundation
+    */
+
+
+    --pv-color-background-primary:
+        #0b0f14;
+
+
+    --pv-color-background-secondary:
+        #141a22;
+
+
+    --pv-color-panel:
+        #1b2430;
+
+
+    --pv-color-panel-border:
+        #344454;
+
+
+    --pv-color-text-primary:
+        #f2f5f7;
+
+
+    --pv-color-text-secondary:
+        #aeb9c5;
+
+
+    --pv-color-accent:
+        #4da3ff;
+
+
+    --pv-color-success:
+        #4fc477;
+
+
+    --pv-color-warning:
+        #e8b04a;
+
+
+    --pv-color-error:
+        #e05d5d;
+}

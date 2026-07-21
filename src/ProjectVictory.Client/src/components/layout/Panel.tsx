@@ -13,12 +13,40 @@ export default function Panel(
     return (
         <section
             style={{
-                padding: "20px",
-                border: "1px solid #444",
-                borderRadius: "8px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "12px"
+                width:
+                    "100%",
+
+
+                maxWidth:
+                    "100%",
+
+
+                padding:
+                    "var(--pv-spacing-lg)",
+
+
+                background:
+                    "var(--pv-color-panel)",
+
+
+                border:
+                    "1px solid var(--pv-color-panel-border)",
+
+
+                borderRadius:
+                    "12px",
+
+
+                display:
+                    "flex",
+
+
+                flexDirection:
+                    "column",
+
+
+                gap:
+                    "var(--pv-spacing-md)"
             }}
         >
             {children}

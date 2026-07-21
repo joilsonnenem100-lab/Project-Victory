@@ -1,10 +1,18 @@
 import { FormEvent, useState } from "react";
+
 import { register } from "../services/accountService";
+
+import Container from "../components/ui/Container";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import FeedbackMessage from "../components/ui/FeedbackMessage";
+
 
 interface RegisterPageProps
 {
     onBack: () => void;
 }
+
 
 export default function RegisterPage(
     {
@@ -15,17 +23,23 @@ export default function RegisterPage(
     const [email, setEmail] =
         useState("");
 
+
     const [password, setPassword] =
         useState("");
+
 
     const [loading, setLoading] =
         useState(false);
 
+
     const [successMessage, setSuccessMessage] =
         useState("");
 
+
     const [errorMessage, setErrorMessage] =
         useState("");
+
+
 
     async function handleSubmit(
         event: FormEvent<HTMLFormElement>
@@ -33,9 +47,13 @@ export default function RegisterPage(
     {
         event.preventDefault();
 
+
         setLoading(true);
+
         setSuccessMessage("");
+
         setErrorMessage("");
+
 
         try
         {
@@ -44,11 +62,14 @@ export default function RegisterPage(
                 password
             );
 
+
             setSuccessMessage(
                 "Conta criada com sucesso."
             );
 
+
             setEmail("");
+
             setPassword("");
         }
         catch (error)
@@ -72,99 +93,157 @@ export default function RegisterPage(
         }
     }
 
+
+
     return (
-        <main
-            style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                minHeight: "100vh"
-            }}
-        >
-            <form
-                onSubmit={handleSubmit}
-                style={{
-                    width: 360,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 16
-                }}
-            >
-                <h1>
-                    Criar Conta
-                </h1>
+        <Container>
 
-                <input
-                    type="email"
-                    placeholder="E-mail"
-                    value={email}
-                    onChange={
-                        (event) =>
-                            setEmail(
-                                event.target.value
-                            )
-                    }
-                    required
-                />
+            <Card>
 
-                <input
-                    type="password"
-                    placeholder="Senha"
-                    value={password}
-                    onChange={
-                        (event) =>
-                            setPassword(
-                                event.target.value
-                            )
-                    }
-                    required
-                />
+                <form
+                    onSubmit={handleSubmit}
+                    style={{
+                        width:
+                            "100%",
 
-                <button
-                    type="submit"
-                    disabled={loading}
+
+                        display:
+                            "flex",
+
+
+                        flexDirection:
+                            "column",
+
+
+                        gap:
+                            "var(--pv-spacing-md)"
+                    }}
                 >
+
+                    <h1
+                        style={{
+                            textAlign:
+                                "center",
+
+                            fontSize:
+                                "var(--pv-font-size-title)",
+
+                            fontWeight:
+                                "var(--pv-font-weight-title)"
+                        }}
+                    >
+                        Criar Conta
+                    </h1>
+
+
+                    <input
+                        type="email"
+                        placeholder="E-mail"
+                        value={email}
+                        onChange={
+                            event =>
+                                setEmail(
+                                    event.target.value
+                                )
+                        }
+                        required
+                        style={{
+                            width:
+                                "100%",
+
+
+                            boxSizing:
+                                "border-box",
+
+
+                            padding:
+                                "var(--pv-spacing-sm)",
+
+
+                            fontFamily:
+                                "var(--pv-font-family-primary)"
+                        }}
+                    />
+
+
+                    <input
+                        type="password"
+                        placeholder="Senha"
+                        value={password}
+                        onChange={
+                            event =>
+                                setPassword(
+                                    event.target.value
+                                )
+                        }
+                        required
+                        style={{
+                            width:
+                                "100%",
+
+
+                            boxSizing:
+                                "border-box",
+
+
+                            padding:
+                                "var(--pv-spacing-sm)",
+
+
+                            fontFamily:
+                                "var(--pv-font-family-primary)"
+                        }}
+                    />
+
+
+                    <Button
+                        onClick={
+                            () =>
+                            {
+                                return;
+                            }
+                        }
+                    >
+                        {
+                            loading
+                                ? "Criando..."
+                                : "Criar Conta"
+                        }
+                    </Button>
+
+
+                    <Button
+                        onClick={onBack}
+                    >
+                        Voltar para Login
+                    </Button>
+
+
                     {
-                        loading
-                            ? "Criando..."
-                            : "Criar Conta"
+                        successMessage &&
+                        (
+                            <FeedbackMessage
+                                message={successMessage}
+                                type="success"
+                            />
+                        )
                     }
-                </button>
 
-                <button
-                    type="button"
-                    onClick={onBack}
-                    disabled={loading}
-                >
-                    Voltar para Login
-                </button>
 
-                {
-                    successMessage &&
-                    (
-                        <p
-                            style={{
-                                color: "green"
-                            }}
-                        >
-                            {successMessage}
-                        </p>
-                    )
-                }
+                    {
+                        errorMessage &&
+                        (
+                            <FeedbackMessage
+                                message={errorMessage}
+                                type="error"
+                            />
+                        )
+                    }
 
-                {
-                    errorMessage &&
-                    (
-                        <p
-                            style={{
-                                color: "red"
-                            }}
-                        >
-                            {errorMessage}
-                        </p>
-                    )
-                }
-            </form>
-        </main>
+                </form>
+
+            </Card>
+
+        </Container>
     );
 }

@@ -10,7 +10,9 @@ from "../services/characterService";
 import Container from "../components/ui/Container";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
+
 import CharacterSection from "../components/sections/CharacterSection";
+
 
 
 interface Props
@@ -19,6 +21,7 @@ interface Props
 
     onEnterWorld: () => void;
 }
+
 
 
 export default function CharacterSelectionPage(
@@ -74,34 +77,116 @@ export default function CharacterSelectionPage(
 
             <Container>
 
-                <Card>
+                <section
+                    className="pv-background-layer"
+                    style={{
+                        minHeight:
+                            "100vh"
+                    }}
+                >
 
-                    <h1>
-                        Character
-                    </h1>
-
-
-                    <Button
-                        onClick={
-                            () =>
-                            {
-                                setCreatingCharacter(
-                                    true
-                                );
-                            }
-                        }
+                    <div
+                        className="pv-background-content"
                     >
-                        Create Character
-                    </Button>
+
+                        <Card>
+
+                            <h1
+                                className="pv-title-decoration"
+                                style={{
+                                    textAlign:
+                                        "center",
+
+                                    fontSize:
+                                        "var(--pv-font-size-title)"
+                                }}
+                            >
+                                Character Identity
+                            </h1>
 
 
-                    <Button
-                        onClick={onEnterWorld}
-                    >
-                        Enter World
-                    </Button>
+                            <p
+                                className="pv-content-decoration"
+                                style={{
+                                    textAlign:
+                                        "center"
+                                }}
+                            >
+                                Your journey begins with your character.
+                            </p>
 
-                </Card>
+
+                            <section
+                                className="pv-panel-decoration"
+                                style={{
+                                    display:
+                                        "flex",
+
+                                    flexDirection:
+                                        "column",
+
+                                    gap:
+                                        "var(--pv-spacing-sm)",
+
+                                    padding:
+                                        "var(--pv-spacing-md)"
+                                }}
+                            >
+
+                                <strong>
+                                    Character Profile
+                                </strong>
+
+
+                                <span>
+                                    Name
+                                </span>
+
+
+                                <span>
+                                    Character ID
+                                </span>
+
+
+                                <span>
+                                    Level
+                                </span>
+
+
+                                <span>
+                                    Experience
+                                </span>
+
+                            </section>
+
+
+                            <Button
+                                onClick={
+                                    () =>
+                                    {
+                                        setCreatingCharacter(
+                                            true
+                                        );
+                                    }
+                                }
+                            >
+                                Create Character
+                            </Button>
+
+
+                            <Button
+                                onClick={
+                                    onEnterWorld
+                                }
+                            >
+                                Enter World
+                            </Button>
+
+                        </Card>
+
+                    </div>
+
+                </section>
 
             </Container>
 

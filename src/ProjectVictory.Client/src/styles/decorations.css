@@ -1,0 +1,67 @@
+.pv-panel-decoration
+{
+    border:
+        1px solid var(--pv-color-panel-border);
+
+    border-radius:
+        12px;
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.18);
+
+    background:
+        var(--pv-color-panel);
+}
+
+
+.pv-card-decoration
+{
+    border:
+        1px solid var(--pv-color-panel-border);
+
+    border-radius:
+        10px;
+
+    background:
+        var(--pv-color-background-secondary);
+}
+
+
+.pv-title-decoration
+{
+    font-family:
+        var(--pv-font-family-primary);
+
+    font-weight:
+        var(--pv-font-weight-title);
+
+    letter-spacing:
+        0.04em;
+}
+
+
+.pv-content-decoration
+{
+    font-family:
+        var(--pv-font-family-primary);
+
+    line-height:
+        1.5;
+}
+
+
+@media (max-width: 768px)
+{
+    .pv-panel-decoration
+    {
+        border-radius:
+            8px;
+    }
+
+
+    .pv-card-decoration
+    {
+        border-radius:
+            8px;
+    }
+}

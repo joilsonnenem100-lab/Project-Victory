@@ -15,6 +15,7 @@ from "./services/characterService";
 import type { GameState } from "./models/game";
 
 
+
 export default function App()
 {
     const [authenticated, setAuthenticated] =
@@ -100,32 +101,28 @@ export default function App()
 
 
         return (
-            <main>
+            <LoginPage
 
-                <LoginPage
-                    onLoginSuccess={
-                        async () =>
-                        {
-                            setAuthenticated(true);
+                onLoginSuccess={
+                    async () =>
+                    {
+                        setAuthenticated(true);
 
-                            await loadCharacter();
+                        await loadCharacter();
 
-                            setEntryExperience(true);
-                        }
+                        setEntryExperience(true);
                     }
-                />
+                }
 
 
-                <button
-                    onClick={
-                        () =>
-                            setRegistering(true)
+                onRegister={
+                    () =>
+                    {
+                        setRegistering(true);
                     }
-                >
-                    Criar conta
-                </button>
+                }
 
-            </main>
+            />
         );
     }
 
@@ -135,12 +132,14 @@ export default function App()
     {
         return (
             <EntryExperiencePage
+
                 onContinue={
                     () =>
                     {
                         setEntryExperience(false);
                     }
                 }
+
             />
         );
     }
@@ -166,6 +165,7 @@ export default function App()
             onCharacterCreated={
                 loadCharacter
             }
+
 
             onEnterWorld={
                 loadCharacter

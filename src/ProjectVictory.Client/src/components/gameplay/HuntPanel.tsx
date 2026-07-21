@@ -17,6 +17,7 @@ export default function HuntPanel(
                 Hunt
             </h2>
 
+
             <button
                 onClick={onStart}
             >

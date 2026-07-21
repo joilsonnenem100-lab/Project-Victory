@@ -1,4 +1,4 @@
-import type { CombatResult } from "../models/combat";
+import type { CombatResult } from "../../models/combat";
 
 
 interface Props

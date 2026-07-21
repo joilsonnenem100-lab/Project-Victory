@@ -1,0 +1,47 @@
+:root
+{
+    /*
+        PROJECT-VICTORY
+        Visual Identity System
+
+        Typography Foundation
+    */
+
+
+    --pv-font-family-primary:
+        "Segoe UI",
+        system-ui,
+        sans-serif;
+
+
+    --pv-font-size-title:
+        2rem;
+
+
+    --pv-font-size-section:
+        1.4rem;
+
+
+    --pv-font-size-body:
+        1rem;
+
+
+    --pv-font-size-small:
+        0.875rem;
+
+
+    --pv-font-weight-title:
+        700;
+
+
+    --pv-font-weight-section:
+        600;
+
+
+    --pv-font-weight-body:
+        400;
+
+
+    --pv-line-height-normal:
+        1.5;
+}
