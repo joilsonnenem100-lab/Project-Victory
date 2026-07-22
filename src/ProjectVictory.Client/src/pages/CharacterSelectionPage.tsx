@@ -2,11 +2,6 @@ import { useState } from "react";
 
 import CharacterCreationPage from "./CharacterCreationPage";
 
-import {
-    createCharacter
-}
-from "../services/characterService";
-
 import Container from "../components/ui/Container";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
@@ -17,7 +12,10 @@ import CharacterSection from "../components/sections/CharacterSection";
 
 interface Props
 {
-    onCharacterCreated: () => Promise<void>;
+    onCharacterCreated(
+        name: string,
+        characterClass: string
+    ): Promise<void>;
 
     onEnterWorld: () => void;
 }
@@ -37,15 +35,14 @@ export default function CharacterSelectionPage(
 
 
     async function handleCreateCharacter(
-        name: string
+        name: string,
+        characterClass: string
     )
     {
-        await createCharacter(
-            name
+        await onCharacterCreated(
+            name,
+            characterClass
         );
-
-
-        await onCharacterCreated();
     }
 
 
@@ -61,9 +58,7 @@ export default function CharacterSelectionPage(
                 onBack={
                     async () =>
                     {
-                        setCreatingCharacter(
-                            false
-                        );
+                        setCreatingCharacter(false);
                     }
                 }
             />
@@ -95,10 +90,7 @@ export default function CharacterSelectionPage(
                                 className="pv-title-decoration"
                                 style={{
                                     textAlign:
-                                        "center",
-
-                                    fontSize:
-                                        "var(--pv-font-size-title)"
+                                        "center"
                                 }}
                             >
                                 Character Identity
@@ -118,19 +110,6 @@ export default function CharacterSelectionPage(
 
                             <section
                                 className="pv-panel-decoration"
-                                style={{
-                                    display:
-                                        "flex",
-
-                                    flexDirection:
-                                        "column",
-
-                                    gap:
-                                        "var(--pv-spacing-sm)",
-
-                                    padding:
-                                        "var(--pv-spacing-md)"
-                                }}
                             >
 
                                 <strong>

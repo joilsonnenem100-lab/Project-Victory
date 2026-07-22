@@ -1,7 +1,12 @@
+// src/ProjectVictory.Application/Character/CreateCharacterHandler.cs
+
 using ProjectVictory.Application.Session;
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.ValueObjects;
+
+using CharacterExperience = ProjectVictory.Domain.ValueObjects.Experience;
+using CharacterLevel = ProjectVictory.Domain.ValueObjects.Level;
 
 namespace ProjectVictory.Application.Character;
 
@@ -20,6 +25,7 @@ public sealed class CreateCharacterHandler
     }
 
 
+
     public async Task<Guid> Handle(
         CreateCharacterCommand command,
         CancellationToken cancellationToken = default)
@@ -27,32 +33,36 @@ public sealed class CreateCharacterHandler
         ArgumentNullException.ThrowIfNull(command);
 
 
-        var accountId =
-            _currentPlayerContext.AccountId;
-
-
-        var existingCharacter =
-            await _characterRepository.GetByAccountIdAsync(
-                accountId,
-                cancellationToken);
-
-
-        if (existingCharacter is not null)
-        {
-            throw new InvalidOperationException(
-                "Character already exists for this account.");
-        }
+        var definition =
+            CharacterClassDefinition.Get(
+                command.CharacterClass);
 
 
         var character =
             new Domain.Entities.Character(
                 Guid.NewGuid(),
-                new AccountId(accountId),
+
+                new AccountId(
+                    _currentPlayerContext.AccountId),
+
                 command.Name,
-                new Health(100),
-                new Mana(50),
-                new ProjectVictory.Domain.ValueObjects.Experience(0),
-                new Level(1));
+
+                command.CharacterClass,
+
+                definition,
+
+                new Health(
+                    definition.InitialHealth),
+
+                new Mana(
+                    definition.InitialMana),
+
+                new CharacterExperience(
+                    0),
+
+                new CharacterLevel(
+                    1)
+            );
 
 
         await _characterRepository.AddAsync(

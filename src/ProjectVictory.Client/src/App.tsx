@@ -1,3 +1,5 @@
+// src/ProjectVictory.Client/src/App.tsx
+
 import { useState } from "react";
 
 import LoginPage from "./pages/LoginPage";
@@ -7,7 +9,8 @@ import GamePage from "./pages/GamePage";
 import EntryExperiencePage from "./pages/EntryExperiencePage";
 
 import {
-    getCharacters
+    getCharacters,
+    createCharacter
 }
 from "./services/characterService";
 
@@ -19,27 +22,19 @@ import type { GameState } from "./models/game";
 export default function App()
 {
     const [authenticated, setAuthenticated] =
-        useState<boolean>(
-            false
-        );
+        useState<boolean>(false);
 
 
     const [registering, setRegistering] =
-        useState<boolean>(
-            false
-        );
+        useState<boolean>(false);
 
 
     const [entryExperience, setEntryExperience] =
-        useState<boolean>(
-            false
-        );
+        useState<boolean>(false);
 
 
     const [gameState, setGameState] =
-        useState<GameState | null>(
-            null
-        );
+        useState<GameState | null>(null);
 
 
 
@@ -81,6 +76,22 @@ export default function App()
                     character.name
             }
         );
+    }
+
+
+
+    async function handleCreateCharacter(
+        name: string,
+        characterClass: string
+    )
+    {
+        await createCharacter(
+            name,
+            characterClass
+        );
+
+
+        await loadCharacter();
     }
 
 
@@ -163,7 +174,7 @@ export default function App()
         <CharacterSelectionPage
 
             onCharacterCreated={
-                loadCharacter
+                handleCreateCharacter
             }
 
 

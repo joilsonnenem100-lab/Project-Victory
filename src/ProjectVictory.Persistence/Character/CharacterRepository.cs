@@ -1,8 +1,13 @@
+// src/ProjectVictory.Persistence/Character/CharacterRepository.cs
+
 using Microsoft.EntityFrameworkCore;
+
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
-using DomainCharacter = ProjectVictory.Domain.Entities.Character;
 using ProjectVictory.Domain.ValueObjects;
+
+using DomainCharacter = ProjectVictory.Domain.Entities.Character;
+
 using ProjectVictory.Persistence.Database;
 
 namespace ProjectVictory.Persistence.Character;
@@ -19,22 +24,43 @@ public sealed class CharacterRepository : ICharacterRepository
     }
 
 
+
     public async Task AddAsync(
         DomainCharacter character,
         CancellationToken cancellationToken = default)
     {
-        var state = new PersistentCharacterState
-        {
-            Id = character.Id,
+        var state =
+            new PersistentCharacterState
+            {
+                Id =
+                    character.Id,
 
-            AccountId = character.AccountId.Value,
+                AccountId =
+                    character.AccountId.Value,
 
-            Name = character.Name,
+                Name =
+                    character.Name,
 
-            Level = character.Level.Value,
 
-            Experience = character.Experience.Value
-        };
+                CharacterClass =
+                    (int)character.CharacterClass,
+
+
+                Health =
+                    character.Health.Value,
+
+
+                Mana =
+                    character.Mana.Value,
+
+
+                Level =
+                    character.Level.Value,
+
+
+                Experience =
+                    character.Experience.Value
+            };
 
 
         await _context.Characters.AddAsync(
@@ -45,6 +71,7 @@ public sealed class CharacterRepository : ICharacterRepository
         await _context.SaveChangesAsync(
             cancellationToken);
     }
+
 
 
     public async Task<DomainCharacter?> GetByIdAsync(
@@ -64,8 +91,10 @@ public sealed class CharacterRepository : ICharacterRepository
         }
 
 
-        return RestoreCharacter(state);
+        return RestoreCharacter(
+            state);
     }
+
 
 
     public async Task<DomainCharacter?> GetByAccountIdAsync(
@@ -85,8 +114,10 @@ public sealed class CharacterRepository : ICharacterRepository
         }
 
 
-        return RestoreCharacter(state);
+        return RestoreCharacter(
+            state);
     }
+
 
 
     public async Task UpdateAsync(
@@ -106,9 +137,25 @@ public sealed class CharacterRepository : ICharacterRepository
         }
 
 
-        state.Name = character.Name;
+        state.Name =
+            character.Name;
 
-        state.Level = character.Level.Value;
+
+        state.CharacterClass =
+            (int)character.CharacterClass;
+
+
+        state.Health =
+            character.Health.Value;
+
+
+        state.Mana =
+            character.Mana.Value;
+
+
+        state.Level =
+            character.Level.Value;
+
 
         state.Experience =
             character.Experience.Value;
@@ -119,16 +166,41 @@ public sealed class CharacterRepository : ICharacterRepository
     }
 
 
+
     private static DomainCharacter RestoreCharacter(
         PersistentCharacterState state)
     {
+        var characterClass =
+            (CharacterClass)state.CharacterClass;
+
+
+        var definition =
+            CharacterClassDefinition.Get(
+                characterClass);
+
+
         return new DomainCharacter(
             state.Id,
-            new AccountId(state.AccountId),
+
+            new AccountId(
+                state.AccountId),
+
             state.Name,
-            new Health(100),
-            new Mana(100),
-            new Experience(state.Experience),
-            new Level(state.Level));
+
+            characterClass,
+
+            definition,
+
+            new Health(
+                state.Health),
+
+            new Mana(
+                state.Mana),
+
+            new Experience(
+                state.Experience),
+
+            new Level(
+                state.Level));
     }
 }

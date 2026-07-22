@@ -1,3 +1,5 @@
+// src/ProjectVictory.Client/src/pages/CharacterCreationPage.tsx
+
 import { useState } from "react";
 
 import Container from "../components/ui/Container";
@@ -10,7 +12,8 @@ import FeedbackMessage from "../components/ui/FeedbackMessage";
 interface Props
 {
     onCreate(
-        name: string
+        name: string,
+        characterClass: string
     ): Promise<void>;
 
     onBack(): void;
@@ -18,15 +21,29 @@ interface Props
 
 
 
+const CHARACTER_CLASSES =
+[
+    "Knight",
+    "Paladin",
+    "Sorcerer",
+    "Druid",
+    "Monk"
+];
+
+
+
 export default function CharacterCreationPage(
-    {
-        onCreate,
-        onBack
-    }: Props
-)
+{
+    onCreate,
+    onBack
+}: Props)
 {
     const [name, setName] =
         useState("");
+
+
+    const [characterClass, setCharacterClass] =
+        useState("Knight");
 
 
     const [message, setMessage] =
@@ -49,7 +66,8 @@ export default function CharacterCreationPage(
         try
         {
             await onCreate(
-                name.trim()
+                name.trim(),
+                characterClass
             );
 
 
@@ -57,10 +75,13 @@ export default function CharacterCreationPage(
                 "Character created successfully."
             );
         }
-        catch
+        catch (error)
         {
+            console.error(error);
+
+
             setMessage(
-                "Unable to create character."
+                String(error)
             );
         }
     }
@@ -137,20 +158,21 @@ export default function CharacterCreationPage(
 
 
                             <span>
-                                Character ID
+                                Class
                             </span>
 
 
                             <span>
-                                Level
+                                Level 1
                             </span>
 
 
                             <span>
-                                Experience
+                                Experience 0
                             </span>
 
                         </section>
+
 
 
                         <input
@@ -180,6 +202,54 @@ export default function CharacterCreationPage(
                         />
 
 
+
+                        <select
+                            value={
+                                characterClass
+                            }
+
+                            onChange={
+                                event =>
+                                    setCharacterClass(
+                                        event.target.value
+                                    )
+                            }
+
+                            style={{
+                                width:
+                                    "100%",
+
+                                boxSizing:
+                                    "border-box",
+
+                                padding:
+                                    "var(--pv-spacing-sm)"
+                            }}
+                        >
+
+                            {
+                                CHARACTER_CLASSES.map(
+                                    item =>
+                                    (
+                                        <option
+                                            key={
+                                                item
+                                            }
+
+                                            value={
+                                                item
+                                            }
+                                        >
+                                            {item}
+                                        </option>
+                                    )
+                                )
+                            }
+
+                        </select>
+
+
+
                         <Button
                             onClick={
                                 handleCreate
@@ -189,6 +259,7 @@ export default function CharacterCreationPage(
                         </Button>
 
 
+
                         <Button
                             onClick={
                                 onBack
@@ -196,6 +267,7 @@ export default function CharacterCreationPage(
                         >
                             Back
                         </Button>
+
 
 
                         {

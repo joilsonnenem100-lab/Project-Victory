@@ -48,10 +48,19 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.Property<Guid>("AccountId")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("CharacterClass")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Experience")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Health")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Level")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Mana")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")

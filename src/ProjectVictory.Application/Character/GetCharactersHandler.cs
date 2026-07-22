@@ -25,9 +25,13 @@ public sealed class GetCharactersHandler
         ArgumentNullException.ThrowIfNull(query);
 
 
+        var accountId =
+            _currentPlayerContext.AccountId;
+
+
         var character =
             await _characterRepository.GetByAccountIdAsync(
-                _currentPlayerContext.AccountId,
+                accountId,
                 cancellationToken);
 
 
@@ -41,9 +45,15 @@ public sealed class GetCharactersHandler
         [
             new GetCharactersResult
             {
+                AccountId = accountId,
+
                 CharacterId = character.Id,
+
                 Name = character.Name,
-                Level = character.Level.Value
+
+                Level = character.Level.Value,
+
+                Experience = character.Experience.Value
             }
         ];
     }

@@ -30,7 +30,8 @@ export async function getCharacters()
 
 
 export async function createCharacter(
-    name: string
+    name: string,
+    characterClass: string
 )
 : Promise<string>
 {
@@ -43,7 +44,9 @@ export async function createCharacter(
                 body:
                     JSON.stringify(
                     {
-                        name
+                        Name: name,
+
+                        CharacterClass: characterClass
                     })
             }
         );
