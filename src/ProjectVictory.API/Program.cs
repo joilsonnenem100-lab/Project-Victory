@@ -1,7 +1,6 @@
 // src/ProjectVictory.API/Program.cs
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjectVictory.API.Authentication;
@@ -24,14 +23,16 @@ using ProjectVictory.Infrastructure.Services;
 using ProjectVictory.Persistence.Account;
 using ProjectVictory.Persistence.Character;
 using ProjectVictory.Persistence.Database;
+using ProjectVictory.Persistence.Database.Seed;
 using ProjectVictory.Persistence.Hunt;
 using ProjectVictory.Persistence.Item;
-using ProjectVictory.Persistence.Database.Seed;
 using System.Text;
 using System.Text.Json.Serialization;
 
 
-var builder = WebApplication.CreateBuilder(args);
+var builder =
+    WebApplication.CreateBuilder(args);
+
 
 
 builder.Services
@@ -59,7 +60,9 @@ builder.Services.AddCors(options =>
 });
 
 
+
 builder.Services.AddHttpContextAccessor();
+
 
 
 builder.Services.AddScoped<
@@ -67,8 +70,10 @@ builder.Services.AddScoped<
     HttpCurrentPlayerContext>();
 
 
+
 builder.Services.AddScoped<
     JwtTokenGenerator>();
+
 
 
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
@@ -76,9 +81,11 @@ builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 
+
 var jwtKey =
     builder.Configuration["Jwt:Key"]
     ?? "ProjectVictoryDevelopmentSecretKey123456";
+
 
 
 builder.Services
@@ -102,7 +109,9 @@ builder.Services
     });
 
 
+
 builder.Services.AddAuthorization();
+
 
 
 builder.Services.AddDbContext<ProjectVictoryDbContext>(
@@ -113,6 +122,7 @@ builder.Services.AddDbContext<ProjectVictoryDbContext>(
     });
 
 
+
 builder.Services.AddScoped<
     IAccountRepository,
     AccountRepository>();
@@ -121,13 +131,14 @@ builder.Services.AddScoped<
     ICharacterRepository,
     CharacterRepository>();
 
-builder.Services.AddScoped<
+builder.Services.AddSingleton<
     IHuntRepository,
     HuntRepository>();
 
 builder.Services.AddScoped<
     IItemDefinitionRepository,
     ItemDefinitionRepository>();
+
 
 
 builder.Services.AddScoped<
@@ -145,6 +156,17 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IProgressionProcessor,
     ProgressionProcessor>();
+
+
+
+builder.Services.AddScoped<
+    EncounterGenerator>();
+
+
+builder.Services.AddSingleton<
+    IEncounterStateStore,
+    EncounterStateStore>();
+
 
 
 builder.Services.AddScoped<
@@ -166,10 +188,16 @@ builder.Services.AddScoped<
     ExecuteHuntHandler>();
 
 builder.Services.AddScoped<
+    AttackEncounterHandler>();
+
+builder.Services.AddScoped<
     GetItemDefinitionHandler>();
 
 
-var app = builder.Build();
+
+var app =
+    builder.Build();
+
 
 
 using (var scope = app.Services.CreateScope())
@@ -178,21 +206,29 @@ using (var scope = app.Services.CreateScope())
         scope.ServiceProvider
             .GetRequiredService<ProjectVictoryDbContext>();
 
-    await ItemDefinitionSeed.ExecuteAsync(context);
+
+    await ItemDefinitionSeed.ExecuteAsync(
+        context);
 }
+
 
 
 app.UseExceptionHandler();
 
+
 app.UseCors(
     "ProjectVictoryClient");
 
+
 app.UseAuthentication();
+
 
 app.UseAuthorization();
 
 
+
 app.MapControllers();
+
 
 
 app.Run();

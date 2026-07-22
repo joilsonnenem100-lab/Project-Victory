@@ -46,9 +46,7 @@ export default function App()
 
         if (characters.length === 0)
         {
-            setGameState(
-                null
-            );
+            setGameState(null);
 
             return;
         }
@@ -74,6 +72,33 @@ export default function App()
 
                 characterName:
                     character.name
+            }
+        );
+    }
+
+
+
+    function updateCharacterProgression(
+        experience: number,
+        level: number
+    )
+    {
+        setGameState(
+            current =>
+            {
+                if (!current)
+                {
+                    return current;
+                }
+
+
+                return {
+                    ...current,
+
+                    experience,
+
+                    level
+                };
             }
         );
     }
@@ -113,7 +138,6 @@ export default function App()
 
         return (
             <LoginPage
-
                 onLoginSuccess={
                     async () =>
                     {
@@ -125,14 +149,12 @@ export default function App()
                     }
                 }
 
-
                 onRegister={
                     () =>
                     {
                         setRegistering(true);
                     }
                 }
-
             />
         );
     }
@@ -143,14 +165,12 @@ export default function App()
     {
         return (
             <EntryExperiencePage
-
                 onContinue={
                     () =>
                     {
                         setEntryExperience(false);
                     }
                 }
-
             />
         );
     }
@@ -164,6 +184,10 @@ export default function App()
                 gameState={
                     gameState
                 }
+
+                onCharacterProgressionUpdate={
+                    updateCharacterProgression
+                }
             />
         );
     }
@@ -174,9 +198,8 @@ export default function App()
         <CharacterSelectionPage
 
             onCharacterCreated={
-                handleCreateCharacter
+                loadCharacter
             }
-
 
             onEnterWorld={
                 loadCharacter

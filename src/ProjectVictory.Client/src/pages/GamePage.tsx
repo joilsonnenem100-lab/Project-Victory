@@ -6,12 +6,19 @@ import type { GameState } from "../models/game";
 interface Props
 {
     gameState: GameState;
+
+    onCharacterProgressionUpdate:
+        (
+            experience: number,
+            level: number
+        ) => void;
 }
 
 
 export default function GamePage(
     {
-        gameState
+        gameState,
+        onCharacterProgressionUpdate
     }: Props
 )
 {
@@ -24,6 +31,10 @@ export default function GamePage(
                 sceneName:
                     "FirstWorld"
             }}
+
+            onCharacterProgressionUpdate={
+                onCharacterProgressionUpdate
+            }
         />
     );
 }

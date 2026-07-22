@@ -155,7 +155,10 @@ public sealed class Character : AggregateRoot
     {
         ArgumentNullException.ThrowIfNull(experience);
 
-        Experience = experience;
+
+        Experience =
+            new CharacterExperience(
+                Experience.Value + experience.Value);
     }
 
 

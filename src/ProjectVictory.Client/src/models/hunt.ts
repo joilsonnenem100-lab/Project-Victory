@@ -1,3 +1,19 @@
+export interface EncounterResult
+{
+    id: string;
+
+    huntId: string;
+
+    currentTargetId: string;
+
+    monsterName: string;
+
+    currentHealth: number;
+
+    maximumHealth: number;
+}
+
+
 export interface HuntResult
 {
     huntId: string;
@@ -9,4 +25,6 @@ export interface HuntResult
     gold: number;
 
     level: number;
+
+    encounter: EncounterResult;
 }

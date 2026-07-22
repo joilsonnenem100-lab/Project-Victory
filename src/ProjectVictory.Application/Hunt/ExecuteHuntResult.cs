@@ -5,4 +5,5 @@ public sealed record ExecuteHuntResult(
     bool Completed,
     int Experience,
     int Gold,
-    int Level);
+    int Level,
+    EncounterResult Encounter);

@@ -1,3 +1,5 @@
+// src/ProjectVictory.Client/src/pages/LoginPage.tsx
+
 import { useState } from "react";
 
 import { login } from "../services/accountService";
@@ -14,10 +16,9 @@ interface Props
 }
 
 
-const DEBUG_HOTSPOTS = true;
+const DEBUG_HOTSPOTS = false;
 
-const HOTSPOT_OFFSET_Y = -100;
-
+const HOTSPOT_OFFSET_Y = -75;
 
 
 interface HotspotProps
@@ -47,8 +48,7 @@ function Hotspot(
             onClick={onClick}
 
             style={{
-                position:
-                    "absolute",
+                position: "absolute",
 
                 left,
 
@@ -68,25 +68,25 @@ function Hotspot(
                         ? "rgba(255,0,0,0.15)"
                         : "transparent",
 
-                color:
-                    "white",
+                color: "white",
 
-                fontSize:
-                    "14px",
+                fontSize: "12px",
 
-                fontWeight:
-                    "bold",
+                fontWeight: "bold",
 
-                zIndex:
-                    10,
+                zIndex: 50,
 
                 cursor:
                     onClick
                         ? "pointer"
-                        : "default"
+                        : "default",
+
+                pointerEvents:
+                    onClick
+                        ? "auto"
+                        : "none"
             }}
         >
-
             {
                 DEBUG_HOTSPOTS &&
                 (
@@ -95,11 +95,11 @@ function Hotspot(
                             background:
                                 "rgba(0,0,0,0.85)",
 
-                            padding:
-                                "4px",
-
                             display:
-                                "inline-block"
+                                "inline-block",
+
+                            padding:
+                                "3px"
                         }}
                     >
                         {name}
@@ -119,6 +119,7 @@ function Hotspot(
                         <br />
 
                         H:{height}
+
                     </span>
                 )
             }
@@ -159,6 +160,7 @@ export default function LoginPage(
                     password
                 );
 
+
             onLoginSuccess(
                 result.accountId
             );
@@ -176,20 +178,15 @@ export default function LoginPage(
     return (
         <main
             style={{
-                position:
-                    "fixed",
+                position: "fixed",
 
-                inset:
-                    0,
+                inset: 0,
 
-                width:
-                    "100vw",
+                width: "100vw",
 
-                height:
-                    "100vh",
+                height: "100vh",
 
-                overflow:
-                    "hidden",
+                overflow: "hidden",
 
                 backgroundImage:
                     `url(${background})`,
@@ -207,33 +204,25 @@ export default function LoginPage(
 
             <div
                 style={{
-                    position:
-                        "absolute",
+                    position: "absolute",
 
-                    inset:
-                        0,
+                    inset: 0,
 
-                    display:
-                        "flex",
+                    display: "flex",
 
-                    justifyContent:
-                        "center",
+                    justifyContent: "center",
 
-                    alignItems:
-                        "center"
+                    alignItems: "center"
                 }}
             >
 
                 <div
                     style={{
-                        position:
-                            "relative",
+                        position: "relative",
 
-                        width:
-                            "1536px",
+                        width: "1536px",
 
-                        height:
-                            "864px",
+                        height: "864px",
 
                         transform:
                             "scale(calc(min(100vw / 1536, 100vh / 864)))",
@@ -251,20 +240,15 @@ export default function LoginPage(
                         draggable={false}
 
                         style={{
-                            position:
-                                "absolute",
+                            position: "absolute",
 
-                            inset:
-                                0,
+                            inset: 0,
 
-                            width:
-                                "1536px",
+                            width: "1536px",
 
-                            height:
-                                "864px",
+                            height: "864px",
 
-                            pointerEvents:
-                                "none"
+                            pointerEvents: "none"
                         }}
                     />
 
@@ -285,26 +269,26 @@ export default function LoginPage(
                         }
 
                         style={{
-                            position:
-                                "absolute",
+                            position: "absolute",
 
-                            left:
-                                520,
+                            left: 520,
 
                             top:
-                                430 + HOTSPOT_OFFSET_Y,
+                                435 + HOTSPOT_OFFSET_Y,
 
-                            width:
-                                496,
+                            width: 496,
 
-                            height:
-                                70,
+                            height: 70,
 
-                            opacity:
-                                0,
+                            opacity: 0,
 
-                            zIndex:
-                                20
+                            background: "transparent",
+
+                            border: "none",
+
+                            outline: "none",
+
+                            zIndex: 20
                         }}
                     />
 
@@ -325,26 +309,26 @@ export default function LoginPage(
                         }
 
                         style={{
-                            position:
-                                "absolute",
+                            position: "absolute",
 
-                            left:
-                                520,
+                            left: 520,
 
                             top:
-                                520 + HOTSPOT_OFFSET_Y,
+                                525 + HOTSPOT_OFFSET_Y,
 
-                            width:
-                                496,
+                            width: 496,
 
-                            height:
-                                70,
+                            height: 70,
 
-                            opacity:
-                                0,
+                            opacity: 0,
 
-                            zIndex:
-                                20
+                            background: "transparent",
+
+                            border: "none",
+
+                            outline: "none",
+
+                            zIndex: 20
                         }}
                     />
 
@@ -352,50 +336,114 @@ export default function LoginPage(
 
                     <Hotspot
                         name="EmailHotspot"
+
                         left={520}
-                        top={430 + HOTSPOT_OFFSET_Y}
+
+                        top={
+                            435 + HOTSPOT_OFFSET_Y
+                        }
+
                         width={496}
+
                         height={70}
                     />
+
 
 
                     <Hotspot
                         name="PasswordHotspot"
+
                         left={520}
-                        top={520 + HOTSPOT_OFFSET_Y}
+
+                        top={
+                            525 + HOTSPOT_OFFSET_Y
+                        }
+
                         width={496}
+
                         height={70}
                     />
 
 
+
                     <Hotspot
                         name="LoginHotspot"
+
                         left={520}
-                        top={650 + HOTSPOT_OFFSET_Y}
+
+                        top={
+                            650 + HOTSPOT_OFFSET_Y
+                        }
+
                         width={496}
+
                         height={90}
+
                         onClick={handleLogin}
                     />
 
 
+
                     <Hotspot
                         name="ForgotPasswordHotspot"
+
                         left={840}
-                        top={575 + HOTSPOT_OFFSET_Y}
+
+                        top={
+                            555 + HOTSPOT_OFFSET_Y
+                        }
+
                         width={190}
+
                         height={45}
-                        onClick={onForgotPassword}
+
+                        onClick={
+                            onForgotPassword
+                        }
                     />
+
 
 
                     <Hotspot
                         name="RegisterHotspot"
+
                         left={790}
-                        top={755 + HOTSPOT_OFFSET_Y}
+
+                        top={
+                            725 + HOTSPOT_OFFSET_Y
+                        }
+
                         width={190}
+
                         height={45}
-                        onClick={onRegister}
+
+                        onClick={
+                            onRegister
+                        }
                     />
+
+
+
+                    {
+                        errorMessage &&
+                        (
+                            <div
+                                style={{
+                                    position: "absolute",
+
+                                    top:100,
+
+                                    left:520,
+
+                                    color:"red",
+
+                                    zIndex:100
+                                }}
+                            >
+                                {errorMessage}
+                            </div>
+                        )
+                    }
 
                 </div>
 

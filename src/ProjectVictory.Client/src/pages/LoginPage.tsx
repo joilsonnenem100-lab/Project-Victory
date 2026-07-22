@@ -1,12 +1,9 @@
 // src/ProjectVictory.Client/src/pages/LoginPage.tsx
 
 import { useState } from "react";
-
 import { login } from "../services/accountService";
-
 import background from "../assets/backgrounds/login/PV-ASSET-001-login-world-background-v001.webp";
 import loginInterface from "../assets/interfaces/login/PV-ASSET-002-login-interface-system-v001.png";
-
 
 interface Props
 {
@@ -15,11 +12,9 @@ interface Props
     onForgotPassword?: () => void;
 }
 
-
-const DEBUG_HOTSPOTS = false;
-
+// Mantenha como true até ajustar tudo 100%, depois mude para false
+const DEBUG_HOTSPOTS = true;
 const HOTSPOT_OFFSET_Y = -75;
-
 
 interface HotspotProps
 {
@@ -31,424 +26,236 @@ interface HotspotProps
     onClick?: () => void;
 }
 
-
-
-function Hotspot(
-{
-    name,
-    left,
-    top,
-    width,
-    height,
-    onClick
-}: HotspotProps)
+function Hotspot({ name, left, top, width, height, onClick }: HotspotProps)
 {
     return (
         <div
             onClick={onClick}
-
             style={{
                 position: "absolute",
-
                 left,
-
                 top,
-
                 width,
-
                 height,
-
-                border:
-                    DEBUG_HOTSPOTS
-                        ? "2px solid red"
-                        : "none",
-
-                background:
-                    DEBUG_HOTSPOTS
-                        ? "rgba(255,0,0,0.15)"
-                        : "transparent",
-
+                border: DEBUG_HOTSPOTS ? "2px solid red" : "none",
+                background: DEBUG_HOTSPOTS ? "rgba(255,0,0,0.15)" : "transparent",
                 color: "white",
-
                 fontSize: "12px",
-
                 fontWeight: "bold",
-
                 zIndex: 50,
-
-                cursor:
-                    onClick
-                        ? "pointer"
-                        : "default",
-
-                pointerEvents:
-                    onClick
-                        ? "auto"
-                        : "none"
+                cursor: onClick ? "pointer" : "default",
+                pointerEvents: onClick ? "auto" : "none"
             }}
         >
-            {
-                DEBUG_HOTSPOTS &&
-                (
-                    <span
-                        style={{
-                            background:
-                                "rgba(0,0,0,0.85)",
-
-                            display:
-                                "inline-block",
-
-                            padding:
-                                "3px"
-                        }}
-                    >
-                        {name}
-
-                        <br />
-
-                        X:{left}
-
-                        <br />
-
-                        Y:{top}
-
-                        <br />
-
-                        W:{width}
-
-                        <br />
-
-                        H:{height}
-
-                    </span>
-                )
-            }
-
+            {DEBUG_HOTSPOTS && (
+                <span
+                    style={{
+                        background: "rgba(0,0,0,0.85)",
+                        display: "inline-block",
+                        padding: "3px"
+                    }}
+                >
+                    {name}<br />X:{left}<br />Y:{top}<br />W:{width}<br />H:{height}
+                </span>
+            )}
         </div>
     );
 }
 
-
-
-export default function LoginPage(
+export default function LoginPage({ onLoginSuccess, onRegister, onForgotPassword }: Props)
 {
-    onLoginSuccess,
-    onRegister,
-    onForgotPassword
-}: Props)
-{
-    const [email, setEmail] =
-        useState("");
-
-    const [password, setPassword] =
-        useState("");
-
-    const [errorMessage, setErrorMessage] =
-        useState("");
-
-
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [rememberMe, setRememberMe] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     async function handleLogin()
     {
         try
         {
             setErrorMessage("");
-
-            const result =
-                await login(
-                    email,
-                    password
-                );
-
-
-            onLoginSuccess(
-                result.accountId
-            );
+            const result = await login(email, password);
+            onLoginSuccess(result.accountId);
         }
         catch
         {
-            setErrorMessage(
-                "Login failed."
-            );
+            setErrorMessage("Login failed.");
         }
     }
-
-
 
     return (
         <main
             style={{
                 position: "fixed",
-
                 inset: 0,
-
                 width: "100vw",
-
                 height: "100vh",
-
                 overflow: "hidden",
-
-                backgroundImage:
-                    `url(${background})`,
-
-                backgroundSize:
-                    "cover",
-
-                backgroundPosition:
-                    "center",
-
-                backgroundRepeat:
-                    "no-repeat"
+                backgroundImage: `url(${background})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat"
             }}
         >
-
             <div
                 style={{
                     position: "absolute",
-
                     inset: 0,
-
                     display: "flex",
-
                     justifyContent: "center",
-
                     alignItems: "center"
                 }}
             >
-
                 <div
                     style={{
                         position: "relative",
-
                         width: "1536px",
-
                         height: "864px",
-
-                        transform:
-                            "scale(calc(min(100vw / 1536, 100vh / 864)))",
-
-                        transformOrigin:
-                            "center"
+                        transform: "scale(calc(min(100vw / 1536, 100vh / 864)))",
+                        transformOrigin: "center"
                     }}
                 >
-
                     <img
                         src={loginInterface}
-
                         alt=""
-
                         draggable={false}
-
                         style={{
                             position: "absolute",
-
                             inset: 0,
-
                             width: "1536px",
-
                             height: "864px",
-
                             pointerEvents: "none"
                         }}
                     />
 
-
-
+                    {/* Input Real de Email */}
                     <input
                         type="email"
-
                         autoComplete="off"
-
                         value={email}
-
-                        onChange={
-                            e =>
-                                setEmail(
-                                    e.target.value
-                                )
-                        }
-
+                        onChange={e => setEmail(e.target.value)}
                         style={{
                             position: "absolute",
-
                             left: 520,
-
-                            top:
-                                435 + HOTSPOT_OFFSET_Y,
-
+                            top: 435 + HOTSPOT_OFFSET_Y,
                             width: 496,
-
                             height: 70,
-
                             opacity: 0,
-
                             background: "transparent",
-
                             border: "none",
-
                             outline: "none",
-
                             zIndex: 20
                         }}
                     />
 
-
-
+                    {/* Input Real de Senha */}
                     <input
-                        type="password"
-
+                        type={showPassword ? "text" : "password"}
                         autoComplete="new-password"
-
                         value={password}
-
-                        onChange={
-                            e =>
-                                setPassword(
-                                    e.target.value
-                                )
-                        }
-
+                        onChange={e => setPassword(e.target.value)}
                         style={{
                             position: "absolute",
-
                             left: 520,
-
-                            top:
-                                525 + HOTSPOT_OFFSET_Y,
-
-                            width: 496,
-
+                            top: 525 + HOTSPOT_OFFSET_Y,
+                            width: 440,
                             height: 70,
-
                             opacity: 0,
-
                             background: "transparent",
-
                             border: "none",
-
                             outline: "none",
-
                             zIndex: 20
                         }}
                     />
 
-
-
+                    {/* Hotspot para o ícone de mostrar/ocultar senha */}
                     <Hotspot
-                        name="EmailHotspot"
-
-                        left={520}
-
-                        top={
-                            435 + HOTSPOT_OFFSET_Y
-                        }
-
-                        width={496}
-
-                        height={70}
+                        name="TogglePassword"
+                        left={965}
+                        top={460}
+                        width={45}
+                        height={45}
+                        onClick={() => setShowPassword(!showPassword)}
                     />
 
-
-
+                    {/* Hotspot para o "Remember me" (Ajustado para a direita) */}
                     <Hotspot
-                        name="PasswordHotspot"
-
+                        name="RememberMe"
                         left={520}
-
-                        top={
-                            525 + HOTSPOT_OFFSET_Y
-                        }
-
-                        width={496}
-
-                        height={70}
+                        top={615}
+                        width={150}
+                        height={30}
+                        onClick={() => setRememberMe(!rememberMe)}
                     />
 
+                    {/* Indicador visual caso o "Remember me" esteja marcado */}
+                    {rememberMe && (
+                        <div
+                            style={{
+                                position: "absolute",
+                                left: 525,
+                                indentation: 0,
+                                top: 623,
+                                width: 14,
+                                height: 14,
+                                background: "#00ffcc",
+                                borderRadius: "50%",
+                                zIndex: 60,
+                                pointerEvents: "none"
+                            }}
+                        />
+                    )}
 
+                    {/* Guias Visuais dos Inputs */}
+                    <Hotspot name="EmailHotspot" left={520} top={360} width={496} height={70} />
+                    <Hotspot name="PasswordHotspot" left={520} top={450} width={496} height={70} />
 
+                    {/* Botão de Login */}
                     <Hotspot
                         name="LoginHotspot"
-
                         left={520}
-
-                        top={
-                            650 + HOTSPOT_OFFSET_Y
-                        }
-
+                        top={575}
                         width={496}
-
                         height={90}
-
                         onClick={handleLogin}
                     />
 
-
-
+                    {/* Botão de Esqueceu a Senha */}
                     <Hotspot
                         name="ForgotPasswordHotspot"
-
                         left={840}
-
-                        top={
-                            555 + HOTSPOT_OFFSET_Y
-                        }
-
+                        top={480}
                         width={190}
-
                         height={45}
-
-                        onClick={
-                            onForgotPassword
-                        }
+                        onClick={onForgotPassword}
                     />
 
-
-
+                    {/* Botão de Registro */}
                     <Hotspot
                         name="RegisterHotspot"
-
                         left={790}
-
-                        top={
-                            725 + HOTSPOT_OFFSET_Y
-                        }
-
+                        top={650}
                         width={190}
-
                         height={45}
-
-                        onClick={
-                            onRegister
-                        }
+                        onClick={onRegister}
                     />
 
-
-
-                    {
-                        errorMessage &&
-                        (
-                            <div
-                                style={{
-                                    position: "absolute",
-
-                                    top:100,
-
-                                    left:520,
-
-                                    color:"red",
-
-                                    zIndex:100
-                                }}
-                            >
-                                {errorMessage}
-                            </div>
-                        )
-                    }
-
+                    {errorMessage && (
+                        <div
+                            style={{
+                                position: "absolute",
+                                top: 100,
+                                left: 520,
+                                color: "red",
+                                zIndex: 100
+                            }}
+                        >
+                            {errorMessage}
+                        </div>
+                    )}
                 </div>
-
             </div>
-
         </main>
     );
 }

@@ -12,26 +12,24 @@ public sealed class ExecuteHuntHandler
     private readonly IHuntRepository _huntRepository;
     private readonly ICharacterRepository _characterRepository;
     private readonly ICurrentPlayerContext _currentPlayerContext;
-    private readonly ICombatResolver _combatResolver;
-    private readonly IRewardProcessor _rewardProcessor;
-    private readonly IProgressionProcessor _progressionProcessor;
+    private readonly IEncounterStateStore _encounterStateStore;
+    private readonly EncounterGenerator _encounterGenerator;
 
 
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
         ICharacterRepository characterRepository,
         ICurrentPlayerContext currentPlayerContext,
-        ICombatResolver combatResolver,
-        IRewardProcessor rewardProcessor,
-        IProgressionProcessor progressionProcessor)
+        IEncounterStateStore encounterStateStore,
+        EncounterGenerator encounterGenerator)
     {
         _huntRepository = huntRepository;
         _characterRepository = characterRepository;
         _currentPlayerContext = currentPlayerContext;
-        _combatResolver = combatResolver;
-        _rewardProcessor = rewardProcessor;
-        _progressionProcessor = progressionProcessor;
+        _encounterStateStore = encounterStateStore;
+        _encounterGenerator = encounterGenerator;
     }
+
 
 
     public async Task<ExecuteHuntResult> Handle(
@@ -55,9 +53,11 @@ public sealed class ExecuteHuntHandler
         }
 
 
-        var hunt = new Domain.Hunt.Hunt(
-            Guid.NewGuid(),
-            character.Id);
+
+        var hunt =
+            new Domain.Hunt.Hunt(
+                Guid.NewGuid(),
+                character.Id);
 
 
         hunt.Start();
@@ -68,63 +68,35 @@ public sealed class ExecuteHuntHandler
             cancellationToken);
 
 
-        var monsterId =
-            Guid.NewGuid();
+
+        var encounter =
+            _encounterGenerator.Generate(
+                hunt.Id);
 
 
-        var combatResult =
-            _combatResolver.Resolve(
-                new CombatRequest(
-                    Guid.NewGuid(),
-                    character.Id,
-                    monsterId));
+
+        _encounterStateStore.Add(
+            encounter);
 
 
-        if (!combatResult.Completed)
-        {
-            hunt.Fail();
 
-            return new ExecuteHuntResult(
-                hunt.Id,
-                false,
-                0,
-                0,
-                character.Level.Value);
-        }
+        var target =
+            encounter.GetCurrentTarget();
 
-
-        var rewardResult =
-            _rewardProcessor.Process(
-                new RewardRequest(
-                    character.Id,
-                    combatResult));
-
-
-        var progressionResult =
-            _progressionProcessor.Process(
-                new ProgressionRequest(
-                    character.Id,
-                    rewardResult.Experience));
-
-
-        character.GainExperience(
-            new ProjectVictory.Domain.ValueObjects.Experience(
-                progressionResult.Experience));
-
-
-        await _characterRepository.UpdateAsync(
-            character,
-            cancellationToken);
-
-
-        hunt.Complete();
 
 
         return new ExecuteHuntResult(
             hunt.Id,
-            true,
-            progressionResult.Experience,
-            rewardResult.Gold,
-            progressionResult.Level);
+            false,
+            0,
+            0,
+            character.Level.Value,
+            new EncounterResult(
+                encounter.Id,
+                encounter.HuntId,
+                encounter.CurrentTargetId,
+                target.Name,
+                target.CurrentHealth,
+                target.MaximumHealth));
     }
 }
