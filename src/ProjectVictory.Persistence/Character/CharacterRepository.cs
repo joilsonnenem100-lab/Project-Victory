@@ -41,22 +41,17 @@ public sealed class CharacterRepository : ICharacterRepository
                 Name =
                     character.Name,
 
-
                 CharacterClass =
                     (int)character.CharacterClass,
-
 
                 Health =
                     character.Health.Value,
 
-
                 Mana =
                     character.Mana.Value,
 
-
                 Level =
                     character.Level.Value,
-
 
                 Experience =
                     character.Experience.Value
@@ -116,6 +111,38 @@ public sealed class CharacterRepository : ICharacterRepository
 
         return RestoreCharacter(
             state);
+    }
+
+
+
+    public async Task<IReadOnlyList<DomainCharacter>> GetAllByAccountIdAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        var states =
+            await _context.Characters
+                .Where(
+                    x => x.AccountId == accountId)
+                .ToListAsync(
+                    cancellationToken);
+
+
+        return states
+            .Select(
+                RestoreCharacter)
+            .ToList();
+    }
+
+
+
+    public async Task<bool> ExistsByNameAsync(
+        string name,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Characters
+            .AnyAsync(
+                x => x.Name == name,
+                cancellationToken);
     }
 
 

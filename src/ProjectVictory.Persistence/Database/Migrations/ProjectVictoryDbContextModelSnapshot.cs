@@ -69,7 +69,7 @@ namespace ProjectVictory.Persistence.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId")
+                    b.HasIndex("Name")
                         .IsUnique();
 
                     b.ToTable("Characters");

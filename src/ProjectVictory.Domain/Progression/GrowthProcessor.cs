@@ -9,12 +9,21 @@ public sealed class GrowthProcessor
         ArgumentNullException.ThrowIfNull(experienceResult);
         ArgumentNullException.ThrowIfNull(table);
 
-        var level = 1;
+
+        var levelCalculator =
+            new LevelCalculator();
+
+
+        var level =
+            levelCalculator.Calculate(
+                new Experience(
+                    experienceResult.ExperienceAmount));
+
 
         return new GrowthResult(
             experienceResult.CharacterId,
             experienceResult.ExperienceAmount,
-            level,
+            level.Value,
             experienceResult.Processed);
     }
 }

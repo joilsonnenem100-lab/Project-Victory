@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import CharacterCreationPage from "./CharacterCreationPage";
 
+import type { Character } from "../models/character";
+
 import Container from "../components/ui/Container";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
@@ -12,25 +14,39 @@ import CharacterSection from "../components/sections/CharacterSection";
 
 interface Props
 {
+    characters: Character[];
+
+
     onCharacterCreated(
         name: string,
         characterClass: string
     ): Promise<void>;
 
-    onEnterWorld: () => void;
+
+    onEnterWorld(
+        character: Character
+    ): void;
 }
 
 
 
 export default function CharacterSelectionPage(
-    {
-        onCharacterCreated,
-        onEnterWorld
-    }: Props
-)
+{
+    characters,
+
+    onCharacterCreated,
+
+    onEnterWorld
+
+}: Props)
 {
     const [creatingCharacter, setCreatingCharacter] =
         useState(false);
+
+
+
+    const [selectedCharacter, setSelectedCharacter] =
+        useState<Character | null>(null);
 
 
 
@@ -93,8 +109,9 @@ export default function CharacterSelectionPage(
                                         "center"
                                 }}
                             >
-                                Character Identity
+                                Character Selection
                             </h1>
+
 
 
                             <p
@@ -104,39 +121,116 @@ export default function CharacterSelectionPage(
                                         "center"
                                 }}
                             >
-                                Your journey begins with your character.
+                                Select your character.
                             </p>
+
 
 
                             <section
                                 className="pv-panel-decoration"
                             >
 
-                                <strong>
-                                    Character Profile
-                                </strong>
+                                {
+                                    characters.length === 0 &&
+                                    (
+                                        <p>
+                                            No characters found.
+                                        </p>
+                                    )
+                                }
 
 
-                                <span>
-                                    Name
-                                </span>
+
+                                {
+                                    characters.map(
+                                        character =>
+                                        (
+                                            <button
+                                                key={
+                                                    character.characterId
+                                                }
+
+                                                onClick={
+                                                    () =>
+                                                    {
+                                                        setSelectedCharacter(
+                                                            character
+                                                        );
+                                                    }
+                                                }
+                                            >
+
+                                                <strong>
+                                                    {
+                                                        character.name
+                                                    }
+                                                </strong>
 
 
-                                <span>
-                                    Character ID
-                                </span>
+                                                <br />
 
 
-                                <span>
-                                    Level
-                                </span>
+                                                Level:
+                                                {" "}
+                                                {
+                                                    character.level
+                                                }
 
 
-                                <span>
-                                    Experience
-                                </span>
+                                                <br />
+
+
+                                                Experience:
+                                                {" "}
+                                                {
+                                                    character.experience
+                                                }
+
+                                            </button>
+                                        )
+                                    )
+                                }
 
                             </section>
+
+
+
+                            {
+                                selectedCharacter &&
+                                (
+                                    <section
+                                        className="pv-panel-decoration"
+                                    >
+
+                                        <h3>
+                                            Selected Character
+                                        </h3>
+
+
+                                        <p>
+                                            {
+                                                selectedCharacter.name
+                                            }
+                                        </p>
+
+
+                                        <Button
+                                            onClick={
+                                                () =>
+                                                {
+                                                    onEnterWorld(
+                                                        selectedCharacter
+                                                    );
+                                                }
+                                            }
+                                        >
+                                            Enter World
+                                        </Button>
+
+                                    </section>
+                                )
+                            }
+
 
 
                             <Button
@@ -152,14 +246,6 @@ export default function CharacterSelectionPage(
                                 Create Character
                             </Button>
 
-
-                            <Button
-                                onClick={
-                                    onEnterWorld
-                                }
-                            >
-                                Enter World
-                            </Button>
 
                         </Card>
 

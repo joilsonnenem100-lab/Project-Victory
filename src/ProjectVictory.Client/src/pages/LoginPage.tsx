@@ -2,64 +2,12 @@
 
 import { useState } from "react";
 import { login } from "../services/accountService";
-import background from "../assets/backgrounds/login/PV-ASSET-001-login-world-background-v001.webp";
-import loginInterface from "../assets/interfaces/login/PV-ASSET-002-login-interface-system-v001.png";
 
 interface Props
 {
     onLoginSuccess(accountId: string): void;
     onRegister?: () => void;
     onForgotPassword?: () => void;
-}
-
-// Mantenha como true até ajustar tudo 100%, depois mude para false
-const DEBUG_HOTSPOTS = true;
-const HOTSPOT_OFFSET_Y = -75;
-
-interface HotspotProps
-{
-    name: string;
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-    onClick?: () => void;
-}
-
-function Hotspot({ name, left, top, width, height, onClick }: HotspotProps)
-{
-    return (
-        <div
-            onClick={onClick}
-            style={{
-                position: "absolute",
-                left,
-                top,
-                width,
-                height,
-                border: DEBUG_HOTSPOTS ? "2px solid red" : "none",
-                background: DEBUG_HOTSPOTS ? "rgba(255,0,0,0.15)" : "transparent",
-                color: "white",
-                fontSize: "12px",
-                fontWeight: "bold",
-                zIndex: 50,
-                cursor: onClick ? "pointer" : "default",
-                pointerEvents: onClick ? "auto" : "none"
-            }}
-        >
-            {DEBUG_HOTSPOTS && (
-                <span
-                    style={{
-                        background: "rgba(0,0,0,0.85)",
-                        display: "inline-block",
-                        padding: "3px"
-                    }}
-                >
-                    {name}<br />X:{left}<br />Y:{top}<br />W:{width}<br />H:{height}
-                </span>
-            )}
-        </div>
-    );
 }
 
 export default function LoginPage({ onLoginSuccess, onRegister, onForgotPassword }: Props)
@@ -70,8 +18,9 @@ export default function LoginPage({ onLoginSuccess, onRegister, onForgotPassword
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    async function handleLogin()
+    async function handleLogin(e: React.FormEvent)
     {
+        e.preventDefault();
         try
         {
             setErrorMessage("");
@@ -91,169 +40,145 @@ export default function LoginPage({ onLoginSuccess, onRegister, onForgotPassword
                 inset: 0,
                 width: "100vw",
                 height: "100vh",
-                overflow: "hidden",
-                backgroundImage: `url(${background})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat"
+                backgroundColor: "#0d0f12",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontFamily: "Arial, sans-serif",
+                color: "#e2e8f0"
             }}
         >
             <div
                 style={{
-                    position: "absolute",
-                    inset: 0,
+                    width: "420px",
+                    padding: "40px",
+                    backgroundColor: "#161b22",
+                    border: "1px solid #30363d",
+                    borderRadius: "12px",
+                    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.5)",
                     display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center"
+                    flexDirection: "column",
+                    gap: "20px"
                 }}
             >
-                <div
-                    style={{
-                        position: "relative",
-                        width: "1536px",
-                        height: "864px",
-                        transform: "scale(calc(min(100vw / 1536, 100vh / 864)))",
-                        transformOrigin: "center"
-                    }}
-                >
-                    <img
-                        src={loginInterface}
-                        alt=""
-                        draggable={false}
-                        style={{
-                            position: "absolute",
-                            inset: 0,
-                            width: "1536px",
-                            height: "864px",
-                            pointerEvents: "none"
-                        }}
-                    />
+                <div style={{ textAlign: "center" }}>
+                    <h1 style={{ fontSize: "24px", margin: "0 0 8px 0", color: "#f0b429" }}>Project Victory</h1>
+                    <p style={{ fontSize: "14px", color: "#8b949e", margin: 0 }}>Entre na sua conta para continuar</p>
+                </div>
 
-                    {/* Input Real de Email */}
-                    <input
-                        type="email"
-                        autoComplete="off"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        style={{
-                            position: "absolute",
-                            left: 520,
-                            top: 435 + HOTSPOT_OFFSET_Y,
-                            width: 496,
-                            height: 70,
-                            opacity: 0,
-                            background: "transparent",
-                            border: "none",
-                            outline: "none",
-                            zIndex: 20
-                        }}
-                    />
-
-                    {/* Input Real de Senha */}
-                    <input
-                        type={showPassword ? "text" : "password"}
-                        autoComplete="new-password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        style={{
-                            position: "absolute",
-                            left: 520,
-                            top: 525 + HOTSPOT_OFFSET_Y,
-                            width: 440,
-                            height: 70,
-                            opacity: 0,
-                            background: "transparent",
-                            border: "none",
-                            outline: "none",
-                            zIndex: 20
-                        }}
-                    />
-
-                    {/* Hotspot para o ícone de mostrar/ocultar senha */}
-                    <Hotspot
-                        name="TogglePassword"
-                        left={965}
-                        top={460}
-                        width={45}
-                        height={45}
-                        onClick={() => setShowPassword(!showPassword)}
-                    />
-
-                    {/* Hotspot para o "Remember me" (Ajustado para a direita) */}
-                    <Hotspot
-                        name="RememberMe"
-                        left={520}
-                        top={615}
-                        width={150}
-                        height={30}
-                        onClick={() => setRememberMe(!rememberMe)}
-                    />
-
-                    {/* Indicador visual caso o "Remember me" esteja marcado */}
-                    {rememberMe && (
-                        <div
+                <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        <label style={{ fontSize: "13px", fontWeight: "bold" }}>E-mail</label>
+                        <input
+                            type="email"
+                            required
+                            autoComplete="off"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            placeholder="seu@email.com"
                             style={{
-                                position: "absolute",
-                                left: 525,
-                                indentation: 0,
-                                top: 623,
-                                width: 14,
-                                height: 14,
-                                background: "#00ffcc",
-                                borderRadius: "50%",
-                                zIndex: 60,
-                                pointerEvents: "none"
+                                padding: "12px 14px",
+                                backgroundColor: "#0d0f12",
+                                border: "1px solid #30363d",
+                                borderRadius: "6px",
+                                color: "#fff",
+                                fontSize: "14px",
+                                outline: "none"
                             }}
                         />
-                    )}
+                    </div>
 
-                    {/* Guias Visuais dos Inputs */}
-                    <Hotspot name="EmailHotspot" left={520} top={360} width={496} height={70} />
-                    <Hotspot name="PasswordHotspot" left={520} top={450} width={496} height={70} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        <label style={{ fontSize: "13px", fontWeight: "bold" }}>Senha</label>
+                        <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                required
+                                autoComplete="current-password"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                style={{
+                                    width: "100%",
+                                    padding: "12px 40px 12px 14px",
+                                    backgroundColor: "#0d0f12",
+                                    border: "1px solid #30363d",
+                                    borderRadius: "6px",
+                                    color: "#fff",
+                                    fontSize: "14px",
+                                    outline: "none"
+                                }}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{
+                                    position: "absolute",
+                                    right: "12px",
+                                    background: "none",
+                                    border: "none",
+                                    color: "#8b949e",
+                                    cursor: "pointer",
+                                    fontSize: "12px"
+                                }}
+                            >
+                                {showPassword ? "Ocultar" : "Mostrar"}
+                            </button>
+                        </div>
+                    </div>
 
-                    {/* Botão de Login */}
-                    <Hotspot
-                        name="LoginHotspot"
-                        left={520}
-                        top={575}
-                        width={496}
-                        height={90}
-                        onClick={handleLogin}
-                    />
-
-                    {/* Botão de Esqueceu a Senha */}
-                    <Hotspot
-                        name="ForgotPasswordHotspot"
-                        left={840}
-                        top={480}
-                        width={190}
-                        height={45}
-                        onClick={onForgotPassword}
-                    />
-
-                    {/* Botão de Registro */}
-                    <Hotspot
-                        name="RegisterHotspot"
-                        left={790}
-                        top={650}
-                        width={190}
-                        height={45}
-                        onClick={onRegister}
-                    />
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+                            <input
+                                type="checkbox"
+                                checked={rememberMe}
+                                onChange={e => setRememberMe(e.target.checked)}
+                                style={{ cursor: "pointer" }}
+                            />
+                            Lembrar de mim
+                        </label>
+                        <button
+                            type="button"
+                            onClick={onForgotPassword}
+                            style={{ background: "none", border: "none", color: "#58a6ff", cursor: "pointer", padding: 0, fontSize: "13px" }}
+                        >
+                            Esqueceu a senha?
+                        </button>
+                    </div>
 
                     {errorMessage && (
-                        <div
-                            style={{
-                                position: "absolute",
-                                top: 100,
-                                left: 520,
-                                color: "red",
-                                zIndex: 100
-                            }}
-                        >
+                        <div style={{ color: "#f85149", fontSize: "13px", textAlign: "center" }}>
                             {errorMessage}
                         </div>
                     )}
+
+                    <button
+                        type="submit"
+                        style={{
+                            marginTop: "8px",
+                            padding: "12px",
+                            backgroundColor: "#238636",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "6px",
+                            fontSize: "15px",
+                            fontWeight: "bold",
+                            cursor: "pointer"
+                        }}
+                    >
+                        Entrar
+                    </button>
+                </form>
+
+                <div style={{ textAlign: "center", fontSize: "13px", color: "#8b949e", borderTop: "1px solid #30363d", paddingTop: "16px" }}>
+                    Não tem uma conta?{" "}
+                    <button
+                        type="button"
+                        onClick={onRegister}
+                        style={{ background: "none", border: "none", color: "#58a6ff", cursor: "pointer", fontWeight: "bold", padding: 0 }}
+                    >
+                        Cadastre-se
+                    </button>
                 </div>
             </div>
         </main>

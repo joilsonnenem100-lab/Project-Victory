@@ -9,10 +9,15 @@ namespace ProjectVictory.Application.Hunt;
 public sealed class ExecuteNextHuntHandler
 {
     private readonly IHuntRepository _huntRepository;
+
     private readonly ICharacterRepository _characterRepository;
+
     private readonly ICombatResolver _combatResolver;
+
     private readonly IRewardProcessor _rewardProcessor;
+
     private readonly IProgressionProcessor _progressionProcessor;
+
 
     public ExecuteNextHuntHandler(
         IHuntRepository huntRepository,
@@ -22,19 +27,26 @@ public sealed class ExecuteNextHuntHandler
         IProgressionProcessor progressionProcessor)
     {
         _huntRepository = huntRepository;
+
         _characterRepository = characterRepository;
+
         _combatResolver = combatResolver;
+
         _rewardProcessor = rewardProcessor;
+
         _progressionProcessor = progressionProcessor;
     }
+
 
     public async Task<ExecuteNextHuntResult> Handle(
         ExecuteNextHuntCommand command,
         CancellationToken cancellationToken = default)
     {
-        var character = await _characterRepository.GetByIdAsync(
-            command.CharacterId,
-            cancellationToken);
+        var character =
+            await _characterRepository.GetByIdAsync(
+                command.CharacterId,
+                cancellationToken);
+
 
         if (character is null)
         {
@@ -42,25 +54,34 @@ public sealed class ExecuteNextHuntHandler
                 "Character not found.");
         }
 
-        var hunt = new Domain.Hunt.Hunt(
-            Guid.NewGuid(),
-            character.Id);
+
+        var hunt =
+            new Domain.Hunt.Hunt(
+                Guid.NewGuid(),
+                character.Id,
+                command.RuntimeId);
+
 
         hunt.Start();
+
 
         await _huntRepository.AddAsync(
             hunt,
             cancellationToken);
 
-        var combatResult = _combatResolver.Resolve(
-            new CombatRequest(
-                Guid.NewGuid(),
-                character.Id,
-                command.EnemyId));
+
+        var combatResult =
+            _combatResolver.Resolve(
+                new CombatRequest(
+                    Guid.NewGuid(),
+                    character.Id,
+                    command.EnemyId));
+
 
         if (!combatResult.Completed)
         {
             hunt.Fail();
+
 
             return new ExecuteNextHuntResult(
                 hunt.Id,
@@ -70,25 +91,33 @@ public sealed class ExecuteNextHuntHandler
                 character.Level.Value);
         }
 
-        var rewardResult = _rewardProcessor.Process(
-            new RewardRequest(
-                character.Id,
-                combatResult));
 
-        var progressionResult = _progressionProcessor.Process(
-            new ProgressionRequest(
-                character.Id,
-                rewardResult.Experience));
+        var rewardResult =
+            _rewardProcessor.Process(
+                new RewardRequest(
+                    character.Id,
+                    combatResult));
+
+
+        var progressionResult =
+            _progressionProcessor.Process(
+                new ProgressionRequest(
+                    character.Id,
+                    rewardResult.Experience));
+
 
         character.GainExperience(
             new ProjectVictory.Domain.ValueObjects.Experience(
                 progressionResult.Experience));
 
+
         await _characterRepository.UpdateAsync(
             character,
             cancellationToken);
 
+
         hunt.Complete();
+
 
         return new ExecuteNextHuntResult(
             hunt.Id,

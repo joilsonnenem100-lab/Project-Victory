@@ -1,7 +1,8 @@
-using System;
-
 namespace ProjectVictory.Application.Reward;
 
 public sealed record ProcessRewardResult(
     Guid CharacterId,
-    bool Processed);
+    bool Processed,
+    int Experience,
+    int Gold,
+    IReadOnlyList<RewardDrop> Drops);

@@ -71,7 +71,9 @@ export default function WorldScenePage(
     async function handleStartHunt()
     {
         const result =
-            await startHunt();
+            await startHunt(
+                world.player.characterId
+            );
 
 
         setHuntResult(
@@ -103,7 +105,9 @@ export default function WorldScenePage(
                     gold: 0,
 
                     level:
-                        result.level
+                        result.level,
+
+                    drops: []
                 }
             );
         }
@@ -145,7 +149,10 @@ export default function WorldScenePage(
                         result.experience,
 
                     gold:
-                        result.gold
+                        result.gold,
+
+                    drops:
+                        result.drops ?? []
                 }
             );
 
@@ -177,7 +184,6 @@ export default function WorldScenePage(
                     >
 
                         <GameplayPresentation>
-
 
                             <PlayerArea>
 
@@ -226,20 +232,19 @@ export default function WorldScenePage(
                                             (
                                                 <>
                                                     <h2>
-                                                        Encounter
+                                                        Combat
                                                     </h2>
 
-                                                    <p>
-                                                        Monster:
-                                                        {" "}
+
+                                                    <h3>
                                                         {
                                                             encounterState.monsterName
                                                         }
-                                                    </p>
+                                                    </h3>
 
 
-                                                    <p>
-                                                        Health:
+                                                    <div>
+                                                        HP Monster:
                                                         {" "}
                                                         {
                                                             encounterState.currentHealth
@@ -248,11 +253,44 @@ export default function WorldScenePage(
                                                         {
                                                             encounterState.maximumHealth
                                                         }
-                                                    </p>
+                                                    </div>
+
+
+                                                    <progress
+                                                        value={
+                                                            encounterState.currentHealth
+                                                        }
+                                                        max={
+                                                            encounterState.maximumHealth
+                                                        }
+                                                    />
+
+
+                                                    <div>
+                                                        Player HP:
+                                                        {" "}
+                                                        {
+                                                            encounterState.playerHealth
+                                                        }
+                                                        /
+                                                        {
+                                                            encounterState.playerMaximumHealth
+                                                        }
+                                                    </div>
+
+
+                                                    <progress
+                                                        value={
+                                                            encounterState.playerHealth
+                                                        }
+                                                        max={
+                                                            encounterState.playerMaximumHealth
+                                                        }
+                                                    />
 
 
                                                     {
-                                                        !encounterState.monsterDefeated &&
+                                                        !encounterState.combatFinished &&
                                                         (
                                                             <button
                                                                 onClick={
@@ -261,6 +299,18 @@ export default function WorldScenePage(
                                                             >
                                                                 Attack
                                                             </button>
+                                                        )
+                                                    }
+
+
+                                                    {
+                                                        encounterState.combatFinished &&
+                                                        (
+                                                            <h2>
+                                                                {
+                                                                    encounterState.combatState
+                                                                }
+                                                            </h2>
                                                         )
                                                     }
 
@@ -290,6 +340,7 @@ export default function WorldScenePage(
                                                         Rewards
                                                     </h2>
 
+
                                                     <p>
                                                         Experience:
                                                         {" "}
@@ -306,6 +357,39 @@ export default function WorldScenePage(
                                                             reward.gold
                                                         }
                                                     </p>
+
+
+                                                    {
+                                                        reward.drops.length > 0 &&
+                                                        (
+                                                            <div>
+
+                                                                <h3>
+                                                                    Items:
+                                                                </h3>
+
+
+                                                                {
+                                                                    reward.drops.map(
+                                                                        drop =>
+                                                                        (
+                                                                            <p
+                                                                                key={
+                                                                                    drop.itemId
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    drop.itemName
+                                                                                }
+                                                                            </p>
+                                                                        )
+                                                                    )
+                                                                }
+
+                                                            </div>
+                                                        )
+                                                    }
+
                                                 </>
                                             )
                                         }

@@ -6,7 +6,9 @@ namespace ProjectVictory.Application.Character;
 public sealed class GetCharactersHandler
 {
     private readonly ICharacterRepository _characterRepository;
+
     private readonly ICurrentPlayerContext _currentPlayerContext;
+
 
 
     public GetCharactersHandler(
@@ -14,8 +16,10 @@ public sealed class GetCharactersHandler
         ICurrentPlayerContext currentPlayerContext)
     {
         _characterRepository = characterRepository;
+
         _currentPlayerContext = currentPlayerContext;
     }
+
 
 
     public async Task<IReadOnlyList<GetCharactersResult>> Handle(
@@ -25,36 +29,45 @@ public sealed class GetCharactersHandler
         ArgumentNullException.ThrowIfNull(query);
 
 
+
         var accountId =
             _currentPlayerContext.AccountId;
 
 
-        var character =
-            await _characterRepository.GetByAccountIdAsync(
+
+        var characters =
+            await _characterRepository.GetAllByAccountIdAsync(
                 accountId,
                 cancellationToken);
 
 
-        if (character is null)
-        {
-            return [];
-        }
 
+        return characters
+            .Select(
+                character =>
+                    new GetCharactersResult
+                    {
+                        AccountId =
+                            accountId,
 
-        return
-        [
-            new GetCharactersResult
-            {
-                AccountId = accountId,
+                        CharacterId =
+                            character.Id,
 
-                CharacterId = character.Id,
+                        Name =
+                            character.Name,
 
-                Name = character.Name,
+                        Level =
+                            character.Level.Value,
 
-                Level = character.Level.Value,
+                        Experience =
+                            character.Experience.Value,
 
-                Experience = character.Experience.Value
-            }
-        ];
+                        AvailableAbilities =
+                            character.AvailableAbilities
+                                .Select(
+                                    ability => ability.Name)
+                                .ToList()
+                    })
+            .ToList();
     }
 }

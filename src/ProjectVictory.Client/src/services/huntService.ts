@@ -2,6 +2,8 @@ import { apiRequest } from "../api/client";
 
 import type { HuntResult } from "../models/hunt";
 
+import type { RewardDrop } from "../models/reward";
+
 
 
 export interface AttackEncounterResult
@@ -16,25 +18,50 @@ export interface AttackEncounterResult
 
     monsterDefeated: boolean;
 
+    playerHealth: number;
+
+    playerMaximumHealth: number;
+
+    playerDefeated: boolean;
+
+    combatFinished: boolean;
+
+    combatState: string;
+
     experience: number;
 
     gold: number;
 
     level: number;
+
+    drops: RewardDrop[];
 }
 
 
 
-export async function startHunt()
+export async function startHunt(
+    characterId: string
+)
 : Promise<HuntResult>
 {
+    console.log(
+        "START HUNT CHARACTER ID:",
+        characterId
+    );
+
+
     const response =
         await apiRequest(
             "/api/hunt/execute",
             {
                 method: "POST",
 
-                body: JSON.stringify({})
+                body:
+                    JSON.stringify(
+                    {
+                        characterId
+                    }
+                )
             }
         );
 
@@ -67,7 +94,8 @@ export async function attackEncounter(
             {
                 method: "POST",
 
-                body: JSON.stringify(
+                body:
+                    JSON.stringify(
                     {
                         encounterId
                     }

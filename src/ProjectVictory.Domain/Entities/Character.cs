@@ -1,7 +1,6 @@
-// src/ProjectVictory.Domain/Entities/Character.cs
-
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
@@ -20,21 +19,29 @@ public sealed class Character : AggregateRoot
 
     public string Name { get; private set; }
 
-
     public CharacterClass CharacterClass { get; private set; }
 
     public CombatAbility InitialAbility { get; private set; }
 
+    public IReadOnlyList<CombatAbility> AvailableAbilities =>
+        InitialAbility is null
+            ? Array.Empty<CombatAbility>()
+            : new[]
+            {
+                InitialAbility
+            };
 
     public Health Health { get; private set; }
 
     public Mana Mana { get; private set; }
 
+    public Health MaximumHealth { get; private set; }
+
+    public Mana MaximumMana { get; private set; }
 
     public CharacterExperience Experience { get; private set; }
 
     public CharacterLevel Level { get; private set; }
-
 
     public Inventory Inventory { get; }
 
@@ -44,7 +51,7 @@ public sealed class Character : AggregateRoot
 
     public Skills Skills { get; }
 
-
+    private readonly CharacterClassDefinition? _classDefinition;
 
     public Character(
         Guid id,
@@ -62,39 +69,24 @@ public sealed class Character : AggregateRoot
         ArgumentNullException.ThrowIfNull(experience);
         ArgumentNullException.ThrowIfNull(level);
 
-
         AccountId = accountId;
-
         Name = name;
-
-
         Health = health;
-
         Mana = mana;
-
-
+        MaximumHealth = health;
+        MaximumMana = mana;
         Experience = experience;
-
         Level = level;
 
-
         Inventory = new Inventory();
-
         Equipment = new Equipment();
-
         Attributes = new Attributes();
-
         Skills = new Skills();
 
-
-        CharacterClass =
-            default;
-
-        InitialAbility =
-            null!;
+        CharacterClass = default;
+        InitialAbility = null!;
+        _classDefinition = null;
     }
-
-
 
     public Character(
         Guid id,
@@ -115,95 +107,48 @@ public sealed class Character : AggregateRoot
         ArgumentNullException.ThrowIfNull(experience);
         ArgumentNullException.ThrowIfNull(level);
 
-
         AccountId = accountId;
-
         Name = name;
-
-
-        CharacterClass =
-            characterClass;
-
-
-        InitialAbility =
-            definition.InitialAbility;
-
+        CharacterClass = characterClass;
+        InitialAbility = definition.InitialAbility;
+        _classDefinition = definition;
 
         Health = health;
-
         Mana = mana;
-
+        MaximumHealth = health;
+        MaximumMana = mana;
 
         Experience = experience;
-
         Level = level;
 
-
         Inventory = new Inventory();
-
         Equipment = new Equipment();
-
         Attributes = new Attributes();
-
         Skills = new Skills();
     }
 
-
-
-    public void GainExperience(
-        CharacterExperience experience)
+    public void GainExperience(CharacterExperience experience)
     {
         ArgumentNullException.ThrowIfNull(experience);
-
 
         Experience =
             new CharacterExperience(
                 Experience.Value + experience.Value);
     }
 
-
-
-    public LevelValidationResult ValidateLevel(
-        int requestedLevel)
+    public LevelValidationResult ValidateLevel(int requestedLevel)
     {
-        if (Id == Guid.Empty)
+        if (Id == Guid.Empty || requestedLevel <= 0 || Level is null)
         {
-            return new LevelValidationResult(
-                Id,
-                false);
+            return new LevelValidationResult(Id, false);
         }
 
-
-        if (requestedLevel <= 0)
-        {
-            return new LevelValidationResult(
-                Id,
-                false);
-        }
-
-
-        if (Level is null)
-        {
-            return new LevelValidationResult(
-                Id,
-                false);
-        }
-
-
-        return new LevelValidationResult(
-            Id,
-            true);
+        return new LevelValidationResult(Id, true);
     }
 
-
-
-    public void ApplyLevel(
-        int requestedLevel)
+    public void ApplyLevel(int requestedLevel)
     {
-        var validation =
-            ValidateLevel(
-                requestedLevel);
-
+        var validation = ValidateLevel(requestedLevel);
 
         if (!validation.Accepted)
         {
@@ -211,52 +156,38 @@ public sealed class Character : AggregateRoot
                 "Character level validation failed.");
         }
 
+        var levelsGained =
+            requestedLevel - Level.Value;
 
-        Level =
-            new CharacterLevel(
-                requestedLevel);
+        if (levelsGained > 0 && _classDefinition is not null)
+        {
+            MaximumHealth =
+                new Health(
+                    MaximumHealth.Value +
+                    (_classDefinition.HealthGrowth * levelsGained));
+
+            MaximumMana =
+                new Mana(
+                    MaximumMana.Value +
+                    (_classDefinition.ManaGrowth * levelsGained));
+        }
+
+        Level = new CharacterLevel(requestedLevel);
     }
-
-
 
     public EvolutionValidationResult ValidateEvolution()
     {
-        if (Id == Guid.Empty)
+        if (Id == Guid.Empty || Experience is null || Level is null)
         {
-            return new EvolutionValidationResult(
-                Id,
-                false);
+            return new EvolutionValidationResult(Id, false);
         }
 
-
-        if (Experience is null)
-        {
-            return new EvolutionValidationResult(
-                Id,
-                false);
-        }
-
-
-        if (Level is null)
-        {
-            return new EvolutionValidationResult(
-                Id,
-                false);
-        }
-
-
-        return new EvolutionValidationResult(
-            Id,
-            true);
+        return new EvolutionValidationResult(Id, true);
     }
-
-
 
     public void ApplyEvolution()
     {
-        var validation =
-            ValidateEvolution();
-
+        var validation = ValidateEvolution();
 
         if (!validation.Accepted)
         {
@@ -265,33 +196,21 @@ public sealed class Character : AggregateRoot
         }
     }
 
-
-
     public EvolutionApplicationValidationResult ValidateCompositeEvolution(
         IReadOnlyCollection<EvolutionEffect> effects)
     {
         if (effects is null || effects.Count == 0)
         {
-            return new EvolutionApplicationValidationResult(
-                Id,
-                false);
+            return new EvolutionApplicationValidationResult(Id, false);
         }
 
-
-        return new EvolutionApplicationValidationResult(
-            Id,
-            true);
+        return new EvolutionApplicationValidationResult(Id, true);
     }
-
-
 
     public void ApplyCompositeEvolution(
         IReadOnlyCollection<EvolutionEffect> effects)
     {
-        var validation =
-            ValidateCompositeEvolution(
-                effects);
-
+        var validation = ValidateCompositeEvolution(effects);
 
         if (!validation.Accepted)
         {
@@ -300,13 +219,10 @@ public sealed class Character : AggregateRoot
         }
     }
 
-
-
     public void ApplyProgressionGrowth(
         GrowthResult growthResult)
     {
         ArgumentNullException.ThrowIfNull(growthResult);
-
 
         if (growthResult.CharacterId != Id)
         {
@@ -314,8 +230,6 @@ public sealed class Character : AggregateRoot
                 "Growth result does not belong to this Character.");
         }
 
-
-        ApplyLevel(
-            growthResult.CurrentLevel);
+        ApplyLevel(growthResult.CurrentLevel);
     }
 }

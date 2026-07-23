@@ -5,4 +5,5 @@ namespace ProjectVictory.Domain.Runtime;
 public sealed record RuntimeExecutionContext(
     Guid RuntimeId,
     Guid CharacterId,
-    bool Initialized);
+    bool Initialized,
+    CharacterRuntimeState? CharacterState = null);

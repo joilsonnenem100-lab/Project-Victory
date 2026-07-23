@@ -1,0 +1,3 @@
+- PV-TOOLS-001A — Smoke Test Project Foundation
+- PROJECT-VICTORY-AI-BOOTSTRAP.md
+- Snapshot atual do projeto

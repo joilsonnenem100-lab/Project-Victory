@@ -136,6 +136,7 @@ export default function RegisterPage(
                     </h1>
 
 
+
                     <input
                         type="email"
                         placeholder="E-mail"
@@ -164,6 +165,7 @@ export default function RegisterPage(
                                 "var(--pv-font-family-primary)"
                         }}
                     />
+
 
 
                     <input
@@ -196,20 +198,15 @@ export default function RegisterPage(
                     />
 
 
-                    <Button
-                        onClick={
-                            () =>
-                            {
-                                return;
-                            }
-                        }
-                    >
-                        {
-                            loading
-                                ? "Criando..."
-                                : "Criar Conta"
-                        }
-                    </Button>
+
+                   <Button type="submit">
+    {
+        loading
+            ? "Criando..."
+            : "Criar Conta"
+    }
+</Button>
+
 
 
                     <Button
@@ -217,6 +214,7 @@ export default function RegisterPage(
                     >
                         Voltar para Login
                     </Button>
+
 
 
                     {
@@ -228,6 +226,7 @@ export default function RegisterPage(
                             />
                         )
                     }
+
 
 
                     {

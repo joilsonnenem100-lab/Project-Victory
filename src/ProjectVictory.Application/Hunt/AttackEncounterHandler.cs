@@ -1,8 +1,8 @@
 using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
+using ProjectVictory.Application.VerticalSlice;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Hunt;
-using ProjectVictory.Domain.ValueObjects;
 
 namespace ProjectVictory.Application.Hunt;
 
@@ -18,6 +18,8 @@ public sealed class AttackEncounterHandler
 
     private readonly IProgressionProcessor _progressionProcessor;
 
+    private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
+
 
     private const int AttackDamage = 5;
 
@@ -28,7 +30,8 @@ public sealed class AttackEncounterHandler
         IHuntRepository huntRepository,
         ICharacterRepository characterRepository,
         IRewardProcessor rewardProcessor,
-        IProgressionProcessor progressionProcessor)
+        IProgressionProcessor progressionProcessor,
+        IRuntimeExecutionStateStore runtimeExecutionStateStore)
     {
         _encounterStateStore =
             encounterStateStore;
@@ -44,6 +47,9 @@ public sealed class AttackEncounterHandler
 
         _progressionProcessor =
             progressionProcessor;
+
+        _runtimeExecutionStateStore =
+            runtimeExecutionStateStore;
     }
 
 
@@ -55,6 +61,52 @@ public sealed class AttackEncounterHandler
         var encounter =
             _encounterStateStore.Get(
                 command.EncounterId);
+
+
+
+        var hunt =
+            await _huntRepository.GetByIdAsync(
+                encounter.HuntId,
+                cancellationToken);
+
+
+
+        if (hunt is null)
+        {
+            throw new InvalidOperationException(
+                "Hunt not found.");
+        }
+
+
+
+        var runtimeContext =
+            _runtimeExecutionStateStore.Get(
+                hunt.RuntimeId);
+
+
+
+        var characterState =
+            runtimeContext.CharacterState;
+
+
+
+        if (characterState is null)
+        {
+            throw new InvalidOperationException(
+                "Character runtime state not initialized.");
+        }
+
+
+
+        if (encounter.IsFinished())
+        {
+            throw new InvalidOperationException(
+                "Combat already finished.");
+        }
+
+
+
+        encounter.Activate();
 
 
 
@@ -79,22 +131,14 @@ public sealed class AttackEncounterHandler
 
         int level = 0;
 
+        IReadOnlyList<RewardDrop> drops =
+            [];
+
 
 
         if (monsterDefeated)
         {
-            var hunt =
-                await _huntRepository.GetByIdAsync(
-                    encounter.HuntId,
-                    cancellationToken);
-
-
-
-            if (hunt is null)
-            {
-                throw new InvalidOperationException(
-                    "Hunt not found.");
-            }
+            encounter.Victory();
 
 
 
@@ -131,6 +175,11 @@ public sealed class AttackEncounterHandler
 
 
 
+            drops =
+                rewardResult.Drops;
+
+
+
             var progressionResult =
                 _progressionProcessor.Process(
                     new ProgressionRequest(
@@ -140,8 +189,8 @@ public sealed class AttackEncounterHandler
 
 
             character.GainExperience(
-    new ProjectVictory.Domain.ValueObjects.Experience(
-        progressionResult.Experience));
+                new ProjectVictory.Domain.ValueObjects.Experience(
+                    progressionResult.Experience));
 
 
 
@@ -163,8 +212,14 @@ public sealed class AttackEncounterHandler
             target.CurrentHealth,
             target.MaximumHealth,
             monsterDefeated,
+            characterState.CurrentHealth,
+            characterState.CurrentMana,
+            false,
+            encounter.IsFinished(),
+            encounter.State.ToString(),
             experience,
             gold,
-            level);
+            level,
+            drops);
     }
 }

@@ -7,6 +7,15 @@ namespace ProjectVictory.Application.Hunt;
 
 public sealed class EncounterGenerator
 {
+    private static readonly Guid RatId =
+        Guid.Parse("10000000-0000-0000-0000-000000000001");
+
+
+    private static readonly Guid CaveRatId =
+        Guid.Parse("10000000-0000-0000-0000-000000000002");
+
+
+
     public ActiveEncounter Generate(
         Guid huntId)
     {
@@ -22,7 +31,9 @@ public sealed class EncounterGenerator
             new List<EncounterMonsterState>
             {
                 CreateRat(),
+
                 CreateCaveRat(),
+
                 CreateRat()
             };
 
@@ -39,7 +50,7 @@ public sealed class EncounterGenerator
     {
         return new EncounterMonsterState(
             Guid.NewGuid(),
-            Guid.NewGuid(),
+            RatId,
             "Rat",
             20);
     }
@@ -50,7 +61,7 @@ public sealed class EncounterGenerator
     {
         return new EncounterMonsterState(
             Guid.NewGuid(),
-            Guid.NewGuid(),
+            CaveRatId,
             "Cave Rat",
             50);
     }

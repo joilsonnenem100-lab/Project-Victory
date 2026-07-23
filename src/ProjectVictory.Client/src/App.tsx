@@ -1,12 +1,9 @@
-// src/ProjectVictory.Client/src/App.tsx
-
 import { useState } from "react";
 
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import CharacterSelectionPage from "./pages/CharacterSelectionPage";
 import GamePage from "./pages/GamePage";
-import EntryExperiencePage from "./pages/EntryExperiencePage";
 
 import {
     getCharacters,
@@ -14,23 +11,23 @@ import {
 }
 from "./services/characterService";
 
-
 import type { GameState } from "./models/game";
+import type { Character } from "./models/character";
 
 
 
 export default function App()
 {
     const [authenticated, setAuthenticated] =
-        useState<boolean>(false);
+        useState(false);
 
 
     const [registering, setRegistering] =
-        useState<boolean>(false);
+        useState(false);
 
 
-    const [entryExperience, setEntryExperience] =
-        useState<boolean>(false);
+    const [characters, setCharacters] =
+        useState<Character[]>([]);
 
 
     const [gameState, setGameState] =
@@ -38,22 +35,43 @@ export default function App()
 
 
 
-    async function loadCharacter()
+    async function loadCharacters()
     {
-        const characters =
+        const result =
             await getCharacters();
 
 
-        if (characters.length === 0)
-        {
-            setGameState(null);
-
-            return;
-        }
+        setCharacters(
+            result
+        );
+    }
 
 
-        const character =
-            characters[0];
+
+    async function handleCreateCharacter(
+        name: string,
+        characterClass: string
+    )
+    {
+        await createCharacter(
+            name,
+            characterClass
+        );
+
+
+        await loadCharacters();
+    }
+
+
+
+    function enterWorld(
+        character: Character
+    )
+    {
+        console.log(
+            "ENTER WORLD CHARACTER:",
+            character
+        );
 
 
         setGameState(
@@ -62,7 +80,7 @@ export default function App()
                     character.accountId,
 
                 characterId:
-                    character.id,
+                    character.characterId,
 
                 level:
                     character.level,
@@ -105,22 +123,6 @@ export default function App()
 
 
 
-    async function handleCreateCharacter(
-        name: string,
-        characterClass: string
-    )
-    {
-        await createCharacter(
-            name,
-            characterClass
-        );
-
-
-        await loadCharacter();
-    }
-
-
-
     if (!authenticated)
     {
         if (registering)
@@ -143,9 +145,7 @@ export default function App()
                     {
                         setAuthenticated(true);
 
-                        await loadCharacter();
-
-                        setEntryExperience(true);
+                        await loadCharacters();
                     }
                 }
 
@@ -153,22 +153,6 @@ export default function App()
                     () =>
                     {
                         setRegistering(true);
-                    }
-                }
-            />
-        );
-    }
-
-
-
-    if (entryExperience)
-    {
-        return (
-            <EntryExperiencePage
-                onContinue={
-                    () =>
-                    {
-                        setEntryExperience(false);
                     }
                 }
             />
@@ -197,12 +181,16 @@ export default function App()
     return (
         <CharacterSelectionPage
 
+            characters={
+                characters
+            }
+
             onCharacterCreated={
-                loadCharacter
+                handleCreateCharacter
             }
 
             onEnterWorld={
-                loadCharacter
+                enterWorld
             }
 
         />

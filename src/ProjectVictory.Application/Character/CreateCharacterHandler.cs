@@ -1,18 +1,18 @@
-// src/ProjectVictory.Application/Character/CreateCharacterHandler.cs
-
 using ProjectVictory.Application.Session;
+
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.ValueObjects;
 
+using CharacterEntity = ProjectVictory.Domain.Entities.Character;
 using CharacterExperience = ProjectVictory.Domain.ValueObjects.Experience;
-using CharacterLevel = ProjectVictory.Domain.ValueObjects.Level;
 
 namespace ProjectVictory.Application.Character;
 
 public sealed class CreateCharacterHandler
 {
     private readonly ICharacterRepository _characterRepository;
+
     private readonly ICurrentPlayerContext _currentPlayerContext;
 
 
@@ -20,10 +20,12 @@ public sealed class CreateCharacterHandler
         ICharacterRepository characterRepository,
         ICurrentPlayerContext currentPlayerContext)
     {
-        _characterRepository = characterRepository;
-        _currentPlayerContext = currentPlayerContext;
-    }
+        _characterRepository =
+            characterRepository;
 
+        _currentPlayerContext =
+            currentPlayerContext;
+    }
 
 
     public async Task<Guid> Handle(
@@ -38,8 +40,9 @@ public sealed class CreateCharacterHandler
                 command.CharacterClass);
 
 
+
         var character =
-            new Domain.Entities.Character(
+            new CharacterEntity(
                 Guid.NewGuid(),
 
                 new AccountId(
@@ -57,12 +60,10 @@ public sealed class CreateCharacterHandler
                 new Mana(
                     definition.InitialMana),
 
-                new CharacterExperience(
-                    0),
+                new CharacterExperience(0),
 
-                new CharacterLevel(
-                    1)
-            );
+                new Level(1));
+
 
 
         await _characterRepository.AddAsync(

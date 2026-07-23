@@ -1,8 +1,8 @@
 export interface Character
 {
-    id: string;
-
     accountId: string;
+
+    characterId: string;
 
     name: string;
 

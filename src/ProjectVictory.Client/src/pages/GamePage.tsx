@@ -15,6 +15,7 @@ interface Props
 }
 
 
+
 export default function GamePage(
     {
         gameState,
@@ -22,6 +23,12 @@ export default function GamePage(
     }: Props
 )
 {
+    console.log(
+        "GAME PAGE STATE:",
+        gameState
+    );
+
+
     return (
         <WorldScenePage
             world={{

@@ -1,21 +1,73 @@
-namespace ProjectVictory.Domain.Entities
+namespace ProjectVictory.Domain.Entities;
+
+public sealed class Skills
 {
-    public sealed class Skills
+    public int Fist { get; private set; } = 10;
+    public int Club { get; private set; } = 10;
+    public int Sword { get; private set; } = 10;
+    public int Axe { get; private set; } = 10;
+    public int Distance { get; private set; } = 10;
+    public int Shielding { get; private set; } = 10;
+    public int MagicLevel { get; private set; } = 10;
+    public int Fishing { get; private set; } = 10;
+
+
+    public void IncreaseFist(int amount)
     {
-        public int Fist { get; private set; } = 10;
+        ValidateIncrease(amount);
+        Fist += amount;
+    }
 
-        public int Club { get; private set; } = 10;
+    public void IncreaseClub(int amount)
+    {
+        ValidateIncrease(amount);
+        Club += amount;
+    }
 
-        public int Sword { get; private set; } = 10;
+    public void IncreaseSword(int amount)
+    {
+        ValidateIncrease(amount);
+        Sword += amount;
+    }
 
-        public int Axe { get; private set; } = 10;
+    public void IncreaseAxe(int amount)
+    {
+        ValidateIncrease(amount);
+        Axe += amount;
+    }
 
-        public int Distance { get; private set; } = 10;
+    public void IncreaseDistance(int amount)
+    {
+        ValidateIncrease(amount);
+        Distance += amount;
+    }
 
-        public int Shielding { get; private set; } = 10;
+    public void IncreaseShielding(int amount)
+    {
+        ValidateIncrease(amount);
+        Shielding += amount;
+    }
 
-        public int MagicLevel { get; private set; } = 10;
+    public void IncreaseMagicLevel(int amount)
+    {
+        ValidateIncrease(amount);
+        MagicLevel += amount;
+    }
 
-        public int Fishing { get; private set; } = 10;
+    public void IncreaseFishing(int amount)
+    {
+        ValidateIncrease(amount);
+        Fishing += amount;
+    }
+
+
+    private static void ValidateIncrease(int amount)
+    {
+        if (amount <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(amount),
+                "Skill increase must be greater than zero.");
+        }
     }
 }

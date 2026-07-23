@@ -8,11 +8,15 @@ public sealed class Hunt
 
     public Guid CharacterId { get; }
 
+    public Guid RuntimeId { get; }
+
     public HuntState State { get; private set; }
+
 
     public Hunt(
         Guid id,
-        Guid characterId)
+        Guid characterId,
+        Guid runtimeId)
     {
         if (characterId == Guid.Empty)
         {
@@ -21,10 +25,19 @@ public sealed class Hunt
                 nameof(characterId));
         }
 
+        if (runtimeId == Guid.Empty)
+        {
+            throw new ArgumentException(
+                "RuntimeId is required.",
+                nameof(runtimeId));
+        }
+
         Id = id;
         CharacterId = characterId;
+        RuntimeId = runtimeId;
         State = HuntState.Created;
     }
+
 
     public void Start()
     {
@@ -37,6 +50,7 @@ public sealed class Hunt
         State = HuntState.Running;
     }
 
+
     public void Complete()
     {
         if (State != HuntState.Running)
@@ -47,6 +61,7 @@ public sealed class Hunt
 
         State = HuntState.Completed;
     }
+
 
     public void CompleteAfterCombat()
     {
@@ -59,6 +74,7 @@ public sealed class Hunt
         State = HuntState.Completed;
     }
 
+
     public void Fail()
     {
         if (State != HuntState.Running)
@@ -69,6 +85,7 @@ public sealed class Hunt
 
         State = HuntState.Failed;
     }
+
 
     public void Cancel()
     {

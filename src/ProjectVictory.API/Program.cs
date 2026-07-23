@@ -15,6 +15,7 @@ using ProjectVictory.Application.Item;
 using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Application.Session;
+using ProjectVictory.Application.VerticalSlice;
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Hunt;
@@ -29,11 +30,8 @@ using ProjectVictory.Persistence.Item;
 using System.Text;
 using System.Text.Json.Serialization;
 
-
 var builder =
     WebApplication.CreateBuilder(args);
-
-
 
 builder.Services
     .AddControllers()
@@ -42,8 +40,6 @@ builder.Services
         options.JsonSerializerOptions.Converters.Add(
             new JsonStringEnumConverter());
     });
-
-
 
 builder.Services.AddCors(options =>
 {
@@ -59,34 +55,22 @@ builder.Services.AddCors(options =>
         });
 });
 
-
-
 builder.Services.AddHttpContextAccessor();
-
-
 
 builder.Services.AddScoped<
     ICurrentPlayerContext,
     HttpCurrentPlayerContext>();
 
-
-
 builder.Services.AddScoped<
     JwtTokenGenerator>();
-
-
 
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 
 builder.Services.AddProblemDetails();
 
-
-
 var jwtKey =
     builder.Configuration["Jwt:Key"]
     ?? "ProjectVictoryDevelopmentSecretKey123456";
-
-
 
 builder.Services
     .AddAuthentication(
@@ -105,14 +89,10 @@ builder.Services
                 ValidateIssuer = false,
 
                 ValidateAudience = false
-            };
-    });
-
-
+};
+});
 
 builder.Services.AddAuthorization();
-
-
 
 builder.Services.AddDbContext<ProjectVictoryDbContext>(
     options =>
@@ -120,8 +100,6 @@ builder.Services.AddDbContext<ProjectVictoryDbContext>(
         options.UseSqlite(
             "Data Source=projectvictory.db");
     });
-
-
 
 builder.Services.AddScoped<
     IAccountRepository,
@@ -139,8 +117,6 @@ builder.Services.AddScoped<
     IItemDefinitionRepository,
     ItemDefinitionRepository>();
 
-
-
 builder.Services.AddScoped<
     IPasswordHasher,
     PasswordHasher>();
@@ -157,17 +133,16 @@ builder.Services.AddScoped<
     IProgressionProcessor,
     ProgressionProcessor>();
 
-
-
 builder.Services.AddScoped<
     EncounterGenerator>();
-
 
 builder.Services.AddSingleton<
     IEncounterStateStore,
     EncounterStateStore>();
 
-
+builder.Services.AddSingleton<
+    IRuntimeExecutionStateStore,
+    RuntimeExecutionStateStore>();
 
 builder.Services.AddScoped<
     CreateAccountHandler>();
@@ -193,12 +168,11 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     GetItemDefinitionHandler>();
 
-
+builder.Services.AddScoped<
+    CreateRuntimeExecutionHandler>();
 
 var app =
     builder.Build();
-
-
 
 using (var scope = app.Services.CreateScope())
 {
@@ -206,29 +180,21 @@ using (var scope = app.Services.CreateScope())
         scope.ServiceProvider
             .GetRequiredService<ProjectVictoryDbContext>();
 
+    await context.Database.MigrateAsync();
 
     await ItemDefinitionSeed.ExecuteAsync(
         context);
 }
 
-
-
 app.UseExceptionHandler();
-
 
 app.UseCors(
     "ProjectVictoryClient");
 
-
 app.UseAuthentication();
-
 
 app.UseAuthorization();
 
-
-
 app.MapControllers();
-
-
 
 app.Run();

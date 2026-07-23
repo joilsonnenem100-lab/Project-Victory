@@ -1,3 +1,5 @@
+using ProjectVictory.Application.Reward;
+
 namespace ProjectVictory.Application.Hunt;
 
 public sealed record AttackEncounterResult(
@@ -6,6 +8,12 @@ public sealed record AttackEncounterResult(
     int CurrentHealth,
     int MaximumHealth,
     bool MonsterDefeated,
+    int PlayerHealth,
+    int PlayerMaximumHealth,
+    bool PlayerDefeated,
+    bool CombatFinished,
+    string CombatState,
     int Experience,
     int Gold,
-    int Level);
+    int Level,
+    IReadOnlyList<RewardDrop> Drops);

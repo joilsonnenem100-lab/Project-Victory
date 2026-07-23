@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ProjectVictory.Domain.Combat;
 
 namespace ProjectVictory.Domain.Hunt;
 
@@ -12,11 +13,16 @@ public sealed class ActiveEncounter
 
     public Guid HuntId { get; }
 
+
     public IReadOnlyCollection<EncounterMonsterState> Monsters =>
         _monsters;
 
 
     public Guid CurrentTargetId { get; private set; }
+
+
+    public CombatState State { get; private set; }
+
 
 
     public ActiveEncounter(
@@ -40,7 +46,8 @@ public sealed class ActiveEncounter
         }
 
 
-        ArgumentNullException.ThrowIfNull(monsters);
+        ArgumentNullException.ThrowIfNull(
+            monsters);
 
 
         if (monsters.Count == 0)
@@ -54,13 +61,20 @@ public sealed class ActiveEncounter
 
         HuntId = huntId;
 
-        _monsters = new List<EncounterMonsterState>(
-            monsters);
+
+        _monsters =
+            new List<EncounterMonsterState>(
+                monsters);
 
 
         CurrentTargetId =
             _monsters[0].Id;
+
+
+        State =
+            CombatState.Created;
     }
+
 
 
     public EncounterMonsterState GetCurrentTarget()
@@ -82,6 +96,42 @@ public sealed class ActiveEncounter
     }
 
 
+
+    public void Activate()
+    {
+        if (State == CombatState.Created)
+        {
+            State =
+                CombatState.Active;
+        }
+    }
+
+
+
+    public void Victory()
+    {
+        State =
+            CombatState.Victory;
+    }
+
+
+
+    public void Defeat()
+    {
+        State =
+            CombatState.Defeat;
+    }
+
+
+
+    public bool IsFinished()
+    {
+        return State == CombatState.Victory ||
+               State == CombatState.Defeat;
+    }
+
+
+
     public void SelectNextTarget()
     {
         var next =
@@ -99,6 +149,7 @@ public sealed class ActiveEncounter
         CurrentTargetId =
             next.Id;
     }
+
 
 
     public bool IsCompleted()

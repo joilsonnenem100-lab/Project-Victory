@@ -1,0 +1,102 @@
+Equipe de Engenharia,
+
+Contrato aprovado:
+
+PV-TOOLS-001A — Smoke Test Project Foundation
+
+
+Antes de qualquer análise ou implementação:
+
+Leia obrigatoriamente:
+
+docs/architecture/master/knowledge-base/PROJECT-VICTORY-AI-BOOTSTRAP.md
+
+Após leitura, confirme:
+
+- documento carregado;
+- regras aplicadas;
+- entendimento das restrições do projeto.
+
+
+Objetivo:
+
+Criar a fundação inicial do sistema de Smoke Test do Project-Victory.
+
+Esta ferramenta deve permitir validação automática rápida do ciclo principal do jogo sem alterar sistemas de produção.
+
+
+Fluxo que será protegido futuramente:
+
+Login
+
+↓
+
+Character
+
+↓
+
+World
+
+↓
+
+Hunt
+
+↓
+
+Combat
+
+↓
+
+Reward
+
+↓
+
+Experience
+
+
+Escopo deste contrato:
+
+Criar somente a base do projeto de testes.
+
+Incluído:
+
+- criação do projeto de teste;
+- configuração inicial;
+- estrutura preparada para testes automáticos;
+- primeiro teste executável.
+
+
+Não implementar neste contrato:
+
+- validação completa de gameplay;
+- frontend;
+- navegador;
+- Playwright;
+- screenshots;
+- relatórios avançados;
+- CI/CD.
+
+
+Antes da implementação realizar:
+
+1. Identificar onde o projeto de testes deve ser criado.
+
+2. Verificar estrutura atual da solução.
+
+3. Informar arquivos/projetos que serão adicionados ou alterados.
+
+4. Avaliar impacto.
+
+
+Entrega esperada:
+
+- arquivos criados;
+- configurações adicionadas;
+- build executado;
+- teste executado;
+- resultado obtido.
+O Smoke Test deve permanecer simples e focado no fluxo crítico do jogador. 
+Qualquer expansão significativa deve ser avaliada separadamente para evitar transformar a ferramenta em um sistema complexo de testes.
+
+
+Implementar somente o escopo deste contrato.
