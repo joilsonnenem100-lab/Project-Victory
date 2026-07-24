@@ -2,6 +2,7 @@ using ProjectVictory.Application.Combat;
 using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Application.Session;
+using ProjectVictory.Application.VerticalSlice;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Hunt;
 
@@ -17,13 +18,14 @@ public sealed class ExecuteHuntHandler
 
     private readonly EncounterGenerator _encounterGenerator;
 
-
+    private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
 
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
         ICharacterRepository characterRepository,
         IEncounterStateStore encounterStateStore,
-        EncounterGenerator encounterGenerator)
+        EncounterGenerator encounterGenerator,
+        IRuntimeExecutionStateStore runtimeExecutionStateStore)
     {
         _huntRepository = huntRepository;
 
@@ -32,9 +34,9 @@ public sealed class ExecuteHuntHandler
         _encounterStateStore = encounterStateStore;
 
         _encounterGenerator = encounterGenerator;
+
+        _runtimeExecutionStateStore = runtimeExecutionStateStore;
     }
-
-
 
     public async Task<ExecuteHuntResult> Handle(
         ExecuteHuntCommand command,
@@ -42,14 +44,10 @@ public sealed class ExecuteHuntHandler
     {
         ArgumentNullException.ThrowIfNull(command);
 
-
-
         var character =
             await _characterRepository.GetByIdAsync(
                 command.CharacterId,
                 cancellationToken);
-
-
 
         if (character is null)
         {
@@ -57,41 +55,31 @@ public sealed class ExecuteHuntHandler
                 "Character not found.");
         }
 
-
+        var runtimeContext =
+            _runtimeExecutionStateStore.GetByCharacterId(
+                character.Id);
 
         var hunt =
             new Domain.Hunt.Hunt(
                 Guid.NewGuid(),
                 character.Id,
-                command.RuntimeId);
-
-
+                runtimeContext.RuntimeId);
 
         hunt.Start();
-
-
 
         await _huntRepository.AddAsync(
             hunt,
             cancellationToken);
 
-
-
         var encounter =
             _encounterGenerator.Generate(
                 hunt.Id);
 
-
-
         _encounterStateStore.Add(
             encounter);
 
-
-
         var target =
             encounter.GetCurrentTarget();
-
-
 
         return new ExecuteHuntResult(
             hunt.Id,

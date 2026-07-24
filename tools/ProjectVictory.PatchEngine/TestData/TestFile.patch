@@ -1,0 +1,12 @@
+diff --git a/TestFile.Modified.txt b/TestFile.Modified.txt
+--- a/TestFile.Modified.txt
++++ b/TestFile.Modified.txt
+@@ -1,5 +1,6 @@
+ Line 1
+ Line 2
+-Line 3
++Line 3 - Modified
+ Line 4
+ Line 5
++Line 6
+

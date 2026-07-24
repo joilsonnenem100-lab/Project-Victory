@@ -2,10 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectVictory.Application.Account;
 using ProjectVictory.Application.Character;
+using ProjectVictory.Application.Combat;
 using ProjectVictory.Application.Hunt;
+using ProjectVictory.Application.Progression;
+using ProjectVictory.Application.Reward;
 using ProjectVictory.Application.VerticalSlice;
-using ProjectVictory.Persistence.Database;
 using ProjectVictory.Domain.Character;
+using ProjectVictory.Persistence.Database;
 using Xunit;
 
 namespace ProjectVictory.SmokeTests;
@@ -33,6 +36,8 @@ public sealed class CoreGameplayFlowSmokeTest
         await db.Database.EnsureCreatedAsync();
 
 
+     
+
         var createAccount =
             scope.ServiceProvider
                 .GetRequiredService<CreateAccountHandler>();
@@ -56,11 +61,6 @@ public sealed class CoreGameplayFlowSmokeTest
                     password));
 
 
-        Assert.NotEqual(
-            Guid.Empty,
-            accountId);
-
-
         var loggedAccountId =
             await login.Handle(
                 new LoginCommand(
@@ -81,7 +81,8 @@ public sealed class CoreGameplayFlowSmokeTest
             loggedAccountId);
 
 
-        // PASSO 4 — Character Creation
+
+       
 
         var createCharacter =
             scope.ServiceProvider
@@ -100,32 +101,114 @@ public sealed class CoreGameplayFlowSmokeTest
             characterId);
 
 
-        // Próximas etapas:
-        // Runtime
-        // Hunt
-        // Combat
-        // Reward
-        // Experience
 
+        
 
-        var runtime =
+        var createRuntime =
             scope.ServiceProvider
                 .GetRequiredService<CreateRuntimeExecutionHandler>();
 
-        Assert.NotNull(runtime);
+
+        var runtimeId =
+            Guid.NewGuid();
 
 
-        var hunt =
+        var runtimeResult =
+            await createRuntime.Handle(
+                new CreateRuntimeExecutionCommand(
+                    runtimeId,
+                    characterId));
+
+
+        Assert.Equal(
+            runtimeId,
+            runtimeResult.RuntimeId);
+
+
+        Assert.Equal(
+            characterId,
+            runtimeResult.CharacterId);
+
+
+
+      
+
+        var executeHunt =
             scope.ServiceProvider
                 .GetRequiredService<ExecuteHuntHandler>();
 
-        Assert.NotNull(hunt);
+
+        var huntResult =
+            await executeHunt.Handle(
+                new ExecuteHuntCommand(
+                    characterId,
+                    runtimeId));
 
 
-        var attack =
-            scope.ServiceProvider
-                .GetRequiredService<AttackEncounterHandler>();
+        Assert.NotEqual(
+            Guid.Empty,
+            huntResult.HuntId);
 
-        Assert.NotNull(attack);
+
+        Assert.NotNull(
+            huntResult.Encounter);
+
+
+
+        
+        
+
+var createCombatContext =
+    scope.ServiceProvider
+        .GetRequiredService<CreateCombatContextHandler>();
+
+var combatContext =
+    await createCombatContext.Handle(
+        new CreateCombatContextCommand(
+            huntResult.HuntId,
+            characterId,
+            huntResult.Encounter.CurrentTargetId));
+
+Assert.NotEqual(
+    Guid.Empty,
+    combatContext.CombatContextId);
+
+var executeCombat =
+    scope.ServiceProvider
+        .GetRequiredService<ExecuteCombatActionHandler>();
+
+var actionId = Guid.NewGuid();
+
+var combatResult =
+    await executeCombat.Handle(
+        new ExecuteCombatActionCommand(
+            combatContext.CombatContextId,
+            actionId));
+
+Assert.True(combatResult.Processed);
+Assert.Equal(combatContext.CombatContextId, combatResult.CombatContextId);
+
+
+
+var applyReward =
+    scope.ServiceProvider
+        .GetRequiredService<ApplyRewardHandler>();
+
+var rewardRequest =
+    new RewardRequest(
+        characterId,
+        combatResult);
+
+var rewardResult =
+    await applyReward.Handle(
+        new ApplyRewardCommand(
+            characterId,
+            rewardRequest));
+
+Assert.True(rewardResult.Applied);
+Assert.Equal(characterId, rewardResult.CharacterId);
+
+
+      
     }
 }

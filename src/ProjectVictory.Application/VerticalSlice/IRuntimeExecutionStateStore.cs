@@ -9,4 +9,7 @@ public interface IRuntimeExecutionStateStore
 
     RuntimeExecutionContext Get(
         Guid runtimeId);
+
+    RuntimeExecutionContext GetByCharacterId(
+        Guid characterId);
 }

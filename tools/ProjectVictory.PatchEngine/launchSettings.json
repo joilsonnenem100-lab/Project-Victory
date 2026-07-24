@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "ProjectVictory.PatchEngine": {
+      "commandName": "Project",
+      "commandLineArgs": "preview sample.patch",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}

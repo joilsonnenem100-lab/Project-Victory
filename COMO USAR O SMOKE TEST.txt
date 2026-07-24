@@ -1,0 +1,100 @@
+Como vamos fazer passo a passo
+
+Eu vou te guiar assim:
+
+Passo 1
+
+Subir o Backend:
+
+Na pasta:
+
+src/ProjectVictory.API
+
+Executar:
+
+dotnet run
+
+Esperar aparecer algo como:
+
+Now listening on http://localhost:xxxx
+Passo 2
+
+Subir o Client:
+
+Na pasta:
+
+src/ProjectVictory.Client
+
+Executar:
+
+npm run dev
+
+Abrir:
+
+http://localhost:5173
+Passo 3
+
+Teste de jogador:
+
+Vamos registrar:
+
+Conta nova
+
+Validar:
+
+criação;
+login;
+token;
+entrada.
+Passo 4
+
+Character:
+
+Criar:
+
+Nome:
+TesteSmoke
+
+Escolher uma classe existente:
+
+Knight
+Paladin
+Sorcerer
+Druid
+Monk
+
+Validar:
+
+Character criado;
+seleção funcionando.
+Passo 5
+
+Runtime:
+
+Entrar no mundo.
+
+Validar:
+
+Runtime criado;
+personagem carregado.
+Passo 6
+
+Gameplay:
+
+Executar:
+
+iniciar Hunt;
+atacar Rat;
+finalizar combate.
+
+Esperar:
+
+Combat Result
+
+↓
+
+Reward
+
+↓
+
+Experience

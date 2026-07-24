@@ -1,0 +1,24 @@
+PVPATCH 1.0
+
+PATCH-ID:
+PV-TOOLS-002
+
+DESCRIPTION:
+Smoke Test Observability Upgrade
+
+FILE:
+tests/ProjectVictory.SmokeTests/CoreGameplayFlowSmokeTest.cs
+
+@@
+ using Xunit;
+ using FluentAssertions;
+-using OldNamespace;
++using ProjectVictory.SmokeTests.Reporting;
+
+ public class CoreGameplayFlowSmokeTest
+ {
+-    // old implementation
++    // new implementation
+ }
+
+END FILE

@@ -18,11 +18,13 @@ using ProjectVictory.Application.Session;
 using ProjectVictory.Application.VerticalSlice;
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
+using ProjectVictory.Domain.Combat;
 using ProjectVictory.Domain.Hunt;
 using ProjectVictory.Domain.Items;
 using ProjectVictory.Infrastructure.Services;
 using ProjectVictory.Persistence.Account;
 using ProjectVictory.Persistence.Character;
+using ProjectVictory.Persistence.Combat;
 using ProjectVictory.Persistence.Database;
 using ProjectVictory.Persistence.Database.Seed;
 using ProjectVictory.Persistence.Hunt;
@@ -89,8 +91,8 @@ builder.Services
                 ValidateIssuer = false,
 
                 ValidateAudience = false
-};
-});
+            };
+    });
 
 builder.Services.AddAuthorization();
 
@@ -112,6 +114,10 @@ builder.Services.AddScoped<
 builder.Services.AddSingleton<
     IHuntRepository,
     HuntRepository>();
+
+builder.Services.AddSingleton<
+    ICombatContextRepository,
+    CombatContextRepository>();
 
 builder.Services.AddScoped<
     IItemDefinitionRepository,

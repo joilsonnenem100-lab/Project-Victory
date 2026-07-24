@@ -8,6 +8,7 @@ public sealed class RuntimeExecutionStateStore :
 {
     private readonly ConcurrentDictionary<Guid, RuntimeExecutionContext> _contexts = new();
 
+    private readonly ConcurrentDictionary<Guid, Guid> _characterRuntimeIndex = new();
 
     public void Store(
         RuntimeExecutionContext context)
@@ -15,8 +16,10 @@ public sealed class RuntimeExecutionStateStore :
         ArgumentNullException.ThrowIfNull(context);
 
         _contexts[context.RuntimeId] = context;
-    }
 
+        _characterRuntimeIndex[context.CharacterId] =
+            context.RuntimeId;
+    }
 
     public RuntimeExecutionContext Get(
         Guid runtimeId)
@@ -30,5 +33,19 @@ public sealed class RuntimeExecutionStateStore :
         }
 
         return context;
+    }
+
+    public RuntimeExecutionContext GetByCharacterId(
+        Guid characterId)
+    {
+        if (!_characterRuntimeIndex.TryGetValue(
+                characterId,
+                out var runtimeId))
+        {
+            throw new InvalidOperationException(
+                "Runtime execution context not found for character.");
+        }
+
+        return Get(runtimeId);
     }
 }

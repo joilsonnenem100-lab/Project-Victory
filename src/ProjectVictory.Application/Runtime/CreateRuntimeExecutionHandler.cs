@@ -56,7 +56,8 @@ public sealed class CreateRuntimeExecutionHandler
                 true,
                 characterState);
 
-
+        Console.WriteLine(
+                $"STORE Runtime={context.RuntimeId} Character={context.CharacterId}");
 
         _runtimeExecutionStateStore.Store(
             context);

@@ -11,42 +11,37 @@ import {
 }
 from "./services/characterService";
 
+import {
+    enterGame
+}
+from "./services/gameService";
+
 import type { GameState } from "./models/game";
 import type { Character } from "./models/character";
-
-
 
 export default function App()
 {
     const [authenticated, setAuthenticated] =
         useState(false);
 
-
     const [registering, setRegistering] =
         useState(false);
-
 
     const [characters, setCharacters] =
         useState<Character[]>([]);
 
-
     const [gameState, setGameState] =
         useState<GameState | null>(null);
-
-
 
     async function loadCharacters()
     {
         const result =
             await getCharacters();
 
-
         setCharacters(
             result
         );
     }
-
-
 
     async function handleCreateCharacter(
         name: string,
@@ -58,13 +53,10 @@ export default function App()
             characterClass
         );
 
-
         await loadCharacters();
     }
 
-
-
-    function enterWorld(
+    async function enterWorld(
         character: Character
     )
     {
@@ -73,28 +65,31 @@ export default function App()
             character
         );
 
+        const result =
+            await enterGame();
 
         setGameState(
             {
                 accountId:
-                    character.accountId,
+                    result.accountId,
 
                 characterId:
-                    character.characterId,
+                    result.characterId,
+
+                runtimeId:
+                    result.runtimeId,
 
                 level:
-                    character.level,
+                    result.level,
 
                 experience:
-                    character.experience,
+                    result.experience,
 
                 characterName:
-                    character.name
+                    result.characterName
             }
         );
     }
-
-
 
     function updateCharacterProgression(
         experience: number,
@@ -109,19 +104,14 @@ export default function App()
                     return current;
                 }
 
-
                 return {
                     ...current,
-
                     experience,
-
                     level
                 };
             }
         );
     }
-
-
 
     if (!authenticated)
     {
@@ -137,7 +127,6 @@ export default function App()
             );
         }
 
-
         return (
             <LoginPage
                 onLoginSuccess={
@@ -148,7 +137,6 @@ export default function App()
                         await loadCharacters();
                     }
                 }
-
                 onRegister={
                     () =>
                     {
@@ -159,8 +147,6 @@ export default function App()
         );
     }
 
-
-
     if (gameState)
     {
         return (
@@ -168,7 +154,6 @@ export default function App()
                 gameState={
                     gameState
                 }
-
                 onCharacterProgressionUpdate={
                     updateCharacterProgression
                 }
@@ -176,23 +161,17 @@ export default function App()
         );
     }
 
-
-
     return (
         <CharacterSelectionPage
-
             characters={
                 characters
             }
-
             onCharacterCreated={
                 handleCreateCharacter
             }
-
             onEnterWorld={
                 enterWorld
             }
-
         />
     );
 }

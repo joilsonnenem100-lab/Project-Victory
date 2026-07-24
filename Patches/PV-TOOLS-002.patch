@@ -1,0 +1,47 @@
+diff --git a/tests/ProjectVictory.SmokeTests/CoreGameplayFlowSmokeTest.cs b/tests/ProjectVictory.SmokeTests/CoreGameplayFlowSmokeTest.cs
+--- a/tests/ProjectVictory.SmokeTests/CoreGameplayFlowSmokeTest.cs
++++ b/tests/ProjectVictory.SmokeTests/CoreGameplayFlowSmokeTest.cs
+@@
+     public async Task Core_Gameplay_Flow_Should_Complete()
+     {
++        SmokeTestReporter.Start();
++
+         var services = new ServiceCollection();
+@@
+         Assert.Equal(
+             accountId,
+             loggedAccountId);
++
++        SmokeTestReporter.StepPassed("Account");
++        SmokeTestReporter.StepPassed("Authentication");
+@@
+         Assert.NotEqual(
+             Guid.Empty,
+             characterId);
++
++        SmokeTestReporter.StepPassed("Character");
+@@
+         Assert.Equal(
+             characterId,
+             runtimeResult.CharacterId);
++
++        SmokeTestReporter.StepPassed("Enter Game");
++        SmokeTestReporter.StepPassed("Runtime");
+@@
+         Assert.NotNull(
+             huntResult.Encounter);
++
++        SmokeTestReporter.StepPassed("Hunt");
+@@
+ Assert.True(combatResult.Processed);
+ Assert.Equal(combatContext.CombatContextId, combatResult.CombatContextId);
++
++SmokeTestReporter.StepPassed("Combat");
+@@
+ Assert.True(rewardResult.Applied);
+ Assert.Equal(characterId, rewardResult.CharacterId);
++
++SmokeTestReporter.StepPassed("Reward");
++SmokeTestReporter.StepPassed("Experience");
++
++SmokeTestReporter.Finish();
