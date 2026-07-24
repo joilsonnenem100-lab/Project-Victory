@@ -55,7 +55,17 @@ public sealed class ApplyRewardHandler
         if (reward.Experience > 0)
         {
             character.GainExperience(
-                new global::ProjectVictory.Domain.ValueObjects.Experience(reward.Experience));
+                new global::ProjectVictory.Domain.ValueObjects.Experience(
+                    reward.Experience));
+        }
+
+        foreach (var drop in reward.Drops)
+        {
+            if (!string.IsNullOrWhiteSpace(drop.ItemName))
+            {
+                character.Inventory.AddItem(
+                    drop.ItemName);
+            }
         }
 
         await _characterRepository.UpdateAsync(

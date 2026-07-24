@@ -1,5 +1,3 @@
-// src/ProjectVictory.API/Program.cs
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,6 +9,7 @@ using ProjectVictory.Application.Character;
 using ProjectVictory.Application.Combat;
 using ProjectVictory.Application.Game;
 using ProjectVictory.Application.Hunt;
+using ProjectVictory.Application.Inventory;
 using ProjectVictory.Application.Item;
 using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
@@ -138,6 +137,9 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IProgressionProcessor,
     ProgressionProcessor>();
+
+builder.Services.AddScoped<
+    GetCharacterInventoryHandler>();
 
 builder.Services.AddScoped<
     EncounterGenerator>();

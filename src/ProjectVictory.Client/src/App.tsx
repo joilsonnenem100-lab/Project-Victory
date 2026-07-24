@@ -3,175 +3,137 @@ import { useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import CharacterSelectionPage from "./pages/CharacterSelectionPage";
-import GamePage from "./pages/GamePage";
+import PlayerInformationPage from "./pages/PlayerInformationPage";
+import InventoryPage from "./pages/InventoryPage";
+import RewardFeedbackPage from "./pages/RewardFeedbackPage";
 
-import {
-    getCharacters,
-    createCharacter
-}
-from "./services/characterService";
+import { startHunt } from "./services/huntService";
 
-import {
-    enterGame
-}
-from "./services/gameService";
-
-import type { GameState } from "./models/game";
 import type { Character } from "./models/character";
 
-export default function App()
+
+function App()
 {
-    const [authenticated, setAuthenticated] =
-        useState(false);
+    const [page, setPage] =
+        useState("login");
 
-    const [registering, setRegistering] =
-        useState(false);
+    const [selectedCharacter, setSelectedCharacter] =
+        useState<Character | null>(null);
 
-    const [characters, setCharacters] =
-        useState<Character[]>([]);
+    const [reward, setReward] =
+        useState<any>(null);
 
-    const [gameState, setGameState] =
-        useState<GameState | null>(null);
 
-    async function loadCharacters()
+
+    if (page === "login")
     {
-        const result =
-            await getCharacters();
-
-        setCharacters(
-            result
-        );
-    }
-
-    async function handleCreateCharacter(
-        name: string,
-        characterClass: string
-    )
-    {
-        await createCharacter(
-            name,
-            characterClass
-        );
-
-        await loadCharacters();
-    }
-
-    async function enterWorld(
-        character: Character
-    )
-    {
-        console.log(
-            "ENTER WORLD CHARACTER:",
-            character
-        );
-
-        const result =
-            await enterGame();
-
-        setGameState(
-            {
-                accountId:
-                    result.accountId,
-
-                characterId:
-                    result.characterId,
-
-                runtimeId:
-                    result.runtimeId,
-
-                level:
-                    result.level,
-
-                experience:
-                    result.experience,
-
-                characterName:
-                    result.characterName
-            }
-        );
-    }
-
-    function updateCharacterProgression(
-        experience: number,
-        level: number
-    )
-    {
-        setGameState(
-            current =>
-            {
-                if (!current)
-                {
-                    return current;
-                }
-
-                return {
-                    ...current,
-                    experience,
-                    level
-                };
-            }
-        );
-    }
-
-    if (!authenticated)
-    {
-        if (registering)
-        {
-            return (
-                <RegisterPage
-                    onBack={
-                        () =>
-                            setRegistering(false)
-                    }
-                />
-            );
-        }
-
         return (
             <LoginPage
-                onLoginSuccess={
-                    async () =>
-                    {
-                        setAuthenticated(true);
+                onLoginSuccess={() =>
+                {
+                    setPage("characters");
+                }}
 
-                        await loadCharacters();
-                    }
-                }
-                onRegister={
-                    () =>
-                    {
-                        setRegistering(true);
-                    }
-                }
+                onRegister={() =>
+                {
+                    setPage("register");
+                }}
             />
         );
     }
 
-    if (gameState)
+
+    if (page === "register")
     {
         return (
-            <GamePage
-                gameState={
-                    gameState
-                }
-                onCharacterProgressionUpdate={
-                    updateCharacterProgression
+            <RegisterPage
+                onBack={() =>
+                {
+                    setPage("login");
+                }}
+            />
+        );
+    }
+
+
+    if (page === "characters")
+    {
+        return (
+            <CharacterSelectionPage
+                onCharacterSelected={(character) =>
+                {
+                    setSelectedCharacter(character);
+                    setPage("player");
+                }}
+            />
+        );
+    }
+
+
+    if (page === "player")
+    {
+        if (!selectedCharacter)
+        {
+            return null;
+        }
+
+
+        return (
+            <PlayerInformationPage
+                character={selectedCharacter}
+
+                onOpenInventory={() =>
+                {
+                    setPage("inventory");
+                }}
+
+                onStartHunt={async () =>
+                {
+                    const result =
+                        await startHunt(
+                            selectedCharacter.characterId
+                        );
+
+
+                    setReward(result);
+
+                    setPage("reward");
+                }}
+            />
+        );
+    }
+
+
+    if (page === "inventory")
+    {
+        if (!selectedCharacter)
+        {
+            return null;
+        }
+
+
+        return (
+            <InventoryPage
+                characterId={
+                    selectedCharacter.characterId
                 }
             />
         );
     }
 
-    return (
-        <CharacterSelectionPage
-            characters={
-                characters
-            }
-            onCharacterCreated={
-                handleCreateCharacter
-            }
-            onEnterWorld={
-                enterWorld
-            }
-        />
-    );
+
+    if (page === "reward")
+    {
+        return (
+            <RewardFeedbackPage
+                reward={reward}
+            />
+        );
+    }
+
+
+    return null;
 }
+
+
+export default App;

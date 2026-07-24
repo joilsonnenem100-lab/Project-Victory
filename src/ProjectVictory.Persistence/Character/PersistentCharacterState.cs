@@ -1,6 +1,7 @@
 // src/ProjectVictory.Persistence/Character/PersistentCharacterState.cs
 
 using System;
+using System.Collections.Generic;
 
 namespace ProjectVictory.Persistence.Character;
 
@@ -24,4 +25,7 @@ public sealed class PersistentCharacterState
     public int Level { get; set; }
 
     public int Experience { get; set; }
+
+
+    public List<string> InventoryItems { get; set; } = new();
 }

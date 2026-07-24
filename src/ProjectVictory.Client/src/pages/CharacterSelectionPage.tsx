@@ -1,260 +1,128 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import CharacterCreationPage from "./CharacterCreationPage";
+import {
+    getCharacters,
+    createCharacter
+} from "../services/characterService";
 
 import type { Character } from "../models/character";
-
-import Container from "../components/ui/Container";
-import Card from "../components/ui/Card";
-import Button from "../components/ui/Button";
-
-import CharacterSection from "../components/sections/CharacterSection";
-
 
 
 interface Props
 {
-    characters: Character[];
-
-
-    onCharacterCreated(
-        name: string,
-        characterClass: string
-    ): Promise<void>;
-
-
-    onEnterWorld(
+    onCharacterSelected: (
         character: Character
-    ): void;
+    ) => void;
 }
-
 
 
 export default function CharacterSelectionPage(
 {
-    characters,
-
-    onCharacterCreated,
-
-    onEnterWorld
+    onCharacterSelected
 
 }: Props)
 {
-    const [creatingCharacter, setCreatingCharacter] =
-        useState(false);
+    const [characters, setCharacters] =
+        useState<Character[]>([]);
+
+    const [name, setName] =
+        useState("");
 
 
-
-    const [selectedCharacter, setSelectedCharacter] =
-        useState<Character | null>(null);
-
-
-
-    async function handleCreateCharacter(
-        name: string,
-        characterClass: string
-    )
+    async function loadCharacters()
     {
-        await onCharacterCreated(
-            name,
-            characterClass
-        );
+        const result =
+            await getCharacters();
+
+        setCharacters(result);
     }
 
 
-
-    if (creatingCharacter)
+    useEffect(() =>
     {
-        return (
-            <CharacterCreationPage
-                onCreate={
-                    handleCreateCharacter
-                }
+        loadCharacters();
 
-                onBack={
-                    async () =>
-                    {
-                        setCreatingCharacter(false);
-                    }
-                }
-            />
+    }, []);
+
+
+    async function handleCreate()
+    {
+        const character =
+            await createCharacter(
+                name
+            );
+
+        setCharacters(
+            previous =>
+            [
+                ...previous,
+                character
+            ]
+        );
+
+        onCharacterSelected(
+            character
         );
     }
-
 
 
     return (
-        <CharacterSection>
+        <section>
 
-            <Container>
-
-                <section
-                    className="pv-background-layer"
-                    style={{
-                        minHeight:
-                            "100vh"
-                    }}
-                >
-
-                    <div
-                        className="pv-background-content"
-                    >
-
-                        <Card>
-
-                            <h1
-                                className="pv-title-decoration"
-                                style={{
-                                    textAlign:
-                                        "center"
-                                }}
-                            >
-                                Character Selection
-                            </h1>
+            <h1>
+                Character Selection
+            </h1>
 
 
-
-                            <p
-                                className="pv-content-decoration"
-                                style={{
-                                    textAlign:
-                                        "center"
-                                }}
-                            >
-                                Select your character.
-                            </p>
-
-
-
-                            <section
-                                className="pv-panel-decoration"
-                            >
-
-                                {
-                                    characters.length === 0 &&
-                                    (
-                                        <p>
-                                            No characters found.
-                                        </p>
-                                    )
-                                }
-
-
-
-                                {
-                                    characters.map(
-                                        character =>
-                                        (
-                                            <button
-                                                key={
-                                                    character.characterId
-                                                }
-
-                                                onClick={
-                                                    () =>
-                                                    {
-                                                        setSelectedCharacter(
-                                                            character
-                                                        );
-                                                    }
-                                                }
-                                            >
-
-                                                <strong>
-                                                    {
-                                                        character.name
-                                                    }
-                                                </strong>
-
-
-                                                <br />
-
-
-                                                Level:
-                                                {" "}
-                                                {
-                                                    character.level
-                                                }
-
-
-                                                <br />
-
-
-                                                Experience:
-                                                {" "}
-                                                {
-                                                    character.experience
-                                                }
-
-                                            </button>
-                                        )
-                                    )
-                                }
-
-                            </section>
-
-
-
-                            {
-                                selectedCharacter &&
-                                (
-                                    <section
-                                        className="pv-panel-decoration"
-                                    >
-
-                                        <h3>
-                                            Selected Character
-                                        </h3>
-
-
-                                        <p>
-                                            {
-                                                selectedCharacter.name
-                                            }
-                                        </p>
-
-
-                                        <Button
-                                            onClick={
-                                                () =>
-                                                {
-                                                    onEnterWorld(
-                                                        selectedCharacter
-                                                    );
-                                                }
-                                            }
-                                        >
-                                            Enter World
-                                        </Button>
-
-                                    </section>
+            {
+                characters.map(
+                    character =>
+                    (
+                        <button
+                            key={
+                                character.id
+                            }
+                            onClick={() =>
+                                onCharacterSelected(
+                                    character
                                 )
                             }
+                        >
+                            {
+                                character.name
+                            }
+                        </button>
+                    )
+                )
+            }
 
 
+            <div>
 
-                            <Button
-                                onClick={
-                                    () =>
-                                    {
-                                        setCreatingCharacter(
-                                            true
-                                        );
-                                    }
-                                }
-                            >
-                                Create Character
-                            </Button>
+                <input
+                    value={
+                        name
+                    }
+                    onChange={
+                        event =>
+                            setName(
+                                event.target.value
+                            )
+                    }
+                    placeholder="Character name"
+                />
 
 
-                        </Card>
+                <button
+                    onClick={
+                        handleCreate
+                    }
+                >
+                    Create Character
+                </button>
 
-                    </div>
+            </div>
 
-                </section>
-
-            </Container>
-
-        </CharacterSection>
+        </section>
     );
 }

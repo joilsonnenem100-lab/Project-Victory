@@ -54,7 +54,10 @@ public sealed class CharacterRepository : ICharacterRepository
                     character.Level.Value,
 
                 Experience =
-                    character.Experience.Value
+                    character.Experience.Value,
+
+                InventoryItems =
+                    character.Inventory.Items.ToList()
             };
 
 
@@ -188,6 +191,10 @@ public sealed class CharacterRepository : ICharacterRepository
             character.Experience.Value;
 
 
+        state.InventoryItems =
+            character.Inventory.Items.ToList();
+
+
         await _context.SaveChangesAsync(
             cancellationToken);
     }
@@ -206,28 +213,38 @@ public sealed class CharacterRepository : ICharacterRepository
                 characterClass);
 
 
-        return new DomainCharacter(
-            state.Id,
+        var character =
+            new DomainCharacter(
+                state.Id,
 
-            new AccountId(
-                state.AccountId),
+                new AccountId(
+                    state.AccountId),
 
-            state.Name,
+                state.Name,
 
-            characterClass,
+                characterClass,
 
-            definition,
+                definition,
 
-            new Health(
-                state.Health),
+                new Health(
+                    state.Health),
 
-            new Mana(
-                state.Mana),
+                new Mana(
+                    state.Mana),
 
-            new Experience(
-                state.Experience),
+                new Experience(
+                    state.Experience),
 
-            new Level(
-                state.Level));
+                new Level(
+                    state.Level));
+
+
+        foreach (var item in state.InventoryItems)
+        {
+            character.Inventory.AddItem(item);
+        }
+
+
+        return character;
     }
 }

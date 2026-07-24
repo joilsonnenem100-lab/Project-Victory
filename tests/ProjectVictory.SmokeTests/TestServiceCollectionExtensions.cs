@@ -40,15 +40,17 @@ public static class TestServiceCollectionExtensions
         services.AddScoped<ICharacterRepository, CharacterRepository>();
 
         services.AddSingleton<IHuntRepository, HuntRepository>();
-        services.AddSingleton<ICombatContextRepository, CombatContextRepository>();
-
         services.AddSingleton<IEncounterStateStore, EncounterStateStore>();
         services.AddSingleton<IRuntimeExecutionStateStore, RuntimeExecutionStateStore>();
+
+        services.AddSingleton<ICombatContextRepository, CombatContextRepository>();
 
         services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         services.AddScoped<ICombatResolver, CombatResolver>();
-        services.AddScoped<IRewardProcessor, RewardProcessor>();
+
+        services.AddScoped<IRewardProcessor, TestRewardProcessor>();
+
         services.AddScoped<IProgressionProcessor, ProgressionProcessor>();
 
         // Account

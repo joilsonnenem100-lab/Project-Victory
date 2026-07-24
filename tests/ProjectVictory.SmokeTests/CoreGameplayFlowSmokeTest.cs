@@ -17,8 +17,10 @@ public sealed class CoreGameplayFlowSmokeTest
 {
     [Fact]
     public async Task Core_Gameplay_Flow_Should_Complete()
-    {
-        var services = new ServiceCollection();
+{
+    SmokeTestReporter.Start();
+
+    var services = new ServiceCollection();
 
         services.AddProjectVictorySmokeTestServices();
 
@@ -209,6 +211,5 @@ Assert.True(rewardResult.Applied);
 Assert.Equal(characterId, rewardResult.CharacterId);
 
 
-      
-    }
+   }
 }

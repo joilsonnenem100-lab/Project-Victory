@@ -57,6 +57,10 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.Property<int>("Health")
                         .HasColumnType("INTEGER");
 
+                    b.PrimitiveCollection<string>("InventoryItems")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Level")
                         .HasColumnType("INTEGER");
 

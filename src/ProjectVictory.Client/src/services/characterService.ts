@@ -1,11 +1,23 @@
-import type { Character } from "../models/character";
-
 import { apiRequest } from "../api/client";
 
 
+export interface Character
+{
+    id: string;
+    name: string;
+    level?: number;
+    experience?: number;
+}
+
+
+export interface InventoryResponse
+{
+    success: boolean;
+    items: string[];
+}
+
 
 export async function getCharacters()
-: Promise<Character[]>
 {
     const response =
         await apiRequest(
@@ -19,58 +31,68 @@ export async function getCharacters()
     if (!response.ok)
     {
         throw new Error(
-            "Failed loading characters"
+            "Failed to load characters"
         );
     }
 
 
-    const data = await response.json();
-
-console.log(
-    "CHARACTERS FROM API:",
-    data
-);
-
-return data;
+    return await response.json() as Character[];
 }
 
 
-
 export async function createCharacter(
-    name: string,
-    characterClass: string
+    name: string
 )
-: Promise<string>
 {
     const response =
         await apiRequest(
             "/api/character",
             {
                 method: "POST",
-
-                body:
-                    JSON.stringify(
-                    {
-                        Name: name,
-
-                        CharacterClass: characterClass
-                    })
+                headers:
+                {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(
+                {
+                    name
+                })
             }
         );
 
 
     if (!response.ok)
     {
-        const message =
-            await response.text();
-
-
         throw new Error(
-            message ||
-            "Failed creating character"
+            "Failed to create character"
         );
     }
 
 
-    return await response.text();
+    return await response.json();
+}
+
+
+export async function getInventory(
+    characterId: string
+)
+{
+    const response =
+        await apiRequest(
+            `/api/inventory/${characterId}`,
+            {
+                method: "GET"
+            }
+        );
+
+
+    if (!response.ok)
+    {
+        throw new Error(
+            "Failed to load inventory"
+        );
+    }
+
+
+    return await response.json() as InventoryResponse;
 }
