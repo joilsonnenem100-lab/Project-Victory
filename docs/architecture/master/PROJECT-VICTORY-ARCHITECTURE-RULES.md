@@ -1,99 +1,104 @@
-# PROJECT-VICTORY --- ARCHITECTURE RULES
+---
 
--   Não assumir que conceitos futuros existem no código.
--   Separar arquitetura planejada de implementação existente.
--   Consultar contratos antes de alterações.
--   Manter responsabilidades claras entre sistemas.
--   Separar estado permanente de estado temporário.
--   Evitar acoplamento direto entre agregados.
+# Evolution Rule — Additive Development Principle
 
-------------------------------------------------------------------------
+Status: LOCKED
 
-# REGRA DE IMPACTO DE ALTERAÇÃO
+## Objetivo
 
-Antes de alterar qualquer arquivo existente no Project-Victory, a
-Engenharia deve realizar uma análise de impacto obrigatória.
+Garantir que novas implementações evoluam o Project-Victory sem remover ou degradar funcionalidades existentes.
 
-Nenhuma implementação deve iniciar sem compreender os efeitos da
-alteração no sistema atual.
+---
 
-## Análise obrigatória antes da implementação
+# Regra principal
 
-A Engenharia deve identificar:
+Uma implementação deve adicionar capacidades ao sistema existente.
 
--   arquivos que serão alterados;
--   dependências existentes desses arquivos;
--   fluxos do sistema que utilizam esses arquivos;
--   possíveis riscos de regressão;
--   estratégia para preservar funcionalidades já validadas.
+Ela nunca deve substituir, remover ou quebrar um comportamento validado sem uma decisão arquitetural explícita.
 
-------------------------------------------------------------------------
+---
 
-# Processo obrigatório de alteração
+# Princípio
 
-Toda alteração deve seguir:
+Antes:
 
-Analisar snapshot atual
+Sistema funcional
 
 ↓
 
-Identificar arquivos envolvidos
+Nova funcionalidade
 
 ↓
 
-Avaliar impacto e riscos
+Depois:
 
-↓
+Sistema funcional + nova funcionalidade
 
-Implementar alteração mínima
+---
 
-↓
+# Proibições
 
-Executar build
+Não é permitido:
 
-↓
+- substituir uma tela funcional por uma versão incompleta;
+- substituir serviços existentes ignorando métodos já utilizados;
+- remover integrações existentes para implementar uma nova;
+- alterar contratos existentes sem autorização;
+- recriar sistemas paralelos quando já existe infraestrutura;
+- simplificar removendo comportamentos existentes.
 
-Validar fluxos existentes
+---
 
-↓
+# Regra de Frontend
 
-Entregar evidências da implementação
+Ao adicionar uma nova interface:
 
-------------------------------------------------------------------------
+Obrigatório preservar:
 
-# Princípios de preservação
+- páginas existentes;
+- navegação existente;
+- chamadas de API existentes;
+- estados já exibidos;
+- fluxos já validados.
 
-Não permitido:
+Uma nova UI deve ser incorporada ao frontend atual.
 
--   alterar arquivos existentes sem análise de impacto;
--   modificar múltiplos sistemas sem necessidade do contrato;
--   refatorar arquitetura durante implementação de uma funcionalidade;
--   substituir comportamentos existentes sem validar seus consumidores;
--   resolver um problema criando regressões em funcionalidades já
-    aprovadas.
+Ela não deve apagar telas funcionais para criar uma nova estrutura.
 
-------------------------------------------------------------------------
+---
 
-# Arquivos de alto impacto
+# Regra de Backend
 
-Alterações em arquivos centrais exigem atenção adicional:
+Ao adicionar uma capacidade:
 
--   Aggregate Roots;
--   Controllers;
--   Application Handlers;
--   Services compartilhados;
--   App.tsx;
--   Componentes globais;
--   Configurações;
--   Estruturas de persistência.
+Obrigatório:
 
-------------------------------------------------------------------------
+- manter endpoints existentes;
+- manter DTOs utilizados;
+- manter handlers existentes;
+- manter persistência existente.
 
-# Princípio fundamental
+Novas responsabilidades devem ser adicionadas através de extensão.
 
-Toda alteração deve responder:
+---
 
-"Qual impacto essa mudança causa no restante do sistema?"
+# Validação obrigatória
 
-Caso o impacto não esteja claro, a implementação deve ser interrompida
-para análise arquitetural.
+Antes de concluir uma implementação:
+
+Verificar:
+
+- funcionalidades anteriores continuam funcionando;
+- builds continuam passando;
+- fluxos validados continuam disponíveis;
+- nenhuma funcionalidade foi removida.
+
+---
+
+# Exceção
+
+Uma remoção ou substituição somente pode ocorrer quando:
+
+1. existe decisão arquitetural documentada;
+2. existe contrato autorizando;
+3. existe validação do impacto.

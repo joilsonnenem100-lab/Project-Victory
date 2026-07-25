@@ -79,6 +79,33 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.ToTable("Characters");
                 });
 
+            modelBuilder.Entity("ProjectVictory.Persistence.Hunt.PersistentHuntSessionState", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CharacterId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("StoppedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HuntSessions");
+                });
+
             modelBuilder.Entity("ProjectVictory.Persistence.Item.PersistentItemState", b =>
                 {
                     b.Property<Guid>("Id")

@@ -4,7 +4,7 @@ interface RewardFeedbackData
 
     gold?: number;
 
-    drops?: string[];
+    drops?: any[];
 }
 
 
@@ -15,16 +15,18 @@ interface RewardFeedbackPageProps
 
 
 export default function RewardFeedbackPage(
-    {
-        reward
-    }: RewardFeedbackPageProps
-)
+{
+    reward
+
+}: RewardFeedbackPageProps)
 {
     if (!reward)
     {
         return (
             <div>
-                <h1>Reward</h1>
+                <h1>
+                    Reward
+                </h1>
 
                 <p>
                     Nenhuma recompensa disponível.
@@ -64,25 +66,48 @@ export default function RewardFeedbackPage(
             {
                 !reward.drops ||
                 reward.drops.length === 0
+
                 ?
+
                 (
                     <p>
                         Nenhum item recebido.
                     </p>
                 )
+
                 :
+
                 (
                     <ul>
+
                         {
                             reward.drops.map(
                                 (drop, index) =>
                                 (
                                     <li key={index}>
-                                        {drop}
+
+                                        {
+                                            typeof drop === "string"
+
+                                            ?
+
+                                            drop
+
+                                            :
+
+                                            drop.name
+                                            ??
+                                            drop.itemName
+                                            ??
+                                            JSON.stringify(drop)
+
+                                        }
+
                                     </li>
                                 )
                             )
                         }
+
                     </ul>
                 )
             }

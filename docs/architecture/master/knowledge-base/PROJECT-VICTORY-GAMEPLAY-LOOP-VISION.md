@@ -1,6 +1,14 @@
-# PROJECT-VICTORY --- GAMEPLAY LOOP VISION
+# PROJECT-VICTORY — GAMEPLAY LOOP VISION
 
-Fluxo de experiência:
+## Referência principal
+
+Este documento deve seguir a filosofia definida em:
+
+`PROJECT-VICTORY-GAME-PHILOSOPHY.md`
+
+---
+
+## Loop principal
 
 Login
 
@@ -10,30 +18,55 @@ Selecionar Character
 
 ↓
 
-Entrar no Mundo
+Entrar no Game HUD
 
 ↓
 
-Escolher Atividade
+Preparar personagem
 
 ↓
 
-Executar Loop
+Escolher Hunt
 
 ↓
 
-Receber Progressão
+Executar Hunt automática
 
 ↓
 
-Melhorar Character
+Simulação da execução
 
 ↓
 
-Continuar Experiência
+Receber EXP e Loot
 
-------------------------------------------------------------------------
+↓
 
-Objetivo:
+Melhorar personagem e equipamentos
 
-Criar um ciclo persistente de gameplay.
+↓
+
+Executar Hunts superiores
+
+---
+
+## Filosofia da Hunt
+
+A Hunt é a atividade principal do Project-Victory.
+
+O combate é uma simulação automática da execução.
+
+A decisão do jogador acontece antes da luta através de:
+
+- preparação;
+- equipamentos;
+- habilidades;
+- escolha da atividade.
+
+---
+
+## Objetivo
+
+Criar um ciclo persistente de:
+
+Preparação → Hunt → Loot → Progressão → Nova Hunt.

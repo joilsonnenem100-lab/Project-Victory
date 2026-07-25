@@ -333,3 +333,20 @@ Toda decisão deve buscar:
 - maior clareza;
 - preservação do trabalho existente;
 - evolução sustentável do projeto.
+---
+
+# Regra de Evolução
+
+Toda implementação deve seguir o princípio:
+
+Adicionar > substituir.
+
+Código existente e funcionalidades validadas são patrimônio do projeto.
+
+Antes de alterar qualquer arquivo existente, verificar:
+
+- qual funcionalidade ele suporta;
+- quem depende dele;
+- quais fluxos podem ser afetados.
+
+Uma melhoria que remove comportamento existente é considerada regressão.

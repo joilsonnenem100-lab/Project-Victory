@@ -171,6 +171,17 @@ builder.Services.AddScoped<
     ExecuteHuntHandler>();
 
 builder.Services.AddScoped<
+    IHuntSessionRepository,
+    HuntSessionRepository>();
+
+builder.Services.AddScoped<
+    StartHuntSessionHandler>();
+
+builder.Services.AddScoped<
+    StopHuntSessionHandler>();
+
+
+builder.Services.AddScoped<
     AttackEncounterHandler>();
 
 builder.Services.AddScoped<

@@ -4,7 +4,6 @@ import Container from "../components/ui/Container";
 import Card from "../components/ui/Card";
 import HuntPanel from "../components/gameplay/HuntPanel";
 
-
 interface Props
 {
     character: Character;
@@ -13,7 +12,6 @@ interface Props
 
     onOpenInventory: () => void;
 }
-
 
 export default function PlayerInformationPage(
 {
@@ -30,50 +28,29 @@ export default function PlayerInformationPage(
 
             <Card>
 
-                <section
-                    className="pv-panel-decoration"
-                >
+                <section className="pv-panel-decoration">
 
-                    <h1
-                        className="pv-title-decoration"
-                    >
+                    <h1 className="pv-title-decoration">
                         Player Information
                     </h1>
 
-
-                    <p
-                        className="pv-content-decoration"
-                    >
-                        Name:
-                        {" "}
-                        {character.name}
+                    <p className="pv-content-decoration">
+                        Name: {character.name}
                     </p>
 
-
-                    <p
-                        className="pv-content-decoration"
-                    >
-                        Level:
-                        {" "}
-                        {character.level}
+                    <p className="pv-content-decoration">
+                        Level: {character.level}
                     </p>
 
-
-                    <p
-                        className="pv-content-decoration"
-                    >
-                        Experience:
-                        {" "}
-                        {character.experience}
+                    <p className="pv-content-decoration">
+                        Experience: {character.experience}
                     </p>
-
 
                     <button
                         onClick={onOpenInventory}
                     >
                         Inventory
                     </button>
-
 
                     <HuntPanel
                         onStart={onStartHunt}

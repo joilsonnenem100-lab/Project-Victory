@@ -1,4 +1,14 @@
 # PROJECT-VICTORY-CONTEXT-HANDOFF
+## Documento de Entrada Oficial
+
+Este é o primeiro documento que deve ser consultado ao iniciar uma nova sessão.
+
+Ordem de leitura:
+
+1. PROJECT-VICTORY-CONTEXT-HANDOFF.md
+2. PROJECT-VICTORY-GAME-PHILOSOPHY.md
+3. PROJECT-VICTORY-ENGINEERING-HANDOFF.md
+4. Documentação específica da tarefa
 
 ## Identidade do Projeto
 
@@ -15,6 +25,7 @@ Este documento representa o contexto oficial para continuidade do projeto entre 
 O projeto não deve ser tratado como iniciado do zero.
 
 ---
+
 
 # Papel da IA no Projeto
 
