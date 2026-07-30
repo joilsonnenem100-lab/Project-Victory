@@ -1,0 +1,1 @@
+Atualizar ProjectVictoryDbContextModelSnapshot.cs gerado pelo dotnet ef migrations add após aplicar esta migration.

@@ -8,10 +8,16 @@ public sealed class CombatResolution
 
     public Guid ActionResultId { get; }
 
+    public int Damage { get; }
+
+    public bool TargetDefeated { get; }
+
     public CombatResolution(
         Guid id,
         Guid combatContextId,
-        Guid actionResultId)
+        Guid actionResultId,
+        int damage,
+        bool targetDefeated)
     {
         if (id == Guid.Empty)
         {
@@ -37,5 +43,7 @@ public sealed class CombatResolution
         Id = id;
         CombatContextId = combatContextId;
         ActionResultId = actionResultId;
+        Damage = damage;
+        TargetDefeated = targetDefeated;
     }
 }

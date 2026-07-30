@@ -1,70 +1,74 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using ProjectVictory.Domain.Items;
 
-namespace ProjectVictory.Domain.Entities
+namespace ProjectVictory.Domain.Entities;
+
+public sealed class Inventory
 {
-    public sealed class Inventory
+    private readonly List<ItemInstance> _items;
+
+
+    public IReadOnlyCollection<ItemInstance> Items =>
+        _items.AsReadOnly();
+
+
+    public int Count =>
+        _items.Count;
+
+
+    public Inventory()
     {
-        private readonly HashSet<string> _items;
+        _items = [];
+    }
 
-        public IReadOnlyCollection<string> Items => _items;
 
-        public int Count => _items.Count;
+    public void AddItem(
+        ItemInstance item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
 
-        public Inventory()
+        _items.Add(item);
+    }
+
+
+    public bool RemoveItem(
+        Guid itemInstanceId)
+    {
+        var item =
+            _items.FirstOrDefault(
+                x => x.Id == itemInstanceId);
+
+
+        if (item is null)
         {
-            _items = new HashSet<string>();
+            return false;
         }
 
-        public void AddItem(string item)
-        {
-            ArgumentNullException.ThrowIfNull(item);
 
-            if (string.IsNullOrWhiteSpace(item))
-            {
-                return;
-            }
+        return _items.Remove(item);
+    }
 
-            _items.Add(item);
-        }
 
-        public void RemoveItem(string item)
-        {
-            ArgumentNullException.ThrowIfNull(item);
+    public bool Contains(
+        Guid itemInstanceId)
+    {
+        return _items.Any(
+            x => x.Id == itemInstanceId);
+    }
 
-            if (string.IsNullOrWhiteSpace(item))
-            {
-                return;
-            }
 
-            _items.Remove(item);
-        }
+    public ItemInstance? GetItem(
+        Guid itemInstanceId)
+    {
+        return _items.FirstOrDefault(
+            x => x.Id == itemInstanceId);
+    }
 
-        public bool Contains(string item)
-        {
-            ArgumentNullException.ThrowIfNull(item);
 
-            if (string.IsNullOrWhiteSpace(item))
-            {
-                return false;
-            }
-
-            return _items.Contains(item);
-        }
-
-        public void Clear()
-        {
-            _items.Clear();
-        }
-
-        public bool IsEmpty()
-        {
-            return _items.Count == 0;
-        }
-
-        public IReadOnlyCollection<string> GetItems()
-        {
-            return _items;
-        }
+    public void Clear()
+    {
+        _items.Clear();
     }
 }

@@ -16,9 +16,10 @@ public sealed class ExecuteCombatActionHandler
         ExecuteCombatActionCommand command,
         CancellationToken cancellationToken = default)
     {
-        var combatContext = await _combatContextRepository.GetByIdAsync(
-            command.CombatContextId,
-            cancellationToken);
+        var combatContext =
+            await _combatContextRepository.GetByIdAsync(
+                command.CombatContextId,
+                cancellationToken);
 
         if (combatContext is null)
         {
@@ -32,10 +33,10 @@ public sealed class ExecuteCombatActionHandler
                 "Only active combat contexts accept actions.");
         }
 
-        var action = new CombatAction(
-            command.ActionId);
+        var action =
+            new CombatAction(
+                command.ActionId);
 
-        return combatContext.ProcessAction(
-            action);
+        return combatContext.ProcessAction(action);
     }
 }

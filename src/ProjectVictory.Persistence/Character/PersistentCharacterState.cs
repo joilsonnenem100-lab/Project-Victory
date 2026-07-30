@@ -13,19 +13,15 @@ public sealed class PersistentCharacterState
 
     public string Name { get; set; } = string.Empty;
 
-
     public int CharacterClass { get; set; }
-
 
     public int Health { get; set; }
 
     public int Mana { get; set; }
 
-
     public int Level { get; set; }
 
     public int Experience { get; set; }
 
-
-    public List<string> InventoryItems { get; set; } = new();
+    public List<PersistentItemInstanceState> InventoryItems { get; set; } = new();
 }

@@ -1,34 +1,52 @@
 using Microsoft.AspNetCore.Mvc;
 using ProjectVictory.Application.Inventory;
-using ProjectVictory.Domain.Entities;
+using ProjectVictory.Domain.Character;
 
 namespace ProjectVictory.API.Controllers;
 
 [ApiController]
 [Route("api/inventory")]
-public class InventoryController : ControllerBase
+public sealed class InventoryController : ControllerBase
 {
     private readonly GetCharacterInventoryHandler _handler;
 
+    private readonly ICharacterRepository _characterRepository;
+
+
     public InventoryController(
-        GetCharacterInventoryHandler handler)
+        GetCharacterInventoryHandler handler,
+        ICharacterRepository characterRepository)
     {
         _handler = handler;
+
+        _characterRepository = characterRepository;
     }
 
 
     [HttpGet("{characterId:guid}")]
-    public IActionResult Get(
-        Guid characterId)
+    public async Task<IActionResult> Get(
+        Guid characterId,
+        CancellationToken cancellationToken)
     {
-        // Endpoint preparado para integração com o Character existente.
-        // A resolução do Character deve seguir o fluxo existente de persistência.
+        var character =
+            await _characterRepository.GetByIdAsync(
+                characterId,
+                cancellationToken);
 
-        return Ok(
-            new InventoryResult(
-                true,
-                Array.Empty<string>()
-            )
-        );
+
+        if (character is null)
+        {
+            return NotFound();
+        }
+
+
+        var result =
+            _handler.Handle(
+                new GetCharacterInventoryQuery(
+                    characterId),
+                character);
+
+
+        return Ok(result);
     }
 }

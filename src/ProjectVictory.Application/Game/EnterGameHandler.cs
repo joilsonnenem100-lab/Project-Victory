@@ -1,6 +1,8 @@
 using ProjectVictory.Application.Session;
 using ProjectVictory.Application.VerticalSlice;
 using ProjectVictory.Domain.Character;
+using ProjectVictory.Domain.Runtime;
+using ProjectVictory.Application.Runtime;
 
 namespace ProjectVictory.Application.Game;
 
@@ -9,15 +11,21 @@ public sealed class EnterGameHandler
     private readonly ICharacterRepository _characterRepository;
     private readonly ICurrentPlayerContext _currentPlayerContext;
     private readonly CreateRuntimeExecutionHandler _createRuntimeExecutionHandler;
+    private readonly IRuntimeRepository _runtimeRepository;
+    private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
 
     public EnterGameHandler(
         ICharacterRepository characterRepository,
         ICurrentPlayerContext currentPlayerContext,
-        CreateRuntimeExecutionHandler createRuntimeExecutionHandler)
+        CreateRuntimeExecutionHandler createRuntimeExecutionHandler,
+        IRuntimeRepository runtimeRepository,
+        IRuntimeExecutionStateStore runtimeExecutionStateStore)
     {
         _characterRepository = characterRepository;
         _currentPlayerContext = currentPlayerContext;
         _createRuntimeExecutionHandler = createRuntimeExecutionHandler;
+        _runtimeRepository = runtimeRepository;
+        _runtimeExecutionStateStore = runtimeExecutionStateStore;
     }
 
     public async Task<EnterGameResult> Handle(
@@ -40,14 +48,57 @@ public sealed class EnterGameHandler
                 "No character found for account.");
         }
 
-        var runtimeId =
-            Guid.NewGuid();
+        var runtime =
+            await _runtimeRepository.GetByCharacterIdAsync(
+                character.Id,
+                cancellationToken);
 
-        await _createRuntimeExecutionHandler.Handle(
-            new CreateRuntimeExecutionCommand(
-                runtimeId,
-                character.Id),
-            cancellationToken);
+        Guid runtimeId;
+
+        if (runtime is not null)
+        {
+            runtimeId = runtime.RuntimeId;
+
+            _runtimeExecutionStateStore.Store(
+                new RuntimeExecutionContext(
+                    runtime.RuntimeId,
+                    runtime.CharacterId,
+                    runtime.Initialized,
+                    new CharacterRuntimeState(
+                        runtime.Health,
+                        runtime.Mana),
+                    new RuntimeGameplayContext(
+                        RuntimeActivity.Idle),
+                    new RuntimeWorldContext(
+                        Guid.Empty,
+                        Guid.Empty,
+                        Guid.Empty)));
+        }
+        else
+        {
+            runtimeId = Guid.NewGuid();
+
+            await _createRuntimeExecutionHandler.Handle(
+                new CreateRuntimeExecutionCommand(
+                    runtimeId,
+                    character.Id),
+                cancellationToken);
+
+            _runtimeExecutionStateStore.Store(
+                new RuntimeExecutionContext(
+                    runtimeId,
+                    character.Id,
+                    true,
+                    new CharacterRuntimeState(
+                        100,
+                        100),
+                    new RuntimeGameplayContext(
+                        RuntimeActivity.Idle),
+                    new RuntimeWorldContext(
+                        Guid.Empty,
+                        Guid.Empty,
+                        Guid.Empty)));
+        }
 
         return new EnterGameResult(
             accountId,

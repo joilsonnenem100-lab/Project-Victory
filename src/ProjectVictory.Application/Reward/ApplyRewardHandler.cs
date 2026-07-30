@@ -1,6 +1,4 @@
 using ProjectVictory.Domain.Character;
-using ProjectVictory.Domain.ValueObjects;
-using Experience = ProjectVictory.Domain.ValueObjects.Experience;
 
 namespace ProjectVictory.Application.Reward;
 
@@ -21,21 +19,10 @@ public sealed class ApplyRewardHandler
         ApplyRewardCommand command,
         CancellationToken cancellationToken = default)
     {
-        if (command.Request.CharacterId == Guid.Empty)
-        {
-            throw new InvalidOperationException(
-                "CharacterId is required.");
-        }
-
-        if (command.Request.SourceResult is null)
-        {
-            throw new InvalidOperationException(
-                "Reward source result is required.");
-        }
-
-        var character = await _characterRepository.GetByIdAsync(
-            command.CharacterId,
-            cancellationToken);
+        var character =
+            await _characterRepository.GetByIdAsync(
+                command.CharacterId,
+                cancellationToken);
 
         if (character is null)
         {
@@ -43,29 +30,15 @@ public sealed class ApplyRewardHandler
                 "Character not found.");
         }
 
-        var reward = _rewardProcessor.Process(
-            command.Request);
-
-        if (reward is null)
-        {
-            throw new InvalidOperationException(
-                "Reward processing failed.");
-        }
+        var reward =
+            _rewardProcessor.Process(
+                command.Request);
 
         if (reward.Experience > 0)
         {
             character.GainExperience(
-                new global::ProjectVictory.Domain.ValueObjects.Experience(
+                new ProjectVictory.Domain.ValueObjects.Experience(
                     reward.Experience));
-        }
-
-        foreach (var drop in reward.Drops)
-        {
-            if (!string.IsNullOrWhiteSpace(drop.ItemName))
-            {
-                character.Inventory.AddItem(
-                    drop.ItemName);
-            }
         }
 
         await _characterRepository.UpdateAsync(

@@ -16,9 +16,10 @@ public sealed class GenerateCombatResolutionHandler
         GenerateCombatResolutionCommand command,
         CancellationToken cancellationToken = default)
     {
-        var combatContext = await _combatContextRepository.GetByIdAsync(
-            command.CombatContextId,
-            cancellationToken);
+        var combatContext =
+            await _combatContextRepository.GetByIdAsync(
+                command.CombatContextId,
+                cancellationToken);
 
         if (combatContext is null)
         {
@@ -38,10 +39,13 @@ public sealed class GenerateCombatResolutionHandler
                 "Action result is required.");
         }
 
-        var resolution = new CombatResolution(
-            Guid.NewGuid(),
-            combatContext.Id,
-            command.ActionResultId);
+        var resolution =
+            new CombatResolution(
+                Guid.NewGuid(),
+                combatContext.Id,
+                command.ActionResultId,
+                5,
+                false);
 
         return new GenerateCombatResolutionResult(
             resolution.Id,

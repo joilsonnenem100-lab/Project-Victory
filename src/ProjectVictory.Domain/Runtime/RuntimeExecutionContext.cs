@@ -6,4 +6,8 @@ public sealed record RuntimeExecutionContext(
     Guid RuntimeId,
     Guid CharacterId,
     bool Initialized,
-    CharacterRuntimeState? CharacterState = null);
+    CharacterRuntimeState? CharacterState = null,
+    RuntimeGameplayContext? GameplayContext = null,
+    RuntimeWorldContext? WorldContext = null,
+    ExplorationContext? ExplorationContext = null,
+    RuntimeEncounterContext? EncounterContext = null);

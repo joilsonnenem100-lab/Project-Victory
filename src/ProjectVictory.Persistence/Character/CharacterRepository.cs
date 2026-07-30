@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Character;
+using ProjectVictory.Domain.Items;
 using ProjectVictory.Domain.ValueObjects;
 
 using DomainCharacter = ProjectVictory.Domain.Entities.Character;
@@ -32,32 +33,33 @@ public sealed class CharacterRepository : ICharacterRepository
         var state =
             new PersistentCharacterState
             {
-                Id =
-                    character.Id,
+                Id = character.Id,
 
-                AccountId =
-                    character.AccountId.Value,
+                AccountId = character.AccountId.Value,
 
-                Name =
-                    character.Name,
+                Name = character.Name,
 
-                CharacterClass =
-                    (int)character.CharacterClass,
+                CharacterClass = (int)character.CharacterClass,
 
-                Health =
-                    character.Health.Value,
+                Health = character.Health.Value,
 
-                Mana =
-                    character.Mana.Value,
+                Mana = character.Mana.Value,
 
-                Level =
-                    character.Level.Value,
+                Level = character.Level.Value,
 
-                Experience =
-                    character.Experience.Value,
+                Experience = character.Experience.Value,
 
                 InventoryItems =
-                    character.Inventory.Items.ToList()
+                    character.Inventory.Items
+                        .Select(item =>
+                            new PersistentItemInstanceState
+                            {
+                                Id = item.Id,
+
+                                ItemDefinitionId =
+                                    item.ItemDefinitionId
+                            })
+                        .ToList()
             };
 
 
@@ -78,6 +80,7 @@ public sealed class CharacterRepository : ICharacterRepository
     {
         var state =
             await _context.Characters
+                .Include(x => x.InventoryItems)
                 .FirstOrDefaultAsync(
                     x => x.Id == id,
                     cancellationToken);
@@ -89,8 +92,7 @@ public sealed class CharacterRepository : ICharacterRepository
         }
 
 
-        return RestoreCharacter(
-            state);
+        return RestoreCharacter(state);
     }
 
 
@@ -101,6 +103,7 @@ public sealed class CharacterRepository : ICharacterRepository
     {
         var state =
             await _context.Characters
+                .Include(x => x.InventoryItems)
                 .FirstOrDefaultAsync(
                     x => x.AccountId == accountId,
                     cancellationToken);
@@ -112,8 +115,7 @@ public sealed class CharacterRepository : ICharacterRepository
         }
 
 
-        return RestoreCharacter(
-            state);
+        return RestoreCharacter(state);
     }
 
 
@@ -124,15 +126,14 @@ public sealed class CharacterRepository : ICharacterRepository
     {
         var states =
             await _context.Characters
-                .Where(
-                    x => x.AccountId == accountId)
+                .Include(x => x.InventoryItems)
+                .Where(x => x.AccountId == accountId)
                 .ToListAsync(
                     cancellationToken);
 
 
         return states
-            .Select(
-                RestoreCharacter)
+            .Select(RestoreCharacter)
             .ToList();
     }
 
@@ -156,6 +157,7 @@ public sealed class CharacterRepository : ICharacterRepository
     {
         var state =
             await _context.Characters
+                .Include(x => x.InventoryItems)
                 .FirstOrDefaultAsync(
                     x => x.Id == character.Id,
                     cancellationToken);
@@ -191,8 +193,81 @@ public sealed class CharacterRepository : ICharacterRepository
             character.Experience.Value;
 
 
-        state.InventoryItems =
-            character.Inventory.Items.ToList();
+        var domainItems =
+            character.Inventory.Items
+                .ToDictionary(
+                    item => item.Id);
+
+
+
+        var removedItems =
+            state.InventoryItems
+                .Where(
+                    persisted =>
+                        !domainItems.ContainsKey(
+                            persisted.Id))
+                .ToList();
+
+
+        foreach (var item in removedItems)
+        {
+            state.InventoryItems.Remove(
+                item);
+        }
+
+
+
+        var persistedIds =
+            state.InventoryItems
+                .Select(
+                    item => item.Id)
+                .ToHashSet();
+
+
+
+        var addedItems =
+            character.Inventory.Items
+                .Where(
+                    item =>
+                        !persistedIds.Contains(
+                            item.Id));
+
+
+
+        foreach (var item in addedItems)
+        {
+            var newItem =
+                new PersistentItemInstanceState
+                {
+                    Id = item.Id,
+
+                    ItemDefinitionId =
+                        item.ItemDefinitionId
+                };
+
+
+            state.InventoryItems.Add(
+                newItem);
+
+
+            _context.Entry(newItem).State =
+                EntityState.Added;
+        }
+
+
+        Console.WriteLine(
+            "===== EF CHANGE TRACKER =====");
+
+
+        foreach (var entry in _context.ChangeTracker.Entries())
+        {
+            Console.WriteLine(
+                $"Entity: {entry.Entity.GetType().Name} | State: {entry.State}");
+        }
+
+
+        Console.WriteLine(
+            "=============================");
 
 
         await _context.SaveChangesAsync(
@@ -241,7 +316,10 @@ public sealed class CharacterRepository : ICharacterRepository
 
         foreach (var item in state.InventoryItems)
         {
-            character.Inventory.AddItem(item);
+            character.Inventory.AddItem(
+                new ItemInstance(
+                    item.Id,
+                    item.ItemDefinitionId));
         }
 
 

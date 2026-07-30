@@ -10,16 +10,13 @@ public sealed class GetCharacterInventoryHandler
     {
         if (character.Id != query.CharacterId)
         {
-            return new InventoryResult(
-                false,
-                []);
+            return new InventoryResult(false, []);
         }
 
         var items = character.Inventory.Items
+            .Select(x => x.Id.ToString())
             .ToList();
 
-        return new InventoryResult(
-            true,
-            items);
+        return new InventoryResult(true, items);
     }
 }

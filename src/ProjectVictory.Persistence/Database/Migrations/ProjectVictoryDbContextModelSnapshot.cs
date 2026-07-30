@@ -57,10 +57,6 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.Property<int>("Health")
                         .HasColumnType("INTEGER");
 
-                    b.PrimitiveCollection<string>("InventoryItems")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Level")
                         .HasColumnType("INTEGER");
 
@@ -145,6 +141,64 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Monsters");
+                });
+
+            modelBuilder.Entity("ProjectVictory.Persistence.Runtime.PersistentRuntimeState", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CharacterId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Health")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Initialized")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Mana")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("RuntimeId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CharacterId");
+
+                    b.HasIndex("RuntimeId")
+                        .IsUnique();
+
+                    b.ToTable("RuntimeStates");
+                });
+
+            modelBuilder.Entity("ProjectVictory.Persistence.Character.PersistentCharacterState", b =>
+                {
+                    b.OwnsMany("ProjectVictory.Persistence.Character.PersistentItemInstanceState", "InventoryItems", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("TEXT");
+
+                            b1.Property<Guid>("CharacterId")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<Guid>("ItemDefinitionId")
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("CharacterId");
+
+                            b1.ToTable("PersistentItemInstanceState");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CharacterId");
+                        });
+
+                    b.Navigation("InventoryItems");
                 });
 #pragma warning restore 612, 618
         }
