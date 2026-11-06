@@ -70,6 +70,11 @@ public static class ProjectVictoryServiceCollectionExtensions
         // Serviços de infraestrutura.
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<ICombatResolver, CombatResolver>();
+
+        // PV-COMBAT-010/011: Combat Orchestrator, ordem de turnos e seleção da Secondary Action.
+        services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.ITurnScheduler, ProjectVictory.Application.Combat.TurnBased.SequentialTurnScheduler>();
+        services.AddScoped<ProjectVictory.Application.Combat.TurnBased.ICombatActionSelector, ProjectVictory.Application.Combat.TurnBased.NoSecondaryActionSelector>();
+        services.AddScoped<ProjectVictory.Application.Combat.TurnBased.CombatOrchestrator>();
         services.AddScoped<IRewardProcessor, RewardProcessor>();
         services.AddScoped<IProgressionProcessor, ProgressionProcessor>();
         services.AddSingleton<ILootDefinitionProvider, MonsterLootDefinitionProvider>();

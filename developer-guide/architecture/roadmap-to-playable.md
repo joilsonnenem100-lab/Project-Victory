@@ -70,7 +70,7 @@ Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (
 
 | Contrato | Conteúdo | Lastro |
 |---|---|---|
-| `PV-COMBAT-010` Combat Orchestrator | Orquestrador coordena turnos; **não** implementa dano, skills, IA, loot ou XP | ADR-051 |
+| `PV-COMBAT-010` Combat Orchestrator | ✅ **Implementado em 2026-11-06** (branch `chief/m3-combat-010`; `docs/contracts/active/PV-COMBAT-010.md`). — Orquestrador coordena turnos; **não** implementa dano, skills, IA, loot ou XP | ADR-051 |
 | `PV-COMBAT-011` Turnos | Combate por turnos, exatamente 1 participante ativo por turno, determinístico | ADR-052 |
 | `PV-COMBAT-012` Regras de dano e ação | Dano do atacante e do inimigo; ação básica + secundária; vida do jogador; resultado (vitória/derrota) substitui `CombatResolver` stub atrás de `ICombatResolver` | ADR-006; Snapshot "Próximos Objetivos" |
 | `PV-HUNT-010` Derrota | Morte encerra a Hunt pelo **mesmo** pipeline de encerramento; jogador volta à cidade e aguarda comando; **nenhuma perda de loot ou XP** | ADR-012; `DEC-20261106-04` |
@@ -79,7 +79,7 @@ Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (
 
 **Saída:** combate com resultado não trivial, determinístico e coberto por testes de Domain/Application; cliente continua consumindo o mesmo contrato de resultado.
 
-**Fila 3 (ordem do PO, 2026-11-06)** — execução do M3 com pré-requisitos, branches `chief/m3-*` (nascem de `chief/m1-clean-001`; a `main` ainda não o contém): ✅ `PV-SEC-002` (R-018; revisado) · ✅ `PV-CHAR-010` (Vida/Mana derivadas, ADR-029; valores PROVISÓRIOS, R-021) · `PV-COMBAT-010` · `PV-COMBAT-011` · `PV-COMBAT-012` · `PV-HUNT-010` · `PV-SUPPLY-010` · `PV-CONTENT-011` · `PV-QA-004` · `PV-CLEAN-002` (só com "R-020: AUTORIZADO"). Status final em `docs/architecture/RELATORIO-FILA-3.md`.
+**Fila 3 (ordem do PO, 2026-11-06)** — execução do M3 com pré-requisitos, branches `chief/m3-*` (nascem de `chief/m1-clean-001`; a `main` ainda não o contém): ✅ `PV-SEC-002` (R-018; revisado) · ✅ `PV-CHAR-010` (Vida/Mana derivadas, ADR-029; valores PROVISÓRIOS, R-021) · ✅ `PV-COMBAT-010` (orquestrador; integração no 011/012) · `PV-COMBAT-011` · `PV-COMBAT-012` · `PV-HUNT-010` · `PV-SUPPLY-010` · `PV-CONTENT-011` · `PV-QA-004` · `PV-CLEAN-002` (só com "R-020: AUTORIZADO"). Status final em `docs/architecture/RELATORIO-FILA-3.md`.
 
 ## M4 — Gameplay Foundation (Fase 6) *(na ordem oficial: Monster AI → Experience Distribution → Spawn)*
 

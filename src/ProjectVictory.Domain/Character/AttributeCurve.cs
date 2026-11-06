@@ -36,7 +36,9 @@ public sealed record AttributeCurve(
 // Vertical Slice), para não mudar o personagem de Level 1. Eles CONFLITAM com
 // knowledge-base/progression.md ("HP inicial 100 para todas; Knight +0.75 por Level…") — pergunta
 // ao PO registrada como R-021. Trocar os valores = trocar só esta tabela (dados), sem mudar regra.
-// A curva é a mesma em todas as Ascensions até decisão em contrário (ADR-026: atributos mantidos).
+// Ascension: a curva usa só o Level, que volta a 1 na Ascension; isso CONTRADIZ "atributos
+// permanentes são mantidos" (progression.md / ADR-026). Sem efeito hoje (Ascension fixa em 1);
+// a regra fica para o contrato de Ascension (R-022).
 public static class AttributeCurveTable
 {
     public static AttributeCurve ForClass(
