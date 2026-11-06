@@ -432,7 +432,7 @@ Status: Accepted (Arquitetura)
 
 Status: **Accepted (Product Owner)** — decisão de Game Design / experiência do jogador (ADR-016 deste log). Registrada pela Arquitetura em `PV-GOV-003`.
 
-**Hunt Analyzer.** Durante e depois da Hunt, a aba **"Analyzer"** do Game HUD mostra, em tempo real:
+**Hunt Analyzer.** **Durante a Hunt**, a aba **"Analyzer"** do Game HUD mostra **em tempo real** os valores abaixo, inclusive o **lucro líquido**; **ao final da Hunt**, mostra o **resumo** da Hunt com os mesmos valores:
 
 - **XP obtido** na Hunt;
 - **XP por hora** naquela Hunt;
@@ -449,6 +449,8 @@ Fundamentos:
 - `PROJECT-VICTORY-GAME-PHILOSOPHY` (jogo Idle; combate totalmente automático; evolução por Hunts e Loot).
 
 Consequências para a Arquitetura (dependências e marco de entrega): ver `roadmap-to-playable.md`, M8 (`PV-HUD-ANALYZER-010` e `PV-HUD-BATTLE-VIEW-010`).
+
+*Correção (2026-11-06, PO, registrada em `PV-GOV-006`): a primeira versão dizia "Durante e depois da Hunt… em tempo real". O PO esclareceu: tempo real **durante** a Hunt (incluindo lucro líquido) e **resumo ao final**.*
 
 ---
 
@@ -503,16 +505,56 @@ Status: **Accepted (Product Owner)**
 
 ## DEC-20261106-08 — Valor do loot no lucro do Hunt Analyzer
 
-Status: **PROVISÓRIA** — recomendação do Arquiteto, **aguardando confirmação do PO**
+Status: **Accepted (Product Owner)** em 2026-11-06 (`PV-GOV-006`) — antes PROVISÓRIA (recomendação do Arquiteto)
 
-No Hunt Analyzer (`DEC-20261106-01`), o **lucro** valora cada item/recurso obtido pelo **preço de venda ao NPC**. (O débito já usa o preço de compra no NPC, por decisão do PO em `DEC-20261106-01`.) Até a confirmação, contratos que dependam disto devem tratar o critério como substituível.
+No Hunt Analyzer (`DEC-20261106-01`), o **lucro** valora cada item/recurso obtido pelo **preço de venda ao NPC**. (O débito já usa o preço de compra no NPC, por decisão do PO em `DEC-20261106-01`.)
+
+**Todo item terá um preço de venda ao NPC.** Os valores iniciais são **PROVISÓRIOS**, definidos pelo Arquiteto (por delegação do PO) e ajustáveis depois pelo PO. O preço é **dado** da definição do item; comércio com NPC continua na Fase 7/8 (`roadmap.md`).
 
 ## DEC-20261106-09 — Primeira Hunt: Spider Cave
 
-Status: **Accepted (Product Owner)** quanto ao local; **monstros novos recomendados pelo Arquiteto**; **atributos provisórios**
+Status: **Accepted (Product Owner)** — local e os 5 monstros **confirmados pelo PO em 2026-11-06** (`PV-GOV-006`); **atributos provisórios**
 
 - Local: **Spider Cave** (nome sugerido pelo PO).
 - Monstros:
   - **Rat** e **Cave Rat** — já existem em `src/ProjectVictory.Application/Hunt/EncounterGenerator.cs` (verificado em 2026-11-06);
-  - **Spider**, **Poison Spider** e **Giant Spider** — **novos**, recomendados pelo Arquiteto.
+  - **Spider**, **Poison Spider** e **Giant Spider** — **novos**, recomendados pelo Arquiteto e **confirmados pelo PO** em 2026-11-06.
 - Atributos (vida, dano, XP, loot) serão propostos como **BALANCEAMENTO PROVISÓRIO** no contrato do M3, para o PO ajustar. Nenhum número é definitivo até o ajuste do PO.
+
+---
+
+# Decisões do Product Owner — 2026-11-06, manhã (registradas em `PV-GOV-006`)
+
+Além das novas entradas abaixo, o `PV-GOV-006` atualizou: `DEC-20261106-01` (texto do Analyzer: tempo real durante a Hunt + resumo ao final), `DEC-20261106-08` (deixa de ser provisória) e `DEC-20261106-09` (monstros confirmados). O `ADR-026` (Ascension Model) foi escrito como ACCEPTED a partir de `knowledge-base/progression.md`.
+
+## DEC-20261106-10 — Curva de Experience do M2
+
+Status: **Accepted (Product Owner)** — a curva é Game Design (ADR-016 deste log); o modelo de dados é da Arquitetura e segue os ADRs citados.
+
+- **Curva:** a Experience **total** necessária para estar no Level `L` é
+
+  `XP(L) = 50/3 × (L³ − 6L² + 17L − 12)`
+
+  (Level 1 = 0, Level 2 = 100, Level 3 = 200, Level 4 = 400, Level 5 = 800, Level 6 = 1.500…). O resultado é sempre inteiro.
+- **Experience como `long`** (64 bits): no Level 500 a Experience total passa de 2 bilhões, acima do limite de `int`. Mudança de persistência por **migration aditiva**, sem editar migrations existentes.
+- **Level derivado** de Experience + Ascension + Experience Table (ADR-027, ADR-028); deixa de ser fonte de verdade.
+- **Experience Table gerada pela fórmula** (ADR-025): entradas explícitas para os Levels 1 a 500 de cada Ascension (`experience-table.md`, "Estrutura"; teto de 500 do `ADR-026`).
+- **XP rate** é configuração, começando em **1x** — detalhada em `DEC-20261106-12`.
+
+Substitui a pendência "Fórmula matemática da experiência / Curva de experiência por Level" de `knowledge-base/progression.md`. Implementação: `PV-PROG-011` e `PV-PROG-010` (M2).
+
+## DEC-20261106-11 — Mesma curva em todas as Ascensions
+
+Status: **Accepted (Product Owner)**
+
+A curva de Experience (`DEC-20261106-10`) é **a mesma em todas as Ascensions**; só muda o **conteúdo desbloqueado** (regiões, monstros, equipamentos — `ADR-026`). Arquitetura: cada Ascension referencia uma Experience Table (ADR-025), e todas são geradas pela mesma fórmula.
+
+## DEC-20261106-12 — XP rate como configuração do servidor; ajuste por ferramenta de administração
+
+Status: **Accepted (Product Owner)**
+
+- **XP rate inicial = 1x.**
+- É **configuração do SERVIDOR** (`appsettings`/user-secrets/variáveis de ambiente), **nunca** controlada pelo cliente nem por jogador comum (Server Authority — `CLAUDE.md`).
+- O XP rate é aplicado **no Reward Pipeline** (ADR-024: único responsável por mudar Experience).
+- **M2:** entrega só a configuração e o uso dela no Reward Pipeline, **sem nenhum endpoint** que leia ou altere o valor.
+- **M8:** uma **tela de ajuste** como **ferramenta de administração**, restrita a uma **conta administradora** (`PV-ADMIN-010`). Pré-requisito arquitetural: conceito de papel de administrador na Account e autorização por papel no servidor — definidos no próprio contrato do M8.

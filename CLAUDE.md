@@ -47,6 +47,6 @@ O ambiente de nuvem usado na análise inicial **não tem `dotnet`**: build e tes
 
 ## Convenções
 - Documentação e comentários em português; identificadores em inglês.
-- IDs: contratos `PV-<ÁREA>-NNN`, work items `PV-VS-NNN`, ADRs `ADR-NNN` (próximo livre: ADR-057; lacunas 026, 044, 048 e ADR-055 vazio são pendências, não números livres).
+- IDs: contratos `PV-<ÁREA>-NNN`, work items `PV-VS-NNN`, ADRs `ADR-NNN` (próximo livre: ADR-058; lacunas 044, 048 e ADR-055 vazio são pendências, não números livres; ADR-026 preenchido em PV-GOV-006).
 - Commits pequenos, mensagem `PV-<ID> - <resumo>`.
 - Registro do que foi apagado/movido: `docs/architecture/CLEANUP-MANIFEST-2026-11-05.md`.

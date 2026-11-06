@@ -211,8 +211,8 @@ Entretanto, a Ascension atual sempre tende a oferecer o melhor equilíbrio entre
 
 Ainda precisam ser definidas:
 
-- Fórmula matemática da experiência.
-- Curva de experiência por Level.
+- ~~Fórmula matemática da experiência.~~ Decidida pelo PO em 2026-11-06 (`DEC-20261106-10`).
+- ~~Curva de experiência por Level.~~ Decidida pelo PO em 2026-11-06: `XP(L) = 50/3 × (L³ − 6L² + 17L − 12)`, a mesma em todas as Ascensions (`DEC-20261106-10/11`).
 - Fórmula do dano base.
 - Escalonamento matemático por faixas de Level.
 - Fórmula completa das Skills.

@@ -25,7 +25,7 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 |---|---|
 | Aprovar `project-state.md` v2.0 e este roadmap | `roadmap.md` (Roadmap Rules 1–5) |
 | Decidir **ADR-057** (Hunt Session × Runtime State/Checkpoint) — ✅ *ACCEPTED em 2026-11-06: B1 (Hunt termina ao desconectar) + Offline Training de skills (`DEC-20261106-05`)* | R-001; ADR-011/012; Handbook V3 §17–19 |
-| Formalizar R-005, R-006, R-008 no `decision-log.md`; preencher/descartar ADR-026/044/048/055 — *2026-11-06: levantamento e propostas em `docs/architecture/PV-GOV-005-RELATORIO-2026-11-06.md` (026 = Ascension Model, 044/048 = número não utilizado, 055 = Event-Driven Quests; 5 linhas de R-006 com texto proposto); aplicação pendente de decisão e contrato* | `ARCHITECTURE-GOVERNANCE` |
+| Formalizar R-005, R-006, R-008 no `decision-log.md`; preencher/descartar ADR-026/044/048/055 — ✅ *ADR-026 (Ascension Model) ACCEPTED em `PV-GOV-006`.* *2026-11-06: levantamento e propostas em `docs/architecture/PV-GOV-005-RELATORIO-2026-11-06.md` (026 = Ascension Model, 044/048 = número não utilizado, 055 = Event-Driven Quests; 5 linhas de R-006 com texto proposto); aplicação pendente de decisão e contrato* | `ARCHITECTURE-GOVERNANCE` |
 | **Dono roda `dotnet build` e `dotnet test`** na solução e informa o resultado (baseline) — ✅ **executado em 2026-11-05 (PV-GOV-002)**; resultado em `project-state.md`, Pendências de Validação | Regra Aditiva ("builds continuam passando") |
 | Dono sobe API + client e percorre `COMO USAR O SMOKE TEST.txt`; informa onde quebra | `ENGINEERING-HANDOFF` (validação manual quando mais eficiente) |
 
@@ -49,14 +49,20 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 
 ## M2 — Conformidade com a arquitetura LOCKED *(corrigir divergências; sem novos sistemas)*
 
+Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (L³ − 6L² + 17L − 12)`, Experience `long`, Level derivado, Experience Table gerada pela fórmula (`DEC-20261106-10`); mesma curva em todas as Ascensions (`DEC-20261106-11`); XP rate 1x como configuração do servidor, sem endpoint (`DEC-20261106-12`); teto de Level 500 por Ascension (`ADR-026`); todo item com preço de venda ao NPC provisório (`DEC-20261106-08`).
+
+**Ordem de execução (Arquiteto, ADR-016):** `PV-PROG-011` vem **antes** do `PV-PROG-010`, porque o Level derivado precisa da Experience Table para existir. Os demais seguem a ordem da tabela.
+
 | Contrato | Conteúdo | Lastro |
 |---|---|---|
-| `PV-PROG-010` Level derivado | Remover `Level` persistido; Level calculado de Experience + Ascension + Experience Table; migration | ADR-023, 027, 028 (R-002) |
-| `PV-PROG-011` Experience Table | Substituir `ProgressionProcessor` por intérprete de Experience Table (dados, não `if`s); sem teto fixo em 5 | ADR-025 (R-003) |
-| `PV-REWARD-010` Reward Pipeline real | `RewardProcessor` deixa de ser stub: XP e ouro vêm da definição de monstro; Loot via Loot Tables; Reward Pipeline é o único que muda Experience; **`ApplyRewardHandler` passa a aplicar drops e ouro ao personagem** (hoje só aplica XP — lacuna encontrada em `PV-QA-001` parte 1); aceite inclui remover o Skip de `ApplyReward_Should_Add_Item_To_Character_Inventory` e ligar a asserção ao `ItemDefinitionId` do drop (hoje estrutural: um item com Ids não vazios) | ADR-008, 024, 037, 038 |
+| `PV-PROG-011` Experience Table | Experience Table no Domain, **gerada pela fórmula** do `DEC-20261106-10`, com entradas explícitas para os Levels 1–500 (teto por Ascension, `ADR-026`) e validação (sem lacunas, crescente, contínua); `ProgressionProcessor` passa a interpretar a tabela (dados, não `if`s) atrás do mesmo `IProgressionProcessor`; sem teto fixo em 5 | ADR-025, ADR-026 (R-003); `DEC-20261106-10/11` |
+| `PV-PROG-010` Level derivado | Experience passa a `long` (Domain e persistência, **migration aditiva**); `Character.Level` calculado de Experience + Ascension (primeira) + Experience Table; o Level deixa de ser fonte de verdade. **A coluna `Level` do banco não é apagada** (apagar coluna é destrutivo): passa a ser só escrita com o valor derivado, nunca lida como verdade; removê-la exige decisão própria | ADR-023, 027, 028 (R-002); `DEC-20261106-10` |
+| `PV-REWARD-010` Reward Pipeline real | `RewardProcessor` deixa de ser stub: XP e ouro vêm da definição de monstro; **XP × XP rate da configuração do servidor** (`Progression:ExperienceRate`, padrão 1x, sem endpoint); Loot via Loot Tables (chance de drop respeitada); Reward Pipeline é o único que muda Experience; **`ApplyRewardHandler` passa a aplicar drops e ouro ao personagem** (hoje só aplica XP — lacuna encontrada em `PV-QA-001` parte 1); o fluxo real do ataque (`RewardResolutionHandler`) passa a entregar XP; **preço de venda ao NPC** na definição de item (valores provisórios); aceite inclui remover o Skip de `ApplyReward_Should_Add_Item_To_Character_Inventory` e ligar a asserção ao `ItemDefinitionId` do drop | ADR-008, 024, 037, 038; `DEC-20261106-08/12` |
 | `PV-STATE-001` Posse de estado | Cada store em memória classificado (temporário × semi-permanente × permanente); corrigir `HuntRepository`/`CombatContextRepository` (thread-safety) e `CombatResultStore` (escopo) | Handbook §8, `STATE-OWNERSHIP-MODEL` |
 
 **Saída:** checklist de conformidade ADR-021…038 completo para o código tocado; testes de regressão do loop passando.
+
+*Itens do M1 ainda abertos quando o M2 começou (2026-11-06): `PV-PLATFORM-004`, `PV-PLATFORM-005` e `PV-CLEAN-001`. O PO mandou executar o M2 (`PV-GOV-006`); nenhum deles é dependência técnica do M2. O `PV-CLEAN-001` apaga arquivos e por isso só roda com autorização explícita.*
 
 ## M3 — Combate real *(Fase 5: Combat Architecture LOCKED → implementação)*
 
@@ -132,7 +138,8 @@ Levantadas na leitura de `roadmap.md` (Fase 2), `knowledge-base/training.md` e `
 | `PV-UI-0xx` Navegação | Router real no client no lugar de `useState` por string; tipar `any`; estados de loading/erro. **Entrada do baseline `PV-QA-002` (2026-11-06):** `vite build` verde, mas `tsc --noEmit` = 443 erros (426 por falta de `@types/react*`), 2 imports quebrados em `WorldScenePage`/`PlayerStatePanel`, `GamePage` órfão, sem lint, `npm audit` 6 vulnerabilidades de build (ver `project-state.md`) | Análise §4.5; contratos `PV-UI-001/002` (histórico git: "Page Composition Rules") |
 | `PV-QA-010` Playtest | Roteiro de playtest, matriz de regressão, critérios de aceite | `ACCEPTANCE_CRITERIA.md`, `PV-VS-2.0-045` |
 | `PV-CONTENT-010` Conteúdo mínimo | Monstros, itens e loot suficientes para ~30 min de jogo | `FIRST_FUN.md`, `PROJECT-VICTORY-CONTENT-PIPELINE-ARCHITECTURE.md` |
-| `PV-HUD-ANALYZER-010` Hunt Analyzer | Aba "Analyzer" do Game HUD: XP obtido, XP/hora, débito, lucro e lucro líquido da Hunt, em tempo real, **calculados no servidor** e só exibidos pelo cliente | `DEC-20261106-01` (PO); ADR-002; `PV-FRONTEND-GAME-HUD-FOUNDATION-001` |
+| `PV-HUD-ANALYZER-010` Hunt Analyzer | Aba "Analyzer" do Game HUD: XP obtido, XP/hora, débito, lucro e lucro líquido da Hunt, em tempo real durante a Hunt e resumo ao final, **calculados no servidor** e só exibidos pelo cliente | `DEC-20261106-01` (PO); ADR-002; `PV-FRONTEND-GAME-HUD-FOUNDATION-001` |
+| `PV-ADMIN-010` Ferramenta de administração | Tela de ajuste do **XP rate** restrita a uma **conta administradora**: papel de administrador na Account, autorização por papel no servidor, endpoint protegido; jogador comum e cliente comum nunca alteram o valor | `DEC-20261106-12` (PO); Server Authority (`CLAUDE.md`) |
 | `PV-HUD-BATTLE-VIEW-010` Representação visual | Animação central por local (ex.: Spider Cave), duelo automático decorativo, **sem efeito no resultado** | `DEC-20261106-01` (PO); ADR-002 |
 
 ### Dependências do Hunt Analyzer (`DEC-20261106-01`)
@@ -143,7 +150,7 @@ O Analyzer é **entregue em M8 (UI)** e **não bloqueia M1 a M4**. Ele consome d
 |---|---|---|
 | **Preços de compra e venda NPC nas definições de item** (dado, não comércio) | `PV-CONTENT-010` (M8), sobre as definições de item; o campo pode ser acrescentado já no `PV-REWARD-010` (M2) quando o Reward passar a usar definições reais | Só o **dado** de preço. Comércio com NPC continua na Fase 7/8 (`roadmap.md`) — Guardião de Escopo |
 | **Modelo de suprimentos (poções)** — o que é gasto e quando | `PV-SUPPLY-010` (M3) | **Decidido pelo PO em 2026-11-06:** só poção de vida e de mana, uso configurável, aplicado no próximo turno (`DEC-20261106-02/03`). O débito do Analyzer = poções gastas × preço de compra no NPC |
-| **Valor do loot no lucro** | `PV-HUD-ANALYZER-010` (M8) | **Preço de venda ao NPC — PROVISÓRIO** (recomendação do Arquiteto, aguardando confirmação do PO: `DEC-20261106-08`) |
+| **Valor do loot no lucro** | `PV-HUD-ANALYZER-010` (M8) | **Preço de venda ao NPC** — confirmado pelo PO em 2026-11-06 (`DEC-20261106-08`); preços iniciais provisórios entram no `PV-REWARD-010` (M2) |
 | **Medição de tempo da Hunt** (início, pausas, fim) para XP/hora | `PV-HUNT-011` (M6, Hunt Loop contínuo) | Política decidida (`ADR-057` ACCEPTED): a Hunt só existe enquanto o jogador está conectado, então XP/hora usa apenas tempo online |
 | XP e loot reais da Hunt | `PV-REWARD-010` (M2), `PV-XP-010` (M4) | Hoje o Reward é stub (XP 0); sem eles o Analyzer mostraria zeros |
 
