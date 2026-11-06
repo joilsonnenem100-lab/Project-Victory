@@ -377,3 +377,49 @@ Resumo:
 A continuidade do Project-Victory não depende do histórico da conversa.
 
 A continuidade depende exclusivamente da documentação oficial consolidada.
+
+---
+
+# Registro da Revisão de 2026-11-05
+
+> **Nota de numeração (R-009):** este arquivo possui uma série própria de decisões `ADR-001…018`, distinta da série de `developer-guide/adr/ADR-001…057`. Para evitar nova colisão, as decisões abaixo usam o prefixo `DEC-`. Unificar as séries exige decisão do Product Owner/Arquiteto e não foi feito.
+
+## DEC-20261105-01 — Código se conforma aos ADRs LOCKED
+
+Status: Accepted (Arquitetura)
+
+Onde o código diverge de ADR ACCEPTED sem decisão que o autorize (Level persistido × ADR-027/028; tabela fixa × ADR-025), o código é corrigido. Lastro: hierarquia da fonte da verdade; `PROJECT-VICTORY-ARCHITECTURE-RULES.md` (substituição só com decisão + contrato + validação).
+
+## DEC-20261105-02 — Segurança e Server Authority em todo endpoint de gameplay
+
+Status: Accepted (Arquitetura)
+
+Todo endpoint de gameplay exige autenticação; identidade vem do token; recurso é verificado quanto ao dono. Lastro: `PRINCIPLES` ("O cliente solicita. O servidor decide."), Handbook V3 §23–24.
+
+## DEC-20261105-03 — Stubs são substituídos atrás da mesma interface
+
+Status: Accepted (Arquitetura)
+
+`CombatResolver`, `RewardProcessor` e `ProgressionProcessor` (stubs/provisórios) são substituídos nos marcos M2–M3 mantendo interfaces, DTOs e endpoints. Lastro: Regra Aditiva (Backend).
+
+## DEC-20261105-04 — Código sem referência em quarentena
+
+Status: Accepted (Arquitetura)
+
+`Application/Architecture`, `Playtest` e `Production` (42 arquivos, sem referências) só são removidos após `dotnet build` verde, em contrato de limpeza (M1). Lastro: Regra Aditiva ("builds continuam passando").
+
+## DEC-20261105-05 — Roadmap de execução
+
+Status: Accepted (Arquitetura) — **aguarda aprovação do Product Owner no M0**
+
+`roadmap-to-playable.md` é o roadmap de execução; `roadmap.md` permanece a ordem oficial de módulos. Resolve R-005. Lastro: ADR-016 (Arquiteto responde por Roadmap) e `roadmap.md` (Roadmap Rules).
+
+## DEC-20261105-06 — Política de desconexão da Hunt
+
+Status: **Pendente** — ver `ADR-057` (PROPOSED). A parte de Game Design pertence ao Product Owner (ADR-016 deste log).
+
+## DEC-20261105-07 — Higiene do repositório
+
+Status: Accepted (Arquitetura)
+
+`node_modules/` e `dist/` deixam de ser versionados; binários e listagens sem valor de fonte são removidos; `projectvictory.db` permanece até o `PV-PLATFORM-001`. Lastro: Regra Aditiva (nenhuma funcionalidade removida) e clone limpo como pré-requisito de baseline.
