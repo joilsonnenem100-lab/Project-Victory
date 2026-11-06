@@ -68,6 +68,6 @@ jobs:
         run: npm run build
 
       # Typecheck informativo: ainda há 7 erros de tipo conhecidos nas telas (PV-PLATFORM-005 → PV-UI-0xx).
+      # Não bloqueia o CI, mas publica um aviso visível na execução (revisão do PV-CI-001).
       - name: Typecheck (informativo)
-        continue-on-error: true
-        run: npm run typecheck
+        run: npm run typecheck || echo "::warning title=Typecheck::tsc --noEmit encontrou erros de tipo conhecidos (ver PV-PLATFORM-005; destino PV-UI-0xx)"

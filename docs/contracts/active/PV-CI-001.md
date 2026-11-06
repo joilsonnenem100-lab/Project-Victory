@@ -1,6 +1,6 @@
 # PV-CI-001 — Integração contínua (GitHub Actions)
 
-Status: **IMPLEMENTADO** (branch `chief/q2-ci-001`)
+Status: **IMPLEMENTADO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/m1-clean-001`). Branch `chief/q2-ci-001`
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 2", item 7): ".github/workflows/ci.yml rodando dotnet build e dotnet test ProjectVictory.sln em push e pull request, com .NET 10 e o build do cliente. Se o push for rejeitado por falta de permissão para workflows, registre no relatório e NÃO tente contornar."
 Lastro: Definition of Done (`CLAUDE.md`: build e testes verdes); `TESTING-STRATEGY`.
 
@@ -32,3 +32,18 @@ Lastro: Definition of Done (`CLAUDE.md`: build e testes verdes); `TESTING-STRATE
 ## Fora do escopo
 
 Publicação/deploy, análise de cobertura, lint e proteção de branch (configuração do repositório no GitHub, do PO).
+
+## Resultado no GitHub
+
+- O push com o workflow foi **aceito**: não houve bloqueio por permissão de workflows.
+- Execução **42225918358** (`chief/q2-ci-001`, `9c91392`): **success** nos dois jobs (.NET: restore, build Release, test; cliente: `npm ci`, build). https://github.com/joilsonnenem100-lab/Project-Victory/actions/runs/42225918358
+- Execução **42226163716** (`chief/m1-clean-001`, `60488c9`): **success**.
+- A **contagem de testes no Linux não foi conferida**: o log e o `.trx` exigem autenticação. Localmente são 173.
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+1. e 2. Resultado da execução registrado acima. A contagem no Linux fica como pendência de leitura do artefato pelo PO.
+3. O passo de typecheck agora publica um `::warning` visível quando há erros, em vez de `continue-on-error` silencioso (aplicado no branch `chief/m1-clean-001`).
+4. Anotações do runner: as actions `@v4` usam Node 20, que está obsoleto, e `ubuntu-latest` vai migrar. Atualizar ou fixar versões fica para um contrato futuro.
+5. Um PR de branch do próprio repositório roda o CI duas vezes (`push` + `pull_request`). Aceito, conforme a ordem.
+6. O import com caixa errada (`PlayerIdentityArea.tsx`) quebra o CI no Linux no dia em que a tela ficar alcançável → `PV-UI-0xx`.
