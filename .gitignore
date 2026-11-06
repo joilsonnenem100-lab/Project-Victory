@@ -27,3 +27,9 @@ packages/
 # OS
 .DS_Store
 Thumbs.db
+# Client (gerado; nunca versionar)
+node_modules/
+dist/
+
+# Editor
+*.swp
