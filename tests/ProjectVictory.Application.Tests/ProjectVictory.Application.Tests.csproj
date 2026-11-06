@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -20,8 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ProjectVictory.Application\ProjectVictory.Application.csproj" />
-    <!-- PV-COMBAT-013: teste de determinismo com o CombatResolver real -->
-    <ProjectReference Include="..\..\src\ProjectVictory.Infrastructure\ProjectVictory.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

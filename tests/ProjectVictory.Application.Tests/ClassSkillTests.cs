@@ -92,6 +92,9 @@ public sealed class ClassSkillTests
             CombatActionKind.UseSkill => new CombatActionOutcome(7, 0, 0, action.Skill!.ManaCost, true),
             _ => CombatActionOutcome.NotExecuted
         };
+
+        public SkillResolution ResolveSkill(Combatant actor, SkillDefinition skill, IReadOnlyList<Combatant> aliveOpponents, IRandomSource random) =>
+            new(true, skill.ManaCost, aliveOpponents.Select(t => new SkillHit(t, new CombatActionOutcome(7, 0, 0, 0, true))).ToList());
     }
 
     private static CombatSession Session(int playerMana, int monsters, int seed = 1)
@@ -132,36 +135,6 @@ public sealed class ClassSkillTests
 
         Assert.Equal("Fierce Thrust", Assert.Single(report.Log, e => e.Kind == CombatActionKind.UseSkill).SkillName);
         Assert.Equal(100 - 25, session.Player.CurrentMana);
-    }
-
-    [Fact]
-    public void RealFormula_SameSeed_SameSkillCombat()
-    {
-        static List<(string?, int)> Run(int seed)
-        {
-            var session = Session(playerMana: 100, monsters: 3, seed);
-            var orchestrator = new CombatOrchestrator(
-                new ProjectVictory.Infrastructure.Services.CombatResolver(new ProvisionalTibiaLikeDamageFormula(), new NoSupplies()),
-                new SequentialTurnScheduler(), new DefaultCombatActionSelector(), []);
-            var log = new List<(string?, int)>();
-
-            for (var i = 0; i < 50 && !session.IsFinished; i++)
-            {
-                log.AddRange(orchestrator.ExecuteRound(session).Log.Select(e => (e.SkillName, e.Damage)));
-            }
-
-            return log;
-        }
-
-        Assert.Equal(Run(9), Run(9));
-        Assert.Contains(Run(9), e => e.Item1 is not null);
-    }
-
-    private sealed class NoSupplies : ISupplyEffects
-    {
-        public int HealthPotionHealing => 0;
-
-        public int ManaPotionRestore => 0;
     }
 
     [Fact]

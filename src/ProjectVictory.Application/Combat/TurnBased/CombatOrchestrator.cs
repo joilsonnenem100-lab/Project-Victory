@@ -18,6 +18,9 @@ public interface ICombatActionSelector
         Combatant actor);
 
     // PV-COMBAT-013: escolha completa (tipo + skill). Padrão: só o tipo, sem skill (aditivo).
+    // Atenção (revisão do PV-COMBAT-013, ressalva 5): um seletor que devolva UseSkill só por
+    // SelectSecondaryAction fica sem skill e o resolver devolve NotExecuted (seguro, mas sem efeito);
+    // para usar skills, implemente este método.
     CombatTurnChoice? SelectSecondaryChoice(
         CombatSession session,
         Combatant actor) =>
@@ -162,41 +165,34 @@ public sealed class CombatOrchestrator
         Apply(session, new CombatTurnAction(actor, secondaryTarget, choice.Kind, choice.Skill), log);
     }
 
-    // PV-COMBAT-013: aplica uma skill em área. O resolver decide o dano de cada alvo; a mana é
-    // gasta UMA vez (custo do primeiro alvo); os demais alvos não pagam de novo.
+    // PV-COMBAT-013 (revisão B1/B2, ADR-051): o orquestrador NÃO decide a regra da skill em área.
+    // Passa os oponentes vivos ao resolver, cobra a mana UMA vez (o custo que o resolver devolveu)
+    // e aplica o resultado de cada alvo.
     private void ApplyArea(
         CombatSession session,
         Combatant actor,
         ProjectVictory.Domain.Combat.Rules.SkillDefinition skill,
         List<CombatTurnLogEntry> log)
     {
-        var targets = actor.Side == CombatSide.Player
+        var opponents = actor.Side == CombatSide.Player
             ? session.Monsters.Where(m => !m.IsDead).ToList()
             : session.Player.IsDead ? new List<Combatant>() : new List<Combatant> { session.Player };
 
-        var paid = false;
+        var resolution = _resolver.ResolveSkill(actor, skill, opponents, session.Random);
 
-        foreach (var target in targets)
+        if (!resolution.Executed)
         {
-            var action = new CombatTurnAction(actor, target, CombatActionKind.UseSkill, skill);
-            var outcome = _resolver.ResolveAction(action, session.Random);
+            return;
+        }
 
-            if (!outcome.Executed)
-            {
-                return;
-            }
+        if (resolution.ManaCost > 0 && !actor.TrySpendMana(resolution.ManaCost))
+        {
+            return;
+        }
 
-            if (!paid)
-            {
-                if (outcome.ManaCost > 0 && !actor.TrySpendMana(outcome.ManaCost))
-                {
-                    return;
-                }
-
-                paid = true;
-            }
-
-            Record(session, action, outcome with { ManaCost = 0 }, log);
+        foreach (var hit in resolution.Hits)
+        {
+            Record(session, new CombatTurnAction(actor, hit.Target, CombatActionKind.UseSkill, skill), hit.Outcome, log);
         }
     }
 

@@ -3,7 +3,7 @@
 - **Status:** Implementado (Fila 4, branch `chief/q4-combat-013`)
 - **Origem:** ordem do PO "MODO FILA 4 - VERSÃO FINAL", item 5; `DEC-20261106-23` (skills) e `DEC-20261106-16` (combate simples).
 - **ADRs:** ADR-006 (ataque básico + ação secundária), ADR-051 (Combat Orchestrator), ADR-052 (turnos determinísticos), ADR-045 (orquestrador não implementa regra de outro domínio).
-- **Regra aditiva:** o enum `CombatActionKind` ganha `UseSkill`; `ClassAbility` continua existindo (sem uso pelo seletor padrão). DTOs e logs ganham campos opcionais (`SkillName`, `DamageType`).
+- **Regra aditiva:** o enum `CombatActionKind` ganha `UseSkill`; `ClassAbility` continua existindo (sem uso pelo seletor padrão). DTO e log do turno ganham o campo opcional `SkillName`; `DamageType` existe em `SkillDefinition` e em `CombatActionOutcome` (ainda não vai para o log nem para o DTO — entra quando houver mais de um tipo).
 
 ## Escopo
 
@@ -12,7 +12,7 @@
    - `ClassSkillTable.All`: 4 skills por classe (2 em área, 2 em alvo único), desbloqueio por Level (1, 5, 15, 20);
    - `ClassSkillTable.BasicAttackMultiplier(class)`: força do ataque básico por classe.
 2. **Seletor automático** — `SkillSelectionPolicy(MinimumEnemiesForArea = 2)`: com 2+ inimigos vivos usa a melhor skill em área que o mana paga; com 1 inimigo, a melhor de alvo único; sem mana ou sem skill do tipo certo, nenhuma (só o ataque básico). Ligado ao `DefaultCombatActionSelector`; o `SupplyAwareCombatActionSelector` mantém a prioridade da poção (`DEC-20261106-22`, próximo turno) e, sem poção, delega a escolha.
-3. **Orquestrador** — `ICombatActionSelector.SelectSecondaryChoice` (método padrão de interface, aditivo) devolve `CombatTurnChoice(Kind, Skill)`. Skill em área atinge todos os inimigos vivos e gasta o mana **uma vez**. O log registra `SkillName`.
+3. **Orquestrador** — `ICombatActionSelector.SelectSecondaryChoice` (método padrão de interface, aditivo) devolve `CombatTurnChoice(Kind, Skill)`. Skill em área atinge todos os inimigos vivos e gasta o mana **uma vez**. O log registra `SkillName`. *Revisão (B1/B2):* a regra da área está no resolver (`ICombatResolver.ResolveSkill`, aditivo); o orquestrador só cobra o custo único devolvido e aplica os resultados.
 4. **Resolver** — `CombatResolver` trata `UseSkill`: confere o mana **antes** de consumir número aleatório (determinismo), usa o multiplicador e o `DamageType` da skill.
 5. **Dano extensível** — `DamageType { Physical }`, carregado em `SkillDefinition` e em `CombatActionOutcome`. Novos tipos (Fire, Ice, Holy...) entram como valores novos do enum e dados; resistências ficam para contrato próprio.
 6. **Fórmula** — `IDamageFormula.RollDamage(attacker, defender, multiplier, random)` e `MaximumDamage(attacker, multiplier)`; o ataque básico usa `CombatProfile.BasicAttackMultiplier` (padrão 1).
@@ -43,3 +43,16 @@ Todo dano de skill é `Physical` hoje (o PO não definiu elementos). `SkillScali
 - **PV-SUPPLY-011:** #2 a localização inicial do mundo semeado passa a se chamar `HomeCity.Name` ("Victoria"); #3 `NoSupplies_DoesNotEndTheHunt` e `PolicyWithoutPotions_DoesNotEndTheHunt` agora exigem `huntEndReason` nulo, combate não finalizado e estado `Active`; #4 novo teste `EndHunt_DeathNoticeOnlyOnDeath_AlwaysReturnsToVictoria` (Death com aviso; Victory, Manual e Disconnect sem aviso; sempre "Victoria"); #5 nota no contrato `PV-SUPPLY-011`.
 
 Resultado da solução: build com 0 avisos; **295 aprovados, 0 ignorados, 0 falhas** (Application 24, Domain 108, Runtime 17, Smoke 62, Api 84).
+
+## Revisão (`pv-architecture-reviewer`) — REPROVADO, corrigido na branch `chief/q4-combat-013b`
+
+- **B1 (corrigido):** com o resolver real, a skill em área parava no primeiro alvo quando a mana ficava entre o custo e o dobro (o resolver conferia a mana de novo a cada alvo, já descontada). Agora a mana é conferida uma vez, antes de qualquer sorteio, todos os alvos são resolvidos e só então o custo é cobrado. Teste novo `SmokeTests/ClassSkillCombatTests.AreaSkill_RealResolver_ManaEqualToCost_HitsAllTargets` (mana = custo, 3 alvos, mana final 0) e `…_NotEnoughMana_NoSkillNoRandomConsumed`.
+- **B2 (corrigido):** a regra da área (quem é atingido, custo único) saiu do orquestrador (ADR-051, linha 36; ADR-045) e foi para `CombatResolver.ResolveSkill`. Operação nova e aditiva em `ICombatResolver` (método padrão que não executa, para resolvers que não conhecem skills em área), com os records `SkillResolution` e `SkillHit`.
+- **Ressalva 1 (registrada no relatório da Fila 4):** o seletor padrão passou de `ClassAbility` para `UseSkill`, e o ataque básico ganhou multiplicador por classe — o balanceamento da Spider Cave muda (mais dano do jogador). Sustentado pelo `DEC-20261106-23`.
+- **Ressalva 2 (corrigida):** texto sobre `DamageType` acima.
+- **Ressalva 3 (aplicada):** os testes com o `CombatResolver` real foram para o `SmokeTests` (`ClassSkillCombatTests`); o `Application.Tests` deixou de referenciar Infrastructure.
+- **Ressalva 4 (registrada):** `SkillScaling` (Magic Level, Distance, Fist) ainda não entra na conta → **R-039**.
+- **Ressalva 5 (aplicada):** comentário em `ICombatActionSelector.SelectSecondaryChoice`.
+- **Ressalva 6 (aplicada):** comentário de `ApplyArea` reescrito.
+
+Resultado depois da correção: build com 0 avisos; **297 aprovados, 0 ignorados, 0 falhas** (Application 23, Domain 108, Runtime 17, Smoke 65, Api 84).

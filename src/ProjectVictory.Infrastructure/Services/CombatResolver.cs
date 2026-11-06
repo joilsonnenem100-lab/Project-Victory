@@ -83,4 +83,35 @@ public sealed class CombatResolver : ICombatResolver
                 return CombatActionOutcome.NotExecuted;
         }
     }
+
+    // Revisão do PV-COMBAT-013 (B1/B2): skill em área atinge TODOS os oponentes vivos e custa a
+    // mana uma vez. A mana é conferida UMA vez, antes de qualquer número aleatório (determinismo);
+    // depois, um sorteio de dano por alvo, na ordem dos oponentes.
+    public SkillResolution ResolveSkill(
+        Combatant actor,
+        SkillDefinition skill,
+        IReadOnlyList<Combatant> aliveOpponents,
+        IRandomSource random)
+    {
+        if (skill.Targeting != SkillTargeting.Area
+            || aliveOpponents.Count == 0
+            || actor.CurrentMana < skill.ManaCost)
+        {
+            return SkillResolution.NotExecuted;
+        }
+
+        var hits = aliveOpponents
+            .Select(target => new SkillHit(
+                target,
+                new CombatActionOutcome(
+                    _damageFormula.RollDamage(actor, target, skill.DamageMultiplier, random),
+                    0,
+                    0,
+                    0,
+                    true,
+                    skill.DamageType)))
+            .ToList();
+
+        return new SkillResolution(true, skill.ManaCost, hits);
+    }
 }
