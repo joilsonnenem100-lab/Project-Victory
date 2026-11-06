@@ -43,7 +43,7 @@ Objetivo: reconciliar documentação e código, decidir as revisões pendentes, 
 | Projetos `ProjectVictory.Runtime` e `ProjectVictory.Shared` | **Vazios** (somente `.csproj`) | 0 arquivos `.cs` |
 | Client | Telas de login, cadastro, personagem, entrada, jogo, inventário, recompensa | `src/ProjectVictory.Client/src/pages` |
 
-Testes automatizados: **3** (`Application.Tests`: 1; `SmokeTests`: 2). `Domain.Tests` e `Runtime.Tests`: 0. `SmokeTests` **fora** do `.sln`.
+Testes automatizados: **3 escritos** (`Application.Tests`: 1; `SmokeTests`: 2); **1 executável e verde** (baseline 2026-11-05); os 2 do `SmokeTests` **não compilam** (ver Pendências de Validação). `Domain.Tests` e `Runtime.Tests`: 0. `SmokeTests` **fora** do `.sln`.
 
 ---
 
@@ -93,7 +93,7 @@ Foundation (Aggregate Root, Value Objects, Entities, Character) · Character Dom
 
 ---
 
-# Pendências de Validação (não executadas nesta verificação)
+# Pendências de Validação
 
 ## Baseline executado na máquina do dono — 2026-11-05 (registrado em PV-GOV-002)
 
