@@ -29,6 +29,8 @@ Skills representam:
 
 # Skills Oficiais
 
+> *Emenda (2026-11-06, Fila 5, `DEC-20261106-26`; revisão formal do documento LOCKED, ressalva da revisão do PV-GOV-010): as skills oficiais são as do Tibia — **Level, Magic Level, Fist Fighting, Club Fighting, Sword Fighting, Axe Fighting, Distance Fighting, Shielding e Fishing**. A lista abaixo não tinha **Fishing** e grafava "First Fighting" (correto: **Fist Fighting**).*
+
 O sistema possui:
 
 ## Sword

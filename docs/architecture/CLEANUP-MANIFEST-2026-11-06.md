@@ -13,3 +13,20 @@ Regras: cada remoção listada aqui; nenhum arquivo inteiro apagado sem estar li
 | `docs/character e conceitos/PROJECT-VICTORY-ITEM-SYSTEM-DESIGN.md` | exemplos de afixo com `Strength` ("of Strength", "Strong III / Strength", "Strength I/II/III") | `DEC-20261106-27` |
 
 Emendas (sem remoção): `ADR-026` v1.2, `knowledge-base/character.md`, `schema/character.md`, `knowledge-base/progression.md`, `developer-guide/domain/attributes.md`, `PV_ATTRIBUTE_SYSTEM_FOUNDATION.md`.
+
+## PV-PROG-013 — Ascension da Fila 4 substituída pelos títulos por Level (`DEC-20261106-30`)
+
+Base: o `DEC-20261106-30` **supera** a regra de Ascension do `DEC-20261106-19` (Fila 4). Substituições, cada uma pelo equivalente novo:
+
+| Removido / substituído | Substituto |
+|---|---|
+| `src/ProjectVictory.Domain/Progression/AscensionRules.cs` (arquivo inteiro, `git rm`) | `src/ProjectVictory.Domain/Progression/LevelTitles.cs` (`LevelTitle`, `LevelTitleTable`) |
+| `Character.Ascension` e `Character.AscensionUnder(rules)` | `Character.Title` e `Character.TitleUnder(table)` |
+| `HuntAreaDefinition.RequiredAscension` (padrão 1); `GetAvailable(ascension)` | `HuntAreaDefinition.RequiredTitleTier` (padrão 0); `GetAvailable(tier)` |
+| `SpiderCaveCatalog.RequiredAscension = 1` | `SpiderCaveCatalog.RequiredTitleTier = 0` |
+| Configuração `Ascension:LevelStep` / `Ascension:Maximum` (`appsettings.json`) | Seção `LevelTitles` (lista de `Tier`, `Label`, `MinimumLevel`) |
+| Parâmetro `AscensionRules? ascensionRules` de `AddProjectVictoryCore` | `ILevelTitleProvider? levelTitles` |
+| Argumento `Ascension` em `AttributeCurveTable.ForClass` dentro do `Character` (sem efeito na curva) | Valor padrão |
+| Testes da Ascension da Fila 4 (`AscensionTests`: 4 testes; `DerivedLevelTests`: 2 asserções; `AscensionContentTests`: 2 testes) | Testes de títulos nos limites 499/500 … 2499/2500 e Level muito alto; tier nas Hunt areas |
+
+Nenhum DTO publicado perdeu campo: a Ascension nunca foi exposta pela API. `GetCharactersResult` e `EnterGameResult` **ganharam** `title` e `titleTier` (aditivo). Schema do banco inalterado (nenhuma migration).

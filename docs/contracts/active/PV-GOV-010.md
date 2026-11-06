@@ -23,7 +23,7 @@
 ## Revisão formal dos docs LOCKED e emendas (texto antigo mantido por histórico)
 
 - `ADR-026` → **v1.2** (títulos por Level).
-- `knowledge-base/character.md` (**LOCKED**) e `schema/character.md`: seção Ascension (R-034) e Sistema de Poder.
+- `knowledge-base/character.md` e `schema/character.md` (ambos **LOCKED**): seção Ascension (R-034) e Sistema de Poder.
 - `knowledge-base/progression.md`: Level/Ascension.
 - `developer-guide/domain/attributes.md` e `PV_ATTRIBUTE_SYSTEM_FOUNDATION.md`: conjunto oficial de atributos.
 - Tachados, com lista no `CLEANUP-MANIFEST-2026-11-06.md`: `AttackSpeed` e `Capacity` em `entities.md` e `value-objects.md`; afixo "Strength" no design de itens.
@@ -35,3 +35,12 @@
 - **Perguntas ao PO:**
   - Critical e Dodge entram como efeitos de item?
   - `BasicCombatAttributes` está sem uso: remover?
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q5-prog-013`
+
+1. Conflito com `knowledge-base/world.md` ("a Hunt não possui Tier"): **emendado** — a Hunt area exige **tier de título**, distinto do Tier de item; no código o nome é `TitleTier`/`RequiredTitleTier` (sem colisão com o Tier de item).
+2. `knowledge-base/skills.md` (LOCKED) sem Fishing e com "First Fighting": **emendado** (revisão formal).
+3. Inventário completado: `affixes.md` (Healing Power → pergunta ao PO) e `combat.md` (Attack Speed/Cast Speed não existem).
+4. `entities.md` e `value-objects.md` (LOCKED): nota de emenda formal no topo; lista de LOCKED corrigida acima.
+5. A substituição da Ascension da Fila 4 é explicitada no contrato `PV-PROG-013` e no manifesto; R-037 encerrado.
+6. R-040 com redação mais precisa; o nome "Arcane Lance" (Sorcerer = energia e fogo) vai para o balanceamento (`DEC-20261106-32`), citado no relatório da Fila 5.

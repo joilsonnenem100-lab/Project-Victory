@@ -30,7 +30,7 @@ public sealed class DerivedLevelTests
         var character = NewCharacter();
 
         Assert.Equal(1, character.Level.Value);
-        Assert.Equal(1, character.Ascension);
+        Assert.Equal(0, character.Title.Tier); // PV-PROG-013: Level 1 = Novice (tier 0)
     }
 
     [Theory]
@@ -63,7 +63,7 @@ public sealed class DerivedLevelTests
 
         Assert.Equal(3_147_483_647L, character.Experience.Value);
         Assert.Equal(575, character.Level.Value);
-        Assert.Equal(2, character.Ascension); // Level 500–999 → Ascension 2
+        Assert.Equal("Ascension 1", character.Title.Label); // PV-PROG-013: Level 500–999 → Ascension 1 (tier 1)
     }
 
     [Fact]

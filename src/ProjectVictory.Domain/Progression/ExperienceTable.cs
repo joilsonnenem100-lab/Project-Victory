@@ -14,11 +14,11 @@ namespace ProjectVictory.Domain.Progression;
 public sealed class ExperienceTable
 {
     // *** Histórico *** (PV-PROG-011): teto de 500 Levels por Ascension — SUPERADO pelo
-    // DEC-20261106-19 (Level sem teto; Ascension derivada do Level, passo em AscensionRules).
+    // DEC-20261106-19 (Level sem teto); títulos por Level em LevelTitleTable (DEC-20261106-30).
     // Mantido como constante pública pela Regra Aditiva; não limita mais nenhuma tabela.
     public const int MaximumLevelPerAscension = 500;
 
-    // A primeira Ascension (a Ascension agora é derivada do Level: AscensionRules).
+    // Constante histórica (a curva é uma só). Títulos/tier derivados do Level: LevelTitleTable (PV-PROG-013).
     public const int FirstAscension = 1;
 
     private static readonly ExperienceTable StandardTable = new();

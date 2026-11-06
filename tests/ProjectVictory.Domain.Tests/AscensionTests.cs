@@ -5,47 +5,62 @@ using Xunit;
 
 namespace ProjectVictory.Domain.Tests;
 
-// PV-PROG-012 (DEC-20261106-19): Ascension derivada do Level; passo e máximo em configuração.
+// PV-PROG-013 (DEC-20261106-30): títulos e tier DERIVADOS do Level, tabela em configuração.
+// Substitui os testes de Ascension da Fila 4 (PV-PROG-012), superados pelo DEC-20261106-30.
 public sealed class AscensionTests
 {
     [Theory]
-    [InlineData(1, 1)]
-    [InlineData(499, 1)]
-    [InlineData(500, 2)]
-    [InlineData(999, 2)]
-    [InlineData(1000, 3)]
-    [InlineData(1499, 3)]
-    [InlineData(1500, 4)]
-    [InlineData(2000, 4)]     // máximo atual 4
-    [InlineData(500_000, 4)]
-    public void DefaultRules_NewAscensionEvery500Levels_UpToFour(int level, int expected)
+    [InlineData(1, 0, "Novice")]
+    [InlineData(499, 0, "Novice")]
+    [InlineData(500, 1, "Ascension 1")]
+    [InlineData(999, 1, "Ascension 1")]
+    [InlineData(1000, 2, "Ascension 2")]
+    [InlineData(1499, 2, "Ascension 2")]
+    [InlineData(1500, 3, "Ascension 3")]
+    [InlineData(1999, 3, "Ascension 3")]
+    [InlineData(2000, 4, "Ascension 4")]
+    [InlineData(2499, 4, "Ascension 4")]
+    [InlineData(2500, 5, "Legend")]
+    [InlineData(10_000, 5, "Legend")]
+    [InlineData(821_009, 5, "Legend")]       // maior Level representável
+    [InlineData(int.MaxValue, 5, "Legend")]  // Legend é permanente, sem teto
+    public void DefaultTable_TitleAndTier_AtEveryLimit(int level, int tier, string label)
     {
-        Assert.Equal(expected, AscensionRules.Default.AscensionFor(level));
+        var title = LevelTitleTable.Default.For(level);
+
+        Assert.Equal(tier, title.Tier);
+        Assert.Equal(label, title.Label);
     }
 
     [Fact]
-    public void Rules_AreConfigurable_ForFutureExpansion()
+    public void Table_IsReplaceable_LabelsAndRanges()
     {
-        var expanded = new AscensionRules(LevelStep: 500, MaximumAscension: 6);
+        var custom = new LevelTitleTable(
+        [
+            new LevelTitle(0, "Rookie", 1),
+            new LevelTitle(1, "Veteran", 100),
+            new LevelTitle(2, "Master", 200)
+        ]);
 
-        Assert.Equal(5, expanded.AscensionFor(2000));
-        Assert.Equal(6, expanded.AscensionFor(9999));
-        Assert.Equal(2500, expanded.UnlockLevel(6));
-        Assert.Equal(1, expanded.UnlockLevel(1));
-        Assert.Equal(3, new AscensionRules(LevelStep: 100, MaximumAscension: 4).AscensionFor(250));
+        Assert.Equal("Rookie", custom.For(99).Label);
+        Assert.Equal("Veteran", custom.For(100).Label);
+        Assert.Equal(2, custom.For(5000).Tier);
+        Assert.Equal(2, custom.MaximumTier);
     }
 
     [Fact]
-    public void Rules_RejectInvalidValues()
+    public void Table_RejectsInvalidConfiguration()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new AscensionRules(LevelStep: 0));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new AscensionRules(MaximumAscension: 0));
-        Assert.Throws<ArgumentOutOfRangeException>(() => AscensionRules.Default.AscensionFor(0));
-        Assert.Throws<ArgumentOutOfRangeException>(() => AscensionRules.Default.UnlockLevel(5));
+        Assert.Throws<ArgumentException>(() => new LevelTitleTable([]));
+        Assert.Throws<ArgumentException>(() => new LevelTitleTable([new LevelTitle(0, "A", 2)]));                         // não começa no 1
+        Assert.Throws<ArgumentException>(() => new LevelTitleTable([new LevelTitle(0, "A", 1), new LevelTitle(2, "B", 5)])); // tier pulado
+        Assert.Throws<ArgumentException>(() => new LevelTitleTable([new LevelTitle(0, "A", 1), new LevelTitle(1, "B", 1)])); // sobreposição
+        Assert.Throws<ArgumentException>(() => new LevelTitleTable([new LevelTitle(0, " ", 1)]));                         // rótulo vazio
+        Assert.Throws<ArgumentOutOfRangeException>(() => LevelTitleTable.Default.For(0));
     }
 
     [Fact]
-    public void Character_AscensionFollowsLevel_LevelNeverResets()
+    public void Character_TitleFollowsLevel_LevelNeverResets()
     {
         var definition = CharacterClassDefinition.Get(CharacterClass.Knight);
         var character = new ProjectVictory.Domain.Entities.Character(
@@ -54,8 +69,9 @@ public sealed class AscensionTests
             new ProjectVictory.Domain.ValueObjects.Experience(ExperienceCurve.TotalExperienceForLevel(1000)));
 
         Assert.Equal(1000, character.Level.Value);
-        Assert.Equal(3, character.Ascension);
-        Assert.Equal(2, character.AscensionUnder(new AscensionRules(LevelStep: 1000, MaximumAscension: 4)));
+        Assert.Equal("Ascension 2", character.Title.Label);
+        Assert.Equal(2, character.Title.Tier);
+        Assert.Equal("Tier 1", character.TitleUnder(new LevelTitleTable([new LevelTitle(0, "Tier 0", 1), new LevelTitle(1, "Tier 1", 1000)])).Label);
 
         // Vida máxima continua crescendo com o Level (sem voltar a 1): Knight 15 × L + 65.
         Assert.Equal((15 * 1000) + 65, character.MaximumHealth.Value);

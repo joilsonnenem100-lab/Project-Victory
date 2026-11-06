@@ -13,14 +13,17 @@ public sealed class EnterGameHandler
     private readonly CreateRuntimeExecutionHandler _createRuntimeExecutionHandler;
     private readonly IRuntimeRepository _runtimeRepository;
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
+    private readonly ProjectVictory.Application.Progression.ILevelTitleProvider _levelTitles;
 
     public EnterGameHandler(
         ICharacterRepository characterRepository,
         ICurrentPlayerContext currentPlayerContext,
         CreateRuntimeExecutionHandler createRuntimeExecutionHandler,
         IRuntimeRepository runtimeRepository,
-        IRuntimeExecutionStateStore runtimeExecutionStateStore)
+        IRuntimeExecutionStateStore runtimeExecutionStateStore,
+        ProjectVictory.Application.Progression.ILevelTitleProvider levelTitles)
     {
+        _levelTitles = levelTitles;
         _characterRepository = characterRepository;
         _currentPlayerContext = currentPlayerContext;
         _createRuntimeExecutionHandler = createRuntimeExecutionHandler;
@@ -106,6 +109,8 @@ public sealed class EnterGameHandler
             runtimeId,
             character.Name,
             character.Level.Value,
-            character.Experience.Value);
+            character.Experience.Value,
+            character.TitleUnder(_levelTitles.Current).Label,
+            character.TitleUnder(_levelTitles.Current).Tier);
     }
 }

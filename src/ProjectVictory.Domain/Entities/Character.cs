@@ -42,14 +42,14 @@ public sealed class Character : AggregateRoot
         _classDefinition is null
             ? _fixedMaximumHealth
             : new Health(
-                AttributeCurveTable.ForClass(CharacterClass, Ascension)
+                AttributeCurveTable.ForClass(CharacterClass)
                     .MaximumHealthAt(Level.Value));
 
     public Mana MaximumMana =>
         _classDefinition is null
             ? _fixedMaximumMana
             : new Mana(
-                AttributeCurveTable.ForClass(CharacterClass, Ascension)
+                AttributeCurveTable.ForClass(CharacterClass)
                     .MaximumManaAt(Level.Value));
 
     private readonly Health _fixedMaximumHealth;
@@ -65,16 +65,16 @@ public sealed class Character : AggregateRoot
     public CharacterLevel Level =>
         new(ExperienceTable.Standard.GetLevel(Experience.Value));
 
-    // PV-PROG-012 (DEC-20261106-19): a Ascension é DERIVADA do Level (não é persistida):
-    // 1 inicial; +1 a cada 500 Levels; máximo 4 (regras padrão). Com regras de configuração do
-    // servidor, use AscensionUnder(rules).
-    public int Ascension => AscensionUnder(AscensionRules.Default);
+    // PV-PROG-013 (DEC-20261106-30; substitui a Ascension da Fila 4): título e tier DERIVADOS do
+    // Level (não persistidos). Tabela padrão: Novice (0), Ascension 1–4 (1–4), Legend (5). Com a
+    // tabela da configuração do servidor, use TitleUnder(table) (ILevelTitleProvider).
+    public LevelTitle Title => TitleUnder(LevelTitleTable.Default);
 
-    public int AscensionUnder(AscensionRules rules)
+    public LevelTitle TitleUnder(LevelTitleTable table)
     {
-        ArgumentNullException.ThrowIfNull(rules);
+        ArgumentNullException.ThrowIfNull(table);
 
-        return rules.AscensionFor(Level.Value);
+        return table.For(Level.Value);
     }
 
     public Inventory Inventory { get; }

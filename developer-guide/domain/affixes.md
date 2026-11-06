@@ -106,6 +106,8 @@ Tier e Rarity são conceitos independentes.
 
 Affixes podem modificar qualquer atributo permitido pela arquitetura do jogo.
 
+> *Emenda (2026-11-06, Fila 5, `DEC-20261106-26/27`): só atributos e efeitos que existem no Tibia. Skills, Health, Mana, Attack, Defense, Resistências (proteções elementais), Critical (chance/dano), Life Leech e Mana Leech existem no Tibia como efeitos de item; **Healing Power** não é stat do Tibia — pergunta ao PO (Fila 5) antes de usar.*
+
 Exemplos:
 
 - Skills

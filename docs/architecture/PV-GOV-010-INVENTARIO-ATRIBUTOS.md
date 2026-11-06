@@ -41,6 +41,11 @@ Método: grep em todo o repositório (`*.cs`, `*.ts`, `*.tsx`, `*.md`) por Stren
 | Dodge | `PROJECT-VICTORY-COMBAT-SYSTEM-DESIGN.md` | Não confirmado como atributo do personagem | Manter só no doc de design (não implementado). **Pergunta ao PO** |
 | MovementSpeed, Weight | `entities.md`, `value-objects.md` | Sim (speed; peso de item) | Manter |
 | "Inteligência" (IA de monstro, "inteligência artificial") | docs de monstro/AI | Não é atributo | Fora do escopo |
+| *Revisão:* "Ascension mínima/recomendada" das Hunts; "A Hunt não possui Tier" | `knowledge-base/world.md` | — | **Emendado**: Hunt area exige **tier de título** (≠ Tier de item); no código `RequiredTitleTier` |
+| *Revisão:* "Skills Oficiais" sem Fishing; grafia "First Fighting" | `knowledge-base/skills.md` (LOCKED) | Fishing e Fist Fighting existem | **Emendado** (revisão formal) |
+| *Revisão:* "Não existe inicialmente: Attack Speed; Cast Speed" | `knowledge-base/combat.md` | Não | **Emendado**: não existem (sem "inicialmente") |
+| *Revisão:* Affixes — Resistências, Critical, Life/Mana Leech | `developer-guide/domain/affixes.md` | Sim, como efeitos de item | Manter (emenda) |
+| *Revisão:* Affix "Healing Power" | `developer-guide/domain/affixes.md` | Não é stat do Tibia | **Pergunta ao PO** (emenda marca) |
 
 ## Resultado
 
@@ -49,4 +54,5 @@ Método: grep em todo o repositório (`*.cs`, `*.ts`, `*.tsx`, `*.md`) por Stren
 - **Ascension da Fila 4:** substituída por títulos/tier (`PV-PROG-013`).
 - **Docs:** 3 documentos com texto tachado (manifesto) e 6 emendados.
 - **Pendências novas:** R-040 (Magic Level inicial 10 × 0 do Tibia).
+- **Revisão do PV-GOV-010:** acrescentadas as linhas marcadas *Revisão* (world.md, skills.md, combat.md, affixes.md).
 - **Perguntas ao PO:** Critical, Dodge e `BasicCombatAttributes` sem uso.

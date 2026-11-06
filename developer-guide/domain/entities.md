@@ -4,6 +4,8 @@ Status: LOCKED
 
 Version: 1.1
 
+> *Emenda (2026-11-06, Fila 5, `DEC-20261106-27` e `DEC-20261106-17/26`; revisão formal do documento LOCKED autorizada pelo PO): `AttackSpeed` e `Capacity` foram **removidos** (texto tachado abaixo; registro no `CLEANUP-MANIFEST-2026-11-06.md`).*
+
 ---
 
 # Objetivo

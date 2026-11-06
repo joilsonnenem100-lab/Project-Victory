@@ -175,10 +175,9 @@ builder.Services.AddProjectVictoryCore(
     new ProjectVictory.Application.Supply.SupplySettings(
         builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterHealthPotionsKey) ?? 0,
         builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterManaPotionsKey) ?? 0),
-    // PV-PROG-012: Ascension derivada do Level; passo e máximo configuráveis (padrão 500 e 4).
-    new ProjectVictory.Domain.Progression.AscensionRules(
-        builder.Configuration.GetValue<int?>(ProjectVictory.Domain.Progression.AscensionRules.LevelStepKey) ?? ProjectVictory.Domain.Progression.AscensionRules.DefaultLevelStep,
-        builder.Configuration.GetValue<int?>(ProjectVictory.Domain.Progression.AscensionRules.MaximumAscensionKey) ?? ProjectVictory.Domain.Progression.AscensionRules.DefaultMaximumAscension));
+    // PV-PROG-013 (DEC-20261106-30): títulos por Level lidos da configuração ("LevelTitles") a cada
+    // consulta — trocar rótulos/faixas no appsettings.json não exige recompilar nem reiniciar.
+    new ProjectVictory.API.Configuration.ConfigurationLevelTitleProvider(builder.Configuration));
 
 var app =
     builder.Build();

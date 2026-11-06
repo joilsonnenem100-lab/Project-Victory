@@ -61,6 +61,8 @@ Monstros
 
 # Continentes
 
+> *Emenda (2026-11-06, Fila 5, `DEC-20261106-30`; revisão do PV-GOV-010): além do bloqueio por Continente, cada **Hunt area** passa a exigir um **tier de título** mínimo (0 = Novice … 5 = Legend, derivado do Level; Spider Cave = 0). "Tier de título" (`TitleTier`, `RequiredTitleTier` no código) é **outro conceito** do "Tier" de item: o Tier de item continua pertencendo só aos itens. Onde abaixo se lê "Ascension mínima/recomendada", leia o tier de título.*
+
 Cada Continente possui uma Ascension mínima para acesso.
 
 O bloqueio acontece no Continente.
@@ -100,6 +102,8 @@ Cada Hunt possui:
 A Hunt não possui Tier.
 
 Tier pertence exclusivamente aos itens.
+
+> *Emenda (Fila 5, `DEC-20261106-30`): a Hunt continua sem Tier **de item**, mas exige um **tier de título** mínimo (`RequiredTitleTier`).*
 
 ---
 

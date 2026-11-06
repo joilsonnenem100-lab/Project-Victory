@@ -63,6 +63,8 @@ Não existe inicialmente:
 - Attack Speed;
 - Cast Speed.
 
+> *Emenda (2026-11-06, Fila 5, `DEC-20261106-27`): Attack Speed e Cast Speed **não existem** (não só "inicialmente"): não são stats do Tibia.*
+
 ---
 
 # Fluxo de Turno

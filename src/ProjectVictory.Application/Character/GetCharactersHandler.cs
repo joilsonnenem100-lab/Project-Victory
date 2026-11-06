@@ -9,15 +9,20 @@ public sealed class GetCharactersHandler
 
     private readonly ICurrentPlayerContext _currentPlayerContext;
 
+    private readonly ProjectVictory.Application.Progression.ILevelTitleProvider _levelTitles;
+
 
 
     public GetCharactersHandler(
         ICharacterRepository characterRepository,
-        ICurrentPlayerContext currentPlayerContext)
+        ICurrentPlayerContext currentPlayerContext,
+        ProjectVictory.Application.Progression.ILevelTitleProvider levelTitles)
     {
         _characterRepository = characterRepository;
 
         _currentPlayerContext = currentPlayerContext;
+
+        _levelTitles = levelTitles;
     }
 
 
@@ -42,6 +47,9 @@ public sealed class GetCharactersHandler
 
 
 
+        var titles =
+            _levelTitles.Current;
+
         return characters
             .Select(
                 character =>
@@ -61,6 +69,12 @@ public sealed class GetCharactersHandler
 
                         Experience =
                             character.Experience.Value,
+
+                        Title =
+                            character.TitleUnder(titles).Label,
+
+                        TitleTier =
+                            character.TitleUnder(titles).Tier,
 
                         AvailableAbilities =
                             character.AvailableAbilities
