@@ -125,3 +125,15 @@ Autorização: PO, `DEC-20261106-25` (R-020). Antes da remoção, grep em `src` 
 - `src/ProjectVictory.Domain/Playtest/PlaytestFeedback.cs`
 - `src/ProjectVictory.Domain/Playtest/PlaytestIssueClassification.cs`
 - `src/ProjectVictory.Domain/Playtest/TechnicalIssueAnalysis.cs`
+
+## Removido em `PV-CLEAN-003` (2026-11-06) — branch `chief/q4-clean-003`, commit `1a2889b`
+
+Autorização: PO, `DEC-20261106-25` (R-031). Antes da remoção, grep de cada nome em `src` e `tests` (`*.cs`, `*.csproj`): **zero referências** fora do próprio arquivo; nenhum registro de handler por reflexão (`GetTypes`, `Scan`). Build com 0 avisos; 295 testes aprovados depois da remoção. Reverter: `git revert 1a2889b`.
+
+- `src/ProjectVictory.Application/Hunt/CancelHuntHandler.cs`
+- `src/ProjectVictory.Application/Hunt/ExecuteExistingHuntHandler.cs`
+- `src/ProjectVictory.Application/Hunt/ExecuteNextHuntHandler.cs`
+- `src/ProjectVictory.Application/Hunt/ProcessHuntExecutionHandler.cs`
+- `src/ProjectVictory.Application/Hunt/ResolveHuntResultHandler.cs`
+
+**Não removidos** (fora da autorização, que nomeia só os handlers): os Commands/Results que ficaram órfãos — `CancelHuntCommand`, `CancelHuntResult`, `ExecuteExistingHuntCommand`, `ExecuteNextHuntCommand`, `ExecuteNextHuntResult`, `ProcessHuntExecutionCommand`, `ProcessHuntExecutionResult`, `ResolveHuntResultCommand`, `ResolveHuntResultResult` (em `src/ProjectVictory.Application/Hunt/`). Registrado como R-038.
