@@ -9,8 +9,9 @@ namespace ProjectVictory.Api.Tests;
 
 // PV-QA-004: ponta a ponta pela API REAL (Development, SQLite temporário, JWT aleatório).
 // O personagem entra na Spider Cave; o combate é determinístico porque a semente de servidor é
-// fixa (Combat:FixedSeed, só em Development). Cobre vitória, derrota, XP/ouro/loot pelo Reward
-// Pipeline, uso de poção a partir do próximo turno, fim de suprimento e retorno à cidade.
+// fixa (Combat:FixedSeed, só em Development). Cobre vitória, derrota, XP e loot (contagem de itens)
+// pelo Reward Pipeline, uso de poção a partir do próximo turno, fim de suprimento e retorno à cidade.
+// O ouro não aparece em nenhuma resposta HTTP: é verificado nos SmokeTests (limite do contrato).
 [Collection("Api")]
 public sealed class SpiderCaveEndToEndTests
 {
@@ -60,7 +61,7 @@ public sealed class SpiderCaveEndToEndTests
         }
     }
 
-    private sealed record Player(HttpClient Client, Guid CharacterId, Guid RuntimeId);
+    private sealed record Player(HttpClient Client, Guid CharacterId, Guid RuntimeId, string Name);
 
     private static async Task<Player> EnterWorld(ApiFactory factory, string characterClass)
     {
@@ -68,7 +69,8 @@ public sealed class SpiderCaveEndToEndTests
         var token = await factory.RegisterAndLoginAsync(client, $"e2e-{Guid.NewGuid():N}@test.com");
         ApiFactory.WithToken(client, token);
 
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"E{Guid.NewGuid():N}"[..16], characterClass });
+        var name = $"E{Guid.NewGuid():N}"[..16];
+        var created = await client.PostAsJsonAsync("/api/character", new { name, characterClass });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
 
@@ -76,15 +78,24 @@ public sealed class SpiderCaveEndToEndTests
         enter.EnsureSuccessStatusCode();
         var runtimeId = (await enter.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("runtimeId").GetGuid();
 
-        return new Player(client, characterId, runtimeId);
+        return new Player(client, characterId, runtimeId, name);
     }
 
-    private static async Task<Guid> StartHunt(Player player)
+    // Revisão do PV-QA-004: confere pela resposta HTTP que o encounter sorteado é o esperado
+    // (o primeiro alvo é o primeiro monstro do encounter).
+    private static async Task<Guid> StartHunt(Player player, int? expectedTemplate = null)
     {
         var hunt = await player.Client.PostAsJsonAsync("/api/hunt/execute", new { characterId = player.CharacterId, runtimeId = player.RuntimeId });
         hunt.EnsureSuccessStatusCode();
+        var encounter = (await hunt.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("encounter");
 
-        return (await hunt.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("encounter").GetProperty("id").GetGuid();
+        if (expectedTemplate is { } template)
+        {
+            var firstMonster = SpiderCaveCatalog.Find(SpiderCaveCatalog.EncounterTemplates[template][0])!.Name;
+            Assert.Equal(firstMonster, encounter.GetProperty("monsterName").GetString());
+        }
+
+        return encounter.GetProperty("id").GetGuid();
     }
 
     private static async Task<JsonElement> Attack(Player player, Guid encounterId)
@@ -129,7 +140,7 @@ public sealed class SpiderCaveEndToEndTests
         var player = await EnterWorld(server.Factory, "Knight");
         using var _ = player.Client;
 
-        var rounds = await FightToTheEnd(player, await StartHunt(player));
+        var rounds = await FightToTheEnd(player, await StartHunt(player, 0));
         var last = rounds[^1];
 
         Assert.Equal("Victory", last.GetProperty("huntEndReason").GetString());
@@ -145,8 +156,8 @@ public sealed class SpiderCaveEndToEndTests
         Assert.InRange(inventory.GetProperty("items").GetArrayLength(), 2, 3);
 
         // O combate é por turnos: os monstros também atacaram.
-        Assert.Contains(Turns(rounds), t => t.GetProperty("actorName").GetString() != (string?)null
-            && !t.GetProperty("actorName").GetString()!.StartsWith('E') && t.GetProperty("damage").GetInt32() > 0);
+        Assert.Contains(Turns(rounds), t => t.GetProperty("actorName").GetString() != player.Name
+            && t.GetProperty("damage").GetInt32() > 0);
     }
 
     [Fact]
@@ -157,7 +168,7 @@ public sealed class SpiderCaveEndToEndTests
         var player = await EnterWorld(server.Factory, "Sorcerer");
         using var _ = player.Client;
 
-        var rounds = await FightToTheEnd(player, await StartHunt(player));
+        var rounds = await FightToTheEnd(player, await StartHunt(player, 4));
         var last = rounds[^1];
 
         Assert.True(last.GetProperty("playerDefeated").GetBoolean());
@@ -172,6 +183,9 @@ public sealed class SpiderCaveEndToEndTests
         Assert.Equal(125, firstPlayerTurn.GetProperty("actorHealthAfter").GetInt32());
     }
 
+    private const string ExpectedPotionOutcome = "OutOfSupplies";
+    private const int ExpectedPotionTurns = 3;
+
     [Fact]
     public async Task Potion_PolicyAppliesFromNextTurn_ConsumesSupplies()
     {
@@ -180,7 +194,7 @@ public sealed class SpiderCaveEndToEndTests
         var player = await EnterWorld(server.Factory, "Knight");
         using var _ = player.Client;
 
-        var encounterId = await StartHunt(player);
+        var encounterId = await StartHunt(player, 0);
 
         // Rodada 1 sem política: nenhuma poção.
         var first = await Attack(player, encounterId);
@@ -207,11 +221,10 @@ public sealed class SpiderCaveEndToEndTests
             Turns(rounds.Skip(1)).Where(t => t.GetProperty("kind").GetString() == "UseHealthPotion"),
             t => Assert.True(t.GetProperty("healing").GetInt32() > 0));
 
-        if (rounds[^1].GetProperty("huntEndReason").GetString() == "OutOfSupplies")
-        {
-            Assert.Equal(3, potionTurns);
-            Assert.True(rounds[^1].GetProperty("returnedToCity").GetBoolean());
-        }
+        // Desfecho concreto com esta semente (revisão do PV-QA-004: sem asserção condicional).
+        Assert.Equal(ExpectedPotionOutcome, rounds[^1].GetProperty("huntEndReason").GetString());
+        Assert.Equal(ExpectedPotionTurns, potionTurns);
+        Assert.True(rounds[^1].GetProperty("returnedToCity").GetBoolean());
     }
 
     [Fact]
@@ -222,7 +235,7 @@ public sealed class SpiderCaveEndToEndTests
         var player = await EnterWorld(server.Factory, "Druid");
         using var _ = player.Client;
 
-        var encounterId = await StartHunt(player);
+        var encounterId = await StartHunt(player, 1);
 
         (await player.Client.PostAsJsonAsync("/api/hunt/supplies",
             new { characterId = player.CharacterId, healthPotionBelowPercent = (int?)null, manaPotionBelowPercent = 50 })).EnsureSuccessStatusCode();
@@ -244,10 +257,10 @@ public sealed class SpiderCaveEndToEndTests
         {
             var player = await EnterWorld(server.Factory, "Paladin");
             using var _ = player.Client;
-            var rounds = await FightToTheEnd(player, await StartHunt(player));
+            var rounds = await FightToTheEnd(player, await StartHunt(player, 3));
 
             return Turns(rounds)
-                .Select(t => $"{(t.GetProperty("actorName").GetString()!.StartsWith('E') ? "PLAYER" : t.GetProperty("actorName").GetString())}:{t.GetProperty("kind").GetString()}:{t.GetProperty("damage").GetInt32()}")
+                .Select(t => $"{(t.GetProperty("actorName").GetString() == player.Name ? "PLAYER" : t.GetProperty("actorName").GetString())}:{t.GetProperty("kind").GetString()}:{t.GetProperty("damage").GetInt32()}")
                 .Append(rounds[^1].GetProperty("huntEndReason").GetString()!)
                 .ToList();
         }
