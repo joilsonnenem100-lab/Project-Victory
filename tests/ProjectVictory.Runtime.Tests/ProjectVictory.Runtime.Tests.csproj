@@ -20,6 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ProjectVictory.Runtime\ProjectVictory.Runtime.csproj" />
+    <!-- PV-QA-001 parte 2: as regras de runtime existentes vivem em ProjectVictory.Domain/Runtime -->
+    <ProjectReference Include="..\..\src\ProjectVictory.Domain\ProjectVictory.Domain.csproj" />
   </ItemGroup>
 
 </Project>

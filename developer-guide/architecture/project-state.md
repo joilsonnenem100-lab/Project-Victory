@@ -43,7 +43,7 @@ Objetivo: reconciliar documentação e código, decidir as revisões pendentes, 
 | Projetos `ProjectVictory.Runtime` e `ProjectVictory.Shared` | **Vazios** (somente `.csproj`) | 0 arquivos `.cs` |
 | Client | Telas de login, cadastro, personagem, entrada, jogo, inventário, recompensa | `src/ProjectVictory.Client/src/pages` |
 
-Testes automatizados: **3 escritos** (`Application.Tests`: 1; `SmokeTests`: 2), todos no `.sln` desde `PV-QA-001` parte 1: **2 passam** e **1 é ignorado** (`ApplyReward_Should_Add_Item_To_Character_Inventory`, Skip aprovado pelo dono até o `PV-REWARD-010`). `Domain.Tests` e `Runtime.Tests`: 0. Ver Pendências de Validação.
+Testes automatizados (após `PV-QA-001` parte 2, 2026-11-06): **80** no `.sln` — `Application.Tests` 1; `Domain.Tests` 22; `Runtime.Tests` 17; `SmokeTests` 11 (1 com Skip aprovado pelo PO até o `PV-REWARD-010`); `Api.Tests` 29 (HTTP com `WebApplicationFactory` + `JwtSettings`). **79 passam, 1 ignorado, 0 falhas.** Detalhe em Pendências de Validação.
 
 ---
 
@@ -162,6 +162,22 @@ API em Development (DLL de `bin/Debug/net10.0`, banco temporário via `Connectio
 | Conta B sobre recursos de A: `hunt/execute`, `hunt/attack`, `hunt-session/start|stop`, `runtime/create|activity|location`, `gameplay/action`, `inventory/{id}` | **403** em todos; corpo `{"title":"Forbidden","status":403}` (sem detalhes do recurso) |
 | Públicos | `account/login` 200 sem token. `playable/status`: 401 sem token e 200 com token (acrescentado depois — ver commit do Playable) |
 | `hunt/attack` do dono | Agora devolve o resultado real do combate (antes, sem `await`, serializava o `Task`) |
+
+## Baseline de testes — `PV-QA-001` parte 2, 2026-11-06
+
+| Projeto | Testes | Resultado | O que cobre |
+|---|---|---|---|
+| `Application.Tests` | 1 | 1/1 | Pipeline de resultado de gameplay (pré-existente) |
+| `Domain.Tests` (novo conteúdo) | 22 | 22/22 | Value objects (`Experience`, `Level`, `Health`, `Mana`, `AccountId`), `Inventory`, `Skills`, ciclo de vida de `HuntSession` |
+| `Runtime.Tests` (novo conteúdo) | 17 | 17/17 | `RuntimeActivityTransitionRules` (Domain/Runtime). O projeto `ProjectVictory.Runtime` continua vazio; o teste passou a referenciar também `ProjectVictory.Domain` |
+| `SmokeTests` | 11 | 10 passam, 1 ignorado | Fluxo principal, 8 testes de posse (`PV-SEC-001`) e **`DependencyInjectionTests`**: todo serviço registrado no DI de teste precisa ser construível (`ValidateOnBuild` + `ValidateScopes`) |
+| `Api.Tests` (projeto novo) | 29 | 29/29 | API real em memória (`WebApplicationFactory`, Development, SQLite temporário, chave JWT aleatória por execução): **401 sem token** em 15 endpoints (todos menos `Account`); `Account` público; token com issuer, audience ou chave errados → 401; **outra conta → 403** em inventory, hunt-session/start, hunt/execute, runtime/create e gameplay/action, sem expor o recurso; `JwtSettings.Validate` (chave ausente/curta/limite de 32, Issuer/Audience, mensagens Development × fora dele) |
+
+`dotnet build ProjectVictory.sln`: verde, 0 erros, 8 avisos — todos NU1903 (`SQLitePCLRaw.lib.e_sqlite3` 2.1.11), 2 por projeto em API, Persistence, SmokeTests e Api.Tests.
+
+**Defasagem encontrada pelo teste de DI:** o `SmokeTests` registrava `AttackEncounterHandler` sem `ICombatResultStore`, `FinalizeHuntAfterCombatHandler` e a cadeia de reward/loot. Corrigido só em `tests/` (mesmos registros do `Program.cs`). Nenhum arquivo de `src/` foi alterado neste contrato.
+
+**Não coberto:** falha de startup em Production sem chave por teste de integração (o `Program.cs` lê a configuração antes do `Build()`, e variáveis de ambiente são globais ao processo de teste); coberto pelo teste unitário de `JwtSettings.Validate` e pela validação manual do `PV-PLATFORM-002`.
 
 ## Ainda pendentes
 

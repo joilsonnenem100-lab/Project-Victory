@@ -5,6 +5,9 @@ using ProjectVictory.Application.Character;
 using ProjectVictory.Application.Combat;
 using ProjectVictory.Application.Hunt;
 using ProjectVictory.Application.Inventory;
+using ProjectVictory.Application.Loot;
+using ProjectVictory.Domain.Loot;
+using ProjectVictory.Infrastructure.Loot;
 using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Application.Session;
@@ -51,6 +54,18 @@ public static class TestServiceCollectionExtensions
         services.AddSingleton<ICombatContextRepository, CombatContextRepository>();
 
         services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+        // PV-QA-001 parte 2: dependências de AttackEncounterHandler que faltavam
+        // (encontradas pelo DependencyInjectionTests); mesmos registros do Program.cs.
+        services.AddScoped<ICombatResultStore, CombatResultStore>();
+        services.AddScoped<FinalizeHuntAfterCombatHandler>();
+        services.AddScoped<CompleteHuntRewardFlowHandler>();
+        services.AddScoped<ForwardHuntRewardHandler>();
+        services.AddScoped<RewardResolutionHandler>();
+        services.AddScoped<LootResolutionHandler>();
+        services.AddScoped<ApplyResolvedRewardToCharacterHandler>();
+        services.AddScoped<ApplyLootToCharacterInventoryHandler>();
+        services.AddSingleton<ILootDefinitionProvider, MonsterLootDefinitionProvider>();
 
         // PV-SEC-001: mesmo registro da API (Program.cs).
         services.AddScoped<PlayerOwnershipGuard>();
