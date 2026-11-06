@@ -58,16 +58,24 @@ public sealed class Character : AggregateRoot
 
     public CharacterExperience Experience { get; private set; }
 
-    // ADR-026: Ascension atual. Só a primeira existe até a troca de Ascension ter contrato
-    // próprio (PV-GOV-006 D4); por isso ainda não é persistida.
     public const int FirstAscension = ExperienceTable.FirstAscension;
 
-    public int Ascension => FirstAscension;
-
-    // PV-PROG-010: Level derivado de Experience + Ascension + Experience Table (ADR-027, ADR-028).
-    // Não é fonte de verdade e não é armazenado no agregado.
+    // PV-PROG-010/012: Level derivado da Experience pela curva do Tibia, SEM teto (DEC-20261106-19).
+    // A curva é a mesma em todas as Ascensions (DEC-20261106-11). Não é fonte de verdade.
     public CharacterLevel Level =>
-        new(ExperienceTable.ForAscension(Ascension).GetLevel(Experience.Value));
+        new(ExperienceTable.Standard.GetLevel(Experience.Value));
+
+    // PV-PROG-012 (DEC-20261106-19): a Ascension é DERIVADA do Level (não é persistida):
+    // 1 inicial; +1 a cada 500 Levels; máximo 4 (regras padrão). Com regras de configuração do
+    // servidor, use AscensionUnder(rules).
+    public int Ascension => AscensionUnder(AscensionRules.Default);
+
+    public int AscensionUnder(AscensionRules rules)
+    {
+        ArgumentNullException.ThrowIfNull(rules);
+
+        return rules.AscensionFor(Level.Value);
+    }
 
     public Inventory Inventory { get; }
 

@@ -49,7 +49,7 @@ public sealed class CharacterExperiencePersistenceTests : IDisposable
         {
             var state = await context.Characters.SingleAsync(x => x.Id == character.Id);
             Assert.Equal(3_000_000_000L, state.Experience);
-            Assert.Equal(500, state.Level); // cache gravado com o valor derivado
+            Assert.Equal(566, state.Level); // cache gravado com o valor derivado (PV-PROG-012: Level sem teto; antes 500)
 
             // Simula um cache antigo divergente: não pode ser lido como verdade.
             state.Level = 3;
@@ -61,7 +61,7 @@ public sealed class CharacterExperiencePersistenceTests : IDisposable
             var loaded = await new CharacterRepository(context).GetByIdAsync(character.Id);
             Assert.NotNull(loaded);
             Assert.Equal(3_000_000_000L, loaded!.Experience.Value);
-            Assert.Equal(500, loaded.Level.Value);
+            Assert.Equal(566, loaded.Level.Value);
         }
     }
 

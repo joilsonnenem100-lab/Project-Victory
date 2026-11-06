@@ -53,15 +53,17 @@ public sealed class DerivedLevelTests
         Assert.Equal(5, character.Level.Value);
     }
 
+    // PV-PROG-012 (DEC-20261106-19): substitui "Level para no 500" — o Level não tem teto.
     [Fact]
-    public void Experience_AboveIntRange_IsSupported_AndLevelStopsAt500()
+    public void Experience_AboveIntRange_IsSupported_AndLevelHasNoCap()
     {
         var character = NewCharacter(int.MaxValue);
 
         character.GainExperience(new Experience(1_000_000_000L));
 
         Assert.Equal(3_147_483_647L, character.Experience.Value);
-        Assert.Equal(500, character.Level.Value);
+        Assert.Equal(575, character.Level.Value);
+        Assert.Equal(2, character.Ascension); // Level 500–999 → Ascension 2
     }
 
     [Fact]

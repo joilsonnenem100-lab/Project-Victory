@@ -174,7 +174,11 @@ builder.Services.AddProjectVictoryCore(
     // PV-SUPPLY-010: poções iniciais (PROVISÓRIO; padrão 0 = nenhuma).
     new ProjectVictory.Application.Supply.SupplySettings(
         builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterHealthPotionsKey) ?? 0,
-        builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterManaPotionsKey) ?? 0));
+        builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterManaPotionsKey) ?? 0),
+    // PV-PROG-012: Ascension derivada do Level; passo e máximo configuráveis (padrão 500 e 4).
+    new ProjectVictory.Domain.Progression.AscensionRules(
+        builder.Configuration.GetValue<int?>(ProjectVictory.Domain.Progression.AscensionRules.LevelStepKey) ?? ProjectVictory.Domain.Progression.AscensionRules.DefaultLevelStep,
+        builder.Configuration.GetValue<int?>(ProjectVictory.Domain.Progression.AscensionRules.MaximumAscensionKey) ?? ProjectVictory.Domain.Progression.AscensionRules.DefaultMaximumAscension));
 
 var app =
     builder.Build();

@@ -4,29 +4,44 @@ using System.Linq;
 
 namespace ProjectVictory.Domain.Progression;
 
-// PV-PROG-011: Experience Table (ADR-025; developer-guide/domain/experience-table.md).
+// PV-PROG-011/012: Experience Table (ADR-025; developer-guide/domain/experience-table.md).
 // Interpreta a Experience absoluta e resolve o Level. Nunca armazena nem altera Experience.
-// Entradas explícitas para todos os Levels, validadas na construção:
-// começa no Level 1 com Experience 0, níveis contínuos, Experience crescente.
+//
+// Dois tipos:
+// - tabela de ENTRADAS explícitas (validada: começa no Level 1 com 0, contínua, crescente);
+// - tabela da CURVA (Standard), SEM TETO de Level (DEC-20261106-19): o Level vem da fórmula do Tibia
+//   (DEC-20261106-10) por busca na curva, até o maior Level cuja Experience cabe em long.
 public sealed class ExperienceTable
 {
-    // ADR-026: cada Ascension possui limite de Level 500.
+    // *** Histórico *** (PV-PROG-011): teto de 500 Levels por Ascension — SUPERADO pelo
+    // DEC-20261106-19 (Level sem teto; Ascension derivada do Level, passo em AscensionRules).
+    // Mantido como constante pública pela Regra Aditiva; não limita mais nenhuma tabela.
     public const int MaximumLevelPerAscension = 500;
 
-    // ADR-026: só a primeira Ascension existe até a troca de Ascension ter contrato (PV-GOV-006 D4).
+    // A primeira Ascension (a Ascension agora é derivada do Level: AscensionRules).
     public const int FirstAscension = 1;
 
-    private static readonly Lazy<ExperienceTable> StandardTable =
-        new(() => FromCurve(MaximumLevelPerAscension));
+    private static readonly ExperienceTable StandardTable = new();
 
-    // Tabela padrão: gerada pela curva do DEC-20261106-10, Levels 1 a 500.
-    public static ExperienceTable Standard => StandardTable.Value;
+    // Tabela padrão: a curva do DEC-20261106-10, sem teto de Level.
+    public static ExperienceTable Standard => StandardTable;
 
-    private readonly long[] _minimumExperienceByLevel;
+    private readonly long[]? _minimumExperienceByLevel;
 
+    // Entradas explícitas; vazio na tabela da curva (que não tem lista finita).
     public IReadOnlyList<ExperienceTableEntry> Entries { get; }
 
-    public int MaximumLevel => _minimumExperienceByLevel.Length;
+    public bool IsUnbounded => _minimumExperienceByLevel is null;
+
+    public int MaximumLevel =>
+        _minimumExperienceByLevel?.Length ?? ExperienceCurve.MaximumSupportedLevel;
+
+    // Tabela da curva (sem teto).
+    private ExperienceTable()
+    {
+        _minimumExperienceByLevel = null;
+        Entries = Array.Empty<ExperienceTableEntry>();
+    }
 
     public ExperienceTable(
         IReadOnlyList<ExperienceTableEntry> entries)
@@ -58,9 +73,10 @@ public sealed class ExperienceTable
         return Standard;
     }
 
+    // Tabela de entradas explícitas gerada pela curva até `maximumLevel` (uso em testes/ferramentas).
     public static ExperienceTable FromCurve(int maximumLevel)
     {
-        if (maximumLevel < 1)
+        if (maximumLevel < 1 || maximumLevel > ExperienceCurve.MaximumSupportedLevel)
         {
             throw new ArgumentOutOfRangeException(nameof(maximumLevel));
         }
@@ -75,7 +91,7 @@ public sealed class ExperienceTable
         return new ExperienceTable(entries);
     }
 
-    // Maior Level cuja Experience mínima já foi alcançada; nunca passa do último Level da tabela.
+    // Maior Level cuja Experience mínima já foi alcançada.
     public int GetLevel(long experience)
     {
         if (experience < 0)
@@ -83,6 +99,11 @@ public sealed class ExperienceTable
             throw new ArgumentOutOfRangeException(
                 nameof(experience),
                 "Experience cannot be negative.");
+        }
+
+        if (_minimumExperienceByLevel is null)
+        {
+            return ExperienceCurve.LevelFor(experience);
         }
 
         var index =
@@ -107,11 +128,13 @@ public sealed class ExperienceTable
             throw new ArgumentOutOfRangeException(nameof(level));
         }
 
-        return _minimumExperienceByLevel[level - 1];
+        return _minimumExperienceByLevel is null
+            ? ExperienceCurve.TotalExperienceForLevel(level)
+            : _minimumExperienceByLevel[level - 1];
     }
 
-    // Experience máxima do Level (experience-table.md, "Estrutura"): derivada da mínima do
-    // Level seguinte − 1; null no último Level, cujo intervalo é aberto (ADR-023).
+    // Experience máxima do Level (experience-table.md, "Estrutura"): mínima do Level seguinte − 1;
+    // null no último Level, cujo intervalo é aberto (ADR-023).
     public long? GetMaximumExperience(int level)
     {
         if (level < 1 || level > MaximumLevel)
@@ -121,10 +144,10 @@ public sealed class ExperienceTable
 
         return level == MaximumLevel
             ? null
-            : _minimumExperienceByLevel[level] - 1;
+            : GetMinimumExperience(level + 1) - 1;
     }
 
-    // Experience que falta para o próximo Level; null quando já está no último Level da tabela.
+    // Experience que falta para o próximo Level; null só no último Level representável.
     public long? GetExperienceToNextLevel(long experience)
     {
         var level = GetLevel(experience);
@@ -134,12 +157,12 @@ public sealed class ExperienceTable
             return null;
         }
 
-        return _minimumExperienceByLevel[level] - experience;
+        return GetMinimumExperience(level + 1) - experience;
     }
 
     // API anterior ao PV-PROG-011, mantida pela Regra Aditiva: Level fora da tabela → 0.
     // Retorna int: lança OverflowException se o mínimo do Level passar de int.MaxValue
-    // (não acontece na tabela padrão: XP(500) = 2.058.474.800). Use GetMinimumExperience.
+    // (a partir do Level ~ 505). Use GetMinimumExperience.
     public int GetRequiredExperience(int level)
     {
         if (level < 1 || level > MaximumLevel)
@@ -147,7 +170,7 @@ public sealed class ExperienceTable
             return 0;
         }
 
-        return checked((int)_minimumExperienceByLevel[level - 1]);
+        return checked((int)GetMinimumExperience(level));
     }
 
     private static long[] Validate(
@@ -160,13 +183,8 @@ public sealed class ExperienceTable
                 nameof(entries));
         }
 
-        // "Último nível válido" (experience-table.md): nenhuma tabela passa do teto da Ascension (ADR-026).
-        if (entries.Count > MaximumLevelPerAscension)
-        {
-            throw new ArgumentException(
-                "Experience Table cannot exceed the Level limit of an Ascension.",
-                nameof(entries));
-        }
+        // PV-PROG-012: o limite de 500 entradas por tabela (ADR-026, texto anterior) foi removido
+        // pelo DEC-20261106-19 (Level sem teto). "Último nível válido" = último da lista.
 
         var minimums = new long[entries.Count];
 

@@ -1,6 +1,6 @@
 # PV-CHAR-011 — Vida e Mana do Tibia
 
-Status: **IMPLEMENTADO** (branch `chief/q4-char-011`)
+Status: **IMPLEMENTADO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/q4-prog-012`). Branch `chief/q4-char-011`
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 4", item 2).
 Lastro:
 - `DEC-20261106-18` (Vida e Mana seguem o Tibia; ganhos por Level do PO; resolve R-021);
@@ -59,3 +59,17 @@ Lastro:
 Resultado da solução: build com 0 avisos; **259 aprovados, 0 ignorados, 0 falhas**.
 
 Também neste branch, as ressalvas da revisão do `PV-GOV-009`.
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+O revisor rodou a suíte (259 aprovados) e conferiu os valores aritmeticamente. Ressalvas:
+1. **"Tabela de configuração por dados"**, decisão do Arquiteto:
+   - os valores ficam numa **tabela única de dados no Domain** (`CharacterClassDefinition` + `AttributeCurveTable`), separada da regra;
+   - mudar exige recompilar, como as demais tabelas do Tibia (curva de XP);
+   - mover para configuração externa (appsettings ou banco) fica para quando o PO pedir ajuste sem deploy (mesma nota do `PV-CHAR-010`).
+2. **Personagens existentes:** um Knight salvo com 185 de vida atual passa a ter máximo 150.
+   - O `Combatant` corta a vida atual no máximo ao montar o combate, e o ataque grava de volta o valor cortado (teste `Combatant_ClampsStoredCurrentHealthToTheNewMaximum`, no `PV-PROG-012`).
+   - Até o primeiro ataque, a vida atual do runtime pode ficar acima do máximo. É só exibição, e a normalização fica para o Recovery (`PV-RUNTIME-011`).
+3. Testes de estouro e de `VocationLevel` inválido acrescentados (`AscensionTests`). A validação acontece no cálculo, porque o record aceita qualquer valor na criação.
+4. Fórmula do Tibia em Level alto também para Paladin, Druid e Sorcerer (`AscensionTests`).
+5. Pendência específica para conferir o Monk: **R-035**.

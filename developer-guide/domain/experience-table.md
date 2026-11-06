@@ -1,5 +1,7 @@
 # Experience Table
 
+> *Emenda (2026-11-06, `DEC-20261106-19`, `PV-PROG-012`): a tabela padrão é a **curva sem teto** (Level sem máximo). "Último nível válido" = último da lista numa tabela explícita, ou o maior Level representável em `long` (569.256) na curva. "Cada Ascension possui exatamente uma Experience Table" continua (todas usam a mesma curva).*
+
 Status: DRAFT
 
 Version: 1.0

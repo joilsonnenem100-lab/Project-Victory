@@ -49,11 +49,15 @@ public static class ProjectVictoryServiceCollectionExtensions
         this IServiceCollection services,
         RewardSettings rewardSettings,
         ProjectVictory.Application.Combat.TurnBased.CombatSettings? combatSettings = null,
-        ProjectVictory.Application.Supply.SupplySettings? supplySettings = null)
+        ProjectVictory.Application.Supply.SupplySettings? supplySettings = null,
+        ProjectVictory.Domain.Progression.AscensionRules? ascensionRules = null)
     {
 
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(rewardSettings);
+
+        // PV-PROG-012: regras de Ascension (passo e máximo) da configuração do servidor.
+        services.AddSingleton(ascensionRules ?? ProjectVictory.Domain.Progression.AscensionRules.Default);
 
         // PV-SUPPLY-010: poções (política do jogador, consumo, fim de suprimento, poções iniciais).
         services.AddSingleton(supplySettings ?? new ProjectVictory.Application.Supply.SupplySettings());

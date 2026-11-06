@@ -35,16 +35,20 @@ public sealed class ExperienceTableTests
         Assert.Throws<ArgumentOutOfRangeException>(() => ExperienceCurve.TotalExperienceForLevel(0));
     }
 
+    // PV-PROG-012: substitui "Standard tem 500 entradas" — a tabela padrão é a curva, sem teto.
     [Fact]
-    public void Standard_HasExplicitEntriesForLevels1To500()
+    public void Standard_IsTheUnboundedCurve_ExplicitTablesStillAvailable()
     {
         var table = ExperienceTable.Standard;
 
-        Assert.Equal(500, table.MaximumLevel);
-        Assert.Equal(500, table.Entries.Count);
-        Assert.Equal(1, table.Entries[0].Level);
-        Assert.Equal(0, table.Entries[0].MinimumExperience);
-        Assert.Equal(500, table.Entries[^1].Level);
+        Assert.True(table.IsUnbounded);
+        Assert.Empty(table.Entries);
+        Assert.Equal(ExperienceCurve.MaximumSupportedLevel, table.MaximumLevel);
+        Assert.Equal(569_256, ExperienceCurve.MaximumSupportedLevel);
+
+        var explicit500 = ExperienceTable.FromCurve(500);
+        Assert.Equal(500, explicit500.Entries.Count);
+        Assert.Equal(500, explicit500.Entries[^1].Level);
     }
 
     [Theory]
@@ -62,13 +66,23 @@ public sealed class ExperienceTableTests
         Assert.Equal(expectedLevel, ExperienceTable.Standard.GetLevel(experience));
     }
 
+    // PV-PROG-012: substitui "nunca passa do Level 500" — o Level continua pela curva do Tibia.
     [Fact]
-    public void GetLevel_NeverPassesLevel500_ExperienceKeepsCounting()
+    public void GetLevel_HasNoCap_FollowsTheCurveAfter500()
     {
-        // ADR-026: limite de Level 500 por Ascension; ADR-023: a Experience continua absoluta.
-        Assert.Equal(500, ExperienceTable.Standard.GetLevel(2058474800L));
-        Assert.Equal(500, ExperienceTable.Standard.GetLevel(long.MaxValue));
-        Assert.Equal(499, ExperienceTable.Standard.GetLevel(2058474799L));
+        Assert.Equal(500, ExperienceTable.Standard.GetLevel(2_058_474_800L));
+        Assert.Equal(500, ExperienceTable.Standard.GetLevel(2_070_899_999L));
+        Assert.Equal(501, ExperienceTable.Standard.GetLevel(2_070_900_000L));
+        Assert.Equal(566, ExperienceTable.Standard.GetLevel(3_000_000_000L));
+        Assert.Equal(1000, ExperienceTable.Standard.GetLevel(ExperienceCurve.TotalExperienceForLevel(1000)));
+        Assert.Equal(ExperienceCurve.MaximumSupportedLevel, ExperienceTable.Standard.GetLevel(long.MaxValue));
+    }
+
+    [Fact]
+    public void Curve_OverflowIsDetected_NeverWrong()
+    {
+        Assert.Throws<OverflowException>(() => ExperienceCurve.TotalExperienceForLevel(ExperienceCurve.MaximumSupportedLevel + 1));
+        Assert.True(ExperienceCurve.TotalExperienceForLevel(ExperienceCurve.MaximumSupportedLevel) > 0);
     }
 
     [Fact]
@@ -78,11 +92,12 @@ public sealed class ExperienceTableTests
     }
 
     [Fact]
-    public void GetExperienceToNextLevel_ReturnsRemaining_AndNullAtLastLevel()
+    public void GetExperienceToNextLevel_ReturnsRemaining_AndNullOnlyAtLastRepresentableLevel()
     {
         Assert.Equal(100, ExperienceTable.Standard.GetExperienceToNextLevel(0));
         Assert.Equal(50, ExperienceTable.Standard.GetExperienceToNextLevel(150));
-        Assert.Null(ExperienceTable.Standard.GetExperienceToNextLevel(3000000000L));
+        Assert.Equal(6_082_600, ExperienceTable.Standard.GetExperienceToNextLevel(3_000_000_000L)); // Level 566 → 567
+        Assert.Null(ExperienceTable.Standard.GetExperienceToNextLevel(long.MaxValue));
     }
 
     [Fact]
@@ -135,17 +150,20 @@ public sealed class ExperienceTableTests
 public sealed class ExperienceTableReviewTests
 {
     [Fact]
-    public void MaximumExperience_IsDerived_AndOpenAtLastLevel()
+    public void MaximumExperience_IsDerived_AndOpenOnlyAtLastRepresentableLevel()
     {
         Assert.Equal(99, ExperienceTable.Standard.GetMaximumExperience(1));
         Assert.Equal(199, ExperienceTable.Standard.GetMaximumExperience(2));
-        Assert.Null(ExperienceTable.Standard.GetMaximumExperience(500));
+        Assert.Equal(2_070_899_999L, ExperienceTable.Standard.GetMaximumExperience(500)); // não é mais o último
+        Assert.Null(ExperienceTable.Standard.GetMaximumExperience(ExperienceCurve.MaximumSupportedLevel));
     }
 
+    // PV-PROG-012: substitui "tabela não passa de 500" — o limite de 500 entradas foi removido.
     [Fact]
-    public void Table_CannotExceedAscensionLimit()
+    public void ExplicitTable_CanExceed500_ButNotTheSupportedLevel()
     {
-        Assert.Throws<ArgumentException>(() => ExperienceTable.FromCurve(501));
+        Assert.Equal(501, ExperienceTable.FromCurve(501).MaximumLevel);
+        Assert.Throws<ArgumentOutOfRangeException>(() => ExperienceTable.FromCurve(ExperienceCurve.MaximumSupportedLevel + 1));
     }
 
     [Fact]
@@ -163,7 +181,7 @@ public sealed class ExperienceTableReviewTests
     [Fact]
     public void Entries_CannotBeMutatedByCast()
     {
-        var entries = ExperienceTable.Standard.Entries;
+        var entries = ExperienceTable.FromCurve(500).Entries;
 
         Assert.False(entries is ExperienceTableEntry[]);
     }

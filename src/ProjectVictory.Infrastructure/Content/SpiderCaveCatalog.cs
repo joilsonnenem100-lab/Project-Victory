@@ -27,6 +27,9 @@ public static class SpiderCaveCatalog
 {
     public const string AreaName = "Spider Cave";
 
+    // PV-PROG-012: a Spider Cave é conteúdo da Ascension 1 (dados).
+    public const int RequiredAscension = 1;
+
     public static readonly Guid RatId = Guid.Parse("10000000-0000-0000-0000-000000000001");
     public static readonly Guid CaveRatId = Guid.Parse("10000000-0000-0000-0000-000000000002");
     public static readonly Guid SpiderId = Guid.Parse("10000000-0000-0000-0000-000000000003");
@@ -91,5 +94,6 @@ public sealed class SpiderCaveHuntArea : IHuntAreaCatalog
                     .Select(id => SpiderCaveCatalog.Find(id)!)
                     .Select(m => new EncounterSpawn(m.Id, m.Name, m.MaximumHealth))
                     .ToList())
-                .ToList());
+                .ToList(),
+            SpiderCaveCatalog.RequiredAscension);
 }
