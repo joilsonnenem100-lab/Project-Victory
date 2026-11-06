@@ -154,9 +154,12 @@ builder.Services.AddDbContext<ProjectVictoryDbContext>(
 var experienceRateValue =
     builder.Configuration.GetValue<decimal?>(RewardSettings.ExperienceRateKey) ?? 1m;
 
+// PV-COMBAT-011: "Combat:FixedSeed" fixa a semente dos combates (só testes/depuração; ausente em produção).
 builder.Services.AddProjectVictoryCore(
     new RewardSettings(
-        new ProjectVictory.Domain.Reward.ExperienceRate(experienceRateValue)));
+        new ProjectVictory.Domain.Reward.ExperienceRate(experienceRateValue)),
+    new ProjectVictory.Application.Combat.TurnBased.CombatSettings(
+        builder.Configuration.GetValue<int?>(ProjectVictory.Application.Combat.TurnBased.CombatSettings.FixedSeedKey)));
 
 var app =
     builder.Build();

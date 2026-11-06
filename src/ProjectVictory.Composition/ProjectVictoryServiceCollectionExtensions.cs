@@ -47,10 +47,15 @@ public static class ProjectVictoryServiceCollectionExtensions
 {
     public static IServiceCollection AddProjectVictoryCore(
         this IServiceCollection services,
-        RewardSettings rewardSettings)
+        RewardSettings rewardSettings,
+        ProjectVictory.Application.Combat.TurnBased.CombatSettings? combatSettings = null)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(rewardSettings);
+
+        // PV-COMBAT-011: semente dos combates (fixa só por configuração do servidor, para testes).
+        services.AddSingleton(combatSettings ?? new ProjectVictory.Application.Combat.TurnBased.CombatSettings());
+        services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.ICombatSeedProvider, ProjectVictory.Application.Combat.TurnBased.CombatSeedProvider>();
 
         // PV-SEC-001: verificação de posse de recursos do jogador.
         services.AddScoped<PlayerOwnershipGuard>();

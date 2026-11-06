@@ -19,6 +19,14 @@ public sealed class EncounterGenerator
     public ActiveEncounter Generate(
         Guid huntId)
     {
+        return Generate(huntId, 0);
+    }
+
+    // PV-COMBAT-011: o encounter guarda a semente do seu combate.
+    public ActiveEncounter Generate(
+        Guid huntId,
+        int seed)
+    {
         if (huntId == Guid.Empty)
         {
             throw new ArgumentException(
@@ -41,7 +49,8 @@ public sealed class EncounterGenerator
         return new ActiveEncounter(
             Guid.NewGuid(),
             huntId,
-            monsters);
+            monsters,
+            seed);
     }
 
 

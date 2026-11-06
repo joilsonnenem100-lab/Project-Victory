@@ -21,6 +21,7 @@ public sealed class ExecuteHuntHandler
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
 
     private readonly PlayerOwnershipGuard _ownershipGuard;
+    private readonly ProjectVictory.Application.Combat.TurnBased.ICombatSeedProvider _seedProvider;
 
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
@@ -28,8 +29,10 @@ public sealed class ExecuteHuntHandler
         IEncounterStateStore encounterStateStore,
         EncounterGenerator encounterGenerator,
         IRuntimeExecutionStateStore runtimeExecutionStateStore,
-        PlayerOwnershipGuard ownershipGuard)
+        PlayerOwnershipGuard ownershipGuard,
+        ProjectVictory.Application.Combat.TurnBased.ICombatSeedProvider seedProvider)
     {
+        _seedProvider = seedProvider;
         _ownershipGuard = ownershipGuard;
 
         _huntRepository = huntRepository;
@@ -83,7 +86,8 @@ public sealed class ExecuteHuntHandler
 
         var encounter =
             _encounterGenerator.Generate(
-                hunt.Id);
+                hunt.Id,
+                _seedProvider.NextSeed());
 
         _encounterStateStore.Add(
             encounter);

@@ -23,13 +23,30 @@ public sealed class ActiveEncounter
 
     public CombatState State { get; private set; }
 
+    // PV-COMBAT-011: semente do combate deste encounter (combate reproduzível, ADR-052).
+    public int Seed { get; }
+
+    // PV-COMBAT-012: combate por turnos em andamento neste encounter (estado temporário, em memória).
+    public ProjectVictory.Domain.Combat.TurnBased.CombatSession? Session { get; private set; }
+
 
 
     public ActiveEncounter(
         Guid id,
         Guid huntId,
         IReadOnlyCollection<EncounterMonsterState> monsters)
+        : this(id, huntId, monsters, 0)
     {
+    }
+
+    public ActiveEncounter(
+        Guid id,
+        Guid huntId,
+        IReadOnlyCollection<EncounterMonsterState> monsters,
+        int seed)
+    {
+        Seed = seed;
+
         if (id == Guid.Empty)
         {
             throw new ArgumentException(
@@ -96,6 +113,20 @@ public sealed class ActiveEncounter
     }
 
 
+
+    public void AttachSession(
+        ProjectVictory.Domain.Combat.TurnBased.CombatSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+
+        if (Session is not null)
+        {
+            throw new InvalidOperationException(
+                "Encounter already has a combat session.");
+        }
+
+        Session = session;
+    }
 
     public void Activate()
     {
