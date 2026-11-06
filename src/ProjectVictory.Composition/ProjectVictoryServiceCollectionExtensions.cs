@@ -163,6 +163,10 @@ public static class ProjectVictoryServiceCollectionExtensions
             provider.GetRequiredService<ProjectVictory.Application.Spawn.ISpawnSystem>(),
             provider.GetRequiredService<IActiveSpawnRegistry>()));
         services.AddScoped<LeaveHuntHandler>();
+
+        // PV-HUNT-012: queda (> 1 min) encerra a Hunt pelo pipeline único; logout explícito.
+        services.AddScoped<ProjectVictory.Application.GameSession.IDisconnectHandler, DisconnectHuntHandler>();
+        services.AddScoped<LogoutHandler>();
         services.AddScoped<ExecuteHuntHandler>();
         services.AddScoped<StartHuntSessionHandler>();
         services.AddScoped<StopHuntSessionHandler>();

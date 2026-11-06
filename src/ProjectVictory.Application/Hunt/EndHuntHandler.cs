@@ -14,7 +14,9 @@ public enum HuntEndReason
     // Regra Aditiva (valor nunca mais produzido pelo combate).
     OutOfSupplies,
     Manual,
-    Disconnect
+    Disconnect,
+    // PV-HUNT-012 (ADR-057 v1.2: "qualquer outro logout → tela inicial"): logout explícito (aditivo).
+    Logout
 }
 
 public sealed record EndHuntCommand(

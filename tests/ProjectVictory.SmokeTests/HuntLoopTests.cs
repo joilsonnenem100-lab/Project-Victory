@@ -116,7 +116,8 @@ public sealed class HuntLoopTests
 
         await world.Get<LeaveHuntHandler>().Handle(new LeaveHuntCommand(hunt.HuntId));
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => world.Get<LeaveHuntHandler>().Handle(new LeaveHuntCommand(hunt.HuntId)));
+        // A Hunt saiu da memória: responde como Hunt desconhecida (403 na API), sem revelar o id.
+        await Assert.ThrowsAsync<ProjectVictory.Application.Session.OwnershipViolationException>(() => world.Get<LeaveHuntHandler>().Handle(new LeaveHuntCommand(hunt.HuntId)));
         await Assert.ThrowsAsync<InvalidOperationException>(() => world.Get<AttackEncounterHandler>().Handle(new AttackEncounterCommand(hunt.Encounter.Id)));
     }
 

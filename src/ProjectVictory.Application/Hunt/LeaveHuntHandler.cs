@@ -30,9 +30,11 @@ public sealed class LeaveHuntHandler
     {
         ArgumentNullException.ThrowIfNull(command);
 
+        // Revisão do PV-HUNT-011 (ressalva 4): Hunt inexistente responde como a de outra conta (403),
+        // sem revelar se o id existe.
         var hunt =
             await _hunts.GetByIdAsync(command.HuntId, cancellationToken)
-            ?? throw new InvalidOperationException("Hunt not found.");
+            ?? throw new ProjectVictory.Application.Session.OwnershipViolationException("hunt");
 
         await _ownershipGuard.EnsureCharacterAsync(hunt.CharacterId, cancellationToken);
 
@@ -40,7 +42,8 @@ public sealed class LeaveHuntHandler
         {
             if (await _hunts.GetByIdAsync(hunt.Id, cancellationToken) is not { State: HuntState.Running })
             {
-                throw new InvalidOperationException("Hunt already finished.");
+                _huntLock.Release(hunt.Id); // ressalva 6: não deixa lock de Hunt morta
+                throw new HuntAlreadyFinishedException();
             }
 
             return await _endHunt.Handle(new EndHuntCommand(hunt.Id, HuntEndReason.Manual), cancellationToken);

@@ -84,6 +84,25 @@ public sealed class ApiExceptionHandler : IExceptionHandler
         }
 
 
+        // Revisão do PV-HUNT-011 (ressalva 4): Hunt já encerrada → 409.
+        if (exception is ProjectVictory.Application.Hunt.HuntAlreadyFinishedException)
+        {
+            httpContext.Response.StatusCode =
+                StatusCodes.Status409Conflict;
+
+            await httpContext.Response.WriteAsJsonAsync(
+                new ProblemDetails
+                {
+                    Status = StatusCodes.Status409Conflict,
+                    Title = "Conflict",
+                    Detail = exception.Message
+                },
+                cancellationToken);
+
+            return true;
+        }
+
+
         // PV-SEC-001: recurso de outra conta → 403, sem expor detalhes do recurso.
         if (exception is OwnershipViolationException)
         {

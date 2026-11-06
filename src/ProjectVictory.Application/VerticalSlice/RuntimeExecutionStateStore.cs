@@ -54,4 +54,19 @@ public sealed class RuntimeExecutionStateStore :
 
         return Get(runtimeId);
     }
+
+    public bool TryGetByCharacterId(
+        Guid characterId,
+        out RuntimeExecutionContext context)
+    {
+        if (_characterRuntimeIndex.TryGetValue(characterId, out var runtimeId)
+            && Contains(runtimeId))
+        {
+            context = Get(runtimeId);
+            return true;
+        }
+
+        context = null!;
+        return false;
+    }
 }

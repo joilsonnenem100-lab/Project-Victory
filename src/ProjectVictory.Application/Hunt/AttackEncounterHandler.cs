@@ -110,6 +110,7 @@ public sealed class AttackEncounterHandler
             // Enquanto esperava, a Hunt pode ter acabado (encounter descartado).
             if (!_encounterStateStore.Contains(command.EncounterId))
             {
+                _huntLock.Release(huntId); // revisão do PV-HUNT-011 (ressalva 6)
                 throw new InvalidOperationException("Combat already finished.");
             }
 
@@ -250,10 +251,12 @@ public sealed class AttackEncounterHandler
         {
             case CombatSessionOutcome.Victory:
                 encounter.Victory();
-                _spawnSystem.Despawn(_activeSpawns.Release(encounter.Id));
-                _encounterStateStore.Remove(encounter.Id);
+                // Revisão do PV-HUNT-011 (ressalva 7): gera o próximo ANTES de descartar o vencido —
+                // se a geração falhar, a Hunt não fica sem encounter.
                 next = _encounterGenerator.Generate(hunt.Id, _seedProvider.NextSeed());
                 _encounterStateStore.Add(next);
+                _spawnSystem.Despawn(_activeSpawns.Release(encounter.Id));
+                _encounterStateStore.Remove(encounter.Id);
                 break;
 
             case CombatSessionOutcome.Defeat:

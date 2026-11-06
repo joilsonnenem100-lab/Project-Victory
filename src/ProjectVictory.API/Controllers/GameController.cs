@@ -21,6 +21,18 @@ public sealed class GameController : BaseApiController
         _heartbeat = heartbeat;
     }
 
+    // PV-HUNT-012 (ADR-057 v1.2): logout explícito — encerra a Hunt pelo pipeline único e volta à
+    // tela inicial "Victoria". Identidade pelo token.
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(
+        [FromServices] ProjectVictory.Application.Hunt.LogoutHandler logout)
+    {
+        var result =
+            await logout.Handle(
+                new ProjectVictory.Application.Hunt.LogoutCommand());
+        return Success(result);
+    }
+
     // PV-RUNTIME-010 (ADR-057 v1.2): heartbeat HTTP do cliente (sem WebSocket). Identidade pelo token.
     [HttpPost("heartbeat")]
     public async Task<IActionResult> Heartbeat()

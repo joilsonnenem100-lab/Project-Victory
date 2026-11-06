@@ -842,3 +842,11 @@ Status: **Accepted (Arquiteto)** — implementa o `DEC-20261106-22` no `PV-HUNT-
 - Vencer um encounter gera o próximo pelo Spawn; a Hunt termina só por morte, saída manual (`POST api/hunt/leave`, novo) ou queda.
 - Fim da Hunt (pipeline único): mede tempo/XP (XP/hora), descarta encounters, despawna as Spawn Instances e tira a Hunt da memória.
 - Comandos sobre a mesma Hunt são serializados (um lock por Hunt).
+
+## DEC-20261106-41 — Encerramento por queda e logout (decisão do Arquiteto, Fila 7)
+
+Status: **Accepted (Arquiteto)** — implementa ADR-057 v1.2 / `DEC-20261106-20` no `PV-HUNT-012`; fecha o R-048
+
+- Queda > 1 min: o `GameSessionCoordinator` encerra a Hunt pelo pipeline único com o motivo `Disconnect` (sob o lock da Hunt), volta à "Victoria" e grava o checkpoint de logout.
+- `POST api/game/logout` (novo): encerra com o motivo novo `Logout` (aditivo), grava o checkpoint e remove a presença (não gera retorno automático).
+- Saída manual: Hunt desconhecida/alheia → 403; já encerrada → 409.

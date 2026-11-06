@@ -75,3 +75,7 @@ Nenhum endpoint, DTO ou campo foi removido; os campos novos são opcionais.
 8. `using` no `GameController`. O arquivo `GameSession.cs` será dividido quando for mexido de novo.
 
 Resultado: build com 0 avisos; **359 aprovados, 0 ignorados, 0 falhas** (Application 31, Domain 119, Runtime 17, Smoke 99, Api 93).
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q7-hunt-012`
+
+Ver a seção "ressalvas da revisão do `PV-HUNT-011`" no contrato `PV-HUNT-012` (R-052, R-053, R-029, 403/409 na saída, testes, lock, ordem da geração do próximo encounter).

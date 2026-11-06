@@ -26,6 +26,7 @@ public sealed class AuthorizationHttpTests
         { "POST", "/api/character" },
         { "POST", "/api/game/enter" },
         { "POST", "/api/game/heartbeat" }, // PV-RUNTIME-010
+        { "POST", "/api/game/logout" }, // PV-HUNT-012
         { "GET", "/api/item/11111111-1111-1111-1111-111111111111" },
         { "POST", "/api/hunt/execute" },
         { "POST", "/api/hunt/attack" },
