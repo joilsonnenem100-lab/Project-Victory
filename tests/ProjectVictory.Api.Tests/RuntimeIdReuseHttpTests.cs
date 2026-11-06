@@ -50,7 +50,7 @@ public sealed class RuntimeIdReuseHttpTests
 
             // O runtime continua do dono: atualizar a atividade com o personagem do dono funciona.
             var activity = await owner.PostAsJsonAsync("/api/runtime/activity", new { runtimeId, activity = "Exploring" });
-            Assert.NotEqual(HttpStatusCode.Forbidden, activity.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, activity.StatusCode);
         }
     }
 }

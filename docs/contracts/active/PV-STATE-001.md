@@ -26,6 +26,8 @@ Lastro:
 | `CombatContextRepository` | singleton | Contexto de combate | Combat System | **Temporário** | memória |
 | `CombatResultStore` | **scoped** | Resultado do combate entre o ataque e a recompensa | Combat System | **Temporário de uma requisição** | memória da requisição |
 
+*Singletons **sem estado mutável**, fora da classificação: `RewardSettings`, `SystemRandomSource` (`Random.Shared`), `MonsterLootDefinitionProvider`, `LocationActionCatalog`, `WorldDefinitionStore`, `WorldDefinitionCatalog` (conferido contra o `Program.cs` na revisão).*
+
 ## Escopo implementado
 
 1. **Thread-safety:** `HuntRepository` e `CombatContextRepository` (singletons) trocam `List<>` sem sincronização por `ConcurrentDictionary`. Id repetido em `AddAsync` passa a lançar exceção, em vez de duplicar na lista.
@@ -50,6 +52,15 @@ Também neste branch, as ressalvas da revisão do `PV-REWARD-010`:
 - R-015, R-016 e R-017 registradas em `project-state.md`.
 
 Resultado da solução: build com 0 avisos; **161 aprovados, 0 ignorados, 0 falhas**.
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+1. Singletons sem estado mutável listados acima.
+2. **Verificar-e-gravar não atômico:** entre `Contains` e `Store` não há trava. Dois `create` simultâneos com o mesmo id, ou um `create` depois de reiniciar a API (memória vazia), continuam protegidos só pela chave primária do banco e respondem 500, não 403. Não há sobrescrita. Registrado em `project-state.md`; solução definitiva: gerar o id no servidor ou o Recovery (`PV-RUNTIME-011`).
+3. `RuntimeId` repetido do mesmo personagem responde 500 (comportamento anterior); 409 fica para um contrato de mapeamento de erros.
+4. Lastro do roadmap corrigido para Handbook §17.
+5. `RuntimeIdReuseHttpTests` passou a exigir 200 do dono.
+6. Agregados mutáveis dentro de singletons (ex.: `ActiveEncounter._monsters`) → checklist do M6 (D3).
 
 ## Fora do escopo
 
