@@ -39,7 +39,7 @@ Contrato citado · diff só no escopo autorizado · `dotnet build` verde · test
 ```
 dotnet build ProjectVictory.sln
 dotnet test  ProjectVictory.sln
-dotnet test  tests/ProjectVictory.SmokeTests          # fora do .sln hoje — ver roadmap M1
+dotnet test  tests/ProjectVictory.SmokeTests          # já incluído no .sln desde PV-QA-001 parte 1 (1 teste com Skip até PV-REWARD-010)
 dotnet run   --project src/ProjectVictory.API          # API (CORS permite http://localhost:5173)
 cd src/ProjectVictory.Client && npm install && npm run dev
 ```
