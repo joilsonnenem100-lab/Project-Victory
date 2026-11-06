@@ -117,3 +117,11 @@ Caminhos removidos:
 - `src/ProjectVictory.Application/Production/ValidateDeploymentCommand.cs`
 - `src/ProjectVictory.Application/Production/ValidateDeploymentHandler.cs`
 - `src/ProjectVictory.Application/Production/ValidateDeploymentResult.cs`
+
+## Removido em `PV-CLEAN-002` (2026-11-06) — branch `chief/q4-clean-002`, commit `902fa1a`
+
+Autorização: PO, `DEC-20261106-25` (R-020). Antes da remoção, grep em `src` e `tests` (`*.cs`, `*.csproj`, `*.ts`, `*.tsx`) por `Domain.Playtest`, `PlaytestFeedback`, `PlaytestIssueClassification` e `TechnicalIssueAnalysis`: **zero referências** fora da própria pasta. Build com 0 avisos; 295 testes aprovados depois da remoção. Reverter: `git revert 902fa1a`.
+
+- `src/ProjectVictory.Domain/Playtest/PlaytestFeedback.cs`
+- `src/ProjectVictory.Domain/Playtest/PlaytestIssueClassification.cs`
+- `src/ProjectVictory.Domain/Playtest/TechnicalIssueAnalysis.cs`
