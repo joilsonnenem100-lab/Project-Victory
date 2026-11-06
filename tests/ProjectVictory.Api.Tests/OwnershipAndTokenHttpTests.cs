@@ -162,23 +162,37 @@ public sealed class OwnershipAndTokenHttpTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    [Fact]
-    public async Task TokenWithoutAccountClaim_NeverReachesPlayerData()
+    // PV-SEC-002 (R-018): token válido (assinatura, Issuer, Audience, validade) sem identidade de
+    // conta utilizável → 401, inclusive em endpoint que não lê a identidade (playable/status).
+    // Antes do PV-SEC-002 este caso respondia 500 nos endpoints que liam a identidade.
+    public static TheoryData<string, string?> InvalidAccountClaims => new()
     {
-        using var client = _factory.CreateClient();
+        { "sem claim", null },
+        { "claim não-Guid", "nao-e-um-guid" },
+        { "claim Guid vazio", Guid.Empty.ToString() }
+    };
 
-        // Assinatura, Issuer, Audience e validade corretos, mas sem a claim da conta (NameIdentifier).
-        var token = CreateToken(
-            [new Claim(ClaimTypes.Name, "sem-conta")],
-            DateTime.UtcNow.AddMinutes(-1),
-            DateTime.UtcNow.AddMinutes(10));
+    [Theory]
+    [MemberData(nameof(InvalidAccountClaims))]
+    public async Task TokenWithoutUsableAccountClaim_Returns401(string caso, string? accountClaim)
+    {
+        Assert.NotNull(caso);
 
-        var response = await ApiFactory.WithToken(client, token).GetAsync("/api/character");
+        var claims = new List<Claim> { new(ClaimTypes.Name, "sem-conta") };
+        if (accountClaim is not null)
+        {
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, accountClaim));
+        }
 
-        // Comportamento atual: o token passa pelo [Authorize] e o HttpCurrentPlayerContext lança
-        // "Player identity unavailable." → 500 (não 401). Nunca devolve dados. A resposta esperada
-        // pela arquitetura seria 401; a mudança é em src/ e foi registrada como R-018 (PV-QA-003).
-        Assert.False(response.IsSuccessStatusCode);
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        var token = CreateToken(claims, DateTime.UtcNow.AddMinutes(-1), DateTime.UtcNow.AddMinutes(10));
+
+        foreach (var url in new[] { "/api/character", "/api/playable/status" })
+        {
+            using var client = _factory.CreateClient();
+
+            var response = await ApiFactory.WithToken(client, token).GetAsync(url);
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
     }
 }

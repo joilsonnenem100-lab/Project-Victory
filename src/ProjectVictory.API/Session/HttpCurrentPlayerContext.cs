@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using ProjectVictory.API.Authentication;
 using ProjectVictory.Application.Session;
 
 namespace ProjectVictory.API.Session;
@@ -30,20 +31,16 @@ public sealed class HttpCurrentPlayerContext : ICurrentPlayerContext
             }
 
 
-            var claim =
-                httpContext.User.FindFirst(
-                    ClaimTypes.NameIdentifier);
-
-
-            if (claim is null)
+            // PV-SEC-002 (R-018): antes, claim ausente → InvalidOperationException (500) e
+            // valor inválido → FormatException (500). Agora as duas viram 401.
+            if (!AccountClaim.TryGetAccountId(
+                    httpContext.User,
+                    out var accountId))
             {
-                throw new InvalidOperationException(
-                    "Player identity unavailable.");
+                throw new PlayerIdentityUnavailableException();
             }
 
-
-            return Guid.Parse(
-                claim.Value);
+            return accountId;
         }
     }
 }

@@ -96,6 +96,22 @@ builder.Services
 
                 ValidAudience = jwtSettings.Audience
             };
+
+        // PV-SEC-002 (R-018): token válido sem a claim da conta (ou com valor que não é Guid)
+        // não autentica → 401 em todo endpoint [Authorize], em vez de 500 adiante.
+        options.Events =
+            new JwtBearerEvents
+            {
+                OnTokenValidated = context =>
+                {
+                    if (!AccountClaim.TryGetAccountId(context.Principal, out _))
+                    {
+                        context.Fail("Token sem a claim da conta.");
+                    }
+
+                    return Task.CompletedTask;
+                }
+            };
     });
 
 builder.Services.AddAuthorization();

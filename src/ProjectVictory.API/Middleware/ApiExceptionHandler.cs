@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using ProjectVictory.API.Session;
 using ProjectVictory.Application.Session;
 
 namespace ProjectVictory.API.Middleware;
@@ -21,6 +22,27 @@ public sealed class ApiExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
+        // PV-SEC-002 (R-018): identidade ausente → 401, com log de aviso (não de erro), para não
+        // inflar o log de erros com requisições não autenticadas.
+        if (exception is PlayerIdentityUnavailableException)
+        {
+            _logger.LogWarning(
+                "Request without a usable account identity.");
+
+            httpContext.Response.StatusCode =
+                StatusCodes.Status401Unauthorized;
+
+            await httpContext.Response.WriteAsJsonAsync(
+                new ProblemDetails
+                {
+                    Status = StatusCodes.Status401Unauthorized,
+                    Title = "Unauthorized"
+                },
+                cancellationToken);
+
+            return true;
+        }
+
         _logger.LogError(
             exception,
             "Unhandled exception occurred.");
