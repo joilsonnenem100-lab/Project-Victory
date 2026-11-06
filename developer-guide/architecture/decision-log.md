@@ -408,6 +408,8 @@ Status: Accepted (Arquitetura)
 
 `Application/Architecture`, `Playtest` e `Production` (42 arquivos, sem referências) só são removidos após `dotnet build` verde, em contrato de limpeza (M1). Lastro: Regra Aditiva ("builds continuam passando").
 
+*Atualização (2026-11-06): removidos em `PV-CLEAN-001` (autorizado pelo PO), commit `38d1be7`; detalhes no `CLEANUP-MANIFEST-2026-11-05.md`.*
+
 ## DEC-20261105-05 — Roadmap de execução
 
 Status: Accepted (Arquitetura) — **aguarda aprovação do Product Owner no M0**

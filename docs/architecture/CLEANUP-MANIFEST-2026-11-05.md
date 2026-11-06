@@ -64,3 +64,56 @@ Nenhum arquivo C# foi alterado: o ambiente de análise não tem `dotnet`, logo n
 - **Para onde foi:** `src/ProjectVictory.API/Program.cs`, dentro do `AddDbContext`, condicionado a `builder.Environment.IsDevelopment()`. Comportamento em Development preservado; fora dele, desligado.
 - **Efeito colateral aceito:** usos do DbContext fora da API (ex.: `SmokeTests`, banco InMemory) deixam de ter log de SQL sensível.
 - O modelo do EF não muda (`has-pending-model-changes`: "No changes have been made to the model since the last migration.").
+
+## Removido em `PV-CLEAN-001` (2026-11-06) — branch `chief/m1-clean-001`, commit `38d1be7`
+
+- **Autorização:** Product Owner, 2026-11-06 (R-007; `DEC-20261105-04`: "só são removidos após `dotnet build` verde, em contrato de limpeza").
+- **O quê:** as pastas `src/ProjectVictory.Application/Architecture` (9), `Playtest` (24) e `Production` (9) — **42 arquivos `.cs`**, removidos com `git rm` num **commit isolado** (`38d1be7`), sem nenhuma outra mudança.
+- **Verificação antes de remover** (`git grep` fora das três pastas): nenhuma referência aos namespaces `ProjectVictory.Application.Architecture|Playtest|Production`, a nenhum dos 42 nomes de tipo (busca por palavra inteira), nem aos caminhos em `.csproj`, DI, testes ou controllers. Só havia citações de planejamento em documentos (`decision-log.md`, `project-state.md`, `roadmap-to-playable.md`, `PV-ANALYSIS-2026-11-05.md`, `RELATORIO-NOITE-2026-11-06.md`). Nenhum arquivo foi poupado.
+- **Depois:** `dotnet build ProjectVictory.sln` com 0 avisos e 0 erros; `dotnet test ProjectVictory.sln` com **173 aprovados, 0 ignorados, 0 falhas** — o mesmo número de antes da remoção.
+- **Como recuperar:** `git revert 38d1be7` (desfaz tudo) ou, para um arquivo, `git checkout 38d1be7~1 -- <caminho>`.
+
+Caminhos removidos:
+
+- `src/ProjectVictory.Application/Architecture/AnalyzeArchitectureImpactCommand.cs`
+- `src/ProjectVictory.Application/Architecture/AnalyzeArchitectureImpactHandler.cs`
+- `src/ProjectVictory.Application/Architecture/AnalyzeArchitectureImpactResult.cs`
+- `src/ProjectVictory.Application/Architecture/ApprovePostSliceArchitectureCommand.cs`
+- `src/ProjectVictory.Application/Architecture/ApprovePostSliceArchitectureHandler.cs`
+- `src/ProjectVictory.Application/Architecture/ApprovePostSliceArchitectureResult.cs`
+- `src/ProjectVictory.Application/Architecture/ValidateArchitectureConsistencyCommand.cs`
+- `src/ProjectVictory.Application/Architecture/ValidateArchitectureConsistencyHandler.cs`
+- `src/ProjectVictory.Application/Architecture/ValidateArchitectureConsistencyResult.cs`
+- `src/ProjectVictory.Application/Playtest/AnalyzeTechnicalIssueCommand.cs`
+- `src/ProjectVictory.Application/Playtest/AnalyzeTechnicalIssueHandler.cs`
+- `src/ProjectVictory.Application/Playtest/AnalyzeTechnicalIssueResult.cs`
+- `src/ProjectVictory.Application/Playtest/ClassifyPlaytestIssueCommand.cs`
+- `src/ProjectVictory.Application/Playtest/ClassifyPlaytestIssueHandler.cs`
+- `src/ProjectVictory.Application/Playtest/ClassifyPlaytestIssueResult.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateCorrectionCommand.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateCorrectionHandler.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateCorrectionResult.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateImprovementFinalCommand.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateImprovementFinalHandler.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateImprovementFinalResult.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateImprovementImplementationCommand.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateImprovementImplementationHandler.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateImprovementImplementationResult.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateImprovementRequestCommand.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateImprovementRequestHandler.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateImprovementRequestResult.cs`
+- `src/ProjectVictory.Application/Playtest/ValidatePlaytestLoopCommand.cs`
+- `src/ProjectVictory.Application/Playtest/ValidatePlaytestLoopHandler.cs`
+- `src/ProjectVictory.Application/Playtest/ValidatePlaytestLoopResult.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateRegressionCommand.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateRegressionHandler.cs`
+- `src/ProjectVictory.Application/Playtest/ValidateRegressionResult.cs`
+- `src/ProjectVictory.Application/Production/AnalyzeProductionReadinessCommand.cs`
+- `src/ProjectVictory.Application/Production/AnalyzeProductionReadinessHandler.cs`
+- `src/ProjectVictory.Application/Production/AnalyzeProductionReadinessResult.cs`
+- `src/ProjectVictory.Application/Production/ApproveProductionFoundationCommand.cs`
+- `src/ProjectVictory.Application/Production/ApproveProductionFoundationHandler.cs`
+- `src/ProjectVictory.Application/Production/ApproveProductionFoundationResult.cs`
+- `src/ProjectVictory.Application/Production/ValidateDeploymentCommand.cs`
+- `src/ProjectVictory.Application/Production/ValidateDeploymentHandler.cs`
+- `src/ProjectVictory.Application/Production/ValidateDeploymentResult.cs`
