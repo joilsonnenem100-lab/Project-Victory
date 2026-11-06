@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- PV-ARCH-001 (R-014): raiz de composição compartilhada entre a API e os testes. -->
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectVictory.Domain\ProjectVictory.Domain.csproj" />
+    <ProjectReference Include="..\ProjectVictory.Application\ProjectVictory.Application.csproj" />
+    <ProjectReference Include="..\ProjectVictory.Infrastructure\ProjectVictory.Infrastructure.csproj" />
+    <ProjectReference Include="..\ProjectVictory.Persistence\ProjectVictory.Persistence.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

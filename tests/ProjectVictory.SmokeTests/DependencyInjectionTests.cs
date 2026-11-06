@@ -6,7 +6,8 @@ namespace ProjectVictory.SmokeTests;
 // PV-QA-001 parte 2: evita a defasagem já registrada (faltou IRuntimeRepository no DI de teste).
 // Todo serviço registrado NO DI DE TESTE precisa ser construível, com escopos válidos: quando um
 // handler já registrado aqui ganha dependência nova e o DI de teste não acompanha, este teste falha.
-// Não detecta serviço registrado no Program.cs e ausente aqui (composição duplicada — ver R-014).
+// PV-ARCH-001: desde então o DI de teste usa o mesmo AddProjectVictoryCore do Program.cs, então
+// este teste também valida a composição real da API (R-014 resolvida).
 public sealed class DependencyInjectionTests
 {
     [Fact]

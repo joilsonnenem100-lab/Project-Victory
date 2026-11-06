@@ -1,28 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ProjectVictory.Application.Account;
-using ProjectVictory.Application.Character;
 using ProjectVictory.Application.Combat;
-using ProjectVictory.Application.Hunt;
-using ProjectVictory.Application.Inventory;
-using ProjectVictory.Application.Loot;
-using ProjectVictory.Domain.Loot;
-using ProjectVictory.Infrastructure.Loot;
 using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Application.Session;
-using ProjectVictory.Application.VerticalSlice;
-using ProjectVictory.Domain.Account;
-using ProjectVictory.Domain.Character;
-using ProjectVictory.Domain.Combat;
-using ProjectVictory.Domain.Hunt;
-using ProjectVictory.Infrastructure.Services;
-using ProjectVictory.Persistence.Account;
-using ProjectVictory.Persistence.Character;
-using ProjectVictory.Persistence.Combat;
+using ProjectVictory.Composition;
+using ProjectVictory.Domain.Primitives;
+using ProjectVictory.Domain.Reward;
 using ProjectVictory.Persistence.Database;
-using ProjectVictory.Persistence.Hunt;
-using ProjectVictory.Persistence.Runtime;
 
 namespace ProjectVictory.SmokeTests;
 
@@ -31,75 +16,25 @@ public static class TestServiceCollectionExtensions
     public static IServiceCollection AddProjectVictorySmokeTestServices(
         this IServiceCollection services)
     {
+        // Partes próprias do host de teste (na API: SQLite e identidade vinda do token).
         services.AddDbContext<ProjectVictoryDbContext>(
             options => options.UseInMemoryDatabase("ProjectVictorySmokeTest"));
 
         services.AddSingleton<TestCurrentPlayerContext>();
 
-        services.AddScoped<EncounterGenerator>();
-
         services.AddSingleton<ICurrentPlayerContext>(
             provider => provider.GetRequiredService<TestCurrentPlayerContext>());
 
-        services.AddScoped<IAccountRepository, AccountRepository>();
-        services.AddScoped<ICharacterRepository, CharacterRepository>();
+        // PV-ARCH-001 (R-014): a MESMA composição usada pelo Program.cs da API.
+        // Antes este arquivo replicava os registros à mão (já defasou duas vezes).
+        services.AddProjectVictoryCore(
+            new RewardSettings(ExperienceRate.Default));
 
-        services.AddSingleton<IHuntRepository, HuntRepository>();
-        services.AddSingleton<IEncounterStateStore, EncounterStateStore>();
-        services.AddSingleton<IRuntimeExecutionStateStore, RuntimeExecutionStateStore>();
-
-        // Mesmo registro da API (Program.cs): exigido por CreateRuntimeExecutionHandler.
-        services.AddScoped<IRuntimeRepository, RuntimeRepository>();
-
-        services.AddSingleton<ICombatContextRepository, CombatContextRepository>();
-
-        services.AddScoped<IPasswordHasher, PasswordHasher>();
-
-        // PV-QA-001 parte 2: dependências de AttackEncounterHandler que faltavam
-        // (encontradas pelo DependencyInjectionTests); mesmos registros do Program.cs.
-        services.AddScoped<ICombatResultStore, CombatResultStore>();
-        services.AddScoped<FinalizeHuntAfterCombatHandler>();
-        services.AddScoped<CompleteHuntRewardFlowHandler>();
-        services.AddScoped<ForwardHuntRewardHandler>();
-        services.AddScoped<RewardResolutionHandler>();
-        services.AddScoped<LootResolutionHandler>();
-        services.AddScoped<ApplyResolvedRewardToCharacterHandler>();
-        services.AddScoped<ApplyLootToCharacterInventoryHandler>();
-        services.AddSingleton<ILootDefinitionProvider, MonsterLootDefinitionProvider>();
-
-        // PV-SEC-001: mesmo registro da API (Program.cs).
-        services.AddScoped<PlayerOwnershipGuard>();
-        services.AddScoped<IHuntSessionRepository, HuntSessionRepository>();
-        services.AddScoped<StartHuntSessionHandler>();
-        services.AddScoped<StopHuntSessionHandler>();
-        services.AddScoped<GetCharacterInventoryHandler>();
-
-        services.AddScoped<ICombatResolver, CombatResolver>();
-
+        // Dublês de teste (o último registro vence na resolução).
         services.AddScoped<IRewardProcessor, TestRewardProcessor>();
+        services.AddSingleton<IRandomSource>(new FixedRandomSource());
 
-        // PV-REWARD-010: mesmos registros do Program.cs (XP rate 1x; sorteio fixo nos testes).
-        services.AddSingleton(new RewardSettings(ProjectVictory.Domain.Reward.ExperienceRate.Default));
-        services.AddSingleton<ProjectVictory.Domain.Primitives.IRandomSource>(new FixedRandomSource());
-
-        services.AddScoped<IProgressionProcessor, ProgressionProcessor>();
-
-        // Account
-        services.AddScoped<CreateAccountHandler>();
-        services.AddScoped<LoginHandler>();
-
-        // Character
-        services.AddScoped<CreateCharacterHandler>();
-
-        // Runtime
-        services.AddScoped<CreateRuntimeExecutionHandler>();
-
-        // Hunt
-        services.AddScoped<ExecuteHuntHandler>();
-        services.AddScoped<AttackEncounterHandler>();
-
-        // Combat
-        services.AddScoped<CreateCombatContextHandler>();
+        // Handlers usados só pelos testes: existem em src/ mas não são registrados pela API.
         services.AddScoped<CreateCombatEncounterHandler>();
         services.AddScoped<CreateGameplayActionHandler>();
         services.AddScoped<ExecuteCombatActionHandler>();
@@ -113,11 +48,7 @@ public static class TestServiceCollectionExtensions
         services.AddScoped<RefineCombatFlowHandler>();
         services.AddScoped<ValidateCombatContentHandler>();
         services.AddScoped<ValidateGameplayDepthHandler>();
-
-        // Reward
         services.AddScoped<ApplyRewardHandler>();
-
-        // Progression
         services.AddScoped<GenerateExperienceResultHandler>();
         services.AddScoped<ProcessExperienceRewardHandler>();
 

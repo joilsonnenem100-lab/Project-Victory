@@ -17,6 +17,7 @@
     <ProjectReference Include="..\ProjectVictory.Infrastructure\ProjectVictory.Infrastructure.csproj" />
 
     <ProjectReference Include="..\ProjectVictory.Persistence\ProjectVictory.Persistence.csproj" />
+    <ProjectReference Include="..\ProjectVictory.Composition\ProjectVictory.Composition.csproj" />
 
   </ItemGroup>
 

@@ -95,6 +95,11 @@ public sealed class OwnershipAndTokenHttpTests
         var stop = await other.PostAsJsonAsync("/api/hunt-session/stop", new { huntSessionId });
 
         Assert.Equal(HttpStatusCode.Forbidden, stop.StatusCode);
+
+        // Controle (ressalva da revisão do PV-QA-003): o dono continua conseguindo encerrar a sessão.
+        Assert.Equal(
+            HttpStatusCode.OK,
+            (await owner.PostAsJsonAsync("/api/hunt-session/stop", new { huntSessionId })).StatusCode);
     }
 
     [Fact]
@@ -137,6 +142,24 @@ public sealed class OwnershipAndTokenHttpTests
         var response = await ApiFactory.WithToken(client, token).GetAsync("/api/character");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ValidTokenFromSameHelper_IsAccepted()
+    {
+        // Controle do teste de token expirado (ressalva da revisão do PV-QA-003): o mesmo
+        // gerador, com validade correta e a claim da conta, é aceito — então o 401 acima vem
+        // do vencimento (tolerância padrão de 5 min do JwtBearer; rever se o ClockSkew mudar).
+        using var client = _factory.CreateClient();
+
+        var token = CreateToken(
+            [new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())],
+            DateTime.UtcNow.AddMinutes(-1),
+            DateTime.UtcNow.AddMinutes(10));
+
+        var response = await ApiFactory.WithToken(client, token).GetAsync("/api/character");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]

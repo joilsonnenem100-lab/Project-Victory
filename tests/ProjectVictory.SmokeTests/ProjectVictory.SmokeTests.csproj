@@ -18,6 +18,8 @@
     <ProjectReference Include="..\..\src\ProjectVictory.Domain\ProjectVictory.Domain.csproj" />
     <ProjectReference Include="..\..\src\ProjectVictory.Persistence\ProjectVictory.Persistence.csproj" />
     <ProjectReference Include="..\..\src\ProjectVictory.Infrastructure\ProjectVictory.Infrastructure.csproj" />
+    <!-- PV-ARCH-001 (R-014): mesma composição de DI da API -->
+    <ProjectReference Include="..\..\src\ProjectVictory.Composition\ProjectVictory.Composition.csproj" />
   </ItemGroup>
 
 </Project>

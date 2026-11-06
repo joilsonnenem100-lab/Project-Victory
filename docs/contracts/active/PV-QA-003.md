@@ -1,6 +1,6 @@
 # PV-QA-003 — Testes HTTP de posse e de token
 
-Status: **CONCLUÍDO** (branch `chief/q2-qa-003`; só `tests/` e documentação)
+Status: **CONCLUÍDO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/q2-arch-001`). Branch `chief/q2-qa-003`; só `tests/` e documentação
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 2", item 3). Lastro: `PV-SEC-001` (403 para recurso de outra conta), `PV-PLATFORM-002` (validação do JWT), `TESTING-STRATEGY`; lacunas listadas no `PV-QA-001` parte 2.
 
 ## Testes (`tests/ProjectVictory.Api.Tests/OwnershipAndTokenHttpTests.cs`, API real)
@@ -22,3 +22,11 @@ O `[Authorize]` aceita o token. O `HttpCurrentPlayerContext` lança `InvalidOper
 Solução: build com 0 avisos; **166 aprovados, 0 ignorados, 0 falhas** (+5 em `Api.Tests`). Nenhum arquivo em `src/` foi alterado.
 
 Neste branch também entraram as ressalvas da revisão do `PV-GOV-008`.
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+O revisor rodou a suíte por conta própria (166 aprovados). Ressalvas aplicadas no branch `chief/q2-arch-001`:
+1. Controle positivo do token: `ValidTokenFromSameHelper_IsAccepted` (mesmo gerador, validade correta → 200).
+2. Controle do dono na hunt session: depois do 403 da outra conta, o dono encerra a sessão com 200.
+3. Dependência da tolerância padrão de 5 min: anotada no teste e no R-018.
+4. Log de nível Error a cada requisição sem claim: anotado no R-018.

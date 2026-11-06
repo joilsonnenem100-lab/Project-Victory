@@ -1,9 +1,10 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjectVictory.API.Authentication;
 using ProjectVictory.API.Middleware;
 using ProjectVictory.API.Session;
+using ProjectVictory.Composition;
 using ProjectVictory.Application.Encounter;
 using ProjectVictory.Application.Account;
 using ProjectVictory.Application.Character;
@@ -82,8 +83,6 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     JwtTokenGenerator>();
 
-// PV-SEC-001: verificação de posse de recursos do jogador.
-builder.Services.AddScoped<PlayerOwnershipGuard>();
 
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 
@@ -159,90 +158,18 @@ builder.Services.AddDbContext<ProjectVictoryDbContext>(
         }
     });
 
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
-builder.Services.AddScoped<IRuntimeRepository, RuntimeRepository>();
-builder.Services.AddSingleton<IHuntRepository, HuntRepository>();
-builder.Services.AddSingleton<ICombatContextRepository, CombatContextRepository>();
-builder.Services.AddScoped<IItemDefinitionRepository, ItemDefinitionRepository>();
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-builder.Services.AddScoped<ICombatResolver, CombatResolver>();
-builder.Services.AddScoped<IRewardProcessor, RewardProcessor>();
-
+// PV-ARCH-001 (R-014): todos os serviços do jogo vêm do método único de composição,
+// o mesmo usado pelos testes (src/ProjectVictory.Composition). Aqui ficam só a
+// configuração do servidor e o que é próprio da API (HTTP, JWT, CORS, DbContext).
+//
 // PV-REWARD-010: XP rate só do servidor (DEC-20261106-12), padrão 1x; valor inválido
 // (<= 0 ou não numérico) derruba o startup. Nenhum endpoint lê ou altera este valor.
 var experienceRateValue =
     builder.Configuration.GetValue<decimal?>(RewardSettings.ExperienceRateKey) ?? 1m;
 
-builder.Services.AddSingleton(
+builder.Services.AddProjectVictoryCore(
     new RewardSettings(
         new ProjectVictory.Domain.Reward.ExperienceRate(experienceRateValue)));
-
-builder.Services.AddSingleton<
-    ProjectVictory.Domain.Primitives.IRandomSource,
-    SystemRandomSource>();
-builder.Services.AddScoped<IProgressionProcessor, ProgressionProcessor>();
-builder.Services.AddScoped<ICombatResultStore, CombatResultStore>();
-
-builder.Services.AddSingleton<
-    ILootDefinitionProvider,
-    MonsterLootDefinitionProvider>();
-
-builder.Services.AddScoped<LootResolutionHandler>();
-
-builder.Services.AddScoped<ApplyLootToCharacterInventoryHandler>();
-
-builder.Services.AddScoped<GetCharacterInventoryHandler>();
-builder.Services.AddScoped<ApplyResolvedRewardToCharacterHandler>();
-
-builder.Services.AddSingleton<IEncounterStateStore, EncounterStateStore>();
-
-builder.Services.AddSingleton<
-    IRuntimeExecutionStateStore,
-    RuntimeExecutionStateStore>();
-
-builder.Services.AddScoped<EncounterGenerator>();
-
-builder.Services.AddScoped<CreateAccountHandler>();
-builder.Services.AddScoped<LoginHandler>();
-builder.Services.AddScoped<CreateCharacterHandler>();
-builder.Services.AddScoped<GetCharactersHandler>();
-builder.Services.AddScoped<EnterGameHandler>();
-builder.Services.AddScoped<ExecuteHuntHandler>();
-
-builder.Services.AddScoped<IHuntSessionRepository, HuntSessionRepository>();
-builder.Services.AddScoped<StartHuntSessionHandler>();
-builder.Services.AddScoped<StopHuntSessionHandler>();
-
-builder.Services.AddScoped<FinalizeHuntAfterCombatHandler>();
-builder.Services.AddScoped<ForwardHuntRewardHandler>();
-builder.Services.AddScoped<CompleteHuntRewardFlowHandler>();
-builder.Services.AddScoped<RewardResolutionHandler>();
-builder.Services.AddScoped<GameplayResultPipeline>();
-builder.Services.AddScoped<AttackEncounterHandler>();
-builder.Services.AddScoped<GetItemDefinitionHandler>();
-
-builder.Services.AddScoped<CreateRuntimeExecutionHandler>();
-builder.Services.AddScoped<UpdateRuntimeActivityHandler>();
-builder.Services.AddScoped<ChangeRuntimeLocationHandler>();
-builder.Services.AddScoped<ResolveLocationActionsHandler>();
-builder.Services.AddScoped<BindEncounterToCombatHandler>();
-builder.Services.AddScoped<StartEncounterCombatHandler>();
-builder.Services.AddScoped<CreateCombatContextHandler>();
-builder.Services.AddScoped<ResolveCombatHandler>();
-builder.Services.AddScoped<GameplayActionDispatcher>();
-builder.Services.AddScoped<GameplayActionExecutionHandler>();
-builder.Services.AddSingleton<ILocationActionCatalog, LocationActionCatalog>();
-builder.Services.AddSingleton<IWorldDefinitionStore, WorldDefinitionStore>();
-
-var worldSeed =
-    WorldDefinitionSeed.Create();
-
-builder.Services.AddSingleton<IWorldDefinitionCatalog>(
-    new WorldDefinitionCatalog(
-        worldSeed.Worlds,
-        worldSeed.Regions,
-        worldSeed.Locations));
 
 var app =
     builder.Build();
