@@ -10,7 +10,7 @@ Lastro: `PRINCIPLES` / Handbook V3 §23–24 (autenticação, autorização, int
 
 ## Escopo
 
-1. **Autenticação:** `[Authorize]` nos controllers `Hunt`, `HuntSession`, `Inventory`, `Runtime`, `Gameplay` e `Location`. `Account` (cadastro/login) e `Playable/status` continuam públicos.
+1. **Autenticação:** `[Authorize]` nos controllers `Hunt`, `HuntSession`, `Inventory`, `Runtime`, `Gameplay`, `Location` e `Playable` (este acrescentado pela ordem do PO de 2026-11-06, modo noite; não é usado pelo cliente). Só `Account` (cadastro/login) continua público.
 2. **Posse (Application):** novo serviço `PlayerOwnershipGuard` (`Application/Session`) compara o dono do recurso com `ICurrentPlayerContext.AccountId`:
    - personagem → `Character.AccountId`;
    - runtime → personagem do `RuntimeExecutionContext`;
@@ -23,7 +23,7 @@ Lastro: `PRINCIPLES` / Handbook V3 §23–24 (autenticação, autorização, int
 ## Decisões do Arquiteto
 
 - **D1 — Rota do Inventory mantida** (`GET api/inventory/{characterId}`), com verificação de dono. O roadmap previa "remover `characterId` livre da rota", mas a conta pode ter **vários personagens** (`AllowMultipleCharacters`) e não existe conceito de "personagem selecionado" no servidor; remover o parâmetro quebraria o cliente (`characterService.ts`) e violaria a Regra Aditiva. O objetivo de segurança (ninguém lê inventário alheio) é atingido pela verificação de dono. `characterId` passa a ser **seletor de recurso verificado**, não identidade.
-- **D2 — `CharacterId` no corpo mantido** nos comandos, pelo mesmo motivo; a identidade continua vindo só do token.
+- **D2 — `CharacterId` no corpo mantido** nos comandos, pelo mesmo motivo; a identidade continua vindo só do token. Leitura da ordem do PO "verificação de dono pelo token, nunca pelo corpo ou rota": o **dono** é sempre a conta do token (`ICurrentPlayerContext`); o id no corpo/rota é apenas o **seletor do recurso**, conferido contra essa conta.
 - **D3 — `await` em `RuntimeController.Create` e `HuntController.Attack`.** Hoje chamam handlers assíncronos sem `await` e serializam o `Task` (defeito pré-existente). Sem `await`, a exceção de posse ficaria presa no `Task` e a resposta seria 200. `hunt/attack` não é chamado pelo cliente; `runtime/create` só é chamado por `runtimeService.createRuntime` (`src/ProjectVictory.Client/src/services/runtimeService.ts`), função que não é importada em nenhuma tela — nenhum consumidor ativo depende do formato antigo. Os handlers síncronos `UpdateRuntimeActivity` e `ChangeRuntimeLocation` passam a assíncronos (mesmo contrato HTTP).
 - **D4 — 403 também para personagem inexistente**, para não revelar quais ids existem. Exceção mantida: `GET api/inventory/{characterId}` continua respondendo **404** quando o personagem não existe (o `InventoryController` já fazia isso antes; comportamento validado preservado pela Regra Aditiva). Como os ids são GUIDs aleatórios, o risco de enumeração é desprezível. Pela mesma regra, **hunt session inexistente** (`hunt-session/stop`) e **encounter cuja hunt não existe** (`hunt/attack`) passam de 500 para **403** (comportamento anterior era erro não tratado, não um contrato validado).
 
