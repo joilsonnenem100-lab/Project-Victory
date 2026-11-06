@@ -28,8 +28,8 @@ public sealed class ProgressionProcessor : IProgressionProcessor
 
 
 
-    // PV-PROG-011: o Level é interpretado pela Experience Table (ADR-025), gerada pela curva
-    // do DEC-20261106-10, sem teto fixo em 5 (teto = Level 500 por Ascension, ADR-026).
+    // PV-PROG-011/012: o Level é interpretado pela Experience Table (ADR-025), a curva do
+    // DEC-20261106-10, sem teto de Level (DEC-20261106-19; o antigo teto de 500 foi superado).
     private static int CalculateLevel(
         int experience)
     {

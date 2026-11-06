@@ -64,3 +64,11 @@ Resultado da solução: build com 0 avisos; **279 aprovados, 0 ignorados, 0 falh
 
 - **R-034** (PO): "5 Ascensions / Legend" em `knowledge-base/character.md` × máximo 4.
 - Conteúdo das Ascensions 2 a 4: ainda não existe (só a Spider Cave, Ascension 1).
+
+## Revisão (`pv-architecture-reviewer`) — ressalvas
+
+1. **R-037** registrada: a configuração de Ascension só vale via `AscensionUnder(rules)`; `Character.Ascension` usa o padrão.
+2. Aplicada no `PV-COMBAT-013`: propriedades de `AscensionRules` só-leitura.
+3. Aplicada no `PV-COMBAT-013`: `ExperienceCurve` divide antes de multiplicar; Level máximo suportado 569.256 → **821.009**.
+4. **Efeito colateral aceito:** `ExperienceTable.GetRequiredExperience` acima do Level 500 deixou de lançar exceção e passou a devolver o valor da curva (sem teto, `DEC-20261106-19`).
+5. Aplicada no `PV-COMBAT-013`: comentário do `ProgressionProcessor`.

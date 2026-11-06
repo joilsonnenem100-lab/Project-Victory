@@ -35,7 +35,9 @@ public sealed class CombatantFactory
             runtimeState.CurrentHealth,
             character.MaximumMana.Value,
             runtimeState.CurrentMana,
-            ClassCombatProfileTable.ForCharacter(character.CharacterClass, character.Skills));
+            ClassCombatProfileTable.ForCharacter(character.CharacterClass, character.Skills),
+            // PV-COMBAT-013: as 4 skills da classe já desbloqueadas pelo Level (dados).
+            ClassSkillTable.UnlockedFor(character.CharacterClass, character.Level.Value));
     }
 
     public Combatant CreateMonster(EncounterMonsterState monster)

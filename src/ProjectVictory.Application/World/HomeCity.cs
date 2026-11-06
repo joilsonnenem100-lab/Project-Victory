@@ -3,8 +3,8 @@ using ProjectVictory.Domain.Runtime;
 namespace ProjectVictory.Application.World;
 
 // PV-SUPPLY-011 (DEC-20261106-24): a cidade de retorno — a "tela inicial" — em dados.
-// *** PROVISÓRIO *** — nome "Victoria" (nome provisório, DEC-20261106-15). A localização usada é a
-// única ativa do mundo semeado (WorldDefinitionSeed). Cidades de verdade são Fase 7.
+// *** PROVISÓRIO *** — nome "Victoria" (nome provisório, DEC-20261106-15). É a localização inicial
+// do mundo semeado (WorldDefinitionSeed usa este nome e estes ids). Cidades de verdade são Fase 7.
 public static class HomeCity
 {
     public const string Name = "Victoria";

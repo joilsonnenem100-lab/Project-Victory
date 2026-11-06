@@ -62,12 +62,20 @@ public sealed class SupplyTests
         Assert.Equal(CombatActionKind.UseHealthPotion, selector.SelectSecondaryAction(Session(hurt), hurt));
 
         supplies.Load(new SupplyPolicy(50, null), healthPotions: 0, manaPotions: 0);
-        // Sem poção não há cura: cai na habilidade da classe (mana disponível).
-        Assert.Equal(CombatActionKind.ClassAbility, selector.SelectSecondaryAction(Session(hurt), hurt));
+        // Sem poção não há cura: cai no seletor de skills (PV-COMBAT-013; antes caía na antiga
+        // "habilidade inicial", ClassAbility). Este combatente não tem skills → nenhuma ação extra.
+        Assert.Null(selector.SelectSecondaryAction(Session(hurt), hurt));
 
         var healthy = Player(hp: 90, mana: 100);
         supplies.Load(new SupplyPolicy(50, null), healthPotions: 2, manaPotions: 0);
-        Assert.Equal(CombatActionKind.ClassAbility, selector.SelectSecondaryAction(Session(healthy), healthy));
+        Assert.Null(selector.SelectSecondaryAction(Session(healthy), healthy));
+
+        // Com skills da classe e sem precisar de poção, usa a skill (1 inimigo → alvo único).
+        var knight = new Combatant(Guid.NewGuid(), Guid.NewGuid(), CombatSide.Player, "K", 10, 100, 90, 100, 100,
+            new CombatProfile(10, 14, 4, 6), ProjectVictory.Domain.Combat.Rules.ClassSkillTable.UnlockedFor(CharacterClass.Knight, 10));
+        var choice = selector.SelectSecondaryChoice(Session(knight), knight);
+        Assert.Equal(CombatActionKind.UseSkill, choice!.Kind);
+        Assert.Equal("Brutal Blow", choice.Skill!.Name);
     }
 
     [Fact]
@@ -174,7 +182,40 @@ public sealed class SupplyTests
         var result = await scope.ServiceProvider.GetRequiredService<AttackEncounterHandler>()
             .Handle(new AttackEncounterCommand(hunt.Encounter.Id));
 
-        Assert.NotEqual(nameof(HuntEndReason.OutOfSupplies), result.HuntEndReason);
-        Assert.NotEqual("Cancelled", result.CombatState);
+        // Revisão do PV-SUPPLY-011: a Hunt segue de fato (sem motivo de fim, encounter ativo).
+        Assert.Null(result.HuntEndReason);
+        Assert.False(result.CombatFinished);
+        Assert.Equal("Active", result.CombatState);
+    }
+
+    // Revisão do PV-SUPPLY-011: DeathNotice só na morte; os outros motivos não trazem mensagem.
+    [Theory]
+    [InlineData(HuntEndReason.Death, true)]
+    [InlineData(HuntEndReason.Victory, false)]
+    [InlineData(HuntEndReason.Manual, false)]
+    [InlineData(HuntEndReason.Disconnect, false)]
+    public async Task EndHunt_DeathNoticeOnlyOnDeath_AlwaysReturnsToVictoria(HuntEndReason reason, bool hasNotice)
+    {
+        await using var provider = Provider(seed: 5, starterHealthPotions: 0);
+        using var scope = provider.CreateScope();
+        scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
+
+        var characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
+            .Handle(new CreateCharacterCommand("D" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
+        var enter = await scope.ServiceProvider.GetRequiredService<EnterGameHandler>().Handle(new EnterGameCommand());
+        var hunt = await scope.ServiceProvider.GetRequiredService<ExecuteHuntHandler>()
+            .Handle(new ExecuteHuntCommand(characterId, enter.RuntimeId));
+
+        var result = await scope.ServiceProvider.GetRequiredService<EndHuntHandler>()
+            .Handle(new EndHuntCommand(hunt.HuntId, reason));
+
+        Assert.Equal("Victoria", result.ReturnCity);
+        Assert.Equal(hasNotice, result.DeathNotice is not null);
+
+        if (hasNotice)
+        {
+            Assert.Equal("Death", result.DeathNotice!.ReasonCode);
+            Assert.Equal(new[] { "Potions", "Runes", "HuntLevel" }, result.DeathNotice.Checks);
+        }
     }
 }

@@ -35,8 +35,10 @@ public static class WorldDefinitionSeed
                 new LocationDefinition(
                     locationId,
                     regionId,
-                    "Starting Location",
-                    "Primeira localização disponível.",
+                    // PV-Q4 (DEC-20261106-24): a localização inicial é a cidade de retorno "Victoria"
+                    // (nome PROVISÓRIO; antes "Starting Location").
+                    HomeCity.Name,
+                    "Cidade de retorno (tela inicial). Antes: Starting Location.",
                     LocationDefinitionStatus.Active)
             });
     }

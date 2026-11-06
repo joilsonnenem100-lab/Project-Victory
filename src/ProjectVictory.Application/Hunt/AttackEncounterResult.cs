@@ -37,7 +37,9 @@ public sealed record CombatTurnDto(
     int Damage,
     int Healing,
     int TargetHealthAfter,
-    int ActorHealthAfter)
+    int ActorHealthAfter,
+    // PV-COMBAT-013: nome da skill usada (aditivo).
+    string? SkillName = null)
 {
     public static CombatTurnDto From(ProjectVictory.Domain.Combat.TurnBased.CombatTurnLogEntry entry) =>
         new(
@@ -50,5 +52,6 @@ public sealed record CombatTurnDto(
             entry.Damage,
             entry.Healing,
             entry.TargetHealthAfter,
-            entry.ActorHealthAfter);
+            entry.ActorHealthAfter,
+            entry.SkillName);
 }

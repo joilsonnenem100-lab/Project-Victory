@@ -13,6 +13,13 @@ public interface IDamageFormula
         Combatant defender,
         CombatActionKind kind,
         IRandomSource random);
+
+    // PV-COMBAT-013: dano com multiplicador explícito (skill de classe).
+    int RollDamage(
+        Combatant attacker,
+        Combatant defender,
+        decimal multiplier,
+        IRandomSource random);
 }
 
 // Constantes da fórmula provisória, como dados.
@@ -55,15 +62,25 @@ public sealed class ProvisionalTibiaLikeDamageFormula : IDamageFormula
     {
         ArgumentNullException.ThrowIfNull(attacker);
 
+        var multiplier = kind switch
+        {
+            CombatActionKind.ClassAbility => attacker.Profile.AbilityDamageMultiplier,
+            CombatActionKind.BasicAttack => attacker.Profile.BasicAttackMultiplier,
+            _ => 1m
+        };
+
+        return MaximumDamage(attacker, multiplier);
+    }
+
+    // PV-COMBAT-013: dano máximo com multiplicador explícito (skill ou ataque básico).
+    public int MaximumDamage(Combatant attacker, decimal multiplier)
+    {
+        ArgumentNullException.ThrowIfNull(attacker);
+
         var profile = attacker.Profile;
         var baseMax =
-            (_settings.SkillAttackFactor * profile.AttackSkill * profile.WeaponAttack)
-            + ((decimal)attacker.Level / _settings.LevelDivisor);
-
-        if (kind == CombatActionKind.ClassAbility)
-        {
-            baseMax *= profile.AbilityDamageMultiplier;
-        }
+            ((_settings.SkillAttackFactor * profile.AttackSkill * profile.WeaponAttack)
+            + ((decimal)attacker.Level / _settings.LevelDivisor)) * multiplier;
 
         return Math.Max(0, (int)decimal.Floor(baseMax));
     }
@@ -75,10 +92,30 @@ public sealed class ProvisionalTibiaLikeDamageFormula : IDamageFormula
         IRandomSource random)
     {
         ArgumentNullException.ThrowIfNull(attacker);
+
+        return Roll(defender, MaximumDamage(attacker, kind), random);
+    }
+
+    public int RollDamage(
+        Combatant attacker,
+        Combatant defender,
+        decimal multiplier,
+        IRandomSource random)
+    {
+        ArgumentNullException.ThrowIfNull(attacker);
+
+        return Roll(defender, MaximumDamage(attacker, multiplier), random);
+    }
+
+    private int Roll(
+        Combatant defender,
+        int maximumDamage,
+        IRandomSource random)
+    {
         ArgumentNullException.ThrowIfNull(defender);
         ArgumentNullException.ThrowIfNull(random);
 
-        var raw = random.NextInclusive(0, MaximumDamage(attacker, kind));
+        var raw = random.NextInclusive(0, maximumDamage);
 
         var armor = defender.Profile.Armor;
         var armorReduction = armor > 1

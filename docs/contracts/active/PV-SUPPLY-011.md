@@ -41,3 +41,11 @@ Resultado da solução: build com 0 avisos; **279 aprovados, 0 ignorados, 0 falh
 ## Pendência registrada
 
 **R-036:** pelo `DEC-20261106-22`, a Hunt só termina por morte, saída manual ou queda de conexão. Hoje a **vitória de um encounter** (todos os monstros mortos) ainda encerra a Hunt (`HuntEndReason.Victory`), porque 1 Hunt = 1 encounter até o **Hunt Loop contínuo** (`PV-HUNT-011`, M6), que vai gerar o próximo encounter em vez de encerrar.
+
+## Revisão (`pv-architecture-reviewer`) — ressalvas
+
+1. R-036 mantida (Hunt Loop contínuo no `PV-HUNT-011`, M6).
+2. Aplicada no `PV-COMBAT-013`: a localização inicial do mundo semeado se chama `HomeCity.Name` ("Victoria").
+3. Aplicada no `PV-COMBAT-013`: `NoSupplies_DoesNotEndTheHunt` e `PolicyWithoutPotions_DoesNotEndTheHunt` exigem `huntEndReason` nulo, combate não finalizado e estado `Active`.
+4. Aplicada no `PV-COMBAT-013`: teste `EndHunt_DeathNoticeOnlyOnDeath_AlwaysReturnsToVictoria` (aviso só na morte).
+5. **Nota de processo:** os testes alterados por mudança de regra do PO ficam listados no contrato (tabela acima) e no relatório da fila, nunca só no diff.

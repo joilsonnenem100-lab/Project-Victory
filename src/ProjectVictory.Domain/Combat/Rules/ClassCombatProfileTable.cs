@@ -48,6 +48,8 @@ public static class ClassCombatProfileTable
             classBase.Armor,
             classBase.Defense,
             classBase.AbilityManaCost,
-            classBase.AbilityDamageMultiplier);
+            classBase.AbilityDamageMultiplier,
+            // PV-COMBAT-013: força do ataque básico da classe (ClassSkillTable).
+            ClassSkillTable.BasicAttackMultiplier(characterClass));
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace ProjectVictory.Domain.Combat.TurnBased;
 
@@ -16,7 +17,9 @@ public sealed record CombatProfile(
     int Armor,
     int Defense,
     int AbilityManaCost = 0,
-    decimal AbilityDamageMultiplier = 1m);
+    decimal AbilityDamageMultiplier = 1m,
+    // PV-COMBAT-013: força do ataque básico (Knight forte, Paladin muito forte), em dados.
+    decimal BasicAttackMultiplier = 1m);
 
 // PV-COMBAT-010: participante de um combate por turnos (jogador ou monstro).
 // Guarda só estado; nenhuma regra de dano, IA, loot ou XP (ADR-051).
@@ -43,6 +46,9 @@ public sealed class Combatant
 
     public CombatProfile Profile { get; }
 
+    // PV-COMBAT-013: skills disponíveis (já desbloqueadas pelo Level); vazio para monstros.
+    public IReadOnlyList<ProjectVictory.Domain.Combat.Rules.SkillDefinition> Skills { get; }
+
     public bool IsDead => CurrentHealth <= 0;
 
     public Combatant(
@@ -55,8 +61,10 @@ public sealed class Combatant
         int currentHealth,
         int maximumMana,
         int currentMana,
-        CombatProfile profile)
+        CombatProfile profile,
+        IReadOnlyList<ProjectVictory.Domain.Combat.Rules.SkillDefinition>? skills = null)
     {
+        Skills = skills ?? Array.Empty<ProjectVictory.Domain.Combat.Rules.SkillDefinition>();
         if (id == Guid.Empty)
         {
             throw new ArgumentException("Combatant id is required.", nameof(id));

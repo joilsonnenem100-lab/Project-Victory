@@ -131,7 +131,11 @@ public sealed class SupplyAwareCombatActionSelector : ICombatActionSelector
         _supplies = supplies;
     }
 
-    public CombatActionKind? SelectSecondaryAction(CombatSession session, Combatant actor)
+    public CombatActionKind? SelectSecondaryAction(CombatSession session, Combatant actor) =>
+        SelectSecondaryChoice(session, actor)?.Kind;
+
+    // PV-COMBAT-013: poção (se a política mandar) ou, senão, a skill escolhida pelo seletor padrão.
+    public CombatTurnChoice? SelectSecondaryChoice(CombatSession session, Combatant actor)
     {
         ArgumentNullException.ThrowIfNull(actor);
 
@@ -143,7 +147,7 @@ public sealed class SupplyAwareCombatActionSelector : ICombatActionSelector
                 && _supplies.HealthPotions > 0
                 && actor.CurrentHealth * 100 < hp * actor.MaximumHealth)
             {
-                return CombatActionKind.UseHealthPotion;
+                return new CombatTurnChoice(CombatActionKind.UseHealthPotion);
             }
 
             if (policy.ManaPotionBelowPercent is { } mp
@@ -151,11 +155,11 @@ public sealed class SupplyAwareCombatActionSelector : ICombatActionSelector
                 && actor.MaximumMana > 0
                 && actor.CurrentMana * 100 < mp * actor.MaximumMana)
             {
-                return CombatActionKind.UseManaPotion;
+                return new CombatTurnChoice(CombatActionKind.UseManaPotion);
             }
         }
 
-        return _fallback.SelectSecondaryAction(session, actor);
+        return _fallback.SelectSecondaryChoice(session, actor);
     }
 }
 

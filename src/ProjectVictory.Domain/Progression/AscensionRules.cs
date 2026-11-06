@@ -22,11 +22,11 @@ public sealed record AscensionRules(
 
     public static AscensionRules Default { get; } = new();
 
-    public int LevelStep { get; init; } = LevelStep > 0
+    public int LevelStep { get; } = LevelStep > 0
         ? LevelStep
         : throw new ArgumentOutOfRangeException(nameof(LevelStep), "Ascension level step must be positive.");
 
-    public int MaximumAscension { get; init; } = MaximumAscension >= 1
+    public int MaximumAscension { get; } = MaximumAscension >= 1
         ? MaximumAscension
         : throw new ArgumentOutOfRangeException(nameof(MaximumAscension), "Maximum Ascension must be at least 1.");
 

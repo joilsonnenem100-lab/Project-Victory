@@ -253,8 +253,10 @@ public sealed class SpiderCaveEndToEndTests
 
         var round = await Attack(player, encounterId);
 
-        Assert.NotEqual("OutOfSupplies", round.GetProperty("huntEndReason").GetString());
-        Assert.NotEqual("Cancelled", round.GetProperty("combatState").GetString());
+        // Revisão do PV-SUPPLY-011: a Hunt segue de fato (sem motivo de fim, encounter ativo).
+        Assert.Equal(JsonValueKind.Null, round.GetProperty("huntEndReason").ValueKind);
+        Assert.False(round.GetProperty("combatFinished").GetBoolean());
+        Assert.Equal("Active", round.GetProperty("combatState").GetString());
     }
 
     [Fact]

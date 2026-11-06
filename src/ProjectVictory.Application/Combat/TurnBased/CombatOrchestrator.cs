@@ -16,7 +16,18 @@ public interface ICombatActionSelector
     CombatActionKind? SelectSecondaryAction(
         CombatSession session,
         Combatant actor);
+
+    // PV-COMBAT-013: escolha completa (tipo + skill). Padrão: só o tipo, sem skill (aditivo).
+    CombatTurnChoice? SelectSecondaryChoice(
+        CombatSession session,
+        Combatant actor) =>
+        SelectSecondaryAction(session, actor) is { } kind ? new CombatTurnChoice(kind) : null;
 }
+
+// PV-COMBAT-013: a Secondary Action escolhida, com a skill quando Kind = UseSkill.
+public sealed record CombatTurnChoice(
+    CombatActionKind Kind,
+    ProjectVictory.Domain.Combat.Rules.SkillDefinition? Skill = null);
 
 // Hook opcional chamado depois que uma Secondary Action é executada (ex.: consumir a poção do
 // inventário — PV-SUPPLY-010). Não altera o combate.
@@ -122,16 +133,24 @@ public sealed class CombatOrchestrator
         }
 
         // Etapa 2 (ADR-006): Secondary Action opcional, escolhida fora do orquestrador.
-        var secondary = _actionSelector.SelectSecondaryAction(session, actor);
+        var choice = _actionSelector.SelectSecondaryChoice(session, actor);
 
-        if (secondary is null)
+        if (choice is null)
         {
+            return;
+        }
+
+        // PV-COMBAT-013: skill em área atinge todos os inimigos vivos (mana gasta uma vez só).
+        if (choice.Kind == CombatActionKind.UseSkill
+            && choice.Skill is { Targeting: ProjectVictory.Domain.Combat.Rules.SkillTargeting.Area } areaSkill)
+        {
+            ApplyArea(session, actor, areaSkill, log);
             return;
         }
 
         // *** PROVISÓRIO *** (revisão do PV-COMBAT-010): poções miram o próprio ator e cura/mana
         // vão para o ator; cura em aliado e escolha de alvo por IA ficam para o M4.
-        var secondaryTarget = secondary is CombatActionKind.UseHealthPotion or CombatActionKind.UseManaPotion
+        var secondaryTarget = choice.Kind is CombatActionKind.UseHealthPotion or CombatActionKind.UseManaPotion
             ? actor
             : session.DefaultTargetFor(actor);
 
@@ -140,7 +159,45 @@ public sealed class CombatOrchestrator
             return;
         }
 
-        Apply(session, new CombatTurnAction(actor, secondaryTarget, secondary.Value), log);
+        Apply(session, new CombatTurnAction(actor, secondaryTarget, choice.Kind, choice.Skill), log);
+    }
+
+    // PV-COMBAT-013: aplica uma skill em área. O resolver decide o dano de cada alvo; a mana é
+    // gasta UMA vez (custo do primeiro alvo); os demais alvos não pagam de novo.
+    private void ApplyArea(
+        CombatSession session,
+        Combatant actor,
+        ProjectVictory.Domain.Combat.Rules.SkillDefinition skill,
+        List<CombatTurnLogEntry> log)
+    {
+        var targets = actor.Side == CombatSide.Player
+            ? session.Monsters.Where(m => !m.IsDead).ToList()
+            : session.Player.IsDead ? new List<Combatant>() : new List<Combatant> { session.Player };
+
+        var paid = false;
+
+        foreach (var target in targets)
+        {
+            var action = new CombatTurnAction(actor, target, CombatActionKind.UseSkill, skill);
+            var outcome = _resolver.ResolveAction(action, session.Random);
+
+            if (!outcome.Executed)
+            {
+                return;
+            }
+
+            if (!paid)
+            {
+                if (outcome.ManaCost > 0 && !actor.TrySpendMana(outcome.ManaCost))
+                {
+                    return;
+                }
+
+                paid = true;
+            }
+
+            Record(session, action, outcome with { ManaCost = 0 }, log);
+        }
     }
 
     private void Apply(
@@ -160,6 +217,16 @@ public sealed class CombatOrchestrator
             return;
         }
 
+        Record(session, action, outcome, log);
+    }
+
+    // Aplica o resultado já calculado (dano, cura, mana) e registra no log.
+    private void Record(
+        CombatSession session,
+        CombatTurnAction action,
+        CombatActionOutcome outcome,
+        List<CombatTurnLogEntry> log)
+    {
         action.Target.ApplyDamage(outcome.Damage);
         action.Actor.Heal(outcome.Healing);
         action.Actor.RestoreMana(outcome.ManaRestored);
@@ -174,7 +241,8 @@ public sealed class CombatOrchestrator
             outcome.Damage,
             outcome.Healing,
             action.Target.CurrentHealth,
-            action.Actor.CurrentHealth));
+            action.Actor.CurrentHealth,
+            action.Skill?.Name));
 
         foreach (var observer in _observers)
         {

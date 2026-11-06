@@ -9,7 +9,9 @@ namespace ProjectVictory.Domain.Progression;
 // (DEC-20261106-19): o limite é só o que cabe em long (Experience é long).
 public static class ExperienceCurve
 {
-    // Maior Level cuja Experience total cabe em long (≈ 569 mil). Acima disso a conta estouraria.
+    // Maior Level cuja Experience total cabe em long (821.009). Revisão do PV-PROG-012: a conta divide
+    // por 3 ANTES de multiplicar por 50 (o polinômio é sempre múltiplo de 3), então o limite é o da
+    // própria Experience, e não o de um valor intermediário.
     public static int MaximumSupportedLevel { get; } = ComputeMaximumSupportedLevel();
 
     public static long TotalExperienceForLevel(int level)
@@ -28,7 +30,7 @@ public static class ExperienceCurve
         var polynomial =
             checked((l * l * l) - (6 * l * l) + (17 * l) - 12);
 
-        return checked(50 * polynomial) / 3;
+        return checked((polynomial / 3) * 50);
     }
 
     // PV-PROG-012: Level da Experience SEM tabela fixa — maior L com XP(L) ≤ experience, por busca
@@ -65,11 +67,11 @@ public static class ExperienceCurve
 
     private static int ComputeMaximumSupportedLevel()
     {
-        // Int128 não estoura nesta faixa; procura o maior L com 50 × polinômio ≤ long.MaxValue.
+        // Int128 não estoura nesta faixa; procura o maior L com XP(L) ≤ long.MaxValue.
         static bool Fits(long l)
         {
             Int128 big = l;
-            var value = 50 * ((big * big * big) - (6 * big * big) + (17 * big) - 12);
+            var value = (((big * big * big) - (6 * big * big) + (17 * big) - 12) / 3) * 50;
 
             return value <= long.MaxValue;
         }

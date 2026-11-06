@@ -57,6 +57,22 @@ public sealed class CombatResolver : ICombatResolver
                 return new CombatActionOutcome(
                     _damageFormula.RollDamage(action.Actor, action.Target, action.Kind, random), 0, 0, cost, true);
 
+            // PV-COMBAT-013: skill de classe (dados em ClassSkillTable). Sem mana, não executa e não
+            // consome aleatoriedade. Tipo de dano da skill (hoje só físico).
+            case CombatActionKind.UseSkill when action.Skill is { } skill:
+                if (action.Actor.CurrentMana < skill.ManaCost)
+                {
+                    return CombatActionOutcome.NotExecuted;
+                }
+
+                return new CombatActionOutcome(
+                    _damageFormula.RollDamage(action.Actor, action.Target, skill.DamageMultiplier, random),
+                    0,
+                    0,
+                    skill.ManaCost,
+                    true,
+                    skill.DamageType);
+
             case CombatActionKind.UseHealthPotion:
                 return new CombatActionOutcome(0, _supplyEffects.HealthPotionHealing, 0, 0, true);
 

@@ -44,7 +44,7 @@ public sealed class ExperienceTableTests
         Assert.True(table.IsUnbounded);
         Assert.Empty(table.Entries);
         Assert.Equal(ExperienceCurve.MaximumSupportedLevel, table.MaximumLevel);
-        Assert.Equal(569_256, ExperienceCurve.MaximumSupportedLevel);
+        Assert.Equal(821_009, ExperienceCurve.MaximumSupportedLevel); // revisão do PV-PROG-012 (antes 569.256)
 
         var explicit500 = ExperienceTable.FromCurve(500);
         Assert.Equal(500, explicit500.Entries.Count);
