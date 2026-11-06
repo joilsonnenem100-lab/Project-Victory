@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using ProjectVictory.Application.Hunt;
+using ProjectVictory.Application.Supply;
 
 
 namespace ProjectVictory.API.Controllers;
@@ -14,13 +15,16 @@ public sealed class HuntController : BaseApiController
     private readonly ExecuteHuntHandler _handler;
 
     private readonly AttackEncounterHandler _attackHandler;
+    private readonly SetSupplyPolicyHandler _supplyHandler;
 
 
 
     public HuntController(
         ExecuteHuntHandler handler,
-        AttackEncounterHandler attackHandler)
+        AttackEncounterHandler attackHandler,
+        SetSupplyPolicyHandler supplyHandler)
     {
+        _supplyHandler = supplyHandler;
         _handler = handler;
 
         _attackHandler = attackHandler;
@@ -52,6 +56,20 @@ public sealed class HuntController : BaseApiController
             await _attackHandler.Handle(
                 command);
 
+
+        return Success(
+            result);
+    }
+
+    // PV-SUPPLY-010: configura o uso de poções (vale a partir do próximo turno). 400 se inválido;
+    // 403 se o personagem não for da conta do token.
+    [HttpPost("supplies")]
+    public async Task<IActionResult> Supplies(
+        [FromBody] SetSupplyPolicyCommand command)
+    {
+        var result =
+            await _supplyHandler.Handle(
+                command);
 
         return Success(
             result);

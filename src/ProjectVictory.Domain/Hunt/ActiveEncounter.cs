@@ -155,10 +155,18 @@ public sealed class ActiveEncounter
 
 
 
+    // PV-SUPPLY-010: combate interrompido (ex.: fim de suprimento).
+    public void Cancel()
+    {
+        State =
+            CombatState.Cancelled;
+    }
+
     public bool IsFinished()
     {
         return State == CombatState.Victory ||
-               State == CombatState.Defeat;
+               State == CombatState.Defeat ||
+               State == CombatState.Cancelled;
     }
 
 

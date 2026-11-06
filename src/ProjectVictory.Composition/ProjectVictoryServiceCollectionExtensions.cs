@@ -48,8 +48,16 @@ public static class ProjectVictoryServiceCollectionExtensions
     public static IServiceCollection AddProjectVictoryCore(
         this IServiceCollection services,
         RewardSettings rewardSettings,
-        ProjectVictory.Application.Combat.TurnBased.CombatSettings? combatSettings = null)
+        ProjectVictory.Application.Combat.TurnBased.CombatSettings? combatSettings = null,
+        ProjectVictory.Application.Supply.SupplySettings? supplySettings = null)
     {
+        // PV-SUPPLY-010: poções (política do jogador, consumo, fim de suprimento, poções iniciais).
+        services.AddSingleton(supplySettings ?? new ProjectVictory.Application.Supply.SupplySettings());
+        services.AddSingleton<ProjectVictory.Application.Supply.ISupplyPolicyStore, ProjectVictory.Application.Supply.SupplyPolicyStore>();
+        services.AddScoped<ProjectVictory.Application.Supply.CombatSupplyContext>();
+        services.AddScoped<ProjectVictory.Application.Combat.TurnBased.ICombatActionObserver, ProjectVictory.Application.Supply.SupplyConsumptionObserver>();
+        services.AddScoped<ProjectVictory.Application.Supply.SetSupplyPolicyHandler>();
+
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(rewardSettings);
 
@@ -78,7 +86,7 @@ public static class ProjectVictoryServiceCollectionExtensions
 
         // PV-COMBAT-010/011: Combat Orchestrator, ordem de turnos e seleção da Secondary Action.
         services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.ITurnScheduler, ProjectVictory.Application.Combat.TurnBased.SequentialTurnScheduler>();
-        services.AddScoped<ProjectVictory.Application.Combat.TurnBased.ICombatActionSelector, ProjectVictory.Application.Combat.TurnBased.DefaultCombatActionSelector>();
+        services.AddScoped<ProjectVictory.Application.Combat.TurnBased.ICombatActionSelector, ProjectVictory.Application.Supply.SupplyAwareCombatActionSelector>();
 
         // PV-COMBAT-012: regras de dano (fórmula PROVISÓRIA), perfis de monstro e efeitos de suprimento.
         services.AddSingleton<ProjectVictory.Domain.Combat.Rules.IDamageFormula, ProjectVictory.Domain.Combat.Rules.ProvisionalTibiaLikeDamageFormula>();

@@ -1,6 +1,7 @@
 using ProjectVictory.Application.Combat.TurnBased;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Application.Session;
+using ProjectVictory.Application.Supply;
 using ProjectVictory.Application.VerticalSlice;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Combat;
@@ -28,6 +29,8 @@ public sealed class AttackEncounterHandler
     private readonly CombatOrchestrator _orchestrator;
     private readonly RewardResolutionHandler _rewardResolutionHandler;
     private readonly EndHuntHandler _endHuntHandler;
+    private readonly ISupplyPolicyStore _supplyPolicies;
+    private readonly CombatSupplyContext _supplies;
 
 
     public AttackEncounterHandler(
@@ -40,8 +43,12 @@ public sealed class AttackEncounterHandler
         CombatantFactory combatantFactory,
         CombatOrchestrator orchestrator,
         RewardResolutionHandler rewardResolutionHandler,
-        EndHuntHandler endHuntHandler)
+        EndHuntHandler endHuntHandler,
+        ISupplyPolicyStore supplyPolicies,
+        CombatSupplyContext supplies)
     {
+        _supplyPolicies = supplyPolicies;
+        _supplies = supplies;
         _endHuntHandler = endHuntHandler;
         _ownershipGuard = ownershipGuard;
         _encounterStateStore = encounterStateStore;
@@ -110,6 +117,18 @@ public sealed class AttackEncounterHandler
         }
 
         var session = encounter.Session!;
+
+        // PV-SUPPLY-010: a política gravada pelo jogador passa a valer AGORA, no início do próximo
+        // turno dele (nunca no meio de um turno). As poções vêm do inventário do personagem.
+        var policy = _supplyPolicies.ActivatePending(character.Id);
+        var potions = character.Inventory.Items
+            .Where(item => SupplyCatalog.IsPotion(item.ItemDefinitionId))
+            .ToList();
+
+        _supplies.Load(
+            policy,
+            potions.Count(item => item.ItemDefinitionId == SupplyCatalog.HealthPotionId),
+            potions.Count(item => item.ItemDefinitionId == SupplyCatalog.ManaPotionId));
         var aliveBefore = session.Monsters.Where(m => !m.IsDead).Select(m => m.Id).ToHashSet();
 
         var report = _orchestrator.ExecuteRound(session);
@@ -128,6 +147,16 @@ public sealed class AttackEncounterHandler
 
         runtimeContext.CharacterState.UpdateHealth(session.Player.CurrentHealth);
         runtimeContext.CharacterState.UpdateMana(session.Player.CurrentMana);
+
+        // PV-SUPPLY-010: poções usadas na rodada saem do inventário (antes das recompensas, que
+        // recarregam o personagem).
+        if (_supplies.HealthPotionsUsed + _supplies.ManaPotionsUsed > 0)
+        {
+            RemovePotions(character, SupplyCatalog.HealthPotionId, _supplies.HealthPotionsUsed);
+            RemovePotions(character, SupplyCatalog.ManaPotionId, _supplies.ManaPotionsUsed);
+
+            await _characterRepository.UpdateAsync(character, cancellationToken);
+        }
 
         // Monstros mortos nesta rodada → Reward Pipeline (um CombatResult de vitória por monstro).
         var killed = session.Monsters.Where(m => m.IsDead && aliveBefore.Contains(m.Id)).ToList();
@@ -164,6 +193,12 @@ public sealed class AttackEncounterHandler
                 encounter.Defeat();
                 ending = await _endHuntHandler.Handle(new EndHuntCommand(hunt.Id, HuntEndReason.Death), cancellationToken);
                 break;
+
+            // PV-SUPPLY-010: fim de suprimento encerra a Hunt pelo MESMO pipeline (DEC-20261106-04).
+            case CombatSessionOutcome.Ongoing when _supplies.IsOutOfSupplies:
+                encounter.Cancel();
+                ending = await _endHuntHandler.Handle(new EndHuntCommand(hunt.Id, HuntEndReason.OutOfSupplies), cancellationToken);
+                break;
         }
 
         var target =
@@ -195,5 +230,22 @@ public sealed class AttackEncounterHandler
             report.Log.Select(CombatTurnDto.From).ToList(),
             ending?.Reason.ToString(),
             ending?.ReturnedToCity ?? false);
+    }
+
+    private static void RemovePotions(
+        ProjectVictory.Domain.Entities.Character character,
+        Guid potionDefinitionId,
+        int amount)
+    {
+        var instances = character.Inventory.Items
+            .Where(item => item.ItemDefinitionId == potionDefinitionId)
+            .Take(amount)
+            .Select(item => item.Id)
+            .ToList();
+
+        foreach (var instanceId in instances)
+        {
+            character.Inventory.RemoveItem(instanceId);
+        }
     }
 }

@@ -65,6 +65,25 @@ public sealed class ApiExceptionHandler : IExceptionHandler
         }
 
 
+        // PV-SUPPLY-010: configuração de suprimentos inválida → 400.
+        if (exception is ProjectVictory.Application.Supply.InvalidSupplyPolicyException)
+        {
+            httpContext.Response.StatusCode =
+                StatusCodes.Status400BadRequest;
+
+            await httpContext.Response.WriteAsJsonAsync(
+                new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Bad Request",
+                    Detail = exception.Message
+                },
+                cancellationToken);
+
+            return true;
+        }
+
+
         // PV-SEC-001: recurso de outra conta → 403, sem expor detalhes do recurso.
         if (exception is OwnershipViolationException)
         {

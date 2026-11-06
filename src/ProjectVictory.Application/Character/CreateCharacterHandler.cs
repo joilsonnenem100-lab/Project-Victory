@@ -11,6 +11,8 @@ namespace ProjectVictory.Application.Character;
 
 public sealed class CreateCharacterHandler
 {
+    private readonly ProjectVictory.Application.Supply.SupplySettings _supplySettings;
+
     private readonly ICharacterRepository _characterRepository;
 
     private readonly ICurrentPlayerContext _currentPlayerContext;
@@ -18,8 +20,10 @@ public sealed class CreateCharacterHandler
 
     public CreateCharacterHandler(
         ICharacterRepository characterRepository,
-        ICurrentPlayerContext currentPlayerContext)
+        ICurrentPlayerContext currentPlayerContext,
+        ProjectVictory.Application.Supply.SupplySettings supplySettings)
     {
+        _supplySettings = supplySettings;
         _characterRepository =
             characterRepository;
 
@@ -63,6 +67,23 @@ public sealed class CreateCharacterHandler
                 new CharacterExperience(0));
 
 
+
+        // PV-SUPPLY-010: poções iniciais por configuração do servidor (PROVISÓRIO; padrão 0).
+        for (var i = 0; i < _supplySettings.StarterHealthPotions; i++)
+        {
+            character.Inventory.AddItem(
+                new global::ItemInstance(
+                    Guid.NewGuid(),
+                    ProjectVictory.Application.Supply.SupplyCatalog.HealthPotionId));
+        }
+
+        for (var i = 0; i < _supplySettings.StarterManaPotions; i++)
+        {
+            character.Inventory.AddItem(
+                new global::ItemInstance(
+                    Guid.NewGuid(),
+                    ProjectVictory.Application.Supply.SupplyCatalog.ManaPotionId));
+        }
 
         await _characterRepository.AddAsync(
             character,

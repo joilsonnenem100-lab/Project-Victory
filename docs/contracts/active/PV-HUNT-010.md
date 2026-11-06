@@ -1,6 +1,6 @@
 # PV-HUNT-010 — Derrota e pipeline único de encerramento da Hunt
 
-Status: **IMPLEMENTADO** (branch `chief/m3-hunt-010`)
+Status: **IMPLEMENTADO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas registradas no branch `chief/m3-supply-010`). Branch `chief/m3-hunt-010`
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 3", item 6).
 Lastro:
 - ADR-012 (ciclo único da Hunt; todo encerramento pelo mesmo pipeline; termina na Cidade Principal);
@@ -29,3 +29,15 @@ Lastro:
 - **Morte não retira XP já ganha** (500 XP antes = 500 depois).
 
 Resultado da solução: build com 0 avisos; **227 aprovados, 0 ignorados, 0 falhas**.
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+O revisor rodou a suíte (227 aprovados). Ressalvas:
+1. A atividade Idle é gravada sem passar pelas regras de transição do Domain → **R-030**.
+2. Cinco handlers mortos mudam o estado da Hunt fora do pipeline → **R-031**. O pipeline é o **único caminho alcançável**.
+3. O teste de morte busca a semente em 1–30. É determinístico, mas uma mudança na fórmula PROVISÓRIA pode trocar a semente usada. Aceito; a preparação de teste mexe na vida do runtime e usa `GainExperience` direto só para montar o cenário.
+4. O teste HTTP de `huntEndReason`/`returnedToCity` fica no `PV-QA-004`.
+5. `Kind` do `CombatTurnDto`: a API já serializava enums como texto (`JsonStringEnumConverter`), então o JSON não mudou.
+6. Na morte, `playerHealth` na resposta é a vida **do fim da rodada** (0); o runtime já está com HP cheio na cidade.
+7. O `EndHuntHandler` não verifica o dono: hoje só o ataque o chama, **depois** do `PlayerOwnershipGuard`. Novos chamadores (`Manual`/`Disconnect`) precisarão do guard.
+8. GUIDs da cidade copiados do `WorldDefinitionSeed`: menor; trocar quando existir cidade (Fase 7).

@@ -170,7 +170,11 @@ if (fixedCombatSeed is not null && !builder.Environment.IsDevelopment())
 builder.Services.AddProjectVictoryCore(
     new RewardSettings(
         new ProjectVictory.Domain.Reward.ExperienceRate(experienceRateValue)),
-    new ProjectVictory.Application.Combat.TurnBased.CombatSettings(fixedCombatSeed));
+    new ProjectVictory.Application.Combat.TurnBased.CombatSettings(fixedCombatSeed),
+    // PV-SUPPLY-010: poções iniciais (PROVISÓRIO; padrão 0 = nenhuma).
+    new ProjectVictory.Application.Supply.SupplySettings(
+        builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterHealthPotionsKey) ?? 0,
+        builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterManaPotionsKey) ?? 0));
 
 var app =
     builder.Build();
