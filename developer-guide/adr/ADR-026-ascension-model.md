@@ -47,7 +47,7 @@ A mecânica está documentada em `knowledge-base/progression.md` (seções "Leve
 
 # Em aberto (sem respaldo em documento; não decidido aqui)
 
-- **Como o Level volta a 1 sem a Experience reiniciar.** Com Experience absoluta (ADR-023), a interpretação da Ascension N precisa de uma referência de partida (ex.: a Experience no momento da Ascension), que seria estado permanente novo. Decisão do Arquiteto, por contrato, quando a Ascension for implementada.
+- **Como o Level volta a 1 sem a Experience reiniciar.** Com Experience absoluta (ADR-023), a interpretação da Ascension N precisa de alguma referência de partida, que seria estado permanente novo (o modelo dessa referência não é decidido aqui). Decisão do Arquiteto, por contrato, quando a Ascension for implementada.
 - **Quantas Ascensions existem**, o que exatamente é desbloqueado em cada uma e se a Ascension é automática ou pedida pelo jogador ("poderá evoluir"). Decisão do PO.
 - **Por qual caso de uso a Ascension muda.** O ADR-024 trata de ganhos/recompensas e não cita Ascension. Decisão do Arquiteto, por contrato.
 - O que acontece com a Experience obtida depois do Level 500 e antes da Ascension. Ela é acumulada normalmente (ADR-023); o efeito dela na Ascension seguinte é decisão do PO.

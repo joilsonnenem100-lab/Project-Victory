@@ -1,6 +1,6 @@
 # PV-GOV-006 — Decisões do PO (manhã de 2026-11-06) e preparação do M2
 
-Status: **CONCLUÍDO** (branch `chief/m2-gov-006`; só arquivos `.md`)
+Status: **CONCLUÍDO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/m2-prog-011`). Branch `chief/m2-gov-006`; só arquivos `.md`
 Emitido por: Arquitetura (sessão Chefe), 2026-11-06, por ordem do PO.
 Lastro: ADR-016 deste projeto (`decision-log.md`: PO decide Game Design; Arquiteto decide arquitetura, roadmap e documentação); `knowledge-base/progression.md`; ADR-023, 024, 025, 027, 028.
 
@@ -23,8 +23,8 @@ Somente documentação (`.md`). Nenhum código, migration ou configuração.
 ## Decisões do Arquiteto (ADR-016: roadmap e organização)
 
 - **D1 — Ordem dentro do M2:** `PV-PROG-011` (Experience Table) antes do `PV-PROG-010` (Level derivado), porque o Level derivado depende da tabela. Depois `PV-REWARD-010` e `PV-STATE-001`.
-- **D2 — Coluna `Level` não é apagada.** O roadmap dizia "remover `Level` persistido". Apagar coluna é destrutivo e a ordem do PO é "migration aditiva". A coluna fica, gravada com o valor derivado e **nunca lida como verdade** (ADR-028: "informações derivadas nunca poderão tornar-se fonte oficial da verdade"). Removê-la exige decisão e contrato próprios.
-- **D3 — Teto de Level 500 já no M2.** Está documentado (`progression.md`, `ADR-026`) e cumpre a regra "último nível válido" de `developer-guide/domain/experience-table.md`. A Experience continua acumulando depois do teto (ADR-023).
+- **D2 — Coluna `Level` não é apagada.** O roadmap dizia "remover `Level` persistido". Apagar coluna é destrutivo e a ordem do PO é "migration aditiva". A coluna fica, gravada com o valor derivado e **nunca lida como verdade** (ADR-028: "informações derivadas nunca poderão tornar-se fonte oficial da verdade"; `developer-guide/domain/level.md`: Level armazenado "para otimização" é "apenas um cache"). Removê-la exige decisão e contrato próprios.
+- **D3 — Teto de Level 500 já no M2.** A entrada do Level 500 tem Experience máxima **aberta** (sem limite), porque a Experience continua acumulando (ressalva 4 da revisão; `experience-table.md`, "Estrutura"). Está documentado (`progression.md`, `ADR-026`) e cumpre a regra "último nível válido" de `developer-guide/domain/experience-table.md`. A Experience continua acumulando depois do teto (ADR-023).
 - **D4 — Só a primeira Ascension no M2.** Como o Level volta a 1 sem a Experience reiniciar é item em aberto do `ADR-026`; nenhum personagem muda de Ascension antes de um contrato próprio.
 - **D5 — Itens do M1 em aberto** (`PV-PLATFORM-004`, `PV-PLATFORM-005`, `PV-CLEAN-001`) não são dependência técnica do M2 e ficam registrados no roadmap. O `PV-CLEAN-001` apaga arquivos e só roda com autorização explícita.
 

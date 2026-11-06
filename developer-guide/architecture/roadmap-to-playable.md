@@ -148,7 +148,7 @@ O Analyzer é **entregue em M8 (UI)** e **não bloqueia M1 a M4**. Ele consome d
 
 | Dependência | Onde entra | Observação |
 |---|---|---|
-| **Preços de compra e venda NPC nas definições de item** (dado, não comércio) | `PV-CONTENT-010` (M8), sobre as definições de item; o campo pode ser acrescentado já no `PV-REWARD-010` (M2) quando o Reward passar a usar definições reais | Só o **dado** de preço. Comércio com NPC continua na Fase 7/8 (`roadmap.md`) — Guardião de Escopo |
+| **Preços de compra e venda NPC nas definições de item** (dado, não comércio) | O campo e os preços provisórios entram no `PV-REWARD-010` (M2); o `PV-CONTENT-010` (M8) completa os preços dos itens novos | Só o **dado** de preço. Comércio com NPC continua na Fase 7/8 (`roadmap.md`) — Guardião de Escopo |
 | **Modelo de suprimentos (poções)** — o que é gasto e quando | `PV-SUPPLY-010` (M3) | **Decidido pelo PO em 2026-11-06:** só poção de vida e de mana, uso configurável, aplicado no próximo turno (`DEC-20261106-02/03`). O débito do Analyzer = poções gastas × preço de compra no NPC |
 | **Valor do loot no lucro** | `PV-HUD-ANALYZER-010` (M8) | **Preço de venda ao NPC** — confirmado pelo PO em 2026-11-06 (`DEC-20261106-08`); preços iniciais provisórios entram no `PV-REWARD-010` (M2) |
 | **Medição de tempo da Hunt** (início, pausas, fim) para XP/hora | `PV-HUNT-011` (M6, Hunt Loop contínuo) | Política decidida (`ADR-057` ACCEPTED): a Hunt só existe enquanto o jogador está conectado, então XP/hora usa apenas tempo online |

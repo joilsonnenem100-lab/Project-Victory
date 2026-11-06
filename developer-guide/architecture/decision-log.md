@@ -536,12 +536,12 @@ Status: **Accepted (Product Owner)** — a curva é Game Design (ADR-016 deste l
   `XP(L) = 50/3 × (L³ − 6L² + 17L − 12)`
 
   (Level 1 = 0, Level 2 = 100, Level 3 = 200, Level 4 = 400, Level 5 = 800, Level 6 = 1.500…). O resultado é sempre inteiro.
-- **Experience como `long`** (64 bits): no Level 500 a Experience total passa de 2 bilhões, acima do limite de `int`. Mudança de persistência por **migration aditiva**, sem editar migrations existentes.
+- **Experience como `long`** (64 bits): XP(500) = 2.058.474.800, perto do limite de `int` (2.147.483.647); a Experience continua acumulando depois do Level 500 (ADR-023) e o XP rate pode passar de 1x, então `int` estouraria. *(Justificativa corrigida na revisão do `PV-GOV-006`.)* Mudança de persistência por **migration aditiva**, sem editar migrations existentes.
 - **Level derivado** de Experience + Ascension + Experience Table (ADR-027, ADR-028); deixa de ser fonte de verdade.
 - **Experience Table gerada pela fórmula** (ADR-025): entradas explícitas para os Levels 1 a 500 de cada Ascension (`experience-table.md`, "Estrutura"; teto de 500 do `ADR-026`).
 - **XP rate** é configuração, começando em **1x** — detalhada em `DEC-20261106-12`.
 
-Substitui a pendência "Fórmula matemática da experiência / Curva de experiência por Level" de `knowledge-base/progression.md`. Implementação: `PV-PROG-011` e `PV-PROG-010` (M2).
+Substitui a pendência "Fórmula matemática da experiência / Curva de experiência por Level" de `knowledge-base/progression.md`. Implementação: `PV-PROG-011` e `PV-PROG-010` (M2); o XP rate, no `PV-REWARD-010` (M2).
 
 ## DEC-20261106-11 — Mesma curva em todas as Ascensions
 
