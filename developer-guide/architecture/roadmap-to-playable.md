@@ -24,7 +24,7 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 | Item | Lastro |
 |---|---|
 | Aprovar `project-state.md` v2.0 e este roadmap | `roadmap.md` (Roadmap Rules 1–5) |
-| Decidir **ADR-057** (Hunt Session × Runtime State/Checkpoint) | R-001; ADR-011/012; Handbook V3 §17–19 |
+| Decidir **ADR-057** (Hunt Session × Runtime State/Checkpoint) — *2026-11-06: Parte A aprovada pelo Arquiteto; Parte B = B3 sem XP offline; escopo do ganho offline **aguardando PO** (`DEC-20261106-05`)* | R-001; ADR-011/012; Handbook V3 §17–19 |
 | Formalizar R-005, R-006, R-008 no `decision-log.md`; preencher/descartar ADR-026/044/048/055 | `ARCHITECTURE-GOVERNANCE` |
 | **Dono roda `dotnet build` e `dotnet test`** na solução e informa o resultado (baseline) — ✅ **executado em 2026-11-05 (PV-GOV-002)**; resultado em `project-state.md`, Pendências de Validação | Regra Aditiva ("builds continuam passando") |
 | Dono sobe API + client e percorre `COMO USAR O SMOKE TEST.txt`; informa onde quebra | `ENGINEERING-HANDOFF` (validação manual quando mais eficiente) |
@@ -63,7 +63,9 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 | `PV-COMBAT-010` Combat Orchestrator | Orquestrador coordena turnos; **não** implementa dano, skills, IA, loot ou XP | ADR-051 |
 | `PV-COMBAT-011` Turnos | Combate por turnos, exatamente 1 participante ativo por turno, determinístico | ADR-052 |
 | `PV-COMBAT-012` Regras de dano e ação | Dano do atacante e do inimigo; ação básica + secundária; vida do jogador; resultado (vitória/derrota) substitui `CombatResolver` stub atrás de `ICombatResolver` | ADR-006; Snapshot "Próximos Objetivos" |
-| `PV-HUNT-010` Derrota | Morte encerra a Hunt pelo **mesmo** pipeline de encerramento | ADR-012 |
+| `PV-HUNT-010` Derrota | Morte encerra a Hunt pelo **mesmo** pipeline de encerramento; jogador volta à cidade e aguarda comando; **nenhuma perda de loot ou XP** | ADR-012; `DEC-20261106-04` |
+| `PV-SUPPLY-010` Suprimentos (poções) | Só **poção de vida** e **poção de mana**; uso configurado pelo jogador em tela própria, inclusive durante a Hunt; servidor valida e aplica **a partir do próximo turno**; **sem suprimento não há cura**; **fim de suprimento encerra a Hunt** pelo mesmo pipeline | `DEC-20261106-02/03/04`; ADR-012; ADR-052 |
+| `PV-CONTENT-011` Spider Cave | Primeira Hunt: **Spider Cave** com 5 monstros — **Rat** e **Cave Rat** (já existem em `EncounterGenerator.cs`) + **Spider**, **Poison Spider** e **Giant Spider** (novos). Atributos entregues como **BALANCEAMENTO PROVISÓRIO** para o PO ajustar; definições por dados (base para o `PV-MONSTER-010`) | `DEC-20261106-09`; ADR-005/006 |
 
 **Saída:** combate com resultado não trivial, determinístico e coberto por testes de Domain/Application; cliente continua consumindo o mesmo contrato de resultado.
 
@@ -86,7 +88,9 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 
 **Saída:** reiniciar a API não perde Account, Character, Inventory, Runtime/checkpoints; testes de persistência após reinício (já exigido em `PV-VS-2.0-044`).
 
-## M6 — Runtime contínuo e Hunt Loop *(depende de ADR-057)*
+## M6 — Runtime contínuo e Hunt Loop *(depende de ADR-057 — bloqueado pela pergunta aberta do PO)*
+
+> **Bloqueio:** o PO escolheu B3 (Hunt continua offline) **sem ganho offline de XP**, mas ainda não respondeu o que a Hunt rende offline: a) loot e lucro sem XP; b) Hunt termina ao desconectar; c) só treino offline de skills (`DEC-20261106-05`). Nenhum contrato do M6 é emitido antes da resposta e de ADR-057 ACCEPTED. M1–M5 seguem normalmente.
 
 | Contrato | Conteúdo | Lastro |
 |---|---|---|
@@ -124,7 +128,8 @@ O Analyzer é **entregue em M8 (UI)** e **não bloqueia M1 a M4**. Ele consome d
 | Dependência | Onde entra | Observação |
 |---|---|---|
 | **Preços de compra e venda NPC nas definições de item** (dado, não comércio) | `PV-CONTENT-010` (M8), sobre as definições de item; o campo pode ser acrescentado já no `PV-REWARD-010` (M2) quando o Reward passar a usar definições reais | Só o **dado** de preço. Comércio com NPC continua na Fase 7/8 (`roadmap.md`) — Guardião de Escopo |
-| **Modelo de consumo de recursos por Hunt** (o que é gasto: poções, munição etc.) | Contrato próprio após o M3 (combate real) | A regra de **quais recursos são gastos e quando** é **mecânica de jogo → decisão do Product Owner** antes do contrato. Sem ela, o débito fica zerado |
+| **Modelo de suprimentos (poções)** — o que é gasto e quando | `PV-SUPPLY-010` (M3) | **Decidido pelo PO em 2026-11-06:** só poção de vida e de mana, uso configurável, aplicado no próximo turno (`DEC-20261106-02/03`). O débito do Analyzer = poções gastas × preço de compra no NPC |
+| **Valor do loot no lucro** | `PV-HUD-ANALYZER-010` (M8) | **Preço de venda ao NPC — PROVISÓRIO** (recomendação do Arquiteto, aguardando confirmação do PO: `DEC-20261106-08`) |
 | **Medição de tempo da Hunt** (início, pausas, fim) para XP/hora | `PV-HUNT-011` (M6, Hunt Loop contínuo) | Depende da política de desconexão (`ADR-057`, decisão do PO): o tempo offline conta ou não para XP/hora |
 | XP e loot reais da Hunt | `PV-REWARD-010` (M2), `PV-XP-010` (M4) | Hoje o Reward é stub (XP 0); sem eles o Analyzer mostraria zeros |
 

@@ -418,6 +418,8 @@ Status: Accepted (Arquitetura) — **aguarda aprovação do Product Owner no M0*
 
 Status: **Pendente** — ver `ADR-057` (PROPOSED). A parte de Game Design pertence ao Product Owner (ADR-016 deste log).
 
+*Atualização (2026-11-06): PO escolheu B3 com restrição de XP offline; escopo do ganho offline em aberto — ver `DEC-20261106-05`.*
+
 ## DEC-20261105-07 — Higiene do repositório
 
 Status: Accepted (Arquitetura)
@@ -447,3 +449,76 @@ Fundamentos:
 - `PROJECT-VICTORY-GAME-PHILOSOPHY` (jogo Idle; combate totalmente automático; evolução por Hunts e Loot).
 
 Consequências para a Arquitetura (dependências e marco de entrega): ver `roadmap-to-playable.md`, M8 (`PV-HUD-ANALYZER-010` e `PV-HUD-BATTLE-VIEW-010`).
+
+---
+
+# Decisões do Product Owner — 2026-11-06 (registradas em `PV-GOV-004`)
+
+Todas são decisões de Game Design / experiência do jogador (ADR-016 deste log). Onde há consequência de arquitetura, ela vem indicada.
+
+## DEC-20261106-02 — Suprimentos de Hunt
+
+Status: **Accepted (Product Owner)**
+
+Nesta fase, os únicos suprimentos de Hunt são **poção de vida** e **poção de mana**. O combate será aprimorado depois (novos suprimentos entram por novas decisões do PO).
+
+## DEC-20261106-03 — Uso de poção configurável pelo jogador
+
+Status: **Accepted (Product Owner)**
+
+O jogador configura o uso de poções em **tela própria**, inclusive **durante a Hunt**. O cliente só **solicita** a mudança; o servidor **valida e aplica a partir do próximo turno** (Server Authority — `CLAUDE.md`; combate por turnos — ADR-052). A configuração nunca altera um turno já em andamento.
+
+## DEC-20261106-04 — Fim da Hunt
+
+Status: **Accepted (Product Owner)**
+
+- **Morte** ou **fim de suprimento** encerram a sessão de Hunt.
+- O jogador **volta à cidade** e **aguarda comando**.
+- **Sem suprimento não há cura.**
+- **Nenhuma perda de loot ou XP** ao encerrar (inclusive por morte).
+
+Consequência de arquitetura: "fim de suprimento" é um novo **motivo** de encerramento e passa pelo **mesmo pipeline** de encerramento da Hunt (ADR-012: "Todo encerramento utilizará exatamente o mesmo pipeline, independentemente do motivo"; fluxo termina em "Cidade Principal"). Não cria caminho alternativo.
+
+## DEC-20261106-05 — Desconexão durante a Hunt (ADR-057, Parte B)
+
+Status: **Parcialmente decidida — pergunta aberta ao Product Owner**
+
+O PO escolheu **B3 — a Hunt continua offline**, **com a restrição: nenhum ganho offline de experiência em Hunts.**
+
+**Em aberto:** o que a Hunt rende offline além de XP. Opções apresentadas ao PO:
+
+| Opção | Comportamento offline |
+|---|---|
+| a | Loot e lucro continuam, **sem XP** |
+| b | A Hunt **termina** ao desconectar |
+| c | Só **treino offline de skills** (módulo Offline Training, LOCKED na Fase 2 do `roadmap.md`) |
+
+Bloqueia **apenas o M6** (`roadmap-to-playable.md`). `ADR-057` permanece **PROPOSED** até a resposta. Substitui a pendência de `DEC-20261105-06`.
+
+## DEC-20261106-06 — Escopo social inicial
+
+Status: **Accepted (Product Owner)**
+
+**Servidor único**, compartilhado com outros jogadores, e **mercado universal de trade**. **Guild adiada.** Consequência de arquitetura: o mercado pertence à Fase 8 Economy do `roadmap.md` e **não** entra antes da fundação (Guardião de Escopo); esta decisão define o alvo, não antecipa a fase.
+
+## DEC-20261106-07 — Classes iniciais
+
+Status: **Accepted (Product Owner)**
+
+**Knight, Paladin, Sorcerer, Druid e Monk** — já existem em `src/ProjectVictory.Domain/Character/CharacterClass.cs` (verificado em 2026-11-06). Nenhuma mudança de código necessária.
+
+## DEC-20261106-08 — Valor do loot no lucro do Hunt Analyzer
+
+Status: **PROVISÓRIA** — recomendação do Arquiteto, **aguardando confirmação do PO**
+
+No Hunt Analyzer (`DEC-20261106-01`), o **lucro** valora cada item/recurso obtido pelo **preço de venda ao NPC**. (O débito já usa o preço de compra no NPC, por decisão do PO em `DEC-20261106-01`.) Até a confirmação, contratos que dependam disto devem tratar o critério como substituível.
+
+## DEC-20261106-09 — Primeira Hunt: Spider Cave
+
+Status: **Accepted (Product Owner)** quanto ao local; **monstros novos recomendados pelo Arquiteto**; **atributos provisórios**
+
+- Local: **Spider Cave** (nome sugerido pelo PO).
+- Monstros:
+  - **Rat** e **Cave Rat** — já existem em `src/ProjectVictory.Application/Hunt/EncounterGenerator.cs` (verificado em 2026-11-06);
+  - **Spider**, **Poison Spider** e **Giant Spider** — **novos**, recomendados pelo Arquiteto.
+- Atributos (vida, dano, XP, loot) serão propostos como **BALANCEAMENTO PROVISÓRIO** no contrato do M3, para o PO ajustar. Nenhum número é definitivo até o ajuste do PO.

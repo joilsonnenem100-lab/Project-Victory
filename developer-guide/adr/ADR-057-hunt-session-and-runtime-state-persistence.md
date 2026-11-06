@@ -54,6 +54,20 @@ Recomendação do Arquiteto: **B3 limitado** (teto de tempo/ganho), por ser a ú
 
 ---
 
+# Situação da decisão (2026-11-06, `PV-GOV-004`)
+
+Status continua **PROPOSED**. Só passa a **ACCEPTED** quando o Product Owner responder a pergunta aberta da Parte B.
+
+- **Parte A — aprovada pelo Arquiteto.** Separação Hunt Session (efêmera) × Runtime State/Checkpoint (persistível), persistência só em checkpoints e recovery criando nova Hunt Session.
+- **Parte B — B3 com restrição de XP offline; escopo do ganho offline pendente de resposta do PO.** O PO escolheu **B3 (Hunt continua offline)** com a restrição **"nenhum ganho offline de experiência em Hunts"** (`decision-log.md`, `DEC-20261106-05`). Em aberto, o que a Hunt rende offline além de XP:
+  - a) loot e lucro sem XP;
+  - b) a Hunt termina ao desconectar;
+  - c) só treino offline de skills (Offline Training, Fase 2).
+- A recomendação original "B3 limitado (teto de tempo/ganho)" fica substituída pela restrição do PO; o teto de tempo/ganho será definido junto com a resposta, se a opção escolhida render algo offline.
+- Bloqueia apenas o **M6** (`roadmap-to-playable.md`); a restrição "Nenhuma implementação de M6 inicia antes desta ADR estar ACCEPTED" continua valendo.
+
+---
+
 # Consequências
 
 Benefícios:
