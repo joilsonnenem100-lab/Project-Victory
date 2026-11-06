@@ -79,8 +79,8 @@ Testes automatizados: **3 escritos** (`Application.Tests`: 1; `SmokeTests`: 2), 
 # Dívida técnica e risco verificados
 
 Detalhe e evidências em `docs/architecture/PV-ANALYSIS-2026-11-05.md`. Itens críticos:
-- **Segurança (Handbook §23–24):** só `Character`, `Game/enter` e `Item` exigem `[Authorize]`; `Hunt`, `HuntSession`, `Inventory`, `Runtime`, `Gameplay` e `Location` não exigem. Chave JWT padrão fixa no código; SQLite com caminho fixo; log com dados sensíveis habilitado.
-- **Inicialização:** ~~o `Program.cs` não aplica migrations; o banco `projectvictory.db` versionado é o que faz um clone rodar hoje.~~ **Resolvido em `PV-PLATFORM-001`:** em Development, o `Program.cs` aplica as 14 migrations (`Database.MigrateAsync()`) antes do seed; `projectvictory.db` não é mais versionado. `NomeDaMigration` (nome-placeholder, já aplicada) continua intocada — não renomear. **Restante:** fora de Development nada cria o schema (um banco vazio em Production falha no seed) e o caminho do banco é relativo ao diretório de trabalho — ambos incluídos no escopo do `PV-PLATFORM-002` (configuração) no `roadmap-to-playable.md`.
+- **Segurança (Handbook §23–24):** só `Character`, `Game/enter` e `Item` exigem `[Authorize]`; `Hunt`, `HuntSession`, `Inventory`, `Runtime`, `Gameplay` e `Location` não exigem (→ `PV-SEC-001`). ~~Chave JWT padrão fixa no código; SQLite com caminho fixo; log com dados sensíveis habilitado.~~ **Resolvido em `PV-PLATFORM-002`:** chave JWT sem valor padrão (user-secrets em Development, `Jwt__Key` fora dele; ausente ou < 32 caracteres derruba o startup), `Issuer/Audience` validados, connection string e CORS por configuração, log sensível do EF só em Development. Guia: `developer-guide/guides/configuracao-local.md`. *A chave antiga continua no histórico do git (repositório público) e não deve ser reutilizada em nenhum ambiente.*
+- **Inicialização:** ~~o `Program.cs` não aplica migrations; o banco `projectvictory.db` versionado é o que faz um clone rodar hoje.~~ **Resolvido em `PV-PLATFORM-001`:** em Development, o `Program.cs` aplica as 14 migrations (`Database.MigrateAsync()`) antes do seed; `projectvictory.db` não é mais versionado. `NomeDaMigration` (nome-placeholder, já aplicada) continua intocada — não renomear. **Restante:** fora de Development nada cria o schema (um banco vazio em Production falha no seed) → **`PV-PLATFORM-004`**. ~~O caminho do banco é relativo ao diretório de trabalho~~ → configurável via `ConnectionStrings:ProjectVictory` desde o `PV-PLATFORM-002` (o valor padrão continua relativo).
 - **Concorrência/estado:** `HuntRepository` é `List<>` singleton (não thread-safe); `CombatContextRepository` idem; `CombatResultStore` está registrado como *scoped* guardando estado (padrão do FIX-001).
 - **Reward não chega ao inventário** (encontrado em `PV-QA-001` parte 1): `ApplyRewardHandler` (`src/ProjectVictory.Application/Reward/ApplyRewardHandler.cs`) aplica só a experiência e ignora `RewardResult.Drops` e `RewardResult.Gold`; nenhum item ou ouro chega ao personagem. O teste `RewardInventoryIntegrationTest.ApplyReward_Should_Add_Item_To_Character_Inventory` documenta o comportamento esperado e está com Skip aprovado pelo dono até a correção. Resolução: **`PV-REWARD-010`** (M2, Reward Pipeline real; ADR-008, 024, 037, 038). Remover o Skip faz parte do aceite desse contrato.
 - **DI de teste mantido à mão:** `tests/ProjectVictory.SmokeTests/TestServiceCollectionExtensions.cs` replica registros do `Program.cs` e já ficou defasado uma vez (faltava `IRuntimeRepository`; corrigido em `PV-QA-001` parte 1). Risco de nova defasagem quando handlers ganharem dependências.
@@ -128,6 +128,21 @@ Nenhum arquivo de `src/` foi alterado. A falha do SmokeTests registrada na tabel
 | `projectvictory.db` do repositório | Hash MD5 inalterado durante os testes; mantido no disco após o `git rm --cached` |
 | `dotnet build ProjectVictory.sln` | Verde, 0 erros, 6 avisos NU1903 |
 | `dotnet test ProjectVictory.sln` (inclui SmokeTests) | 0 falhas: `Application.Tests` 1/1; `SmokeTests` 1 passou + 1 ignorado (`PV-REWARD-010`) |
+
+## Validação de configuração e segredos — `PV-PLATFORM-002`, 2026-11-05
+
+Execuções feitas com a DLL da API a partir de `bin/Debug/net10.0`, banco em pasta temporária (`ConnectionStrings__ProjectVictory`), sem tocar no `projectvictory.db` local.
+
+| Verificação | Resultado |
+|---|---|
+| `dotnet build ProjectVictory.sln` | Verde, 0 erros, 6 avisos NU1903 |
+| `dotnet test ProjectVictory.sln` (inclui SmokeTests) | 0 falhas: `Application.Tests` 1/1; `SmokeTests` 1 passou + 1 ignorado (`PV-REWARD-010`) |
+| `has-pending-model-changes` após mexer no `OnConfiguring` | "No changes have been made to the model since the last migration." |
+| Development, chave em user-secrets | Cadastro 200; login 200; token com `iss=ProjectVictory.API` e `aud=ProjectVictory.Client`; `GET /api/character` com token 200 e sem token 401; CORS libera `http://localhost:5173`; log do EF com valores de parâmetros (modo sensível ligado) |
+| Production sem `Jwt__Key` | Startup encerra: `InvalidOperationException: Configuração JWT inválida — a API não pode subir. Jwt:Key não configurada...` |
+| Production com chave de 12 caracteres | Startup encerra: `...Jwt:Key fraca: tem 12 caracteres; o mínimo é 32...` |
+| Production com chave válida (via variável de ambiente) | Login 200; CORS **não** libera `http://localhost:5173` (lista vazia); log do EF com parâmetros mascarados (`'?'`), modo sensível desligado |
+| Busca pelo valor da chave antiga na árvore atual | 0 ocorrências (permanece só no histórico do git) |
 
 ## Ainda pendentes
 
