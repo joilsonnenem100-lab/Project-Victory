@@ -25,7 +25,7 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 |---|---|
 | Aprovar `project-state.md` v2.0 e este roadmap | `roadmap.md` (Roadmap Rules 1–5) |
 | Decidir **ADR-057** (Hunt Session × Runtime State/Checkpoint) — ✅ *ACCEPTED em 2026-11-06: B1 (Hunt termina ao desconectar) + Offline Training de skills (`DEC-20261106-05`)* | R-001; ADR-011/012; Handbook V3 §17–19 |
-| Formalizar R-005, R-006, R-008 no `decision-log.md`; preencher/descartar ADR-026/044/048/055 | `ARCHITECTURE-GOVERNANCE` |
+| Formalizar R-005, R-006, R-008 no `decision-log.md`; preencher/descartar ADR-026/044/048/055 — *2026-11-06: levantamento e propostas em `docs/architecture/PV-GOV-005-RELATORIO-2026-11-06.md` (026 = Ascension Model, 044/048 = número não utilizado, 055 = Event-Driven Quests; 5 linhas de R-006 com texto proposto); aplicação pendente de decisão e contrato* | `ARCHITECTURE-GOVERNANCE` |
 | **Dono roda `dotnet build` e `dotnet test`** na solução e informa o resultado (baseline) — ✅ **executado em 2026-11-05 (PV-GOV-002)**; resultado em `project-state.md`, Pendências de Validação | Regra Aditiva ("builds continuam passando") |
 | Dono sobe API + client e percorre `COMO USAR O SMOKE TEST.txt`; informa onde quebra | `ENGINEERING-HANDOFF` (validação manual quando mais eficiente) |
 
