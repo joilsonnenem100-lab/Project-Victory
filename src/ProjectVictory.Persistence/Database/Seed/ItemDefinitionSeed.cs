@@ -25,7 +25,9 @@ public static class ItemDefinitionSeed
         {
             Id = Guid.NewGuid(),
             Name = "Training Sword",
-            Description = "Basic sword used for validation."
+            Description = "Basic sword used for validation.",
+            // PV-REWARD-010: preço de venda PROVISÓRIO (DEC-20261106-08).
+            NpcSellPrice = 10
         };
 
 

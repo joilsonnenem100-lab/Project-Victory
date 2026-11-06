@@ -72,6 +72,10 @@ public sealed class ProjectVictoryDbContext : DbContext
             entity.Property(x => x.Experience)
                 .IsRequired();
 
+            // PV-REWARD-010: coluna nova com padrão 0 (migration aditiva).
+            entity.Property(x => x.Gold)
+                .HasDefaultValue(0L);
+
             entity.Property(x => x.CharacterClass)
                 .IsRequired();
 
@@ -125,6 +129,10 @@ public sealed class ProjectVictoryDbContext : DbContext
 
             entity.Property(x => x.Description)
                 .IsRequired();
+
+            // PV-REWARD-010: coluna nova com padrão 0 (migration aditiva).
+            entity.Property(x => x.NpcSellPrice)
+                .HasDefaultValue(0);
         });
 
 

@@ -24,5 +24,8 @@ public sealed class PersistentCharacterState
 
     public long Experience { get; set; }
 
+    // PV-REWARD-010: ouro do Inventory (Resource, ADR-035).
+    public long Gold { get; set; }
+
     public List<PersistentItemInstanceState> InventoryItems { get; set; } = new();
 }

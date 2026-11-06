@@ -2,19 +2,25 @@
 using ProjectVictory.Domain.Combat;
 using ProjectVictory.Domain.Items;
 using ProjectVictory.Domain.Loot;
+using ProjectVictory.Domain.Primitives;
 
 namespace ProjectVictory.Application.Loot;
 
 public sealed class LootResolutionHandler
 {
     private readonly ILootDefinitionProvider _lootDefinitionProvider;
+    private readonly IRandomSource _random;
 
 
     public LootResolutionHandler(
-        ILootDefinitionProvider lootDefinitionProvider)
+        ILootDefinitionProvider lootDefinitionProvider,
+        IRandomSource random)
     {
         _lootDefinitionProvider =
             lootDefinitionProvider;
+
+        _random =
+            random;
     }
 
 
@@ -44,16 +50,23 @@ public sealed class LootResolutionHandler
         }
 
 
+        // PV-REWARD-010: cada drop respeita a chance da Loot Table (antes: todos caíam sempre)
+        // e o ouro é sorteado entre o mínimo e o máximo da definição do monstro.
         var items =
-            lootDefinition.Drops
-                .Select(drop =>
+            MonsterLootRoll.RollDrops(
+                    lootDefinition,
+                    _random)
+                .Select(item =>
                     new ItemInstance(
                         Guid.NewGuid(),
-                        drop.Item.Id))
+                        item.Id))
                 .ToList();
 
 
         return new LootResolutionResult(
-            items);
+            items,
+            MonsterLootRoll.RollGold(
+                lootDefinition,
+                _random));
     }
 }

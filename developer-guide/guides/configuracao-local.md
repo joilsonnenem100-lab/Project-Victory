@@ -13,6 +13,7 @@ Contrato: `PV-PLATFORM-002`. Vale para `src/ProjectVictory.API`.
 | `Jwt:Audience` | `appsettings.json` (`ProjectVictory.Client`) | Sim | Validado no token |
 | `ConnectionStrings:ProjectVictory` | `appsettings.json` (`Data Source=projectvictory.db`) | Sim | Caminho relativo ao diretório de trabalho (ver `CLEANUP-MANIFEST-2026-11-05.md`) |
 | `Cors:AllowedOrigins` | `appsettings.Development.json` (`http://localhost:5173`) | Não | Vazio fora de Development: nenhuma origem liberada |
+| `Progression:ExperienceRate` | `appsettings.json` (`1.0`) ou variável `Progression__ExperienceRate` | Não (padrão 1x) | XP rate do servidor (`DEC-20261106-12`). Deve ser maior que zero, senão a API **não sobe**. Nenhum endpoint lê ou altera o valor; a tela de administração é o `PV-ADMIN-010` (M8) |
 
 Ordem de precedência (padrão do ASP.NET Core): `appsettings.json` → `appsettings.{Ambiente}.json` → user-secrets (só em Development) → variáveis de ambiente → linha de comando.
 

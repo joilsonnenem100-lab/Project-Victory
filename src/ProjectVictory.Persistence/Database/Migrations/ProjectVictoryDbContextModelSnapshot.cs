@@ -54,6 +54,11 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.Property<long>("Experience")
                         .HasColumnType("INTEGER");
 
+                    b.Property<long>("Gold")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0L);
+
                     b.Property<int>("Health")
                         .HasColumnType("INTEGER");
 
@@ -115,6 +120,11 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("NpcSellPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 

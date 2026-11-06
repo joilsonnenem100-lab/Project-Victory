@@ -6,6 +6,8 @@ using ProjectVictory.Domain.Combat;
 using ProjectVictory.Domain.Hunt;
 using ProjectVictory.Domain.Items;
 using ProjectVictory.Domain.Loot;
+using ProjectVictory.Domain.Primitives;
+using ProjectVictory.Domain.Reward;
 using Xunit;
 
 namespace ProjectVictory.Application.Tests;
@@ -38,14 +40,17 @@ public sealed class GameplayResultPipelineTests
 
         var lootHandler =
             new LootResolutionHandler(
-                lootProvider);
+                lootProvider,
+                new FixedRandomSource());
 
 
         var rewardHandler =
     new RewardResolutionHandler(
         null!,
         lootHandler,
-        null!);
+        null!,
+        lootProvider,
+        new RewardSettings(ExperienceRate.Default));
 
 
         var pipeline =
@@ -72,6 +77,15 @@ public sealed class GameplayResultPipelineTests
 
 
         Assert.NotNull(result);
+    }
+
+
+    // PV-REWARD-010: sorteio determinístico (drop de chance 1 sempre cai; ouro = mínimo).
+    private sealed class FixedRandomSource : IRandomSource
+    {
+        public double NextDouble() => 0;
+
+        public int NextInclusive(int minInclusive, int maxInclusive) => minInclusive;
     }
 
 

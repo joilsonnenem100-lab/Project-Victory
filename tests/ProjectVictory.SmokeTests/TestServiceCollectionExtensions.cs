@@ -78,6 +78,10 @@ public static class TestServiceCollectionExtensions
 
         services.AddScoped<IRewardProcessor, TestRewardProcessor>();
 
+        // PV-REWARD-010: mesmos registros do Program.cs (XP rate 1x; sorteio fixo nos testes).
+        services.AddSingleton(new RewardSettings(ProjectVictory.Domain.Reward.ExperienceRate.Default));
+        services.AddSingleton<ProjectVictory.Domain.Primitives.IRandomSource>(new FixedRandomSource());
+
         services.AddScoped<IProgressionProcessor, ProgressionProcessor>();
 
         // Account

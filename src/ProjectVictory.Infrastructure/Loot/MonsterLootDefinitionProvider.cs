@@ -22,7 +22,9 @@ public sealed class MonsterLootDefinitionProvider : ILootDefinitionProvider
                             Guid.Parse("00000000-0000-0000-0000-000000000001"),
                             "Rat Tail",
                             new ItemCharacteristics(
-                                "Validation loot item")),
+                                "Validation loot item"),
+                            // PV-REWARD-010: preço de venda PROVISÓRIO (DEC-20261106-08).
+                            2),
                         1.0)
                 ]))
     ];

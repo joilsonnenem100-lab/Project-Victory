@@ -18,6 +18,11 @@ public sealed class Inventory
         _items.Count;
 
 
+    // PV-REWARD-010: ouro é um Resource do Inventory (ADR-035), guardado como saldo.
+    // Só o Reward Pipeline o acrescenta nesta fase (comércio é Fase 7/8).
+    public long Gold { get; private set; }
+
+
     public Inventory()
     {
         _items = [];
@@ -30,6 +35,20 @@ public sealed class Inventory
         ArgumentNullException.ThrowIfNull(item);
 
         _items.Add(item);
+    }
+
+
+    public void AddGold(
+        long amount)
+    {
+        if (amount < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(amount),
+                "Gold amount cannot be negative.");
+        }
+
+        Gold = checked(Gold + amount);
     }
 
 

@@ -25,7 +25,7 @@ public sealed class ApplyLootToCharacterInventoryHandler
             lootResult);
 
 
-        if (lootResult.Items.Count == 0)
+        if (lootResult.Items.Count == 0 && lootResult.Gold == 0)
         {
             return;
         }
@@ -49,6 +49,13 @@ public sealed class ApplyLootToCharacterInventoryHandler
                 item);
         }
 
+
+        // PV-REWARD-010: o ouro do loot chega ao Inventory.
+        if (lootResult.Gold > 0)
+        {
+            character.Inventory.AddGold(
+                lootResult.Gold);
+        }
 
         await _characterRepository.UpdateAsync(
             character,

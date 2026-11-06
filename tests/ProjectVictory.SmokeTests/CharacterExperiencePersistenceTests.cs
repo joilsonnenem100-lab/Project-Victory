@@ -65,6 +65,54 @@ public sealed class CharacterExperiencePersistenceTests : IDisposable
         }
     }
 
+    [Fact]
+    public async Task Gold_AndItemSellPrice_ArePersisted()
+    {
+        // PV-REWARD-010: colunas novas da migration InventoryGoldAndItemSellPrice.
+        await using (var context = NewContext())
+        {
+            await context.Database.MigrateAsync();
+            await ProjectVictory.Persistence.Database.Seed.ItemDefinitionSeed.ExecuteAsync(context);
+        }
+
+        var definition = CharacterClassDefinition.Get(CharacterClass.Knight);
+        var character = new CharacterEntity(
+            Guid.NewGuid(),
+            new AccountId(Guid.NewGuid()),
+            "GoldOwner",
+            CharacterClass.Knight,
+            definition,
+            new Health(definition.InitialHealth),
+            new Mana(definition.InitialMana),
+            new Experience(0));
+
+        character.Inventory.AddGold(42);
+
+        await using (var context = NewContext())
+        {
+            await new CharacterRepository(context).AddAsync(character);
+        }
+
+        await using (var context = NewContext())
+        {
+            var loaded = await new CharacterRepository(context).GetByIdAsync(character.Id);
+            Assert.Equal(42, loaded!.Inventory.Gold);
+
+            loaded.Inventory.AddGold(8);
+            await new CharacterRepository(context).UpdateAsync(loaded);
+        }
+
+        await using (var context = NewContext())
+        {
+            var reloaded = await new CharacterRepository(context).GetByIdAsync(character.Id);
+            Assert.Equal(50, reloaded!.Inventory.Gold);
+
+            var sword = await context.Items.SingleAsync(x => x.Name == "Training Sword");
+            var item = await new ProjectVictory.Persistence.Item.ItemDefinitionRepository(context).GetByIdAsync(sword.Id);
+            Assert.Equal(10, item!.NpcSellPrice);
+        }
+    }
+
     public void Dispose()
     {
         foreach (var suffix in new[] { "", "-wal", "-shm" })

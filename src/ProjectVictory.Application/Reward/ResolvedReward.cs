@@ -4,7 +4,7 @@ public sealed class ResolvedReward
 {
     public Guid CharacterId { get; }
 
-    public int? ExperienceAmount { get; }
+    public long? ExperienceAmount { get; }
 
     public string SourceType { get; }
 
@@ -13,7 +13,7 @@ public sealed class ResolvedReward
 
     public ResolvedReward(
         Guid characterId,
-        int? experienceAmount,
+        long? experienceAmount,
         string sourceType,
         Guid sourceId)
     {

@@ -9,7 +9,8 @@ namespace ProjectVictory.SmokeTests;
 
 public sealed class RewardInventoryIntegrationTest
 {
-    [Fact(Skip = "PV-REWARD-010: ApplyRewardHandler não aplica drops/ouro ao inventário (lacuna conhecida, M2)")]
+    // PV-REWARD-010: Skip removido — o ApplyRewardHandler passou a aplicar drops e ouro.
+    [Fact]
     public async Task ApplyReward_Should_Add_Item_To_Character_Inventory()
     {
         var services = new ServiceCollection();
@@ -64,11 +65,8 @@ public sealed class RewardInventoryIntegrationTest
 
         Assert.NotNull(character);
 
-        // Inventory.Items é coleção de ItemInstance (Id + ItemDefinitionId), sem nome.
-        // O drop do TestRewardProcessor ("Smoke Test Item") usa ItemDefinitionId gerado
-        // na hora e não tem definição registrada; por isso a verificação é estrutural:
-        // o inventário (vazio na criação) deve conter exatamente a instância criada a
-        // partir do único drop da recompensa.
+        // PV-REWARD-010: o drop da recompensa vira uma instância no Inventory com o
+        // ItemDefinitionId do drop; o ouro e a XP (× XP rate 1x) também chegam ao personagem.
         var item =
             Assert.Single(
                 character.Inventory.Items);
@@ -77,8 +75,16 @@ public sealed class RewardInventoryIntegrationTest
             Guid.Empty,
             item.Id);
 
-        Assert.NotEqual(
-            Guid.Empty,
+        Assert.Equal(
+            TestRewardProcessor.DropItemDefinitionId,
             item.ItemDefinitionId);
+
+        Assert.Equal(
+            TestRewardProcessor.Gold,
+            character.Inventory.Gold);
+
+        Assert.Equal(
+            TestRewardProcessor.Experience,
+            character.Experience.Value);
     }
 }

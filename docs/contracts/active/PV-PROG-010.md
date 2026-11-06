@@ -1,7 +1,7 @@
 # PV-PROG-010 — Level derivado e Experience `long`
 
 Status: **IMPLEMENTADO** (branch `chief/m2-prog-010`)
-Emitido por: Arquitetura (sessão Chefe), 2026-11-06, conforme `roadmap-to-playable.md` (M2) e `PV-GOV-006`.
+Emitido por: Arquitetura (sessão Chefe), 2026-11-06, conforme `roadmap-to-playable.md` (M2) e `PV-GOV-006` (escopo emitido no `PV-GOV-006`; este arquivo foi escrito junto da implementação, no mesmo dia).
 Lastro: ADR-023 (Experience absoluta), ADR-027 (Level derivado), ADR-028 (estado permanente × derivado), ADR-026 (Ascension), `DEC-20261106-10`, `developer-guide/domain/level.md`. Resolve **R-002**. Depende do `PV-PROG-011`.
 
 ## Escopo implementado
@@ -23,3 +23,11 @@ Lastro: ADR-023 (Experience absoluta), ADR-027 (Level derivado), ADR-028 (estado
 ## Fora do escopo
 
 Apagar a coluna `Level` (destrutivo; decisão própria); troca de Ascension (`ADR-026`, em aberto); Vida/Mana derivadas por Level (ADR-029).
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+1. Os ganhos de XP dos pipelines antigos (`ProgressionProcessor`, ~20 commands com `int ExperienceAmount`) continuam `int`, e o `ProgressionProcessor` calcula o Level a partir do **ganho**, não do total. Comportamento anterior, fora do caminho real do ataque; o `PV-REWARD-010` passou o fluxo real para `long`.
+2. `ApplyLevelHandler` (inalcançável: sem DI e sem controller): com Level diferente do derivado, agora lança exceção em vez de devolver `Accepted=false`. Se for ligado, `ValidateLevel` deve comparar com o Level derivado.
+3. O snapshot passou a `ProductVersion 10.0.14` — gerado pela ferramenta (`dotnet ef` com EF Core 10.0.14, `PV-PLATFORM-003`), não editado à mão.
+4. Data: o escopo foi emitido no `PV-GOV-006`; este arquivo é do mesmo dia da implementação.
+5. `CharacterClassDefinition.HealthGrowth/ManaGrowth` ficaram sem uso no `Character`; mantidos para o contrato futuro de atributos derivados (ADR-029).

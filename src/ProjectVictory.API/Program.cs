@@ -168,6 +168,19 @@ builder.Services.AddScoped<IItemDefinitionRepository, ItemDefinitionRepository>(
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<ICombatResolver, CombatResolver>();
 builder.Services.AddScoped<IRewardProcessor, RewardProcessor>();
+
+// PV-REWARD-010: XP rate só do servidor (DEC-20261106-12), padrão 1x; valor inválido
+// (<= 0 ou não numérico) derruba o startup. Nenhum endpoint lê ou altera este valor.
+var experienceRateValue =
+    builder.Configuration.GetValue<decimal?>(RewardSettings.ExperienceRateKey) ?? 1m;
+
+builder.Services.AddSingleton(
+    new RewardSettings(
+        new ProjectVictory.Domain.Reward.ExperienceRate(experienceRateValue)));
+
+builder.Services.AddSingleton<
+    ProjectVictory.Domain.Primitives.IRandomSource,
+    SystemRandomSource>();
 builder.Services.AddScoped<IProgressionProcessor, ProgressionProcessor>();
 builder.Services.AddScoped<ICombatResultStore, CombatResultStore>();
 

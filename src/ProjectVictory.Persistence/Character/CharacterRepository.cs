@@ -49,6 +49,8 @@ public sealed class CharacterRepository : ICharacterRepository
 
                 Experience = character.Experience.Value,
 
+                Gold = character.Inventory.Gold,
+
                 InventoryItems =
                     character.Inventory.Items
                         .Select(item =>
@@ -193,6 +195,10 @@ public sealed class CharacterRepository : ICharacterRepository
             character.Experience.Value;
 
 
+        state.Gold =
+            character.Inventory.Gold;
+
+
         var domainItems =
             character.Inventory.Items
                 .ToDictionary(
@@ -319,6 +325,11 @@ public sealed class CharacterRepository : ICharacterRepository
                     item.Id,
                     item.ItemDefinitionId));
         }
+
+
+        // PV-REWARD-010: saldo de ouro do Inventory.
+        character.Inventory.AddGold(
+            state.Gold);
 
 
         return character;
