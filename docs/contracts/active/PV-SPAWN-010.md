@@ -53,3 +53,13 @@ Resultado: build com 0 avisos; **336 aprovados, 0 ignorados, 0 falhas** (Applica
 4. Teste do filtro de poção do monstro no observer.
 5. `developer-guide/domain/experience-distribution.md`: seção "Implementação atual (PV-XP-010)"; o documento continua DRAFT.
 6. **R-045:** atomicidade da Experience com vários participantes.
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q6-persist-010`
+
+1. O `EncounterMonsterState` usa o **mesmo id** da Spawn Instance (teste `SpawnInstanceId_IsTheEncounterMonsterId`).
+2. e 4. O R-044 foi completado: o encounter nunca é removido (crescimento sem limite, anterior a este contrato), e as instâncias ficam em `Active` até o `PV-HUNT-011`.
+3. **R-046:** os Engine Events de spawn ficam para o M6 / contrato de eventos (`spawn.md` é DRAFT).
+5. O `TimeProvider.System` foi registrado explicitamente (`TryAddSingleton`); o `StatelessSpawnSystem` é criado por factory. Há teste com relógio fixo (`SpawnedAt`/`DespawnedAt`).
+6. **`SpawnDefinitionId`:** hoje é o id da **definição do monstro** (MonsterId do catálogo). A "Spawn Definition versionada" do `spawn.md` fica para o conteúdo/M6.
+7. Testes das guardas do `ApplyRewardHandler`: parte de outro personagem dá erro; parte 0 não altera nada.
+8. `EncounterGenerator` com `using` e sem instância dupla do Spawn System.

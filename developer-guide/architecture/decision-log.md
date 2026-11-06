@@ -802,3 +802,10 @@ Status: **Accepted (Arquiteto)** — implementa o ADR-009/010/047 no `PV-SPAWN-0
 
 - A configuração de spawn de cada Hunt é a da sua Hunt area (packs do Monster Pool); o `StatelessSpawnSystem` só a interpreta, sem estado, com o mesmo sorteio por semente de antes.
 - Spawn Instances efêmeras com máquina de estados explícita; o descarte do encounter no fim da Hunt fica para o Hunt Loop (M6, R-044).
+
+## DEC-20261106-36 — Política de poções é estado Permanente (decisão do Arquiteto, Fila 6)
+
+Status: **Accepted (Arquiteto)** — `PV-PERSIST-010`, Handbook §17
+
+- A política de poções (`PV-SUPPLY-010`) é configuração do jogador → **Permanente**; passa de memória para EF Core (tabela `SupplyPolicies`, migration nova e aditiva `20261106220713_SupplyPolicies`).
+- Os demais stores seguem a classificação do `PV-STATE-001` (temporários em memória; Runtime vivo em memória com checkpoint persistido).

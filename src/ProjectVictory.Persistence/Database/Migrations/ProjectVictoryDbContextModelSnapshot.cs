@@ -239,6 +239,31 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.ToTable("RuntimeStates");
                 });
 
+            modelBuilder.Entity("ProjectVictory.Persistence.Supply.PersistentSupplyPolicyState", b =>
+                {
+                    b.Property<Guid>("CharacterId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("ActiveHealthPotionBelowPercent")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ActiveManaPotionBelowPercent")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasPending")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PendingHealthPotionBelowPercent")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PendingManaPotionBelowPercent")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CharacterId");
+
+                    b.ToTable("SupplyPolicies", (string)null);
+                });
+
             modelBuilder.Entity("ProjectVictory.Persistence.Character.PersistentCharacterState", b =>
                 {
                     b.OwnsMany("ProjectVictory.Persistence.Character.PersistentItemInstanceState", "InventoryItems", b1 =>

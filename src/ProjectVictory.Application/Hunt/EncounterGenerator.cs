@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ProjectVictory.Application.Spawn;
 using ProjectVictory.Domain.Hunt;
 using ProjectVictory.Domain.Primitives;
 
@@ -18,8 +19,7 @@ public sealed class EncounterGenerator
 
     private readonly IHuntAreaCatalog? _areas;
 
-    private readonly ProjectVictory.Application.Spawn.ISpawnSystem _spawnSystem =
-        new ProjectVictory.Application.Spawn.StatelessSpawnSystem();
+    private readonly ISpawnSystem? _spawnSystem;
 
 
     // Composição antiga fixa (Rat, Cave Rat, Rat), mantida pela Regra Aditiva para quem cria o
@@ -30,13 +30,13 @@ public sealed class EncounterGenerator
 
     // PV-CONTENT-011: com catálogo (DI), o encounter vem da área de caça (Spider Cave), por dados.
     public EncounterGenerator(IHuntAreaCatalog areas)
+        : this(areas, new StatelessSpawnSystem())
     {
-        _areas = areas;
     }
 
     // PV-SPAWN-010 (ADR-009/010/047): os monstros do encounter vêm do Spawn System, a partir da
     // configuração de spawn da Hunt (área de caça). O gerador só monta o encounter.
-    public EncounterGenerator(IHuntAreaCatalog areas, ProjectVictory.Application.Spawn.ISpawnSystem spawnSystem)
+    public EncounterGenerator(IHuntAreaCatalog areas, ISpawnSystem spawnSystem)
     {
         _areas = areas;
         _spawnSystem = spawnSystem ?? throw new ArgumentNullException(nameof(spawnSystem));
@@ -85,8 +85,8 @@ public sealed class EncounterGenerator
         HuntAreaDefinition area,
         int seed)
     {
-        var result = _spawnSystem.SpawnPack(
-            new ProjectVictory.Application.Spawn.SpawnContext(huntId, area, seed));
+        var result = _spawnSystem!.SpawnPack(
+            new SpawnContext(huntId, area, seed));
 
         return result.Monsters.ToList();
     }

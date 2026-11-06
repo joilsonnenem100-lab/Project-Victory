@@ -62,7 +62,9 @@ public static class ProjectVictoryServiceCollectionExtensions
 
         // PV-SUPPLY-010: poções (política do jogador, consumo, fim de suprimento, poções iniciais).
         services.AddSingleton(supplySettings ?? new ProjectVictory.Application.Supply.SupplySettings());
-        services.AddSingleton<ProjectVictory.Application.Supply.ISupplyPolicyStore, ProjectVictory.Application.Supply.SupplyPolicyStore>();
+        // PV-PERSIST-010: a política de poções é configuração do jogador (Permanente) → EF Core.
+        // O SupplyPolicyStore em memória continua existindo (testes de unidade).
+        services.AddScoped<ProjectVictory.Application.Supply.ISupplyPolicyStore, ProjectVictory.Persistence.Supply.PersistentSupplyPolicyStore>();
         services.AddScoped<ProjectVictory.Application.Supply.CombatSupplyContext>();
         services.AddScoped<ProjectVictory.Application.Combat.TurnBased.ICombatActionObserver, ProjectVictory.Application.Supply.SupplyConsumptionObserver>();
         services.AddScoped<ProjectVictory.Application.Supply.SetSupplyPolicyHandler>();
@@ -134,7 +136,10 @@ public static class ProjectVictoryServiceCollectionExtensions
         // PV-CONTENT-011: área de caça (Spider Cave) definida por dados.
         services.AddSingleton<IHuntAreaCatalog, ProjectVictory.Infrastructure.Content.SpiderCaveHuntArea>();
         // PV-SPAWN-010 (ADR-009/010/047): Spawn System stateless (singleton, sem estado) dirigido pela Hunt.
-        services.AddSingleton<ProjectVictory.Application.Spawn.ISpawnSystem, ProjectVictory.Application.Spawn.StatelessSpawnSystem>();
+        // Revisão do PV-SPAWN-010: relógio explícito (o host pode trocar por outro antes).
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(services, TimeProvider.System);
+        services.AddSingleton<ProjectVictory.Application.Spawn.ISpawnSystem>(provider =>
+            new ProjectVictory.Application.Spawn.StatelessSpawnSystem(provider.GetRequiredService<TimeProvider>()));
         services.AddScoped<EncounterGenerator>(provider => new EncounterGenerator(
             provider.GetRequiredService<IHuntAreaCatalog>(),
             provider.GetRequiredService<ProjectVictory.Application.Spawn.ISpawnSystem>()));

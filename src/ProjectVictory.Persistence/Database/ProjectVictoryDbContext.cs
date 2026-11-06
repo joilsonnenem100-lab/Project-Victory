@@ -30,6 +30,10 @@ public sealed class ProjectVictoryDbContext : DbContext
     public DbSet<PersistentRuntimeState> RuntimeStates =>
         Set<PersistentRuntimeState>();
 
+    // PV-PERSIST-010: política de poções do jogador (configuração permanente).
+    public DbSet<ProjectVictory.Persistence.Supply.PersistentSupplyPolicyState> SupplyPolicies =>
+        Set<ProjectVictory.Persistence.Supply.PersistentSupplyPolicyState>();
+
 
     public ProjectVictoryDbContext(
         DbContextOptions<ProjectVictoryDbContext> options)
@@ -167,6 +171,14 @@ public sealed class ProjectVictoryDbContext : DbContext
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => x.RuntimeId).IsUnique();
             entity.HasIndex(x => x.CharacterId);
+        });
+
+        // PV-PERSIST-010: uma linha por personagem.
+        modelBuilder.Entity<ProjectVictory.Persistence.Supply.PersistentSupplyPolicyState>(entity =>
+        {
+            entity.ToTable("SupplyPolicies");
+            entity.HasKey(x => x.CharacterId);
+            entity.Property(x => x.CharacterId).ValueGeneratedNever();
         });
     }
 }

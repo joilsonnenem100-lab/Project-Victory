@@ -25,6 +25,7 @@ Lastro:
 | `EncounterStateStore` | singleton | Encounter ativo | Hunt Runtime / Combat | **Temporário** | memória (`ConcurrentDictionary`) |
 | `CombatContextRepository` | singleton | Contexto de combate | Combat System | **Temporário** | memória |
 | `CombatResultStore` | **scoped** | Resultado do combate entre o ataque e a recompensa | Combat System | **Temporário de uma requisição** | memória da requisição |
+| `SupplyPolicyStore` → `PersistentSupplyPolicyStore` *(Fila 6, `PV-PERSIST-010`)* | scoped (EF) | Política de poções do jogador (ativa e pendente) | Jogador (configuração) | **Permanente** | SQLite (`SupplyPolicies`) |
 
 *Singletons **sem estado mutável**, fora da classificação: `RewardSettings`, `SystemRandomSource` (`Random.Shared`), `MonsterLootDefinitionProvider`, `LocationActionCatalog`, `WorldDefinitionStore`, `WorldDefinitionCatalog` (conferido contra o `Program.cs` na revisão).*
 

@@ -57,6 +57,27 @@ public sealed class SpawnSystemTests
         Assert.All(second.Instances, i => Assert.Equal(SpawnState.Active, i.CurrentState));
     }
 
+    private sealed class FixedClock(DateTimeOffset now) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => now;
+    }
+
+    // Revisão do PV-SPAWN-010 (ressalvas 1 e 5).
+    [Fact]
+    public void SpawnInstanceId_IsTheEncounterMonsterId_AndTimesComeFromTheClock()
+    {
+        var now = new DateTimeOffset(2026, 11, 6, 20, 0, 0, TimeSpan.Zero);
+        var spawn = new StatelessSpawnSystem(new FixedClock(now));
+
+        var result = spawn.SpawnPack(new SpawnContext(Guid.NewGuid(), SpiderCave, 4));
+
+        Assert.Equal(result.Instances.Select(i => i.SpawnInstanceId), result.Monsters.Select(m => m.Id));
+        Assert.All(result.Instances, i => Assert.Equal(now.UtcDateTime, i.SpawnedAt));
+
+        spawn.Despawn(result.Instances);
+        Assert.All(result.Instances, i => Assert.Equal(now.UtcDateTime, i.DespawnedAt));
+    }
+
     [Fact]
     public void InvalidContext_IsRejected()
     {

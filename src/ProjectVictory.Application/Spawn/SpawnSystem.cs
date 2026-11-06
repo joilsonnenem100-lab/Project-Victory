@@ -72,8 +72,10 @@ public sealed class StatelessSpawnSystem : ISpawnSystem
             var instance = new SpawnInstance(Guid.NewGuid(), spawn.MonsterId);
             instance.BeginSpawning();
 
+            // Revisão do PV-SPAWN-010: o monstro do encounter usa o MESMO id da Spawn Instance, para o
+            // Hunt Loop (M6) despawnar a instância do monstro certo.
             monsters.Add(new EncounterMonsterState(
-                Guid.NewGuid(),
+                instance.SpawnInstanceId,
                 spawn.MonsterId,
                 spawn.Name,
                 spawn.MaximumHealth));
