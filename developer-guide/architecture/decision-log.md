@@ -824,3 +824,5 @@ Status: **Accepted (Arquiteto)** — revisão documentada em `docs/architecture/
 - **LOCKED:** Monster AI e Experience Distribution (regra de grupo PROVISÓRIA do PO).
 - **REVIEW:** Spawn System — LOCK no M6, depois do descarte no fim da Hunt (R-044) e dos Engine Events (R-046).
 - Fase 6 continua IN PROGRESS.
+
+> *Emenda (mesma data, revisão do `pv-architecture-reviewer`): critério único — um módulo só fica LOCKED quando o seu documento de domínio (contrato arquitetural do módulo) está cumprido. Por isso **Monster AI e Experience Distribution também ficam em REVIEW** (pendências R-050/R-043 e R-045), como o Spawn System. Nenhum módulo da Fase 6 foi travado nesta revisão.*

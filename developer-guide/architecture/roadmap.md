@@ -139,9 +139,9 @@ Status: IN PROGRESS
 Módulos:
 
 - Monsters (LOCKED)
-- Monster AI (LOCKED — revisão de fechamento do M4, 2026-11-06: `docs/architecture/REVISAO-FECHAMENTO-M4.md`)
-- Experience Distribution (LOCKED — mesma revisão; regra de grupo PROVISÓRIA do PO)
-- Spawn System (REVIEW — implementado no `PV-SPAWN-010`; LOCK no M6, depois do R-044/R-046)
+- Monster AI (~~PLANNED~~ REVIEW — implementado no `PV-MONSTER-010`; LOCK depois do R-050 e do R-043 — revisão de fechamento do M4, 2026-11-06: `docs/architecture/REVISAO-FECHAMENTO-M4.md`)
+- Experience Distribution (~~PLANNED~~ REVIEW — implementado no `PV-XP-010`; LOCK depois do R-045 — mesma revisão)
+- Spawn System (~~PLANNED~~ REVIEW — implementado no `PV-SPAWN-010`; LOCK no M6, depois do R-044/R-046 — mesma revisão)
 
 ---
 
@@ -234,8 +234,8 @@ Gameplay Foundation
 
 Objetivo:
 
-~~Consolidar a documentação oficial do módulo Monsters, finalizar sua revisão arquitetural e prosseguir para os próximos módulos da Gameplay Foundation.~~ *(Atualizado na revisão de fechamento do M4, 2026-11-06.)* Monster AI e Experience Distribution estão LOCKED; falta fechar o Spawn System (R-044, R-046) junto com o Hunt Loop contínuo (M6).
+~~Consolidar a documentação oficial do módulo Monsters, finalizar sua revisão arquitetural e prosseguir para os próximos módulos da Gameplay Foundation.~~ *(Atualizado na revisão de fechamento do M4, 2026-11-06.)* Monster AI, Experience Distribution e Spawn System estão implementados e em REVIEW; cada LOCK depende das pendências listadas na revisão de fechamento do M4 (R-050/R-043, R-045, R-044/R-046).
 
 Próximo módulo:
 
-~~Monster AI~~ Spawn System (fechamento) — junto com o M6 (`PV-HUNT-011`)
+~~Monster AI~~ Fechamento da Fase 6 (Spawn com o M6, `PV-HUNT-011`; Monster AI com as skills de monstro; Experience Distribution com a Hunt em grupo)
