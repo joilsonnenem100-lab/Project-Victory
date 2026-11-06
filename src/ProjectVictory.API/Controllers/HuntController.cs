@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using ProjectVictory.Application.Hunt;
@@ -6,6 +7,7 @@ using ProjectVictory.Application.Hunt;
 namespace ProjectVictory.API.Controllers;
 
 
+[Authorize] // PV-SEC-001
 [Route("api/hunt")]
 public sealed class HuntController : BaseApiController
 {
@@ -42,11 +44,12 @@ public sealed class HuntController : BaseApiController
 
 
     [HttpPost("attack")]
-    public IActionResult Attack(
+    public async Task<IActionResult> Attack(
         [FromBody] AttackEncounterCommand command)
     {
+        // PV-SEC-001 (D3): antes o Task era serializado sem await.
         var result =
-            _attackHandler.Handle(
+            await _attackHandler.Handle(
                 command);
 
 

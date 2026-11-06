@@ -1,3 +1,4 @@
+using ProjectVictory.Application.Session;
 using ProjectVictory.Application.VerticalSlice;
 using ProjectVictory.Application.World;
 using ProjectVictory.Domain.Runtime;
@@ -8,19 +9,28 @@ public sealed class ChangeRuntimeLocationHandler
 {
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
     private readonly IWorldDefinitionStore _worldDefinitionStore;
+    private readonly PlayerOwnershipGuard _ownershipGuard;
 
     public ChangeRuntimeLocationHandler(
         IRuntimeExecutionStateStore runtimeExecutionStateStore,
-        IWorldDefinitionStore worldDefinitionStore)
+        IWorldDefinitionStore worldDefinitionStore,
+        PlayerOwnershipGuard ownershipGuard)
     {
         _runtimeExecutionStateStore = runtimeExecutionStateStore;
         _worldDefinitionStore = worldDefinitionStore;
+        _ownershipGuard = ownershipGuard;
     }
 
-    public ChangeRuntimeLocationResult Handle(
-        ChangeRuntimeLocationCommand command)
+    public async Task<ChangeRuntimeLocationResult> Handle(
+        ChangeRuntimeLocationCommand command,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(command);
+
+        // PV-SEC-001: o runtime precisa ser de personagem da conta autenticada.
+        await _ownershipGuard.EnsureRuntimeAsync(
+            command.RuntimeId,
+            cancellationToken);
 
         if (!_worldDefinitionStore.Exists(command.WorldId))
             throw new InvalidOperationException("World not found.");

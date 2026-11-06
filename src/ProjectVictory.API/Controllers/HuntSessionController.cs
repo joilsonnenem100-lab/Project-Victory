@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectVictory.Application.Hunt;
 
 namespace ProjectVictory.API.Controllers;
 
+[Authorize] // PV-SEC-001
 [Route("api/hunt-session")]
 public sealed class HuntSessionController : BaseApiController
 {

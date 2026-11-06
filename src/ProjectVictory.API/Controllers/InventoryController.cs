@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectVictory.Application.Inventory;
 using ProjectVictory.Domain.Character;
@@ -5,6 +6,7 @@ using ProjectVictory.Domain.Character;
 namespace ProjectVictory.API.Controllers;
 
 [ApiController]
+[Authorize] // PV-SEC-001
 [Route("api/inventory")]
 public sealed class InventoryController : ControllerBase
 {

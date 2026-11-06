@@ -4,6 +4,7 @@ using ProjectVictory.Application.Account;
 using ProjectVictory.Application.Character;
 using ProjectVictory.Application.Combat;
 using ProjectVictory.Application.Hunt;
+using ProjectVictory.Application.Inventory;
 using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Application.Session;
@@ -50,6 +51,13 @@ public static class TestServiceCollectionExtensions
         services.AddSingleton<ICombatContextRepository, CombatContextRepository>();
 
         services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+        // PV-SEC-001: mesmo registro da API (Program.cs).
+        services.AddScoped<PlayerOwnershipGuard>();
+        services.AddScoped<IHuntSessionRepository, HuntSessionRepository>();
+        services.AddScoped<StartHuntSessionHandler>();
+        services.AddScoped<StopHuntSessionHandler>();
+        services.AddScoped<GetCharacterInventoryHandler>();
 
         services.AddScoped<ICombatResolver, CombatResolver>();
 

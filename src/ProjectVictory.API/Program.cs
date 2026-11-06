@@ -82,6 +82,9 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     JwtTokenGenerator>();
 
+// PV-SEC-001: verificação de posse de recursos do jogador.
+builder.Services.AddScoped<PlayerOwnershipGuard>();
+
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 
 builder.Services.AddProblemDetails();

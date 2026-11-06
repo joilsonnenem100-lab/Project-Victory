@@ -1,3 +1,4 @@
+using ProjectVictory.Application.Session;
 using ProjectVictory.Application.VerticalSlice;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Hunt;
@@ -10,21 +11,29 @@ public sealed class StartHuntSessionHandler
     private readonly ICharacterRepository _characterRepository;
     private readonly IHuntSessionRepository _repository;
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
+    private readonly PlayerOwnershipGuard _ownershipGuard;
 
     public StartHuntSessionHandler(
         ICharacterRepository characterRepository,
         IHuntSessionRepository repository,
-        IRuntimeExecutionStateStore runtimeExecutionStateStore)
+        IRuntimeExecutionStateStore runtimeExecutionStateStore,
+        PlayerOwnershipGuard ownershipGuard)
     {
         _characterRepository = characterRepository;
         _repository = repository;
         _runtimeExecutionStateStore = runtimeExecutionStateStore;
+        _ownershipGuard = ownershipGuard;
     }
 
     public async Task<StartHuntSessionResult> Handle(
         StartHuntSessionCommand command,
         CancellationToken cancellationToken = default)
     {
+        // PV-SEC-001: o personagem precisa pertencer à conta autenticada.
+        await _ownershipGuard.EnsureCharacterAsync(
+            command.CharacterId,
+            cancellationToken);
+
         var character =
             await _characterRepository.GetByIdAsync(
                 command.CharacterId,

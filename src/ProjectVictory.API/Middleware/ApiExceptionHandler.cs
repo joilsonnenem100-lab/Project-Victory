@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using ProjectVictory.Application.Session;
 
 namespace ProjectVictory.API.Middleware;
 
@@ -35,6 +36,24 @@ public sealed class ApiExceptionHandler : IExceptionHandler
                     Status = StatusCodes.Status401Unauthorized,
                     Title = "Unauthorized",
                     Detail = "Invalid credentials."
+                },
+                cancellationToken);
+
+            return true;
+        }
+
+
+        // PV-SEC-001: recurso de outra conta → 403, sem expor detalhes do recurso.
+        if (exception is OwnershipViolationException)
+        {
+            httpContext.Response.StatusCode =
+                StatusCodes.Status403Forbidden;
+
+            await httpContext.Response.WriteAsJsonAsync(
+                new ProblemDetails
+                {
+                    Status = StatusCodes.Status403Forbidden,
+                    Title = "Forbidden"
                 },
                 cancellationToken);
 

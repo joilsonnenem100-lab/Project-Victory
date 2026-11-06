@@ -1,3 +1,4 @@
+using ProjectVictory.Application.Session;
 using ProjectVictory.Application.VerticalSlice;
 using ProjectVictory.Domain.Combat;
 using ProjectVictory.Domain.Hunt;
@@ -11,6 +12,7 @@ public sealed class AttackEncounterHandler
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
     private readonly ICombatResultStore _combatResultStore;
     private readonly FinalizeHuntAfterCombatHandler _finalizeHuntAfterCombatHandler;
+    private readonly PlayerOwnershipGuard _ownershipGuard;
 
     private const int AttackDamage = 5;
 
@@ -20,8 +22,11 @@ public sealed class AttackEncounterHandler
         IHuntRepository huntRepository,
         IRuntimeExecutionStateStore runtimeExecutionStateStore,
         ICombatResultStore combatResultStore,
-        FinalizeHuntAfterCombatHandler finalizeHuntAfterCombatHandler)
+        FinalizeHuntAfterCombatHandler finalizeHuntAfterCombatHandler,
+        PlayerOwnershipGuard ownershipGuard)
     {
+        _ownershipGuard = ownershipGuard;
+
         _encounterStateStore = encounterStateStore;
 
         _huntRepository = huntRepository;
@@ -39,6 +44,11 @@ public sealed class AttackEncounterHandler
         AttackEncounterCommand command,
         CancellationToken cancellationToken = default)
     {
+        // PV-SEC-001: o encounter precisa ser de uma hunt de personagem da conta autenticada.
+        await _ownershipGuard.EnsureEncounterAsync(
+            command.EncounterId,
+            cancellationToken);
+
         var encounter =
             _encounterStateStore.Get(
                 command.EncounterId);

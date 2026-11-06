@@ -1,3 +1,4 @@
+using ProjectVictory.Application.Session;
 using ProjectVictory.Application.VerticalSlice;
 using ProjectVictory.Domain.Runtime;
 
@@ -6,17 +7,26 @@ namespace ProjectVictory.Application.Runtime;
 public sealed class UpdateRuntimeActivityHandler
 {
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
+    private readonly PlayerOwnershipGuard _ownershipGuard;
 
     public UpdateRuntimeActivityHandler(
-        IRuntimeExecutionStateStore runtimeExecutionStateStore)
+        IRuntimeExecutionStateStore runtimeExecutionStateStore,
+        PlayerOwnershipGuard ownershipGuard)
     {
         _runtimeExecutionStateStore = runtimeExecutionStateStore;
+        _ownershipGuard = ownershipGuard;
     }
 
-    public UpdateRuntimeActivityResult Handle(
-        UpdateRuntimeActivityCommand command)
+    public async Task<UpdateRuntimeActivityResult> Handle(
+        UpdateRuntimeActivityCommand command,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(command);
+
+        // PV-SEC-001: o runtime precisa ser de personagem da conta autenticada.
+        await _ownershipGuard.EnsureRuntimeAsync(
+            command.RuntimeId,
+            cancellationToken);
 
         if (!Enum.TryParse<RuntimeActivity>(
                 command.Activity,

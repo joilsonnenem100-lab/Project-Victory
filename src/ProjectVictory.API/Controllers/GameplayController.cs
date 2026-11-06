@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectVictory.Application.Gameplay;
 
 namespace ProjectVictory.API.Controllers;
 
+[Authorize] // PV-SEC-001
 [Route("api/gameplay")]
 public sealed class GameplayController : BaseApiController
 {

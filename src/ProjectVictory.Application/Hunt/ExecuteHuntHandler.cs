@@ -20,13 +20,18 @@ public sealed class ExecuteHuntHandler
 
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
 
+    private readonly PlayerOwnershipGuard _ownershipGuard;
+
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
         ICharacterRepository characterRepository,
         IEncounterStateStore encounterStateStore,
         EncounterGenerator encounterGenerator,
-        IRuntimeExecutionStateStore runtimeExecutionStateStore)
+        IRuntimeExecutionStateStore runtimeExecutionStateStore,
+        PlayerOwnershipGuard ownershipGuard)
     {
+        _ownershipGuard = ownershipGuard;
+
         _huntRepository = huntRepository;
 
         _characterRepository = characterRepository;
@@ -43,6 +48,11 @@ public sealed class ExecuteHuntHandler
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(command);
+
+        // PV-SEC-001: o personagem precisa pertencer à conta autenticada.
+        await _ownershipGuard.EnsureCharacterAsync(
+            command.CharacterId,
+            cancellationToken);
 
         var character =
             await _characterRepository.GetByIdAsync(
