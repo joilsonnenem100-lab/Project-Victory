@@ -51,15 +51,16 @@ public static class ProjectVictoryServiceCollectionExtensions
         ProjectVictory.Application.Combat.TurnBased.CombatSettings? combatSettings = null,
         ProjectVictory.Application.Supply.SupplySettings? supplySettings = null)
     {
+
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(rewardSettings);
+
         // PV-SUPPLY-010: poções (política do jogador, consumo, fim de suprimento, poções iniciais).
         services.AddSingleton(supplySettings ?? new ProjectVictory.Application.Supply.SupplySettings());
         services.AddSingleton<ProjectVictory.Application.Supply.ISupplyPolicyStore, ProjectVictory.Application.Supply.SupplyPolicyStore>();
         services.AddScoped<ProjectVictory.Application.Supply.CombatSupplyContext>();
         services.AddScoped<ProjectVictory.Application.Combat.TurnBased.ICombatActionObserver, ProjectVictory.Application.Supply.SupplyConsumptionObserver>();
         services.AddScoped<ProjectVictory.Application.Supply.SetSupplyPolicyHandler>();
-
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(rewardSettings);
 
         // PV-COMBAT-011: semente dos combates (fixa só por configuração do servidor, para testes).
         services.AddSingleton(combatSettings ?? new ProjectVictory.Application.Combat.TurnBased.CombatSettings());
@@ -118,7 +119,9 @@ public static class ProjectVictoryServiceCollectionExtensions
         services.AddScoped<GetItemDefinitionHandler>();
 
         // Hunt.
-        services.AddScoped<EncounterGenerator>();
+        // PV-CONTENT-011: área de caça (Spider Cave) definida por dados.
+        services.AddSingleton<IHuntAreaCatalog, ProjectVictory.Infrastructure.Content.SpiderCaveHuntArea>();
+        services.AddScoped<EncounterGenerator>(provider => new EncounterGenerator(provider.GetRequiredService<IHuntAreaCatalog>()));
         services.AddScoped<ExecuteHuntHandler>();
         services.AddScoped<StartHuntSessionHandler>();
         services.AddScoped<StopHuntSessionHandler>();

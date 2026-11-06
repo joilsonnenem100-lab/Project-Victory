@@ -32,6 +32,7 @@ public sealed class AuthorizationHttpTests
         { "POST", "/api/hunt-session/stop" },
         { "GET", "/api/inventory/22222222-2222-2222-2222-222222222222" },
         { "POST", "/api/runtime/create" },
+        { "POST", "/api/hunt/supplies" }, // PV-SUPPLY-010
         { "POST", "/api/runtime/activity" },
         { "POST", "/api/runtime/location" },
         { "POST", "/api/gameplay/action" },

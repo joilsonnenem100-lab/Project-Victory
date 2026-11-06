@@ -38,6 +38,7 @@ public sealed class ItemDefinitionRepository : IItemDefinitionRepository
             state.Name,
             new ItemCharacteristics(
                 state.Description),
-            state.NpcSellPrice);
+            state.NpcSellPrice,
+            state.NpcBuyPrice);
     }
 }

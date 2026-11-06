@@ -116,9 +116,13 @@ public sealed class HuntEndingPipelineTests
         Assert.Equal(RuntimeActivity.Idle, runtime.GameplayContext!.CurrentActivity);
         Assert.Equal(EndHuntHandler.MainCity, runtime.WorldContext);
 
-        // Rats mortos: 10 XP cada (Cave Rat ainda sem definição até o PV-CONTENT-011); nada é retirado.
+        // PV-CONTENT-011: o encounter vem da Spider Cave (sorteado pela semente). XP final = soma do XP
+        // de cada monstro do encounter (dados do catálogo); nada é retirado no encerramento.
+        var encounter = scope.ServiceProvider.GetRequiredService<IEncounterStateStore>().Get(last.EncounterId);
+        var expectedXp = encounter.Monsters.Sum(m => (long)ProjectVictory.Infrastructure.Content.SpiderCaveCatalog.Find(m.MonsterId)!.Loot.Experience);
+
         var character = await scope.ServiceProvider.GetRequiredService<ICharacterRepository>().GetByIdAsync(characterId);
-        Assert.Equal(20, character!.Experience.Value);
+        Assert.Equal(expectedXp, character!.Experience.Value);
     }
 
     [Fact]

@@ -53,6 +53,27 @@ public sealed class MonsterLootDefinition
 
 
 
-public sealed record LootDropDefinition(
-    ItemDefinition Item,
-    double Chance);
+// PV-CONTENT-011 (pendência do M2): a chance de drop é validada entre 0 e 1.
+public sealed record LootDropDefinition
+{
+    public ItemDefinition Item { get; }
+
+    public double Chance { get; }
+
+    public LootDropDefinition(
+        ItemDefinition Item,
+        double Chance)
+    {
+        ArgumentNullException.ThrowIfNull(Item);
+
+        if (double.IsNaN(Chance) || Chance < 0 || Chance > 1)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(Chance),
+                "Drop chance must be between 0 and 1.");
+        }
+
+        this.Item = Item;
+        this.Chance = Chance;
+    }
+}

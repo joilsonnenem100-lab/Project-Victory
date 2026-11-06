@@ -121,6 +121,11 @@ namespace ProjectVictory.Persistence.Database.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("NpcBuyPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
+
                     b.Property<int>("NpcSellPrice")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
@@ -129,6 +134,56 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Items");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Description = "Validation loot item",
+                            Name = "Rat Tail",
+                            NpcBuyPrice = 0,
+                            NpcSellPrice = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            Description = "Queijo levado pelos ratos.",
+                            Name = "Cheese",
+                            NpcBuyPrice = 0,
+                            NpcSellPrice = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
+                            Description = "Presa de aranha.",
+                            Name = "Spider Fang",
+                            NpcBuyPrice = 0,
+                            NpcSellPrice = 8
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000004"),
+                            Description = "Seda de aranha gigante.",
+                            Name = "Spider Silk",
+                            NpcBuyPrice = 0,
+                            NpcSellPrice = 25
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-0000000000a1"),
+                            Description = "Restaura vida (suprimento de Hunt).",
+                            Name = "Health Potion",
+                            NpcBuyPrice = 50,
+                            NpcSellPrice = 10
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-0000000000a2"),
+                            Description = "Restaura mana (suprimento de Hunt).",
+                            Name = "Mana Potion",
+                            NpcBuyPrice = 50,
+                            NpcSellPrice = 10
+                        });
                 });
 
             modelBuilder.Entity("ProjectVictory.Persistence.Monster.PersistentMonsterState", b =>

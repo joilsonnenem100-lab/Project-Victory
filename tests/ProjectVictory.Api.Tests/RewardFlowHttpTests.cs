@@ -16,8 +16,37 @@ public sealed class RewardFlowHttpTests
         _factory = factory;
     }
 
+    // PV-CONTENT-011: o encounter é sorteado na Spider Cave pela semente. Escolhe (de forma
+    // determinística) a primeira semente que sorteia o encounter [Rat, Cave Rat, Rat] (índice 0).
+    private static int SeedForRatEncounter()
+    {
+        for (var seed = 1; ; seed++)
+        {
+            if (new ProjectVictory.Domain.Primitives.SeededRandomSource(seed).NextInclusive(0, 4) == 0)
+            {
+                return seed;
+            }
+        }
+    }
+
     [Fact]
     public async Task DefeatingRat_GivesExperienceAndDrop()
+    {
+        var previousSeed = Environment.GetEnvironmentVariable("Combat__FixedSeed");
+        Environment.SetEnvironmentVariable("Combat__FixedSeed", SeedForRatEncounter().ToString());
+
+        try
+        {
+            using var factory = new ApiFactory();
+            await DefeatRat(factory);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("Combat__FixedSeed", previousSeed);
+        }
+    }
+
+    private static async Task DefeatRat(ApiFactory _factory)
     {
         using var client = _factory.CreateClient();
         var token = await _factory.RegisterAndLoginAsync(client, $"reward-{Guid.NewGuid():N}@test.com");

@@ -1,6 +1,6 @@
 # PV-SUPPLY-010 — Poções de vida e de mana
 
-Status: **IMPLEMENTADO** (branch `chief/m3-supply-010`) — valores e duas interpretações **PROVISÓRIOS**
+Status: **IMPLEMENTADO (servidor)** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/m3-content-011`). Branch `chief/m3-supply-010` — valores e duas interpretações **PROVISÓRIOS**
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 3", item 7).
 Lastro:
 - `DEC-20261106-02`: só poção de vida e poção de mana;
@@ -45,5 +45,17 @@ Resultado da solução: build com 0 avisos; **242 aprovados, 0 ignorados, 0 falh
 ## Perguntas ao PO
 
 1. Cura das poções (hoje +75 HP e +50 Mana) e preços de compra e venda no NPC (hoje 50 e 10).
-2. "Fim de suprimento" significa "acabou uma poção configurada" (implementado) ou outra regra (ex.: acabaram **todas**)?
+2. "Fim de suprimento" significa "acabou uma poção configurada" (implementado) ou outra regra (ex.: acabaram **todas**)? **Efeito hoje:** com a política de uma poção ligada e 0 unidades, a Hunt termina **já na primeira rodada**, mesmo sem dano. Como todo jogador começa com 0 poções (padrão), ligar a política sem ter poções encerra a Hunt na hora.
 3. Como o jogador consegue poções antes do comércio (Fase 7/8)? Kit inicial? Drop?
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+O revisor rodou a suíte (242 aprovados). Ressalvas tratadas no branch `chief/m3-content-011`:
+1. **ADR-035/036 / R-015:** o consumo de poções remove itens direto do inventário. O R-015 foi atualizado: aceito como débito, e o Inventory Service fica para antes do comércio.
+2. **A "tela própria" do cliente não foi entregue**, só o endpoint. Corrigido no roadmap ("servidor implementado"); a tela é do `PV-UI-0xx` (M8).
+3. A política fica **só em memória** (`SupplyPolicyStore`, singleton) e se perde ao reiniciar o servidor. Concorrência: a mesma do R-029. A persistência é do `PV-PERSIST-011` (M5).
+4. O efeito "0 poções + política ligada → fim na primeira rodada" foi incluído na pergunta 2 ao PO.
+5. `NpcBuyPrice` agora é **persistido e lido** (`PV-CONTENT-011`: coluna, repositório e poções na tabela `Items`). O débito do Analyzer é do `PV-HUD-ANALYZER-010` (M8).
+6. Teste HTTP de 401 sem token para `POST api/hunt/supplies` acrescentado ao `AuthorizationHttpTests`. A política gravada entre rodadas e só aplicada na seguinte tem cobertura unitária (store); a de integração fica para o `PV-QA-004`.
+7. A ordem dos registros na composição foi corrigida (suprimentos depois do `ThrowIfNull`).
+8. O efeito das poções no `CombatResolver` da Infrastructure soma-se ao **R-028**.

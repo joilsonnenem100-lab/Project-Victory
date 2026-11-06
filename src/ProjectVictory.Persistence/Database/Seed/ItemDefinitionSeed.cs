@@ -10,9 +10,11 @@ public static class ItemDefinitionSeed
         ProjectVictoryDbContext context,
         CancellationToken cancellationToken = default)
     {
+        // PV-CONTENT-011: a tabela agora já vem com itens da migration (HasData); o seed procura o
+        // Training Sword pelo nome, em vez de "qualquer item", para continuar semeando-o.
         var exists =
             await context.Items
-                .AnyAsync(cancellationToken);
+                .AnyAsync(x => x.Name == "Training Sword", cancellationToken);
 
 
         if (exists)
