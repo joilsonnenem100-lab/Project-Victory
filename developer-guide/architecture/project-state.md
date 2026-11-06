@@ -184,22 +184,26 @@ API em Development (DLL de `bin/Debug/net10.0`, banco temporário via `Connectio
 
 ## Dependências vulneráveis — `PV-PLATFORM-003`, 2026-11-06
 
-**Decisão:** atualizar o EF Core de **10.0.0 para 10.0.14** (patch da mesma linha 10.0) em vez de fixar a dependência transitiva. O 10.0.14 depende de `SQLitePCLRaw` **2.1.13** (fora da faixa vulnerável), a correção vem pelo canal de manutenção oficial e não fica uma fixação manual para manter. Pacotes alinhados: `Microsoft.EntityFrameworkCore`, `.Sqlite`, `.Design` (API), `.InMemory` (SmokeTests) e `tools/PvDatabaseCheck` (estava em 10.0.10, que ainda puxava o 2.1.11). Nenhuma migration alterada.
+Contrato: ordem do PO de 2026-11-06 (modo noite, item 4) + linha do `PV-PLATFORM-003` em `roadmap-to-playable.md`.
+
+**Decisão:** atualizar o EF Core de **10.0.0 para 10.0.14** (patch da mesma linha 10.0) em vez de fixar a dependência transitiva. O 10.0.14 depende de `SQLitePCLRaw` **2.1.13** (fora da faixa vulnerável), a correção vem pelo canal de manutenção oficial e não fica uma fixação manual para manter. Pacotes alinhados: `Microsoft.EntityFrameworkCore`, `.Sqlite`, `.Design` (API), `.InMemory` (SmokeTests), `tools/PvDatabaseCheck` e `ItemCheck/` (`Microsoft.Data.Sqlite`; os dois estavam em 10.0.10, que ainda puxava o 2.1.11 — ferramentas fora do `.sln`, a segunda do contrato ativo `PV-TOOLS-002`; o `ItemCheck` foi incluído pela revisão). Nenhuma migration alterada.
 
 | Vulnerabilidade | Pacote (transitivo) | Origem | Situação |
 |---|---|---|---|
 | **CVE-2025-6965** / GHSA-2m69-gcr7-jv3q (alta, NU1903): SQLite nativo empacotado vulnerável; afeta `SQLitePCLRaw.lib.e_sqlite3` `<= 2.1.11` | `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 | `Microsoft.EntityFrameworkCore.Sqlite` 10.0.0 | ✅ Resolvida: 2.1.13 com EF 10.0.14 |
 | **CVE-2026-84008** / GHSA-846f-f764-76mx (alta, NU1903) e **CVE-2026-70162** / GHSA-2fmv-rv2c-59x7 (moderada, NU1902): negação de serviço no .NET; afeta `System.Security.Cryptography.Pkcs` 9.0.0–9.0.20 e 10.0.0–10.0.12 | `System.Security.Cryptography.Pkcs` 9.0.0 | `Microsoft.EntityFrameworkCore.Design` 10.0.0 → `Microsoft.Build.Tasks.Core` 17.14.28 (só no projeto da API) | ✅ Resolvida: com `.Design` 10.0.14 a API não depende mais do `Pkcs` (`dotnet nuget why`) |
 
-**O "7º aviso":** além dos NU1903 do SQLite (um por projeto que usa SQLite, cada um impresso duas vezes pelo restore/build), o projeto da API mostrava avisos do `System.Security.Cryptography.Pkcs` 9.0.0 (NU1903 e NU1902). Esses alertas da base do GitHub Advisory podem aparecer depois de um baseline já registrado, porque a auditoria do NuGet consulta a base no momento do restore; por isso o número de avisos mudou entre execuções. Build completo (`--no-incremental`) da `main` (d94c907) em 2026-11-06: **10 linhas de aviso** (SQLite em API, Persistence e SmokeTests; `Pkcs` alta e moderada na API).
+**O "7º aviso":** além dos NU1903 do SQLite (um por projeto que usa SQLite, cada um impresso duas vezes pelo restore/build), o projeto da API mostrava avisos do `System.Security.Cryptography.Pkcs` 9.0.0 (NU1903 e NU1902). Esses alertas da base do GitHub Advisory podem aparecer depois de um baseline já registrado, porque a auditoria do NuGet consulta a base no momento do restore; por isso o número de avisos mudou entre execuções. O "7" visto pelo dono é uma contagem intermediária (depende de build incremental — que não reimprime avisos de restore de projetos já restaurados — e do momento da consulta à base); a contagem auditável é a do build `--no-incremental`. Build completo (`--no-incremental`) da `main` (d94c907) em 2026-11-06: **10 linhas de aviso** (SQLite em API, Persistence e SmokeTests; `Pkcs` alta e moderada na API).
 
 | Verificação (branch `chief/m1-platform-003`) | Resultado |
 |---|---|
 | `dotnet build ProjectVictory.sln --no-incremental` | **Verde, 0 erros, 0 avisos** |
-| `dotnet list package --vulnerable --include-transitive` em API, Persistence, SmokeTests, Api.Tests e `tools/PvDatabaseCheck` | **Nenhum pacote vulnerável** |
+| `dotnet list package --vulnerable --include-transitive` em API, Persistence, SmokeTests, Api.Tests (solução) e nas ferramentas fora do `.sln` `tools/PvDatabaseCheck` e `ItemCheck` | **Nenhum pacote vulnerável** |
 | `dotnet test ProjectVictory.sln` | 0 falhas: 91 passam, 1 ignorado (`PV-REWARD-010`) |
 | `has-pending-model-changes` com EF 10.0.14 | "No changes have been made to the model since the last migration." |
 | Clone limpo (Development, banco temporário) | 14 migrations aplicadas; histórico com `ProductVersion` 10.0.14; cadastro e login 200 |
+
+Pendência (revisão): versões desalinhadas entre famílias de pacotes (`JwtBearer` e `Mvc.Testing` em 10.0.0; xunit/Test.Sdk diferentes entre projetos de teste) — sem vulnerabilidade hoje; candidato a contrato de gestão central de versões (`Directory.Packages.props`) e `.config/dotnet-tools.json` fixando o `dotnet-ef`.
 
 Observação: o `dotnet-ef` global da máquina está em 10.0.10; funciona com o runtime 10.0.14, mas convém atualizá-lo (`dotnet tool update -g dotnet-ef`) — fora do repositório, não feito.
 
