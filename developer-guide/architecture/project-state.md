@@ -141,7 +141,7 @@ Execuções feitas com a DLL da API a partir de `bin/Debug/net10.0`, banco em pa
 | Development, chave em user-secrets | Cadastro 200; login 200; token com `iss=ProjectVictory.API` e `aud=ProjectVictory.Client`; `GET /api/character` com token 200 e sem token 401; CORS libera `http://localhost:5173`; log do EF com valores de parâmetros (modo sensível ligado) |
 | Production sem `Jwt__Key` | Startup encerra: `InvalidOperationException: Configuração JWT inválida — a API não pode subir. Jwt:Key não configurada...` |
 | Production com chave de 12 caracteres | Startup encerra: `...Jwt:Key fraca: tem 12 caracteres; o mínimo é 32...` |
-| Production com chave válida (via variável de ambiente) | Login 200; CORS **não** libera `http://localhost:5173` (lista vazia); log do EF com parâmetros mascarados (`'?'`), modo sensível desligado |
+| Production com chave válida (via variável de ambiente), sobre **cópia do banco temporário já migrado** pela execução em Development (fora de Development nada cria o schema — `PV-PLATFORM-004`) | Login 200; CORS **não** libera `http://localhost:5173` (lista vazia); log do EF com parâmetros mascarados (`'?'`), modo sensível desligado |
 | Busca pelo valor da chave antiga na árvore atual | 0 ocorrências (permanece só no histórico do git) |
 
 ## Ainda pendentes

@@ -57,4 +57,10 @@ Nenhum arquivo C# foi alterado: o ambiente de análise não tem `dotnet`, logo n
   ```
   O `dotnet run --project` usa a pasta do projeto como diretório de trabalho — **verificado** em 2026-11-05 (execução a partir de outra pasta, com `--no-launch-profile`: content root `src/ProjectVictory.API`, nenhum banco criado na pasta de origem). Que o perfil `http` aplica `ASPNETCORE_ENVIRONMENT=Development` (porta 5250) é **lido do `launchSettings.json`, não executado** nesta validação. Resultado esperado: banco em `src/ProjectVictory.API/projectvictory.db`, migrations aplicadas.
 - **Evite** executar a DLL diretamente (`dotnet ProjectVictory.API.dll`) de outra pasta: o banco seria criado na pasta corrente. Com `--no-launch-profile` o ambiente vira Production e o `Migrate()` **não** roda.
-- Tornar o caminho do banco configurável é escopo do `PV-PLATFORM-002`.
+- Tornar o caminho do banco configurável é escopo do `PV-PLATFORM-002`. *Atualização: feito em `PV-PLATFORM-002` (`ConnectionStrings:ProjectVictory`).*
+
+## Movido em `PV-PLATFORM-002` — branch `chief/m1-platform-002`
+- **`ProjectVictoryDbContext.OnConfiguring`** (`src/ProjectVictory.Persistence/Database/ProjectVictoryDbContext.cs`) **removido**. Ele ligava `EnableSensitiveDataLogging()` e `LogTo(Console.WriteLine, LogLevel.Information)` sempre que o contexto vinha configurado, em qualquer ambiente (Análise §4.3).
+- **Para onde foi:** `src/ProjectVictory.API/Program.cs`, dentro do `AddDbContext`, condicionado a `builder.Environment.IsDevelopment()`. Comportamento em Development preservado; fora dele, desligado.
+- **Efeito colateral aceito:** usos do DbContext fora da API (ex.: `SmokeTests`, banco InMemory) deixam de ter log de SQL sensível.
+- O modelo do EF não muda (`has-pending-model-changes`: "No changes have been made to the model since the last migration.").

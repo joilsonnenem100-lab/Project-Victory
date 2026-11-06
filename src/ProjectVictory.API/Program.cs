@@ -97,9 +97,9 @@ var jwtSettings =
 jwtSettings.Validate(
     builder.Environment.IsDevelopment());
 
-builder.Services
-    .AddOptions<JwtSettings>()
-    .Bind(builder.Configuration.GetSection(JwtSettings.SectionName));
+// A mesma instância validada serve à emissão (JwtTokenGenerator) e à validação (JwtBearer).
+builder.Services.AddSingleton(
+    Microsoft.Extensions.Options.Options.Create(jwtSettings));
 
 builder.Services
     .AddAuthentication(
