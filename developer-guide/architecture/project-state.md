@@ -43,7 +43,7 @@ Objetivo: reconciliar documentação e código, decidir as revisões pendentes, 
 | Projetos `ProjectVictory.Runtime` e `ProjectVictory.Shared` | **Vazios** (somente `.csproj`) | 0 arquivos `.cs` |
 | Client | Telas de login, cadastro, personagem, entrada, jogo, inventário, recompensa | `src/ProjectVictory.Client/src/pages` |
 
-Testes automatizados: **3 escritos** (`Application.Tests`: 1; `SmokeTests`: 2); **1 executável e verde** (baseline 2026-11-05); os 2 do `SmokeTests` **não compilam** (ver Pendências de Validação). `Domain.Tests` e `Runtime.Tests`: 0. `SmokeTests` **fora** do `.sln`.
+Testes automatizados: **3 escritos** (`Application.Tests`: 1; `SmokeTests`: 2), todos no `.sln` desde `PV-QA-001` parte 1: **2 passam** e **1 é ignorado** (`ApplyReward_Should_Add_Item_To_Character_Inventory`, Skip aprovado pelo dono até o `PV-REWARD-010`). `Domain.Tests` e `Runtime.Tests`: 0. Ver Pendências de Validação.
 
 ---
 
@@ -82,6 +82,8 @@ Detalhe e evidências em `docs/architecture/PV-ANALYSIS-2026-11-05.md`. Itens cr
 - **Segurança (Handbook §23–24):** só `Character`, `Game/enter` e `Item` exigem `[Authorize]`; `Hunt`, `HuntSession`, `Inventory`, `Runtime`, `Gameplay` e `Location` não exigem. Chave JWT padrão fixa no código; SQLite com caminho fixo; log com dados sensíveis habilitado.
 - **Inicialização:** o `Program.cs` não aplica migrations; existem 14 migrations (uma com nome-placeholder `NomeDaMigration`, já aplicada — não renomear). O banco `projectvictory.db` versionado é o que faz um clone rodar hoje.
 - **Concorrência/estado:** `HuntRepository` é `List<>` singleton (não thread-safe); `CombatContextRepository` idem; `CombatResultStore` está registrado como *scoped* guardando estado (padrão do FIX-001).
+- **Reward não chega ao inventário** (encontrado em `PV-QA-001` parte 1): `ApplyRewardHandler` (`src/ProjectVictory.Application/Reward/ApplyRewardHandler.cs`) aplica só a experiência e ignora `RewardResult.Drops` e `RewardResult.Gold`; nenhum item ou ouro chega ao personagem. O teste `RewardInventoryIntegrationTest.ApplyReward_Should_Add_Item_To_Character_Inventory` documenta o comportamento esperado e está com Skip aprovado pelo dono até a correção. Resolução: **`PV-REWARD-010`** (M2, Reward Pipeline real; ADR-008, 024, 037, 038). Remover o Skip faz parte do aceite desse contrato.
+- **DI de teste mantido à mão:** `tests/ProjectVictory.SmokeTests/TestServiceCollectionExtensions.cs` replica registros do `Program.cs` e já ficou defasado uma vez (faltava `IRuntimeRepository`; corrigido em `PV-QA-001` parte 1). Risco de nova defasagem quando handlers ganharem dependências.
 
 ---
 
@@ -105,6 +107,15 @@ Foundation (Aggregate Root, Value Objects, Entities, Character) · Character Dom
 | `dotnet test tests/ProjectVictory.SmokeTests` | **NÃO compila**: CS1503 em `RewardInventoryIntegrationTest.cs` linha 70 — `Assert.Contains` de `string` contra `Inventory.Items`, que é coleção de `ItemInstance` |
 
 Encaminhamento: correção do SmokeTests dentro de `PV-QA-001` e atualização do pacote SQLitePCLRaw (NU1903), ambos no M1 (`roadmap-to-playable.md`).
+
+## Baseline após `PV-QA-001` parte 1 — 2026-11-05
+
+| Verificação | Resultado |
+|---|---|
+| `dotnet build ProjectVictory.sln` | **Verde**, 0 erros, 6 avisos — todos **NU1903** (os 4 anteriores + 2 do `SmokeTests`, que agora está no `.sln`). CS0105 eliminado |
+| `dotnet test ProjectVictory.sln` | **0 falhas.** `Application.Tests` 1/1; `SmokeTests` 1 passou (`Core_Gameplay_Flow_Should_Complete`) e 1 ignorado (`ApplyReward_Should_Add_Item_To_Character_Inventory` → `PV-REWARD-010`); `Domain.Tests` e `Runtime.Tests` com 0 testes |
+
+Nenhum arquivo de `src/` foi alterado. A falha do SmokeTests registrada na tabela anterior está resolvida.
 
 ## Ainda pendentes
 
