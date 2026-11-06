@@ -6,7 +6,7 @@ Versão do Documento: 2.0
 Status: Oficial
 Data da verificação: 2026-11-05
 Substitui: v1.2 (2026-07-14), preservada no histórico git.
-Método: estado **verificado contra o código** (hierarquia da fonte da verdade: código > contratos/ADRs > documentação). Build e testes **não foram executados** (ambiente sem `dotnet`); ver Pendências de Validação.
+Método: estado **verificado contra o código** (hierarquia da fonte da verdade: código > contratos/ADRs > documentação). Build e testes **não foram executados** (ambiente sem `dotnet`) nesta verificação; o baseline foi executado depois na máquina do dono (2026-11-05) e está registrado em Pendências de Validação.
 
 ---
 
@@ -71,7 +71,7 @@ Testes automatizados: **3** (`Application.Tests`: 1; `SmokeTests`: 2). `Domain.T
 | R-006 | Estado oficial declarado em `project-state.md`, mas 4 documentos ainda apontam `CURRENT_CONTEXT.md` (histórico) | `PROJECT_CONTEXT.md`, `AI_WORKFLOW.md`, `architecture-checklist.md`, `README_DEVELOPMENT.md` | Ordem de leitura fixada no `CLAUDE.md`. Edição dos documentos LOCKED aguarda revisão formal (M0) | Nenhum |
 | R-007 | Pastas `Application/Architecture`, `Playtest`, `Production` (42 arquivos) modelam processos de governança como handlers que ecoam booleanos; **sem referência** em nenhum outro ponto | Código × Clean Architecture (Application = casos de uso do jogo) | Remoção **somente após `dotnet build` verde**; contrato de limpeza em M1 | Build |
 | R-009 | Duas séries de ADR com a mesma numeração (`decision-log.md` ADR-001…018 × `developer-guide/adr/` ADR-001…057) | decision-log × pasta adr | Novas decisões usam prefixo `DEC-`; unificação aguarda decisão | Dono/Arquiteto |
-| R-010 | Higiene do repositório: `node_modules`/`dist` (2.551 arquivos), 3 binários/listagens e `projectvictory.db` versionados; `.gitignore` incompleto | Clone do GitHub | `node_modules/` e `dist/` ignorados e removidos do controle; binários removidos (ver `CLEANUP-MANIFEST`). `projectvictory.db` sai **depois** do `PV-PLATFORM-001` (migração no startup) | Nenhum |
+| R-010 | Higiene do repositório: `node_modules`/`dist` (2.440 arquivos; corrigido em PV-GOV-002), 3 binários/listagens e `projectvictory.db` versionados; `.gitignore` incompleto | Clone do GitHub | `node_modules/` e `dist/` ignorados e removidos do controle; binários removidos (ver `CLEANUP-MANIFEST`). `projectvictory.db` sai **depois** do `PV-PLATFORM-001` (migração no startup) | Nenhum |
 | R-008 | Numeração de ADR: faltam 026, 044, 048; ADR-055 existe vazio; `docs/history/Sprint-054..056.md` vazios | `developer-guide/adr/` | Preencher ou declarar formalmente como reservados/descartados | Dono |
 
 ---
@@ -95,7 +95,19 @@ Foundation (Aggregate Root, Value Objects, Entities, Character) · Character Dom
 
 # Pendências de Validação (não executadas nesta verificação)
 
-- `dotnet build` e `dotnet test` da solução (não há SDK .NET no ambiente de análise).
+## Baseline executado na máquina do dono — 2026-11-05 (registrado em PV-GOV-002)
+
+| Verificação | Resultado |
+|---|---|
+| SDK | `dotnet` 10.0.301 |
+| `dotnet build ProjectVictory.sln` | **Verde**, com 4 avisos **NU1903**: `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 (vulnerabilidade de severidade alta) |
+| `dotnet test ProjectVictory.sln` | **1/1 passou** (`Application.Tests`). `Domain.Tests` e `Runtime.Tests` com 0 testes |
+| `dotnet test tests/ProjectVictory.SmokeTests` | **NÃO compila**: CS1503 em `RewardInventoryIntegrationTest.cs` linha 70 — `Assert.Contains` de `string` contra `Inventory.Items`, que é coleção de `ItemInstance` |
+
+Encaminhamento: correção do SmokeTests dentro de `PV-QA-001` e atualização do pacote SQLitePCLRaw (NU1903), ambos no M1 (`roadmap-to-playable.md`).
+
+## Ainda pendentes
+
 - Que o `ModelSnapshot` e as 14 migrations refletem o modelo atual do `DbContext` (6 DbSets: Accounts, Characters, Monsters, Items, HuntSessions, RuntimeStates).
 - Execução do fluxo no navegador (`COMO USAR O SMOKE TEST.txt`).
 

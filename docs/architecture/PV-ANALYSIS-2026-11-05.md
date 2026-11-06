@@ -80,7 +80,7 @@ ADRs relevantes para o trabalho à frente (todos ACCEPTED): 005/006 (Monster AI,
 - Volume de contratos: `docs/expansion/contracts` (161), `docs/vertical-slice/contracts` (58), `work-items` (46), `docs/contracts/*`: excelente rastreabilidade, mas sem índice único de "qual contrato está em vigor".
 
 ### 4.7 Higiene do repositório GitHub (verificada contra o clone)
-- O `.gitignore` não cobria `node_modules/` nem `dist/`: **2.438 arquivos de `node_modules` e 113 de `dist`** estavam versionados no client (repositório com 4.266 arquivos rastreados contra ≈ 1.830 de conteúdo real).
+- O `.gitignore` não cobria `node_modules/` nem `dist/`: **2.440 arquivos de `node_modules`/`dist`** (2.438 de `node_modules` e 2 de `dist`) estavam versionados no client (repositório com 4.266 arquivos rastreados contra ≈ 1.830 de conteúdo real).
 - Binários e listagens versionados sem valor de fonte: `src.zip` (5 MB), `client-files.txt` (352 KB), `NOT-APROVED-gameHUD.zip`.
 - `projectvictory.db` versionado (banco SQLite de desenvolvimento com 7 contas de teste, e-mails `@projectvictory.com`/`@test.com`). Não há dado pessoal aparente; o arquivo permanece no histórico do git. **Não foi removido nesta revisão**: sem migração no startup (M1, `PV-PLATFORM-001`), um clone novo ficaria sem banco.
 - Conteúdo de código e documentação: GitHub e zip enviado são **idênticos** em 1.768 arquivos comparados (diferença apenas de fim de linha CRLF×LF).

@@ -32,6 +32,6 @@ Nenhum arquivo C# foi alterado: o ambiente de análise não tem `dotnet`, logo n
 
 ## Higiene do repositório GitHub (R-010) — aplicada na branch `chief/m0-baseline-cleanup`
 - `.gitignore`: adicionados `node_modules/`, `dist/` e `*.swp`.
-- Removidos do **controle** do git (os arquivos continuam no disco de quem já os tem; rode `npm install` no client após o merge, pois o git remove `node_modules` da árvore de trabalho ao aplicar esta remoção): 2.438 arquivos de `node_modules` e 113 de `dist` em `src/ProjectVictory.Client/`.
+- Removidos do **controle** do git (os arquivos continuam no disco de quem já os tem; rode `npm install` no client após o merge, pois o git remove `node_modules` da árvore de trabalho ao aplicar esta remoção): **2.440 arquivos** em `src/ProjectVictory.Client/` (2.438 de `node_modules` e 2 de `dist`). *Corrigido em PV-GOV-002: a contagem anterior ("113 de `dist`", total 2.551) contava em duplicidade 111 arquivos de pastas `dist/` internas a `node_modules`; conferido no commit `ec1a1e0` — 2.441 arquivos alterados = 2.440 remoções + `.gitignore`.*
 - **Mantido de propósito:** `src/ProjectVictory.API/projectvictory.db` (ver Análise §4.7). Sai depois do `PV-PLATFORM-001`.
 - Os mesmos 5 itens apagados e 4 movidos descritos acima foram aplicados com `git rm` / `git mv` (histórico dos arquivos movidos preservado).
