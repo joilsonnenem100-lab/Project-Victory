@@ -20,4 +20,10 @@ public interface IRuntimeRepository
         int health,
         int mana,
         CancellationToken cancellationToken = default);
+
+    // PV-RUNTIME-010 (ADR-057 v1.2): grava a última Hunt escolhida no checkpoint do Runtime.
+    Task SaveLastHuntAsync(
+        Guid runtimeId,
+        string huntArea,
+        CancellationToken cancellationToken = default);
 }

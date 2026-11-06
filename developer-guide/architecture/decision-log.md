@@ -826,3 +826,11 @@ Status: **Accepted (Arquiteto)** — revisão documentada em `docs/architecture/
 - Fase 6 continua IN PROGRESS.
 
 > *Emenda (mesma data, revisão do `pv-architecture-reviewer`): critério único — um módulo só fica LOCKED quando o seu documento de domínio (contrato arquitetural do módulo) está cumprido. Por isso **Monster AI e Experience Distribution também ficam em REVIEW** (pendências R-050/R-043 e R-045), como o Spawn System. Nenhum módulo da Fase 6 foi travado nesta revisão.*
+
+## DEC-20261106-39 — Sessão de jogo por heartbeat HTTP (decisão do Arquiteto, Fila 7)
+
+Status: **Accepted (Arquiteto)** — implementa a diretriz do M6 (ADR-057 v1.2, `DEC-20261106-20`) no `PV-RUNTIME-010`
+
+- Heartbeat HTTP (`POST api/game/heartbeat`), **sem WebSocket**; presença em memória thread-safe; varredura periódica de quedas (Runtime Coordinator).
+- Tempos em configuração (`GameSession`): queda > 60 s, retorno após > 10 s online, varredura a cada 5 s.
+- "Última Hunt escolhida" gravada no checkpoint do Runtime (coluna nova `LastHuntArea`, migration aditiva); o retorno cria uma **nova** Hunt.

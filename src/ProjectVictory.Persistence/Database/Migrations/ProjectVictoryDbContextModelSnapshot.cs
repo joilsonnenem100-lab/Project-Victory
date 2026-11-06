@@ -223,6 +223,9 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.Property<bool>("Initialized")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("LastHuntArea")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Mana")
                         .HasColumnType("INTEGER");
 

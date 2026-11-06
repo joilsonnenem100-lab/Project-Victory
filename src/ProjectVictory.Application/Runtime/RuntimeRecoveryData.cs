@@ -5,4 +5,6 @@ public sealed record RuntimeRecoveryData(
     Guid CharacterId,
     bool Initialized,
     int Health,
-    int Mana);
+    int Mana,
+    // PV-RUNTIME-010: última Hunt escolhida (aditivo).
+    string? LastHuntArea = null);

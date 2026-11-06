@@ -65,6 +65,12 @@ public sealed class SaveStrategyTests
         public Task<RuntimeRecoveryData?> GetByCharacterIdAsync(Guid characterId, CancellationToken cancellationToken = default) =>
             inner.GetByCharacterIdAsync(characterId, cancellationToken);
 
+        public Task SaveLastHuntAsync(Guid runtimeId, string huntArea, CancellationToken cancellationToken = default)
+        {
+            counter.RuntimeWrites++;
+            return inner.SaveLastHuntAsync(runtimeId, huntArea, cancellationToken);
+        }
+
         public Task SaveCheckpointAsync(Guid runtimeId, int health, int mana, CancellationToken cancellationToken = default)
         {
             counter.RuntimeWrites++;

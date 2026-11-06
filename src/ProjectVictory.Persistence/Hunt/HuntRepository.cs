@@ -33,4 +33,18 @@ public sealed class HuntRepository : IHuntRepository
 
         return Task.FromResult(hunt);
     }
+
+    public Task<Domain.Hunt.Hunt?> GetRunningByCharacterIdAsync(
+        Guid characterId,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(_hunts.Values.FirstOrDefault(
+            hunt => hunt.CharacterId == characterId && hunt.State == Domain.Hunt.HuntState.Running));
+
+    public Task RemoveAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        _hunts.TryRemove(id, out _);
+        return Task.CompletedTask;
+    }
 }

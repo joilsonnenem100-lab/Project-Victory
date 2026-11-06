@@ -58,7 +58,8 @@ public sealed class RuntimeRepository : IRuntimeRepository
             state.CharacterId,
             state.Initialized,
             state.Health,
-            state.Mana);
+            state.Mana,
+            state.LastHuntArea);
     }
 
     // PV-PERSIST-011: atualiza a cópia persistida do Runtime só em checkpoint (nunca por rodada).
@@ -81,6 +82,29 @@ public sealed class RuntimeRepository : IRuntimeRepository
 
         state.Health = health;
         state.Mana = mana;
+
+        await _context.SaveChangesAsync(
+            cancellationToken);
+    }
+
+    // PV-RUNTIME-010: grava a última Hunt escolhida (uma vez por início de Hunt — checkpoint).
+    public async Task SaveLastHuntAsync(
+        Guid runtimeId,
+        string huntArea,
+        CancellationToken cancellationToken = default)
+    {
+        var state =
+            await _context.RuntimeStates
+                .FirstOrDefaultAsync(
+                    x => x.RuntimeId == runtimeId,
+                    cancellationToken);
+
+        if (state is null)
+        {
+            return;
+        }
+
+        state.LastHuntArea = huntArea;
 
         await _context.SaveChangesAsync(
             cancellationToken);

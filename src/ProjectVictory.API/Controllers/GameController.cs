@@ -9,12 +9,25 @@ namespace ProjectVictory.API.Controllers;
 public sealed class GameController : BaseApiController
 {
     private readonly EnterGameHandler _handler;
+    private readonly ProjectVictory.Application.GameSession.HeartbeatHandler _heartbeat;
 
 
     public GameController(
-        EnterGameHandler handler)
+        EnterGameHandler handler,
+        ProjectVictory.Application.GameSession.HeartbeatHandler heartbeat)
     {
         _handler = handler;
+        _heartbeat = heartbeat;
+    }
+
+    // PV-RUNTIME-010 (ADR-057 v1.2): heartbeat HTTP do cliente (sem WebSocket). Identidade pelo token.
+    [HttpPost("heartbeat")]
+    public async Task<IActionResult> Heartbeat()
+    {
+        var result =
+            await _heartbeat.Handle(
+                new ProjectVictory.Application.GameSession.HeartbeatCommand());
+        return Success(result);
     }
 
 

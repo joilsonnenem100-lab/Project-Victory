@@ -176,6 +176,16 @@ builder.Services.AddProjectVictoryCore(
         builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterHealthPotionsKey) ?? 0,
         builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterManaPotionsKey) ?? 0));
 
+// PV-RUNTIME-010 (ADR-057 v1.2; DEC-20261106-20): tempos da sessão de jogo em configuração
+// (queda > 1 min encerra a Hunt; retorno depois de > 10 s online) e varredura periódica de quedas.
+Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace(
+    builder.Services,
+    ServiceDescriptor.Singleton(new ProjectVictory.Application.GameSession.GameSessionSettings(
+        TimeSpan.FromSeconds(builder.Configuration.GetValue<double?>(ProjectVictory.Application.GameSession.GameSessionSettings.DisconnectTimeoutKey) ?? 60),
+        TimeSpan.FromSeconds(builder.Configuration.GetValue<double?>(ProjectVictory.Application.GameSession.GameSessionSettings.ReturnDelayKey) ?? 10),
+        TimeSpan.FromSeconds(builder.Configuration.GetValue<double?>(ProjectVictory.Application.GameSession.GameSessionSettings.SweepIntervalKey) ?? 5))));
+builder.Services.AddHostedService<ProjectVictory.API.Configuration.GameSessionSweepService>();
+
 // PV-PROG-013 (DEC-20261106-30): títulos por Level lidos da configuração ("LevelTitles") a cada
 // consulta — trocar rótulos/faixas no appsettings.json não exige recompilar nem reiniciar.
 // Revisão: registrado pela DI (recebe IConfiguration e ILogger); substitui o padrão da composição.

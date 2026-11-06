@@ -34,6 +34,7 @@ public sealed class AttackEncounterHandler
     private readonly CombatSupplyContext _supplies;
     private readonly IPendingSupplyConsumption _pendingSupplies;
     private readonly ICheckpointService _checkpoints;
+    private readonly ProjectVictory.Application.GameSession.IGameActivity _activity;
 
 
     public AttackEncounterHandler(
@@ -51,8 +52,11 @@ public sealed class AttackEncounterHandler
         CombatSupplyContext supplies,
         // PV-PERSIST-011: consumo pendente e checkpoints (Handbook §19).
         IPendingSupplyConsumption pendingSupplies,
-        ICheckpointService checkpoints)
+        ICheckpointService checkpoints,
+        // PV-RUNTIME-010: cada ataque também conta como presença.
+        ProjectVictory.Application.GameSession.IGameActivity activity)
     {
+        _activity = activity;
         _pendingSupplies = pendingSupplies;
         _checkpoints = checkpoints;
         _supplyPolicies = supplyPolicies;
@@ -110,6 +114,8 @@ public sealed class AttackEncounterHandler
                 hunt.CharacterId,
                 cancellationToken)
             ?? throw new InvalidOperationException("Character not found.");
+
+        _activity.MarkActive(character.Id);
 
         encounter.Activate();
 

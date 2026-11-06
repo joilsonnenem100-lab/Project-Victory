@@ -13,4 +13,7 @@ public sealed class PersistentRuntimeState
     public int Health { get; set; }
 
     public int Mana { get; set; }
+
+    // PV-RUNTIME-010 (ADR-057 v1.2): última Hunt escolhida — checkpoint mínimo do Runtime State.
+    public string? LastHuntArea { get; set; }
 }
