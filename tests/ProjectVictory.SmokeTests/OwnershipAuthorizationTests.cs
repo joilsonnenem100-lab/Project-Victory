@@ -165,6 +165,127 @@ public sealed class OwnershipAuthorizationTests
 
 
     [Fact]
+    public async Task StopHuntSession_Owner_Succeeds()
+    {
+        var (provider, scope, player) = await CreateAsync();
+        await using var _ = provider;
+        using var __ = scope;
+
+        var characterId =
+            await CreateOwnedCharacterWithRuntimeAsync(
+                scope.ServiceProvider,
+                player,
+                Guid.NewGuid());
+
+        var session =
+            await scope.ServiceProvider
+                .GetRequiredService<StartHuntSessionHandler>()
+                .Handle(
+                    new StartHuntSessionCommand(characterId));
+
+        await scope.ServiceProvider
+            .GetRequiredService<StopHuntSessionHandler>()
+            .Handle(
+                new StopHuntSessionCommand(session.HuntSessionId));
+    }
+
+
+    [Fact]
+    public async Task ExecuteHunt_OtherAccount_IsDenied()
+    {
+        var (provider, scope, player) = await CreateAsync();
+        await using var _ = provider;
+        using var __ = scope;
+
+        var characterId =
+            await CreateOwnedCharacterWithRuntimeAsync(
+                scope.ServiceProvider,
+                player,
+                Guid.NewGuid());
+
+        player.SetAccount(Guid.NewGuid());
+
+        await Assert.ThrowsAsync<OwnershipViolationException>(
+            () => scope.ServiceProvider
+                .GetRequiredService<ExecuteHuntHandler>()
+                .Handle(
+                    new ExecuteHuntCommand(
+                        characterId,
+                        Guid.NewGuid())));
+    }
+
+
+    [Fact]
+    public async Task OwnershipGuard_Runtime_Owner_Succeeds_OtherAccount_IsDenied()
+    {
+        var (provider, scope, player) = await CreateAsync();
+        await using var _ = provider;
+        using var __ = scope;
+
+        var ownerAccount = Guid.NewGuid();
+
+        var characterId =
+            await CreateOwnedCharacterWithRuntimeAsync(
+                scope.ServiceProvider,
+                player,
+                ownerAccount);
+
+        var runtimeId =
+            scope.ServiceProvider
+                .GetRequiredService<IRuntimeExecutionStateStore>()
+                .GetByCharacterId(characterId)
+                .RuntimeId;
+
+        var guard =
+            scope.ServiceProvider
+                .GetRequiredService<PlayerOwnershipGuard>();
+
+        await guard.EnsureRuntimeAsync(runtimeId);
+
+        player.SetAccount(Guid.NewGuid());
+
+        await Assert.ThrowsAsync<OwnershipViolationException>(
+            () => guard.EnsureRuntimeAsync(runtimeId));
+    }
+
+
+    [Fact]
+    public async Task OwnershipGuard_Encounter_Owner_Succeeds_OtherAccount_IsDenied()
+    {
+        var (provider, scope, player) = await CreateAsync();
+        await using var _ = provider;
+        using var __ = scope;
+
+        var ownerAccount = Guid.NewGuid();
+
+        var characterId =
+            await CreateOwnedCharacterWithRuntimeAsync(
+                scope.ServiceProvider,
+                player,
+                ownerAccount);
+
+        var hunt =
+            await scope.ServiceProvider
+                .GetRequiredService<ExecuteHuntHandler>()
+                .Handle(
+                    new ExecuteHuntCommand(
+                        characterId,
+                        Guid.NewGuid()));
+
+        var guard =
+            scope.ServiceProvider
+                .GetRequiredService<PlayerOwnershipGuard>();
+
+        await guard.EnsureEncounterAsync(hunt.Encounter.Id);
+
+        player.SetAccount(Guid.NewGuid());
+
+        await Assert.ThrowsAsync<OwnershipViolationException>(
+            () => guard.EnsureEncounterAsync(hunt.Encounter.Id));
+    }
+
+
+    [Fact]
     public async Task OwnershipGuard_UnknownCharacter_IsDenied()
     {
         var (provider, scope, player) = await CreateAsync();
