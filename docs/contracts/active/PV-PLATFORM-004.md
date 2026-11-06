@@ -1,6 +1,6 @@
 # PV-PLATFORM-004 — Schema do banco fora de Development
 
-Status: **IMPLEMENTADO** (branch `chief/q2-platform-004`)
+Status: **IMPLEMENTADO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/q2-ci-001`). Branch `chief/q2-platform-004`
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 2", item 5). Pedido: "Aplicar migrations no startup fora de Development apenas se uma chave de configuração explícita estiver ligada (padrão: desligada em Production)".
 Lastro: pendência herdada do `PV-PLATFORM-001`/`002`; Análise §4.4.
 
@@ -38,3 +38,11 @@ Lastro: pendência herdada do `PV-PLATFORM-001`/`002`; Análise §4.4.
 - O `ApiFactory` ganhou um construtor `internal` que recebe o ambiente. O fixture do xUnit continua com um único construtor público, em Development.
 
 Resultado da solução: build com 0 avisos; **173 aprovados, 0 ignorados, 0 falhas**. Nenhuma migration foi criada ou editada.
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+O revisor rodou build e testes (173 aprovados; `MigrationsOnStartupTests` 6/6). Ressalvas tratadas no branch `chief/q2-ci-001`:
+1. `deploy.md` agora diz que o `dotnet ef`/bundle precisa da ferramenta `dotnet-ef` e de `Jwt__Key` no ambiente, porque o `Program.cs` roda até o `Build()`. Também diz que o fluxo de Production não foi executado.
+2. **Valor inválido na chave** (ex.: `yes`) derruba o startup em qualquer ambiente (`GetValue<bool>`). Isso é aceito explicitamente: falhar cedo com configuração inválida é o mesmo padrão do `Jwt:Key` e do XP rate. Está documentado no guia e no `deploy.md`.
+3. O aviso de migrations pendentes **não tem teste automatizado**; o comportamento está só declarado. Fica para um contrato futuro de observabilidade.
+4. Comportamento aditivo novo: fora de Development, com a chave desligada, o startup faz **uma consulta de leitura** (`GetPendingMigrationsAsync`) para emitir o aviso.

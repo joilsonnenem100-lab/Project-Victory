@@ -42,6 +42,7 @@ Nome: **Fila 2** (ordem do PO de 2026-11-06): fechamento do M1 e governança —
 | Loot / Inventory | Parcial (Loot por definição de monstro, inventário do personagem) | `MonsterLootDefinitionProvider`, `InventoryController` |
 | Event System | **Inexistente** (ADR-049/050 não implementados) | Known Gaps |
 | Game Session / Runtime Coordinator / Hunt Loop contínuo | **Inexistentes** | Known Gaps |
+| Integração contínua | **Ativa** desde o `PV-CI-001`: `.github/workflows/ci.yml` roda `dotnet build`/`dotnet test ProjectVictory.sln` (.NET 10, Release, Ubuntu) e o build do cliente (Node 22) em push e pull request; typecheck informativo | `.github/workflows/ci.yml` |
 | Projeto `ProjectVictory.Composition` | **Ativo** desde o `PV-ARCH-001`: raiz de composição de DI compartilhada pela API e pelos testes (`AddProjectVictoryCore`); referencia Domain, Application, Infrastructure e Persistence; não é camada de regra | `src/ProjectVictory.Composition` |
 | Projetos `ProjectVictory.Runtime` e `ProjectVictory.Shared` | **Vazios** (somente `.csproj`) | 0 arquivos `.cs` |
 | Client | Telas de login, cadastro, personagem, entrada, jogo, inventário, recompensa | `src/ProjectVictory.Client/src/pages` |

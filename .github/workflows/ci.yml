@@ -1,0 +1,73 @@
+# PV-CI-001: build e testes da solução .NET e build do cliente em todo push e pull request.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dotnet:
+    name: .NET build e testes
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore ProjectVictory.sln
+
+      - name: Build
+        run: dotnet build ProjectVictory.sln --no-restore --configuration Release
+
+      # Os testes de API geram a própria chave JWT aleatória (ApiFactory); nenhum segredo é necessário.
+      - name: Test
+        run: dotnet test ProjectVictory.sln --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
+
+      - name: Publicar resultados dos testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-test-results
+          path: "**/TestResults/*.trx"
+          if-no-files-found: ignore
+
+  client:
+    name: Cliente (build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: src/ProjectVictory.Client
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/ProjectVictory.Client/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Typecheck informativo: ainda há 7 erros de tipo conhecidos nas telas (PV-PLATFORM-005 → PV-UI-0xx).
+      - name: Typecheck (informativo)
+        continue-on-error: true
+        run: npm run typecheck

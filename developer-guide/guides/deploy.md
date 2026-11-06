@@ -29,8 +29,14 @@ Escolha **uma** das estratégias por ambiente:
    ```
    dotnet ef database update --project src/ProjectVictory.Persistence --startup-project src/ProjectVictory.API --connection "Data Source=<caminho do banco>"
    ```
+   **Pré-requisitos (revisão do `PV-PLATFORM-004`):**
+   - a ferramenta `dotnet-ef` instalada (`dotnet tool install --global dotnet-ef`);
+   - `Jwt__Key` definido no ambiente onde o comando roda. O `dotnet ef` executa o `Program.cs` até o `Build()`, e o `JwtSettings.Validate` derruba a execução sem a chave.
+
+   *Este comando foi usado em Development (validação do `PV-REWARD-010`, numa cópia do banco); o fluxo completo de Production ainda não foi executado.*
+
    Outra opção é gerar um bundle executável: `dotnet ef migrations bundle --project src/ProjectVictory.Persistence --startup-project src/ProjectVictory.API`. Faça **backup** do banco antes (o arquivo `.db` junto com `-wal` e `-shm`).
-2. **Migrations no startup.** Ligue `Database__ApplyMigrationsOnStartup=true`. É simples para um servidor único, mas o schema é atualizado no momento em que a aplicação sobe, sem etapa de aprovação.
+2. **Migrations no startup.** Ligue `Database__ApplyMigrationsOnStartup=true` (só `true` ou `false`: qualquer outro valor, como `yes`, faz o startup falhar ao ler a configuração). É simples para um servidor único, mas o schema é atualizado no momento em que a aplicação sobe, sem etapa de aprovação.
 
 Com a chave desligada:
 - se houver migrations pendentes, a API registra um **aviso** no log com a lista delas;

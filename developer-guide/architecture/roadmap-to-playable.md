@@ -47,7 +47,7 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 
 **Saída:** clone limpo → `dotnet build` e `dotnet test ProjectVictory.sln` verdes; API sobe com schema; nenhum endpoint de gameplay anônimo; fluxo atual do Vertical Slice intacto.
 
-**Fila 2 (ordem do PO, 2026-11-06)** — fechamento do M1 e governança, branches `chief/q2-*` e `chief/m1-clean-001`: ✅ `PV-GOV-007` (ADRs 044/048/055, R-006, R-013; revisado) · ✅ `PV-GOV-008` (`CLAUDE.md`/`project-state.md`; revisado) · ✅ `PV-QA-003` (testes HTTP de posse e token; achado R-018) · ✅ `PV-ARCH-001` (R-014; projeto `ProjectVictory.Composition`) · ✅ `PV-PLATFORM-004` · ✅ `PV-PLATFORM-005` · `PV-CI-001` · `PV-CLEAN-001`. Status final em `docs/architecture/RELATORIO-FILA-2.md`.
+**Fila 2 (ordem do PO, 2026-11-06)** — fechamento do M1 e governança, branches `chief/q2-*` e `chief/m1-clean-001`: ✅ `PV-GOV-007` (ADRs 044/048/055, R-006, R-013; revisado) · ✅ `PV-GOV-008` (`CLAUDE.md`/`project-state.md`; revisado) · ✅ `PV-QA-003` (testes HTTP de posse e token; achado R-018) · ✅ `PV-ARCH-001` (R-014; projeto `ProjectVictory.Composition`) · ✅ `PV-PLATFORM-004` · ✅ `PV-PLATFORM-005` · ✅ `PV-CI-001` (`.github/workflows/ci.yml`) · `PV-CLEAN-001`. Status final em `docs/architecture/RELATORIO-FILA-2.md`.
 
 ## M2 — Conformidade com a arquitetura LOCKED *(corrigir divergências; sem novos sistemas)*
 
