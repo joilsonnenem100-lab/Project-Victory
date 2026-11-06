@@ -4,7 +4,7 @@
 
 Versão do Documento: 2.0
 Status: Oficial
-Data da verificação: 2026-11-05
+Data da verificação: 2026-11-05 · **Atualizado em 2026-11-06** (M1 parcial, M2 completo, Fila 2 — `PV-GOV-008`)
 Substitui: v1.2 (2026-07-14), preservada no histórico git.
 Método: estado **verificado contra o código** (hierarquia da fonte da verdade: código > contratos/ADRs > documentação). Build e testes **não foram executados** (ambiente sem `dotnet`) nesta verificação; o baseline foi executado depois na máquina do dono (2026-11-05) e está registrado em Pendências de Validação.
 
@@ -14,12 +14,14 @@ Método: estado **verificado contra o código** (hierarquia da fonte da verdade:
 
 O código está **à frente** da documentação de estado anterior: o Vertical Slice (conta → login → personagem → entrada no mundo → hunt → combate → recompensa → XP) existe ponta a ponta, porém **sobre implementações provisórias** (stubs) em Combate, Recompensa e Progressão, e com divergências em relação a ADRs ACCEPTED. O projeto **não está pronto para jogo**; está pronto para a fase de **conformidade e substituição de stubs**.
 
+*Atualização 2026-11-06 (`PV-GOV-008`):* M1 quase completo (faltam `PV-PLATFORM-004/005` e `PV-CLEAN-001`, em andamento na Fila 2) e **M2 completo**: Experience Table pela curva do PO, Level derivado, Experience `long`, Reward Pipeline real (XP × XP rate do servidor, ouro, drops por chance), stores em memória seguros. O **combate** ainda é stub (dano fixo 5, sem vida do jogador): é o M3.
+
 ---
 
 # Sprint Atual
 
-Nome: **M0 — Baseline e Governança** (ver `roadmap-to-playable.md`)
-Objetivo: reconciliar documentação e código, decidir as revisões pendentes, estabelecer equipe e baseline executável.
+Nome: **Fila 2** (ordem do PO de 2026-11-06): fechamento do M1 e governança — `PV-GOV-007/008`, `PV-QA-003`, `PV-ARCH-001`, `PV-PLATFORM-004/005`, `PV-CI-001`, `PV-CLEAN-001`. Depois: **M3 — Combate real**.
+*Histórico:* M0 — Baseline e Governança (2026-11-05); M1 (2026-11-05/06); M2 (2026-11-06, `docs/architecture/RELATORIO-M2.md`).
 
 ---
 
@@ -249,7 +251,9 @@ Encaminhamento (sem corrigir agora, conforme o contrato): **`PV-PLATFORM-005`** 
 
 # Próximo Objetivo
 
-Executar **M0** (decisões ~~R-001~~ (resolvida em 2026-11-06), R-005, R-006, R-008; baseline executável na máquina do dono) e em seguida **M1**. Ver `roadmap-to-playable.md`.
+Concluir a **Fila 2** e iniciar o **M3** (Combate real: `PV-COMBAT-010/011/012`, `PV-HUNT-010`, `PV-SUPPLY-010`, `PV-CONTENT-011`). Revisões ainda abertas: R-005 (duas famílias de roadmap), R-011 (confirmação do PO), R-012, R-014 (`PV-ARCH-001`), R-015…R-017. Ver `roadmap-to-playable.md`.
+
+*Histórico:* ~~Executar **M0** (decisões ~~R-001~~ (resolvida em 2026-11-06), R-005, R-006, R-008; baseline executável na máquina do dono) e em seguida **M1**.~~ R-006 e R-008 resolvidas no `PV-GOV-007`.
 
 ---
 

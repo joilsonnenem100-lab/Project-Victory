@@ -15,7 +15,7 @@ MMORPG Idle inspirado em Tibia: progressão automática por Hunts. Backend ASP.N
 5. `docs/architecture/master/PROJECT-VICTORY-ARCHITECTURE-HANDBOOK-V3.md` + `docs/architecture/master/PROJECT-VICTORY-ARCHITECTURE-RULES.md`
 6. ADRs relevantes em `developer-guide/adr/` e o contrato da tarefa.
 
-`docs/CURRENT_CONTEXT.md` é **histórico** (ele mesmo declara isso). Ignore as referências antigas a ele que ainda existem em `PROJECT_CONTEXT.md`, `AI_WORKFLOW.md` e `architecture-checklist.md`.
+`docs/CURRENT_CONTEXT.md` é **histórico** (ele mesmo declara isso). As referências antigas a ele em `docs/PROJECT_CONTEXT.md`, `docs/AI_WORKFLOW.md`, `README_DEVELOPMENT.md` e `docs/checklists/architecture-checklist.md` foram corrigidas no `PV-GOV-007` (`DEC-20261106-13`) e hoje apontam para `project-state.md` (texto antigo tachado).
 
 ## Hierarquia da fonte da verdade (do próprio projeto)
 1. Código oficial aprovado → 2. Contratos e decisões arquiteturais (ADRs) → 3. Documentação oficial → 4. Master Architecture Map.
@@ -38,15 +38,26 @@ Contrato citado · diff só no escopo autorizado · `dotnet build` verde · test
 ## Comandos
 ```
 dotnet build ProjectVictory.sln
-dotnet test  ProjectVictory.sln
-dotnet test  tests/ProjectVictory.SmokeTests          # já incluído no .sln desde PV-QA-001 parte 1 (1 teste com Skip até PV-REWARD-010)
-dotnet run   --project src/ProjectVictory.API          # API (CORS permite http://localhost:5173)
+dotnet test  ProjectVictory.sln                        # todos os projetos de teste (abaixo)
+dotnet user-secrets set "Jwt:Key" "<chave com 32+ caracteres>" --project src/ProjectVictory.API   # uma vez, antes do primeiro run
+dotnet run   --project src/ProjectVictory.API          # Development: aplica as migrations no startup; CORS permite http://localhost:5173
 cd src/ProjectVictory.Client && npm install && npm run dev
 ```
-O ambiente de nuvem usado na análise inicial **não tem `dotnet`**: build e testes só são comprováveis na máquina do dono. Nunca declare "build passou" sem tê-lo executado; diga "não executado" e peça o resultado.
+- **Sem `Jwt:Key` a API não sobe** em nenhum ambiente (`PV-PLATFORM-002`). Em Development a chave vem de **user-secrets**; fora dele, da variável `Jwt__Key`. Guia: `developer-guide/guides/configuracao-local.md`. Nunca escreva a chave no repositório (é público).
+- **Projetos de teste** (todos no `.sln`): `ProjectVictory.Application.Tests`, `ProjectVictory.Domain.Tests`, `ProjectVictory.Runtime.Tests`, `ProjectVictory.SmokeTests` (DI + InMemory/SQLite) e `ProjectVictory.Api.Tests` (API real via `WebApplicationFactory`, chave JWT aleatória por execução).
+- **Baseline atual:** a contagem oficial de testes fica em `project-state.md` (seção de testes automatizados); em 2026-11-06, depois do M2, eram **161 aprovados, 0 ignorados, 0 falhas**, com build sem avisos.
+- Nunca declare "build passou" ou "testes verdes" sem tê-los executado; diga "não executado" e peça o resultado. Ao fim de cada contrato, confirme que não sobrou processo `dotnet`/`ProjectVictory.API` (`dotnet build-server shutdown`; `Get-Process dotnet,ProjectVictory.API`).
 
 ## Convenções
 - Documentação e comentários em português; identificadores em inglês.
-- IDs: contratos `PV-<ÁREA>-NNN`, work items `PV-VS-NNN`, ADRs `ADR-NNN` (próximo livre: ADR-058; lacunas 044, 048 e ADR-055 vazio são pendências, não números livres; ADR-026 preenchido em PV-GOV-006).
+- IDs: contratos `PV-<ÁREA>-NNN`, work items `PV-VS-NNN`, ADRs `ADR-NNN` (**próximo livre: ADR-058**). ADR-044 e ADR-048 são **NOT USED** (reservados, não reutilizar); ADR-026 ACCEPTED (`PV-GOV-006`); ADR-055 PROPOSED (`PV-GOV-007`). Decisões datadas do PO/Arquiteto: `DEC-AAAAMMDD-NN` no `decision-log.md`.
 - Commits pequenos, mensagem `PV-<ID> - <resumo>`.
 - Registro do que foi apagado/movido: `docs/architecture/CLEANUP-MANIFEST-2026-11-05.md`.
+
+## Execução autônoma em fila (MODO NOITE / MODO FILA)
+Protocolo usado quando o PO manda executar uma fila de contratos sem parar (ordens de 2026-11-06):
+- **Branches empilhadas:** a primeira nasce da última branch pronta; cada seguinte nasce da anterior. Push de cada branch; **nunca** `push --force`, nunca alterar a `main` (o merge é do PO), nunca apagar arquivos sem autorização explícita, nunca editar migrations existentes, nunca escrever segredos.
+- **Por contrato:** plano curto → implementação → `dotnet build` → `dotnet test ProjectVictory.sln` → `pv-architecture-reviewer` → aplicar ressalvas (podem entrar na branch seguinte, se a revisão chegar depois) → atualizar `project-state.md` e `roadmap-to-playable.md` → commits `PV-<ID> - <resumo>` → confirmar que não restou processo `dotnet`.
+- **Se travar** por decisão de PO, ação destrutiva ou conflito com ADR/LOCKED sem solução documental: registrar no relatório, pular e seguir. Não inventar solução.
+- **Relatório final** em `docs/architecture/` na última branch (ex.: `RELATORIO-NOITE-2026-11-06.md`, `RELATORIO-M2.md`, `RELATORIO-FILA-2.md`), com status de cada contrato, build/testes, achados do revisor, o que travou e decisões de PO pendentes; depois push e um resumo curto ao PO.
+- **Worktrees:** se o checkout principal for trocado por fora da sessão (já aconteceu com uma IDE aberta), trabalhar num `git worktree` separado (`git -c core.longpaths=true worktree add ...`).

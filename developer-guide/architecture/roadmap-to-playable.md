@@ -47,6 +47,8 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 
 **Saída:** clone limpo → `dotnet build` e `dotnet test ProjectVictory.sln` verdes; API sobe com schema; nenhum endpoint de gameplay anônimo; fluxo atual do Vertical Slice intacto.
 
+**Fila 2 (ordem do PO, 2026-11-06)** — fechamento do M1 e governança, branches `chief/q2-*` e `chief/m1-clean-001`: ✅ `PV-GOV-007` (ADRs 044/048/055, R-006, R-013) · ✅ `PV-GOV-008` (`CLAUDE.md`/`project-state.md`) · `PV-QA-003` · `PV-ARCH-001` (R-014) · `PV-PLATFORM-004` · `PV-PLATFORM-005` · `PV-CI-001` · `PV-CLEAN-001`. Status final em `docs/architecture/RELATORIO-FILA-2.md`.
+
 ## M2 — Conformidade com a arquitetura LOCKED *(corrigir divergências; sem novos sistemas)*
 
 Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (L³ − 6L² + 17L − 12)`, Experience `long`, Level derivado, Experience Table gerada pela fórmula (`DEC-20261106-10`); mesma curva em todas as Ascensions (`DEC-20261106-11`); XP rate 1x como configuração do servidor, sem endpoint (`DEC-20261106-12`); teto de Level 500 por Ascension (`ADR-026`); todo item com preço de venda ao NPC provisório (`DEC-20261106-08`).
