@@ -1,6 +1,6 @@
 # PV-GOV-008 — CLAUDE.md e project-state.md no estado real
 
-Status: **CONCLUÍDO** (branch `chief/q2-gov-008`; só `.md`)
+Status: **CONCLUÍDO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/q2-qa-003`). Branch `chief/q2-gov-008`; só `.md` — build/teste não aplicáveis ao diff (a suíte foi executada no branch anterior e no seguinte, sem mudança)
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 2", item 2). Lastro: ADR-016 do `decision-log.md` (documentação é do Arquiteto); `CLAUDE.md` (Definition of Done: documentação atualizada).
 
 ## Mudanças no `CLAUDE.md`
