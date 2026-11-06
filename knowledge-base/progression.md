@@ -67,7 +67,7 @@ Cada Ascension representa uma nova etapa do personagem.
 
 Ao realizar uma Ascension:
 
-- O Level retorna para 1.
+- O Level retorna para 1. *(SUPERADO, `DEC-20261106-19`: o Level nunca volta a 1; a Ascension é derivada do Level.)*
 - Os atributos permanentes são mantidos.
 - Novas regiões são desbloqueadas.
 - Novos monstros tornam-se disponíveis.

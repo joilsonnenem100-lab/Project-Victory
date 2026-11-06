@@ -1,5 +1,7 @@
 # PV-PROG-011 — Experience Table gerada pela curva
 
+> *Emenda (2026-11-06, `DEC-20261106-19`): o teto de 500 Levels por tabela foi **superado** (Level sem teto; Ascension derivada do Level). A implementação nova está no `PV-PROG-012`.*
+
 Status: **IMPLEMENTADO** (branch `chief/m2-prog-011`)
 Emitido por: Arquitetura (sessão Chefe), 2026-11-06, conforme `roadmap-to-playable.md` (M2) e `PV-GOV-006`.
 Lastro: ADR-025 (Experience Table interpreta a Experience), ADR-026 (Level 500 por Ascension), `DEC-20261106-10/11`, `developer-guide/domain/experience-table.md`. Resolve **R-003**.

@@ -636,7 +636,7 @@ Os valores iniciais e os ganhos por Level seguem o Tibia. Ganhos por Level defin
   - Paladin: vida 185 + 10 × (Level − 8); mana 90 + 15 × (Level − 8).
   - Druid e Sorcerer: vida 5 × Level + 145; mana 90 + 30 × (Level − 8).
   - Todos batem com os ganhos do PO.
-- **Monk: PROVISÓRIO.** A vocação não está na fonte consultada. Ela usa o mesmo padrão até o Level 8, com os ganhos do PO (+12/+15) depois.
+- **Monk: PROVISÓRIO até conferir na TibiaWiki.** A vocação existe no Tibia atual, mas não está na fonte consultada (o NabBot é anterior a ela). Ela usa o mesmo padrão até o Level 8. Os ganhos depois do 8 (+12/+15) valem **por decisão do PO** (`DEC-20261106-15`: "salvo decisão do PO"), não por conferência com o Tibia.
 
 Implementação: `PV-CHAR-011`.
 

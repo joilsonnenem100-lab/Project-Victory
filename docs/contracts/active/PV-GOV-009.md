@@ -1,6 +1,6 @@
 # PV-GOV-009 — Decisões do PO da tarde de 2026-11-06
 
-Status: **CONCLUÍDO** (branch `chief/q4-gov-009`; só `.md`)
+Status: **CONCLUÍDO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/q4-char-011`). Branch `chief/q4-gov-009`; só `.md`
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 4", item 1). Revisão formal dos documentos LOCKED afetados **autorizada pelo Arquiteto-Chefe** na mesma ordem.
 Lastro: ADR-016 do `decision-log.md` (o PO decide Game Design); `roadmap.md`/`CLAUDE.md` (LOCKED só muda por revisão documentada).
 
@@ -35,3 +35,15 @@ Lastro: ADR-016 do `decision-log.md` (o PO decide Game Design); `roadmap.md`/`CL
 - `roadmap-to-playable.md`: linha da Fila 4 e nota do M6, com as respostas às dúvidas de treino e de conexão.
 
 Build e testes: não aplicáveis (só `.md`); a suíte segue a da `main`.
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+O revisor confirmou que nada foi apagado, que a fórmula está correta (Level 1 = 150/55, Level 8 = 185/90) e que o ADR-057 1.1 → 1.2 está certo. Ressalvas aplicadas no branch `chief/q4-char-011`:
+1. Nota em `progression.md` ("O Level retorna para 1").
+2. Notas de superação em `PV-PROG-011.md`, `PV-GOV-006.md` (D3 e D4) e no M2 do `roadmap-to-playable.md`.
+3. Conflitos registrados:
+   - `knowledge-base/character.md` (e `schema/character.md`): "5 Ascensions" e "Legend = Level 500 + Ascension 5" × máximo 4 → **R-034** (PO);
+   - `experience-table.md`, "último nível válido" × sem Level máximo → resolvido no `PV-PROG-012`.
+4. ADR-057 v1.2 recebeu "logout por outro motivo → tela inicial".
+5. Monk reformulado: PROVISÓRIO até conferir na TibiaWiki; os ganhos depois do 8 são **do PO**.
+6. Linha de histórico da Fila 4 no `project-state.md`.

@@ -4,7 +4,7 @@ Status: ACCEPTED
 Version: 1.2
 
 > **Emenda v1.2 (2026-11-06, `DEC-20261106-20/21`, revisão autorizada pelo Arquiteto-Chefe):**
-> - **Parte B:** a queda de conexão só encerra a Hunt (pipeline único) depois de **mais de 1 minuto**; no primeiro minuto a Hunt segue no servidor. Ao voltar, o jogador cai na tela inicial; se ficar online mais de 10 s depois de uma queda, retorna à **última Hunt escolhida** com uma **nova** Hunt Session (a anterior não é mantida).
+> - **Parte B:** a queda de conexão só encerra a Hunt (pipeline único) depois de **mais de 1 minuto**; no primeiro minuto a Hunt segue no servidor. Ao voltar, o jogador cai na tela inicial; se ficar online mais de 10 s depois de uma queda, retorna à **última Hunt escolhida** com uma **nova** Hunt Session (a anterior não é mantida). Logout por qualquer outro motivo → tela inicial.
 > - **"Offline Training" passa a ser Treino com a página aberta:** queda de mais de 5 min encerra o treino. **Não há progresso offline em nenhuma atividade.**
 > - **Parte A:** a **última Hunt escolhida** é o checkpoint mínimo do Runtime State. Diretriz do M6: heartbeat sem WebSocket (salvo justificativa) e presença em memória thread-safe.
 Data: 2026-11-05

@@ -51,7 +51,7 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 
 ## M2 — Conformidade com a arquitetura LOCKED *(corrigir divergências; sem novos sistemas)*
 
-Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (L³ − 6L² + 17L − 12)`, Experience `long`, Level derivado, Experience Table gerada pela fórmula (`DEC-20261106-10`); mesma curva em todas as Ascensions (`DEC-20261106-11`); XP rate 1x como configuração do servidor, sem endpoint (`DEC-20261106-12`); teto de Level 500 por Ascension (`ADR-026`); todo item com preço de venda ao NPC provisório (`DEC-20261106-08`).
+Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (L³ − 6L² + 17L − 12)`, Experience `long`, Level derivado, Experience Table gerada pela fórmula (`DEC-20261106-10`); mesma curva em todas as Ascensions (`DEC-20261106-11`); XP rate 1x como configuração do servidor, sem endpoint (`DEC-20261106-12`); teto de Level 500 por Ascension (`ADR-026`; *superado por `DEC-20261106-19`: Level sem teto, Ascension derivada*); todo item com preço de venda ao NPC provisório (`DEC-20261106-08`).
 
 **Ordem de execução (Arquiteto, ADR-016):** `PV-PROG-011` vem **antes** do `PV-PROG-010`, porque o Level derivado precisa da Experience Table para existir. Os demais seguem a ordem da tabela.
 
@@ -79,7 +79,7 @@ Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (
 
 **Saída:** combate com resultado não trivial, determinístico e coberto por testes de Domain/Application; cliente continua consumindo o mesmo contrato de resultado.
 
-**Fila 4 (ordem do PO, 2026-11-06 à tarde)** — branches `chief/q4-*` a partir da `main` (que contém a Fila 3): `PV-GOV-009` (decisões do PO) · `PV-CHAR-011` (Vida/Mana Tibia) · `PV-PROG-012` (Level sem teto, Ascension derivada) · `PV-SUPPLY-011` (fim de suprimento não encerra; morte → tela inicial) · `PV-COMBAT-013` (4 skills por classe) · `PV-CLEAN-002`/`003` (remoções autorizadas). Status final em `docs/architecture/RELATORIO-FILA-4.md`.
+**Fila 4 (ordem do PO, 2026-11-06 à tarde)** — branches `chief/q4-*` a partir da `main` (que contém a Fila 3): `PV-GOV-009` (decisões do PO) · ✅ `PV-CHAR-011` (Vida/Mana Tibia) · `PV-PROG-012` (Level sem teto, Ascension derivada) · `PV-SUPPLY-011` (fim de suprimento não encerra; morte → tela inicial) · `PV-COMBAT-013` (4 skills por classe) · `PV-CLEAN-002`/`003` (remoções autorizadas). Status final em `docs/architecture/RELATORIO-FILA-4.md`.
 
 **Fila 3 (ordem do PO, 2026-11-06)** — execução do M3 com pré-requisitos, branches `chief/m3-*` (nascem de `chief/m1-clean-001`; a `main` ainda não o contém): ✅ `PV-SEC-002` (R-018; revisado) · ✅ `PV-CHAR-010` (Vida/Mana derivadas, ADR-029; valores PROVISÓRIOS, R-021) · ✅ `PV-COMBAT-010` (orquestrador; integração no 011/012) · ✅ `PV-COMBAT-011` (semente por encounter; `Combat:FixedSeed` só para testes) · ✅ `PV-COMBAT-012` (combate real no ataque; fórmula e atributos PROVISÓRIOS) · ✅ `PV-HUNT-010` (pipeline único `EndHuntHandler`; cidade PROVISÓRIA) · ✅ `PV-SUPPLY-010` (poções; valores e interpretações PROVISÓRIOS) · ✅ `PV-CONTENT-011` (Spider Cave por dados; balanceamento PROVISÓRIO) · ✅ `PV-QA-004` (ponta a ponta na Spider Cave pela API real) · ⏭️ `PV-CLEAN-002` (**pulado**: a linha "R-020: AUTORIZADO" não constava na ordem). Status final em `docs/architecture/RELATORIO-FILA-3.md`.
 

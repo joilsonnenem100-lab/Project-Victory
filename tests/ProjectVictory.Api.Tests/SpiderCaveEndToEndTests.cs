@@ -163,7 +163,7 @@ public sealed class SpiderCaveEndToEndTests
     [Fact]
     public async Task Defeat_EndsHuntThroughSamePipeline_ReturnsToCity_WithFullHealth_AndCanHuntAgain()
     {
-        // Encounter [Giant Spider] contra um Sorcerer de Level 1 (125 HP, armadura 2).
+        // Encounter [Giant Spider] contra um Sorcerer de Level 1 (150 HP pelo Tibia, DEC-20261106-18; armadura 2).
         using var server = new Server(SeedForTemplate(4));
         var player = await EnterWorld(server.Factory, "Sorcerer");
         using var _ = player.Client;
@@ -177,10 +177,10 @@ public sealed class SpiderCaveEndToEndTests
         Assert.Equal(0, (await CharacterOf(player)).GetProperty("experience").GetInt64()); // nada perdido (nada ganho)
 
         // Na cidade com HP cheio: a próxima Hunt começa e o primeiro turno do jogador acontece
-        // com a vida máxima (125) antes do primeiro golpe recebido.
+        // com a vida máxima (150) antes do primeiro golpe recebido.
         var next = await Attack(player, await StartHunt(player));
         var firstPlayerTurn = next.GetProperty("turns").EnumerateArray().First();
-        Assert.Equal(125, firstPlayerTurn.GetProperty("actorHealthAfter").GetInt32());
+        Assert.Equal(150, firstPlayerTurn.GetProperty("actorHealthAfter").GetInt32());
     }
 
     private const string ExpectedPotionOutcome = "OutOfSupplies";

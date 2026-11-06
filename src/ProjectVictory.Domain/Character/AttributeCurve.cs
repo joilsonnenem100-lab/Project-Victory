@@ -2,45 +2,71 @@ using System;
 
 namespace ProjectVictory.Domain.Character;
 
-// PV-CHAR-010: Attribute Curve (ADR-029) — Vida e Mana máximas derivadas de Class + Level
-// (Level derivado de Experience + Ascension, ADR-027). Não são armazenadas como valor editável.
+// PV-CHAR-010/011: Attribute Curve (ADR-029) — Vida e Mana máximas derivadas de Class + Level
+// (Level derivado da Experience, ADR-027). Não são armazenadas como valor editável.
 //
-// Máximo no Level L = Inicial + floor(Ganho por Level × (L − 1)).
-// O ganho aceita fração (ex.: +0.75), porque knowledge-base/progression.md usa valores fracionários.
+// PV-CHAR-011 (DEC-20261106-18, referência Tibia): duas fases.
+// - Do Level 1 até o VocationLevel: Inicial + floor(ganho sem vocação × (L − 1)).
+// - Depois: valor no VocationLevel + floor(ganho da classe × (L − VocationLevel)).
+// Com VocationLevel = 1 (padrão) a curva tem uma fase só: Inicial + ganho × (L − 1).
+// Os ganhos aceitam fração.
 public sealed record AttributeCurve(
     int InitialHealth,
     decimal HealthPerLevel,
     int InitialMana,
-    decimal ManaPerLevel)
+    decimal ManaPerLevel,
+    int VocationLevel = 1,
+    decimal PreVocationHealthPerLevel = 0,
+    decimal PreVocationManaPerLevel = 0)
 {
     public int MaximumHealthAt(int level) =>
-        ValueAt(InitialHealth, HealthPerLevel, level);
+        ValueAt(InitialHealth, PreVocationHealthPerLevel, HealthPerLevel, level);
 
     public int MaximumManaAt(int level) =>
-        ValueAt(InitialMana, ManaPerLevel, level);
+        ValueAt(InitialMana, PreVocationManaPerLevel, ManaPerLevel, level);
 
-    private static int ValueAt(int initial, decimal perLevel, int level)
+    private int ValueAt(int initial, decimal prePerLevel, decimal perLevel, int level)
     {
         if (level < 1)
         {
             throw new ArgumentOutOfRangeException(nameof(level));
         }
 
-        return checked(initial + (int)decimal.Floor(perLevel * (level - 1)));
+        if (VocationLevel < 1)
+        {
+            throw new InvalidOperationException("Vocation level must be at least 1.");
+        }
+
+        if (level <= VocationLevel)
+        {
+            return checked(initial + (int)decimal.Floor(prePerLevel * (level - 1)));
+        }
+
+        var atVocationLevel = initial + decimal.Floor(prePerLevel * (VocationLevel - 1));
+        var value = atVocationLevel + decimal.Floor(perLevel * (level - VocationLevel));
+
+        // checked: o Level não tem teto (DEC-20261106-19); estouro vira exceção, nunca valor errado.
+        return checked((int)value);
     }
 }
 
-// PV-CHAR-010: tabela de curvas por classe.
+// PV-CHAR-011: tabela de curvas por classe, em dados (DEC-20261106-18; R-021 resolvido).
 //
-// *** PROVISÓRIO *** — os números vêm de CharacterClassDefinition (o que o jogo já usa desde o
-// Vertical Slice), para não mudar o personagem de Level 1. Eles CONFLITAM com
-// knowledge-base/progression.md ("HP inicial 100 para todas; Knight +0.75 por Level…") — pergunta
-// ao PO registrada como R-021. Trocar os valores = trocar só esta tabela (dados), sem mudar regra.
-// Ascension: a curva usa só o Level, que volta a 1 na Ascension; isso CONTRADIZ "atributos
-// permanentes são mantidos" (progression.md / ADR-026). Sem efeito hoje (Ascension fixa em 1);
-// a regra fica para o contrato de Ascension (R-022).
+// Referência Tibia, conferida no código aberto do NabBot (`cogs/utils/tibia.py`, Apache 2.0, com as
+// fórmulas da TibiaWiki):
+// - sem vocação até o Level 8: Vida = 5 × L + 145 e Mana = 5 × L + 50 (Level 1 = 150/55);
+// - do Level 8 em diante, os ganhos da classe (Knight +15/+5, Paladin +10/+15, Druid e Sorcerer
+//   +5/+30), conferidos com os ganhos definidos pelo PO.
+// - Monk: *** PROVISÓRIO *** — ausente da fonte; mesmo padrão até o 8 e ganhos do PO (+12/+15).
+// Os valores por classe ficam em CharacterClassDefinition; a fase sem vocação, aqui.
 public static class AttributeCurveTable
 {
+    public const int VocationLevel = 8;
+
+    public const decimal PreVocationHealthPerLevel = 5;
+
+    public const decimal PreVocationManaPerLevel = 5;
+
     public static AttributeCurve ForClass(
         CharacterClass characterClass,
         int ascension = 1)
@@ -50,6 +76,8 @@ public static class AttributeCurveTable
             throw new ArgumentOutOfRangeException(nameof(ascension));
         }
 
+        // A Ascension é derivada do Level (DEC-20261106-19) e o Level nunca volta a 1, então a curva
+        // não muda com a Ascension (R-022 sem efeito).
         var definition =
             CharacterClassDefinition.Get(characterClass);
 
@@ -57,6 +85,9 @@ public static class AttributeCurveTable
             definition.InitialHealth,
             definition.HealthGrowth,
             definition.InitialMana,
-            definition.ManaGrowth);
+            definition.ManaGrowth,
+            VocationLevel,
+            PreVocationHealthPerLevel,
+            PreVocationManaPerLevel);
     }
 }
