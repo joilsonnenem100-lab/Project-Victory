@@ -33,3 +33,8 @@ dist/
 
 # Editor
 *.swp
+
+# Banco SQLite de desenvolvimento (PV-PLATFORM-001: criado pelo Migrate() no startup em Development)
+projectvictory.db
+*.db-shm
+*.db-wal
