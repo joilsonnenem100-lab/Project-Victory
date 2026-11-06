@@ -191,6 +191,13 @@ using (var scope = app.Services.CreateScope())
         scope.ServiceProvider
             .GetRequiredService<ProjectVictoryDbContext>();
 
+    // PV-PLATFORM-001: em Development, aplica as migrations existentes antes do seed,
+    // para que um clone limpo suba com o schema criado. Fora de Development nada muda.
+    if (app.Environment.IsDevelopment())
+    {
+        await context.Database.MigrateAsync();
+    }
+
     await ItemDefinitionSeed.ExecuteAsync(
         context);
 }
