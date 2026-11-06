@@ -123,3 +123,14 @@ Ver também:
 - monsters.md
 - monster-ai.md
 - experience.md
+
+---
+
+# Implementação atual (`PV-XP-010`, Fila 6)
+
+> Status do documento continua DRAFT: a regra de grupo é decisão do PO.
+
+- `IExperienceDistributor.Distribute(finalExperience, participants)` (`src/ProjectVictory.Application/Reward/ExperienceDistribution.cs`) recebe só a Experience **final** (já com XP rate) e devolve as partes (`ExperienceShare`); não altera Experience.
+- O Reward Pipeline (`RewardResolutionHandler`) aplica cada parte pelo `ApplyResolvedRewardToCharacterHandler` (ADR-024).
+- Regra **PROVISÓRIA** (`EvenSplitExperienceDistributor`): divisão igual; o resto vai 1 a 1 aos primeiros participantes; com 1 participante (hoje), recebe tudo.
+- Pendência: atomicidade com vários participantes (R-045).

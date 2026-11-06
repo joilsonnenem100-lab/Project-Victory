@@ -48,3 +48,12 @@ Resultado: build com 0 avisos; **325 aprovados, 0 ignorados, 0 falhas** (Applica
 
 - A regra de divisão da Experience em grupo (`EvenSplitExperienceDistributor`) é do PO; no Tibia, o *shared experience* tem regras próprias. Para trocar, implemente outra `IExperienceDistributor` e registre-a na DI.
 - Quem são os participantes de uma Hunt em grupo: hoje é sempre o personagem do combate. A Hunt em grupo é uma fase futura.
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q6-spawn-010`
+
+1. Status da Fase 6 no `project-state.md`.
+2. Guarda de `CharacterId` no `ApplyRewardHandler`.
+3. Partes zero ignoradas no `ApplyRewardHandler`.
+4. Teste do filtro de poção do monstro.
+5. Seção "Implementação atual" no `experience-distribution.md`.
+6. R-045 (atomicidade com vários participantes).

@@ -62,9 +62,21 @@ public sealed class ApplyRewardHandler
         {
             foreach (var share in _experienceDistributor.Distribute(experience, [character.Id]))
             {
-                character.GainExperience(
-                    new ProjectVictory.Domain.ValueObjects.Experience(
-                        share.Amount));
+                // Revisão do PV-XP-010: este handler serve a UM participante; parte de outro personagem
+                // é erro de configuração (nunca aplicar a Experience no personagem errado).
+                if (share.CharacterId != character.Id)
+                {
+                    throw new InvalidOperationException(
+                        "ApplyRewardHandler applies experience to a single participant.");
+                }
+
+                // Parte zero (ex.: 1 XP dividido entre 3) não altera nada.
+                if (share.Amount > 0)
+                {
+                    character.GainExperience(
+                        new ProjectVictory.Domain.ValueObjects.Experience(
+                            share.Amount));
+                }
             }
         }
 

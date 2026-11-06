@@ -795,3 +795,10 @@ Status: **Accepted (Arquiteto)** — implementa o ADR-007 no `PV-XP-010`; regra 
 
 - A Experience **final** (depois do XP rate) passa pela `IExperienceDistributor`, que só reparte; cada parte é aplicada pelo Reward Pipeline (ADR-024).
 - Regra provisória: divisão igual, resto aos primeiros; com 1 participante (hoje) recebe tudo — mesmo XP de antes.
+
+## DEC-20261106-35 — Spawn System stateless (decisão do Arquiteto, Fila 6)
+
+Status: **Accepted (Arquiteto)** — implementa o ADR-009/010/047 no `PV-SPAWN-010`
+
+- A configuração de spawn de cada Hunt é a da sua Hunt area (packs do Monster Pool); o `StatelessSpawnSystem` só a interpreta, sem estado, com o mesmo sorteio por semente de antes.
+- Spawn Instances efêmeras com máquina de estados explícita; o descarte do encounter no fim da Hunt fica para o Hunt Loop (M6, R-044).

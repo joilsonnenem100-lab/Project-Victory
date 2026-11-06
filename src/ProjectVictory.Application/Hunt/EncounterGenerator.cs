@@ -18,6 +18,9 @@ public sealed class EncounterGenerator
 
     private readonly IHuntAreaCatalog? _areas;
 
+    private readonly ProjectVictory.Application.Spawn.ISpawnSystem _spawnSystem =
+        new ProjectVictory.Application.Spawn.StatelessSpawnSystem();
+
 
     // Composição antiga fixa (Rat, Cave Rat, Rat), mantida pela Regra Aditiva para quem cria o
     // gerador sem catálogo.
@@ -29,6 +32,14 @@ public sealed class EncounterGenerator
     public EncounterGenerator(IHuntAreaCatalog areas)
     {
         _areas = areas;
+    }
+
+    // PV-SPAWN-010 (ADR-009/010/047): os monstros do encounter vêm do Spawn System, a partir da
+    // configuração de spawn da Hunt (área de caça). O gerador só monta o encounter.
+    public EncounterGenerator(IHuntAreaCatalog areas, ProjectVictory.Application.Spawn.ISpawnSystem spawnSystem)
+    {
+        _areas = areas;
+        _spawnSystem = spawnSystem ?? throw new ArgumentNullException(nameof(spawnSystem));
     }
 
 
@@ -56,7 +67,7 @@ public sealed class EncounterGenerator
         var monsters =
             _areas is null
                 ? new List<EncounterMonsterState> { CreateRat(), CreateCaveRat(), CreateRat() }
-                : FromArea(_areas.GetDefault(), seed);
+                : FromSpawn(huntId, _areas.GetDefault(), seed);
 
 
         return new ActiveEncounter(
@@ -67,25 +78,17 @@ public sealed class EncounterGenerator
     }
 
 
-    private static List<EncounterMonsterState> FromArea(
+    // PV-SPAWN-010: substitui o sorteio que ficava aqui (FromArea). Mesmo resultado para a mesma
+    // semente. As Spawn Instances são efêmeras: o encounter guarda só o estado dos monstros.
+    private List<EncounterMonsterState> FromSpawn(
+        Guid huntId,
         HuntAreaDefinition area,
         int seed)
     {
-        if (area.EncounterTemplates.Count == 0)
-        {
-            throw new InvalidOperationException("Hunt area has no encounters.");
-        }
+        var result = _spawnSystem.SpawnPack(
+            new ProjectVictory.Application.Spawn.SpawnContext(huntId, area, seed));
 
-        var pick = new SeededRandomSource(seed)
-            .NextInclusive(0, area.EncounterTemplates.Count - 1);
-
-        return area.EncounterTemplates[pick]
-            .Select(spawn => new EncounterMonsterState(
-                Guid.NewGuid(),
-                spawn.MonsterId,
-                spawn.Name,
-                spawn.MaximumHealth))
-            .ToList();
+        return result.Monsters.ToList();
     }
 
 

@@ -133,7 +133,11 @@ public static class ProjectVictoryServiceCollectionExtensions
         // Hunt.
         // PV-CONTENT-011: área de caça (Spider Cave) definida por dados.
         services.AddSingleton<IHuntAreaCatalog, ProjectVictory.Infrastructure.Content.SpiderCaveHuntArea>();
-        services.AddScoped<EncounterGenerator>(provider => new EncounterGenerator(provider.GetRequiredService<IHuntAreaCatalog>()));
+        // PV-SPAWN-010 (ADR-009/010/047): Spawn System stateless (singleton, sem estado) dirigido pela Hunt.
+        services.AddSingleton<ProjectVictory.Application.Spawn.ISpawnSystem, ProjectVictory.Application.Spawn.StatelessSpawnSystem>();
+        services.AddScoped<EncounterGenerator>(provider => new EncounterGenerator(
+            provider.GetRequiredService<IHuntAreaCatalog>(),
+            provider.GetRequiredService<ProjectVictory.Application.Spawn.ISpawnSystem>()));
         services.AddScoped<ExecuteHuntHandler>();
         services.AddScoped<StartHuntSessionHandler>();
         services.AddScoped<StopHuntSessionHandler>();
