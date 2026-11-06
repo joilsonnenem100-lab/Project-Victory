@@ -15,7 +15,7 @@ Método: `git ls-files`, `git grep`, `git log --all` (inclusive arquivos apagado
 | 026 | não existe | **nunca existiu** (0 commits com `*ADR-026*`) | só documentos de governança: `roadmap-to-playable.md` (M0), `project-state.md` (R-008), `PV-ANALYSIS-2026-11-05.md` §4.6 |
 | 044 | não existe | **nunca existiu** | idem |
 | 048 | não existe | **nunca existiu** | idem |
-| 055 | `developer-guide/adr/ADR-055-event-driven-quests.md`, **0 bytes** | vazio em todos os commits (`40d5ea7`, `0aa823f`, `9f54994`) | `CLEANUP-MANIFEST-2026-11-05.md` ("vazios a preencher, não apagar"), `PV-ANALYSIS` |
+| 055 | `developer-guide/adr/ADR-055-event-driven-quests.md`, **0 bytes** | criado vazio em `9f54994` ("update"); 0 bytes em todas as versões | `CLEANUP-MANIFEST-2026-11-05.md` ("vazios a preencher, não apagar"), `PV-ANALYSIS` |
 
 Nenhum código (`src/`, `tests/`) cita ADR-026, 044, 048 ou 055. O `architecture-index.md` lista só ADR-001…004.
 
@@ -26,7 +26,7 @@ Vizinhos (todos ACCEPTED): 024 Centralized Reward Pipeline · 025 Experience Tab
 **ADR-026 — proposta: "Ascension Model"** (hipótese com evidência indireta)
 - Evidência: "Ascension" é usada como conceito já existente por ADR-023, 025, 027, 028, 029 e 031 ("Cada Ascension referencia sua própria Experience Table" — ADR-025:25; Level derivado de "Experience + Ascension" — ADR-027:26), mas **nenhum ADR define o que é uma Ascension**. O número 026 fica exatamente entre a Experience Table (025) e o Level derivado (027).
 - Texto proposto (rascunho, Status PROPOSED):
-  > **Contexto:** ADR-023/025/027/028 tratam Ascension como parte da progressão, sem defini-la. **Decisão:** Ascension é um estágio de progressão permanente do Character, persistido como estado permanente (ADR-028); cada Ascension referencia uma Experience Table própria (ADR-025); o Level é derivado de Experience + Ascension + Experience Table (ADR-027). A mudança de Ascension acontece só por um caso de uso explícito, passando pelo Reward/Progression Pipeline (ADR-024). **Em aberto (PO):** quantas Ascensions existem, o que dispara a mudança e o que muda para o jogador.
+  > **Contexto:** ADR-023/025/027/028 tratam Ascension como parte da progressão, sem defini-la. **Decisão:** Ascension é um estágio de progressão permanente do Character, persistido como estado permanente (ADR-028); cada Ascension referencia uma Experience Table própria (ADR-025); o Level é derivado de Experience + Ascension + Experience Table (ADR-027). **Em aberto (Arquiteto, sem respaldo em ADR hoje):** por qual caso de uso a Ascension muda — o ADR-024 trata de ganhos/recompensas e não cita Ascension; o ADR-028 sustenta só a persistência como estado permanente. **Em aberto (PO):** quantas Ascensions existem, o que dispara a mudança e o que muda para o jogador.
 - **A mecânica (o que uma Ascension significa no jogo) é decisão do PO**; o ADR só fixa o modelo de dados e quem é dono do estado.
 
 **ADR-044 — proposta: declarar "número não utilizado"**
@@ -67,11 +67,13 @@ Todos os nomes não ASCII do repositório (5):
 
 | De | Para | Quem cita o nome atual (atualizar junto) |
 |---|---|---|
-| `docs/Visual-Identity/Antigos/PV-ASSET-001 — Technical Specification.md` | `docs/Visual-Identity/Antigos/PV-ASSET-001-TECHNICAL-SPECIFICATION.md` | `PV-ART-002-ASSET-ROADMAP.md`, `PV-ASSET-001-INTEGRATION-CONTRACT.md` |
-| `docs/Visual-Identity/Antigos/PV-UI-010 — Revision Integration Contract.md` | `docs/Visual-Identity/Antigos/PV-UI-010-REVISION-INTEGRATION-CONTRACT.md` | `PV-UI-010-CORRECTION-CONTRACT.md`, `PV-UI-010-INTEGRATION-CONTRACT.md`, `PV-UI-010-LOGIN-EXPERIENCE-SPECIFICATION.md`, `PV-UI-010-TWO-LAYER-INTEGRATION-CONTRACT.md` |
-| `Documentation/Contracts/VerticalSlice/PV-VS-007 — Combat Experience Layer.md` | `Documentation/Contracts/VerticalSlice/PV-VS-007-Combat-Experience-Layer.md` | `docs/vertical-slice/work-items/PV-VS-007.md`, `PV-VS-008.md`, `PV-VS-009.md`, `PV-VS-011.md` |
+| `docs/Visual-Identity/Antigos/PV-ASSET-001 — Technical Specification.md` | `docs/Visual-Identity/Antigos/PV-ASSET-001-TECHNICAL-SPECIFICATION.md` | Nenhuma citação ao nome atual. **`PV-ASSET-001-INTEGRATION-CONTRACT.md:36` já cita o nome-alvo** — hoje é uma referência quebrada que o renomeio conserta |
+| `docs/Visual-Identity/Antigos/PV-UI-010 — Revision Integration Contract.md` | `docs/Visual-Identity/Antigos/PV-UI-010-REVISION-INTEGRATION-CONTRACT.md` | Nenhuma citação ao nome do arquivo (outros documentos citam só o ID `PV-UI-010`) |
+| `Documentation/Contracts/VerticalSlice/PV-VS-007 — Combat Experience Layer.md` | `Documentation/Contracts/VerticalSlice/PV-VS-007-Combat-Experience-Layer.md` | Nenhuma citação ao nome do arquivo (os work items `PV-VS-007/008/009/011` citam outro título, "PV-VS-007 — Aplicar Progressão após Hunt") |
 | `docs/architecture/master/contracts/vertical-slice/PV-VS-009A — Monster Loot Reward Integration.md` | `.../PV-VS-009A-Monster-Loot-Reward-Integration.md` | ninguém além do próprio arquivo |
 | `docs/engineering/Abordagem IA Produção.docx` | `docs/engineering/Abordagem-IA-Producao.docx` | ninguém |
+
+*Correção da revisão do PV-GOV-005: a primeira versão desta tabela listava como "citações" arquivos que só mencionam o ID do contrato, não o nome do arquivo (`git grep -F` com cada nome completo não encontra nenhum outro arquivo).*
 
 Padrão proposto: ID do contrato + hífen + título, sem espaços e só ASCII, seguindo o padrão já usado pelos vizinhos em `docs/Visual-Identity/Antigos/` (maiúsculas) e em `Documentation/Contracts/` (Title-Case). Aplicar com `git mv` (preserva histórico) e atualizar as citações no mesmo commit. Atenção: `Documentation/` é raiz paralela e "contratos citam o próprio caminho" (`CLEANUP-MANIFEST-2026-11-05.md`) — o renomeio ali precisa de decisão explícita.
 
