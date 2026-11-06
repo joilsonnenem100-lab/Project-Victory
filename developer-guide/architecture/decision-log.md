@@ -816,3 +816,11 @@ Status: **Accepted (Arquiteto)** — implementa o Handbook §19 no `PV-PERSIST-0
 
 - Checkpoints em início da Hunt, recompensa, conclusão (pipeline único) e logout (este sem chamador até o M6, R-048).
 - Rodada de combate é ação pequena: o consumo de poções fica pendente em memória e é gravado no próximo checkpoint (risco aceito: queda do servidor perde o débito das poções desde o último checkpoint).
+
+## DEC-20261106-38 — Fechamento do M4 (decisão do Arquiteto, Fila 6)
+
+Status: **Accepted (Arquiteto)** — revisão documentada em `docs/architecture/REVISAO-FECHAMENTO-M4.md`
+
+- **LOCKED:** Monster AI e Experience Distribution (regra de grupo PROVISÓRIA do PO).
+- **REVIEW:** Spawn System — LOCK no M6, depois do descarte no fim da Hunt (R-044) e dos Engine Events (R-046).
+- Fase 6 continua IN PROGRESS.

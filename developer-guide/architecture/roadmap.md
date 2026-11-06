@@ -139,9 +139,9 @@ Status: IN PROGRESS
 Módulos:
 
 - Monsters (LOCKED)
-- Monster AI (PLANNED)
-- Experience Distribution (PLANNED)
-- Spawn System (PLANNED)
+- Monster AI (LOCKED — revisão de fechamento do M4, 2026-11-06: `docs/architecture/REVISAO-FECHAMENTO-M4.md`)
+- Experience Distribution (LOCKED — mesma revisão; regra de grupo PROVISÓRIA do PO)
+- Spawn System (REVIEW — implementado no `PV-SPAWN-010`; LOCK no M6, depois do R-044/R-046)
 
 ---
 
@@ -234,8 +234,8 @@ Gameplay Foundation
 
 Objetivo:
 
-Consolidar a documentação oficial do módulo Monsters, finalizar sua revisão arquitetural e prosseguir para os próximos módulos da Gameplay Foundation.
+~~Consolidar a documentação oficial do módulo Monsters, finalizar sua revisão arquitetural e prosseguir para os próximos módulos da Gameplay Foundation.~~ *(Atualizado na revisão de fechamento do M4, 2026-11-06.)* Monster AI e Experience Distribution estão LOCKED; falta fechar o Spawn System (R-044, R-046) junto com o Hunt Loop contínuo (M6).
 
 Próximo módulo:
 
-Monster AI
+~~Monster AI~~ Spawn System (fechamento) — junto com o M6 (`PV-HUNT-011`)

@@ -56,7 +56,7 @@ Nome: **Fila 2** (ordem do PO de 2026-11-06): fechamento do M1 e governança —
 | Fase | Declarado | Observação verificada |
 |---|---|---|
 | 0–5 | LOCKED | Arquitetura LOCKED; **implementação em código divergente/parcial** (ver revisões) |
-| 6 Gameplay Foundation | IN PROGRESS (Monsters LOCKED; Monster AI, Experience Distribution e Spawn **implementados por contrato** na Fila 6 — `PV-MONSTER-010`, `PV-XP-010`, `PV-SPAWN-010`; LOCK só pela revisão de fechamento do M4) | Mantido: Monster AI continua sendo o próximo módulo **de arquitetura**. O código avançou por Vertical Slice (contratos `PV-VS-*`) sem esses módulos |
+| 6 Gameplay Foundation | IN PROGRESS (Monsters, **Monster AI** e **Experience Distribution LOCKED** pela revisão de fechamento do M4 — `docs/architecture/REVISAO-FECHAMENTO-M4.md`; **Spawn System em REVIEW** até o R-044/R-046, no M6) | Mantido: Monster AI continua sendo o próximo módulo **de arquitetura**. O código avançou por Vertical Slice (contratos `PV-VS-*`) sem esses módulos |
 | 7–10 | PLANNED | Inalterado |
 
 ---
