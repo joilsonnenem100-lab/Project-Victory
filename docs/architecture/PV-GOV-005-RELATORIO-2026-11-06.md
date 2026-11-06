@@ -1,5 +1,7 @@
 # PV-GOV-005 — Relatório somente leitura (2026-11-06)
 
+> **Aplicado em 2026-11-06 (`PV-GOV-007`, `DEC-20261106-13`):** seções (a) e (c). A seção (b), renomeação, continua só como mapa.
+
 Contrato: ordem do Product Owner (modo noite, item 6). **Nenhuma mudança foi aplicada** nos arquivos analisados; este documento só registra achados e propostas. Cada proposta precisa de decisão (Arquiteto ou PO, conforme indicado) e de contrato próprio para ser aplicada.
 
 Método: `git ls-files`, `git grep`, `git log --all` (inclusive arquivos apagados), `find` no disco. Branch: `chief/m1-gov-005`.

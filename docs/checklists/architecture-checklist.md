@@ -6,7 +6,7 @@
 
 □ Atualiza vc-lab?
 
-□ Atualiza CURRENT_CONTEXT?
+□ Atualiza developer-guide/architecture/project-state.md? *(antes: ~~□ Atualiza CURRENT_CONTEXT?~~ — `PV-GOV-007`)*
 
 □ Atualiza CHANGELOG?
 

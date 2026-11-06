@@ -2,6 +2,8 @@
 
 Status: LOCKED
 
+> **Emenda (2026-11-06, `PV-GOV-007` / `DEC-20261106-13`):** revisão arquitetural formal autorizada pelo Arquiteto-Chefe. As referências a `docs/CURRENT_CONTEXT.md` (documento histórico) foram trocadas por `developer-guide/architecture/project-state.md`, estado oficial (`CLAUDE.md`). O texto antigo foi mantido tachado.
+
 Version: 1.0
 
 ---
@@ -32,7 +34,7 @@ Antes de iniciar qualquer Sprint:
 
 1. docs/PROJECT_CONTEXT.md
 
-2. docs/CURRENT_CONTEXT.md
+2. developer-guide/architecture/project-state.md *(antes: ~~docs/CURRENT_CONTEXT.md~~ — `PV-GOV-007`)*
 
 3. developer-guide/
 
@@ -139,7 +141,7 @@ Toda Sprint deve entregar obrigatoriamente:
 
 Ao finalizar uma Sprint atualizar:
 
-docs/CURRENT_CONTEXT.md
+developer-guide/architecture/project-state.md *(antes: ~~docs/CURRENT_CONTEXT.md~~ — `PV-GOV-007`)*
 
 docs/CHANGELOG.md
 

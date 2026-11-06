@@ -558,3 +558,16 @@ Status: **Accepted (Product Owner)**
 - O XP rate é aplicado **no Reward Pipeline** (ADR-024: único responsável por mudar Experience).
 - **M2:** entrega só a configuração e o uso dela no Reward Pipeline, **sem nenhum endpoint** que leia ou altere o valor.
 - **M8:** uma **tela de ajuste** como **ferramenta de administração**, restrita a uma **conta administradora** (`PV-ADMIN-010`). Pré-requisito arquitetural: conceito de papel de administrador na Account e autorização por papel no servidor — definidos no próprio contrato do M8.
+
+## DEC-20261106-13 — Revisão formal de documentos LOCKED (PV-GOV-007)
+
+Status: **Accepted (Arquiteto-Chefe)** — revisão arquitetural documentada autorizada em 2026-11-06 (ordem "MODO FILA 2"). Aplica as propostas do `docs/architecture/PV-GOV-005-RELATORIO-2026-11-06.md`.
+
+- **ADR-026** Ascension Model: já ACCEPTED desde o `PV-GOV-006`, escrito só a partir de `knowledge-base/progression.md`; confirmado sem mudança.
+- **ADR-044 e ADR-048:** declarados **NOT USED** (números reservados, sem conteúdo inventado).
+- **ADR-055** Event-Driven Quests: preenchido como **PROPOSED** a partir de ADR-049, 050 e 056 (e ADR-024); aceite depois do M7.
+- **R-006:** as 5 referências a `docs/CURRENT_CONTEXT.md` em `docs/AI_WORKFLOW.md` (LOCKED), `docs/PROJECT_CONTEXT.md` (LOCKED), `README_DEVELOPMENT.md` e `docs/checklists/architecture-checklist.md` passam a apontar para `developer-guide/architecture/project-state.md`. O texto antigo foi mantido tachado e há nota de emenda nos dois LOCKED.
+- **R-013:** nota de emenda, sem apagar texto, em `ADR-002` ("suporte ao modo Hunt Offline") e `knowledge-base/loot.md` (LOCKED, "regras de Hunt Offline"), apontando para o `ADR-057`.
+- Os arquivos com travessão "—" no nome **não** foram renomeados; o mapa de renomeação continua no relatório do `PV-GOV-005`.
+
+Lastro: `roadmap.md` e `CLAUDE.md` (módulo LOCKED só muda por revisão arquitetural documentada), ADR-016 deste log (documentação é do Arquiteto).

@@ -48,4 +48,4 @@ Commit
 
 IMPORTANTE
 
-CURRENT_CONTEXT.md representa sempre o estado atual da Sprint.
+O estado atual oficial está em `developer-guide/architecture/project-state.md`; `docs/CURRENT_CONTEXT.md` é histórico. *(Antes: ~~CURRENT_CONTEXT.md representa sempre o estado atual da Sprint.~~ — `PV-GOV-007`)*
