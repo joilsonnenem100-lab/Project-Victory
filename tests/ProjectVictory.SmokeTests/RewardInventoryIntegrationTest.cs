@@ -67,11 +67,18 @@ public sealed class RewardInventoryIntegrationTest
         // Inventory.Items é coleção de ItemInstance (Id + ItemDefinitionId), sem nome.
         // O drop do TestRewardProcessor ("Smoke Test Item") usa ItemDefinitionId gerado
         // na hora e não tem definição registrada; por isso a verificação é estrutural:
-        // o inventário deve conter a instância criada a partir do drop da recompensa.
-        Assert.Contains(
-            character.Inventory.Items,
-            item =>
-                item.Id != Guid.Empty &&
-                item.ItemDefinitionId != Guid.Empty);
+        // o inventário (vazio na criação) deve conter exatamente a instância criada a
+        // partir do único drop da recompensa.
+        var item =
+            Assert.Single(
+                character.Inventory.Items);
+
+        Assert.NotEqual(
+            Guid.Empty,
+            item.Id);
+
+        Assert.NotEqual(
+            Guid.Empty,
+            item.ItemDefinitionId);
     }
 }
