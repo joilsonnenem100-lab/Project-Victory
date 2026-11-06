@@ -30,3 +30,12 @@ Base: o `DEC-20261106-30` **supera** a regra de Ascension do `DEC-20261106-19` (
 | Testes da Ascension da Fila 4 (`AscensionTests`: 4 testes; `DerivedLevelTests`: 2 asserções; `AscensionContentTests`: 2 testes) | Testes de títulos nos limites 499/500 … 2499/2500 e Level muito alto; tier nas Hunt areas |
 
 Nenhum DTO publicado perdeu campo: a Ascension nunca foi exposta pela API. `GetCharactersResult` e `EnterGameResult` **ganharam** `title` e `titleTier` (aditivo). Schema do banco inalterado (nenhuma migration).
+
+## PV-CHAR-012 — atributos que não existem no Tibia (`DEC-20261106-27/28`)
+
+| Removido | Onde | Verificação |
+|---|---|---|
+| Classe `Attributes` (`Strength`, `Dexterity`, `Intelligence`, `Vitality`) — **arquivo inteiro**, `git rm` | `src/ProjectVictory.Domain/Entities/Attributes.cs` | grep: usada só em `Character.cs` |
+| Propriedade `Character.Attributes` e as 2 atribuições `Attributes = new Attributes()` nos construtores | `src/ProjectVictory.Domain/Entities/Character.cs` | sempre vazia (valores 0); nunca lida, persistida, exposta em DTO ou exibida |
+
+Nada a remover em Application, Persistence (a tabela `Characters` nunca guardou esses campos → **nenhuma migration**), API (nenhum DTO os expunha), cliente (não exibia) nem testes (nenhum os usava). Teste de guarda novo: `Domain.Tests/TibiaAttributeTests` impede que voltem.

@@ -81,8 +81,8 @@ public sealed class Character : AggregateRoot
 
     public Equipment Equipment { get; }
 
-    public Attributes Attributes { get; }
-
+    // PV-CHAR-012 (DEC-20261106-26): as skills do Tibia (Magic Level, Fist, Club, Sword, Axe, Distance,
+    // Shielding, Fishing). Não há outros atributos (a classe Attributes foi removida, DEC-20261106-27).
     public Skills Skills { get; }
 
     private readonly CharacterClassDefinition? _classDefinition;
@@ -111,7 +111,6 @@ public sealed class Character : AggregateRoot
 
         Inventory = new Inventory();
         Equipment = new Equipment();
-        Attributes = new Attributes();
         Skills = new Skills();
 
         CharacterClass = default;
@@ -151,7 +150,6 @@ public sealed class Character : AggregateRoot
 
         Inventory = new Inventory();
         Equipment = new Equipment();
-        Attributes = new Attributes();
         Skills = new Skills();
     }
 
