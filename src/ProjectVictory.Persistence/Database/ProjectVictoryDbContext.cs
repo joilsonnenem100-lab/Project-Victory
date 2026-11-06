@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 using ProjectVictory.Persistence.Account;
 using ProjectVictory.Persistence.Character;
@@ -36,22 +35,6 @@ public sealed class ProjectVictoryDbContext : DbContext
         DbContextOptions<ProjectVictoryDbContext> options)
         : base(options)
     {
-    }
-
-
-    protected override void OnConfiguring(
-        DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            return;
-        }
-
-        optionsBuilder
-            .EnableSensitiveDataLogging()
-            .LogTo(
-                Console.WriteLine,
-                LogLevel.Information);
     }
 
 

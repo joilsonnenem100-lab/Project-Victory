@@ -1,32 +1,28 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ProjectVictory.API.Authentication;
 
 public sealed class JwtTokenGenerator
 {
-    private readonly IConfiguration _configuration;
+    private readonly JwtSettings _settings;
 
 
     public JwtTokenGenerator(
-        IConfiguration configuration)
+        IOptions<JwtSettings> settings)
     {
-        _configuration = configuration;
+        _settings = settings.Value;
     }
 
 
     public string Generate(Guid accountId)
     {
-        var key =
-            _configuration["Jwt:Key"]
-            ?? "ProjectVictoryDevelopmentSecretKey123456";
-
-
         var securityKey =
             new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(key));
+                Encoding.UTF8.GetBytes(_settings.Key));
 
 
         var credentials =
@@ -46,6 +42,8 @@ public sealed class JwtTokenGenerator
 
         var token =
             new JwtSecurityToken(
+                issuer: _settings.Issuer,
+                audience: _settings.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(8),
                 signingCredentials: credentials);

@@ -51,6 +51,14 @@ builder.Services
             new JsonStringEnumConverter());
     });
 
+// PV-PLATFORM-002: origens CORS vêm de configuração (Cors:AllowedOrigins).
+// Lista vazia = nenhuma origem liberada (a API sobe, o navegador é bloqueado).
+var allowedOrigins =
+    builder.Configuration
+        .GetSection("Cors:AllowedOrigins")
+        .Get<string[]>()
+    ?? [];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -59,7 +67,7 @@ builder.Services.AddCors(options =>
         {
             policy
                 .WithOrigins(
-                    "http://localhost:5173")
+                    allowedOrigins)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -78,9 +86,21 @@ builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 
 builder.Services.AddProblemDetails();
 
-var jwtKey =
-    builder.Configuration["Jwt:Key"]
-    ?? "ProjectVictoryDevelopmentSecretKey123456";
+// PV-PLATFORM-002: chave, Issuer e Audience vêm de configuração, sem valor padrão.
+// Falta ou chave fraca derruba o startup com mensagem clara (JwtSettings.Validate).
+var jwtSettings =
+    builder.Configuration
+        .GetSection(JwtSettings.SectionName)
+        .Get<JwtSettings>()
+    ?? new JwtSettings();
+
+jwtSettings.Validate(
+    builder.Environment.IsDevelopment());
+
+builder.Services
+    .AddOptions<JwtSettings>()
+    .Bind(builder.Configuration.GetSection(JwtSettings.SectionName));
+
 builder.Services
     .AddAuthentication(
         JwtBearerDefaults.AuthenticationScheme)
@@ -93,21 +113,47 @@ builder.Services
 
                 IssuerSigningKey =
                     new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtKey)),
+                        Encoding.UTF8.GetBytes(jwtSettings.Key)),
 
-                ValidateIssuer = false,
+                ValidateIssuer = true,
 
-                ValidateAudience = false
+                ValidIssuer = jwtSettings.Issuer,
+
+                ValidateAudience = true,
+
+                ValidAudience = jwtSettings.Audience
             };
     });
 
 builder.Services.AddAuthorization();
 
+// PV-PLATFORM-002: connection string vem de configuração (ConnectionStrings:ProjectVictory).
+var connectionString =
+    builder.Configuration.GetConnectionString("ProjectVictory");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "ConnectionStrings:ProjectVictory não configurada — a API não pode subir. "
+        + "Defina em appsettings.json ou pela variável de ambiente ConnectionStrings__ProjectVictory. "
+        + "Ver developer-guide/guides/configuracao-local.md.");
+}
+
 builder.Services.AddDbContext<ProjectVictoryDbContext>(
     options =>
     {
         options.UseSqlite(
-            "Data Source=projectvictory.db");
+            connectionString);
+
+        // PV-PLATFORM-002: log de SQL com dados sensíveis só em Development.
+        if (builder.Environment.IsDevelopment())
+        {
+            options
+                .EnableSensitiveDataLogging()
+                .LogTo(
+                    Console.WriteLine,
+                    LogLevel.Information);
+        }
     });
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
