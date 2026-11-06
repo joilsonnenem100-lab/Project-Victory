@@ -203,6 +203,32 @@ API em Development (DLL de `bin/Debug/net10.0`, banco temporário via `Connectio
 
 Observação: o `dotnet-ef` global da máquina está em 10.0.10; funciona com o runtime 10.0.14, mas convém atualizá-lo (`dotnet tool update -g dotnet-ef`) — fora do repositório, não feito.
 
+## Baseline do cliente — `PV-QA-002`, 2026-11-06
+
+Executado em `src/ProjectVictory.Client` (Node 24.18.0, npm 11.16.0). **Nenhum código do cliente foi alterado**; `package-lock.json` inalterado (mesmo hash antes e depois do `npm install`).
+
+| Verificação | Resultado |
+|---|---|
+| `npm install` | OK — 67 pacotes auditados, "up to date". Aviso do npm: `esbuild@0.28.1` tem script de instalação ainda não aprovado (`allowScripts`) |
+| `npm audit` | **6 vulnerabilidades (2 moderadas, 4 altas)**, todas em dependências de **build/dev**, todas com correção via `npm audit fix`: `vite` 7.0.0–7.3.6 (alta; `launch-editor` sem escape de `%` no Windows — GHSA-698v-4r3x-3vcv), `browserslist` ≤ 4.28.6 (alta; GHSA-c83g-rgw3-j3cx, GHSA-73wf-gq98-2v4g), `nanoid` < 3.3.18 (alta; GHSA-2v37-7h3g-55p8), `source-map-js` 1.0.0–1.2.1 (alta; GHSA-68fv-2mgg-jv7q), `postcss` ≤ 8.5.22 (moderada; GHSA-fxqj-rqcc-2cmp), `baseline-browser-mapping` 2.0.0–2.10.x (moderada; GHSA-w5vr-8v7q-w6rv) |
+| `npm run build` (`vite build`) | **Verde** — 53 módulos, `dist/index.html` 0,33 kB, `dist/assets/index-*.js` 206,18 kB (64,15 kB gzip) |
+| Lint | **Não existe** script de lint nem configuração de ESLint no `package.json` |
+| `npx tsc --noEmit` (diagnóstico extra; o `build` **não** checa tipos) | **443 erros** |
+
+Erros de TypeScript por causa:
+
+| Código | Qtde | Causa |
+|---|---|---|
+| TS7026 (339), TS7016 (58), TS2503 (29) | 426 | **Faltam `@types/react` e `@types/react-dom`** nas `devDependencies` (React 19 não traz tipos próprios); com `strict: true`, todo JSX vira `any` implícito. Um único ajuste de dependências eliminaria quase todos |
+| TS7006 | 13 | Parâmetros com `any` implícito (ex.: `CharacterCreationPage.tsx:186` `event`, `WorldScenePage.tsx:374` `drop`) |
+| TS2305 | 2 | `pages/WorldScenePage.tsx:27-28` importa `attackEncounter` e `AttackEncounterResult` de `services/huntService.ts`, que **não existem** (o serviço só exporta `startHunt`) |
+| TS2307 | 1 | `components/character/PlayerStatePanel.tsx:1` importa `../models/game`, que **não existe** |
+| TS2353 | 1 | `services/accountService.ts:100` monta `AccountLoginResult` com a propriedade `token`, que o tipo não declara |
+
+**Código inalcançável:** `pages/GamePage.tsx` (que usa `WorldScenePage`) **não é importado** por `App.tsx` nem por outro arquivo — por isso o `vite build` passa apesar do import quebrado. A navegação real (`App.tsx`) usa Login, Register, CharacterSelection, PlayerInformation, Inventory e RewardFeedback.
+
+Encaminhamento (sem corrigir agora, conforme o contrato): `PV-UI-0xx` Navegação (M8) já prevê "tipar `any`"; os itens acima viram escopo desse contrato ou de um `PV-QA-0xx` do cliente — adicionar `@types/react*`, script de typecheck/lint, resolver os imports quebrados e o `GamePage` órfão, e aplicar `npm audit fix` (dependências de build).
+
 ## Ainda pendentes
 
 - ~~Que o `ModelSnapshot` e as 14 migrations refletem o modelo atual do `DbContext`.~~ Verificado em `PV-PLATFORM-001` (tabela acima).
