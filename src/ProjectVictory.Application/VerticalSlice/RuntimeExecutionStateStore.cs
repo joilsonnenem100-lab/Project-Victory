@@ -35,6 +35,12 @@ public sealed class RuntimeExecutionStateStore :
         return context;
     }
 
+    public bool Contains(
+        Guid runtimeId)
+    {
+        return _contexts.ContainsKey(runtimeId);
+    }
+
     public RuntimeExecutionContext GetByCharacterId(
         Guid characterId)
     {

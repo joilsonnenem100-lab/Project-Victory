@@ -30,6 +30,24 @@ public sealed class CreateRuntimeExecutionHandler
             command.CharacterId,
             cancellationToken);
 
+        // PV-STATE-001: o RuntimeId vem do cliente; um id já em uso nunca é sobrescrito.
+        // Antes a proteção dependia de a gravação no banco falhar (chave primária) antes do Store.
+        // Runtime de outro personagem → 403 (mesma regra do PV-SEC-001); do mesmo → erro.
+        if (_runtimeExecutionStateStore.Contains(command.RuntimeId))
+        {
+            var existing =
+                _runtimeExecutionStateStore.Get(
+                    command.RuntimeId);
+
+            if (existing.CharacterId != command.CharacterId)
+            {
+                throw new OwnershipViolationException("runtime");
+            }
+
+            throw new InvalidOperationException(
+                "Runtime already exists.");
+        }
+
         var context =
             new RuntimeExecutionContext(
                 command.RuntimeId,

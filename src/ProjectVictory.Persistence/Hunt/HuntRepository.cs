@@ -1,16 +1,26 @@
+using System.Collections.Concurrent;
 using ProjectVictory.Domain.Hunt;
 
 namespace ProjectVictory.Persistence.Hunt;
 
+// PV-STATE-001: estado TEMPORÁRIO (execução da Hunt; ADR-057 — a Hunt nunca é recuperada),
+// mantido em memória num singleton compartilhado entre requisições. Antes era List<> sem
+// sincronização; agora é ConcurrentDictionary (leituras e escritas concorrentes seguras).
 public sealed class HuntRepository : IHuntRepository
 {
-    private readonly List<Domain.Hunt.Hunt> _hunts = [];
+    private readonly ConcurrentDictionary<Guid, Domain.Hunt.Hunt> _hunts = new();
 
     public Task AddAsync(
         Domain.Hunt.Hunt hunt,
         CancellationToken cancellationToken = default)
     {
-        _hunts.Add(hunt);
+        ArgumentNullException.ThrowIfNull(hunt);
+
+        if (!_hunts.TryAdd(hunt.Id, hunt))
+        {
+            throw new InvalidOperationException(
+                "Hunt already exists.");
+        }
 
         return Task.CompletedTask;
     }
@@ -19,8 +29,7 @@ public sealed class HuntRepository : IHuntRepository
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        var hunt = _hunts
-            .FirstOrDefault(x => x.Id == id);
+        _hunts.TryGetValue(id, out var hunt);
 
         return Task.FromResult(hunt);
     }

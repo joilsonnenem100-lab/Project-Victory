@@ -74,3 +74,13 @@ Lastro: ADR-024 (Reward Pipeline é o único que muda Experience e progressões 
 - `Api.Tests/RewardFlowHttpTests.cs`: pela API real, derrotar um Rat deixa o personagem com 10 de XP e 1 item.
 
 Resultado da solução: build com 0 avisos; **156 aprovados, 0 ignorados, 0 falhas**.
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+Aplicadas no branch `chief/m2-state-001`:
+1. ADR-036 (Inventory Service inexistente) → registrado como **R-015** em `project-state.md`.
+2. Dois caminhos de recompensa paralelos (ADR-024) → **R-016**.
+3. Gravação da recompensa não atômica → **R-017** (`PV-PERSIST-011`, M5).
+4. Rat Tail fora da tabela `Items` e 6. `Chance` sem validação → registrados para o `PV-CONTENT-011` (M3).
+5. Testes de configuração: `InvalidRate_FailsStartup` agora exige a `ArgumentOutOfRangeException` do rate; novo `NonNumericRate_FailsStartup`.
+7. Ouro fora do HTTP: declarado (exibição no M8).

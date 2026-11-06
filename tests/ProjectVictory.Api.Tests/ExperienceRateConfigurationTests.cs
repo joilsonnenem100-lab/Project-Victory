@@ -52,11 +52,44 @@ public sealed class ExperienceRateConfigurationTests
         {
             using var factory = new ApiFactory();
 
-            Assert.ThrowsAny<Exception>(() => factory.Services.GetRequiredService<RewardSettings>());
+            var ex = Assert.ThrowsAny<Exception>(() => factory.Services.GetRequiredService<RewardSettings>());
+
+            // Ressalva da revisão do PV-REWARD-010: a falha tem de vir da validação do rate.
+            Assert.True(
+                Flatten(ex).OfType<ArgumentOutOfRangeException>().Any(e => e.ParamName == "value"),
+                ex.ToString());
         }
         finally
         {
             Environment.SetEnvironmentVariable(RateVariable, previous);
+        }
+    }
+
+    [Fact]
+    public void NonNumericRate_FailsStartup()
+    {
+        var previous = Environment.GetEnvironmentVariable(RateVariable);
+        Environment.SetEnvironmentVariable(RateVariable, "abc");
+
+        try
+        {
+            using var factory = new ApiFactory();
+
+            var ex = Assert.ThrowsAny<Exception>(() => factory.Services.GetRequiredService<RewardSettings>());
+
+            Assert.Contains(Flatten(ex), e => e.Message.Contains(RewardSettings.ExperienceRateKey, StringComparison.Ordinal));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(RateVariable, previous);
+        }
+    }
+
+    private static IEnumerable<Exception> Flatten(Exception exception)
+    {
+        for (var current = exception; current is not null; current = current.InnerException)
+        {
+            yield return current;
         }
     }
 
