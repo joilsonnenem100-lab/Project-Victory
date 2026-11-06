@@ -54,7 +54,14 @@ public sealed class PersistentSupplyPolicyStore : ISupplyPolicyStore
             // Revisão do PV-PERSIST-010 (ressalva 4): outra requisição criou a linha ao mesmo tempo.
             // Descarta a inserção, relê a linha existente e grava como atualização.
             _context.Entry(row).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-            var existing = Find(characterId) ?? throw new InvalidOperationException("Supply policy row not found.");
+            var existing = Find(characterId);
+
+            if (existing is null)
+            {
+                // Não era a corrida esperada: relança a exceção ORIGINAL.
+                throw;
+            }
+
             Apply(existing, policy);
             _context.SaveChanges();
         }

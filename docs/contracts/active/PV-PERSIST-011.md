@@ -62,3 +62,16 @@ Se o servidor cair no meio de uma Hunt, as poções usadas desde o último check
 
 - **R-048:** o checkpoint de logout e de queda tem de ser chamado no M6 (`PV-RUNTIME-010`/`PV-HUNT-012`).
 - **R-045:** a atomicidade da Experience com vários participantes continua registrada.
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q6-m4-close`
+
+1. **(Obrigatória, Server Authority)** O checkpoint de início usava o `RuntimeId` do **corpo da requisição**. Agora usa `hunt.RuntimeId`, resolvido pelo servidor. Teste: `StartCheckpoint_IgnoresTheRuntimeIdFromTheRequest`.
+2. O consumo pendente só é retirado **depois** de gravado (`Peek` → grava → `Subtract`). Se a gravação falhar, o débito continua pendente.
+3. O `CheckpointLog` guarda só os últimos 32 registros por personagem.
+4. `IRuntimeRepository.SaveCheckpointAsync` ficou **sem corpo padrão**: toda implementação grava de fato.
+5. Testes explícitos de **vitória** (checkpoints `Reward` e `HuntConclusion`, XP preservada) e de **morte** (só `HuntStart` e `HuntConclusion`; a cópia do Runtime fica com a vida restaurada). A escrita da ativação da política está comentada como fora da contagem.
+6. Corrida no `SetPending`: se a linha não existir, relança a exceção **original**.
+7. Textos do R-045 (alvo: Hunt em grupo) e do R-048 (origem) corrigidos.
+8. **R-049:** invariante — retirar itens do inventário (venda, depot, troca) tem de considerar o consumo pendente.
+
+Resultado: build com 0 avisos; **348 aprovados, 0 ignorados, 0 falhas** (Application 31, Domain 119, Runtime 17, Smoke 91, Api 90).

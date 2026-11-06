@@ -97,9 +97,11 @@ public sealed class ExecuteHuntHandler
             encounter);
 
         // PV-PERSIST-011: checkpoint de início da Hunt (cópia do Runtime antes do primeiro combate).
+        // Revisão (Server Authority): o Runtime é o da Hunt, resolvido pelo servidor a partir do
+        // personagem — NUNCA o RuntimeId do corpo da requisição.
         await _checkpoints.SaveAsync(
             character.Id,
-            command.RuntimeId,
+            hunt.RuntimeId,
             ProjectVictory.Application.Checkpoint.CheckpointReason.HuntStart,
             cancellationToken);
 

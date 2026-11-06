@@ -57,7 +57,7 @@
 ## Estado do código no fechamento
 
 - Build: `dotnet build ProjectVictory.sln` com **0 avisos, 0 erros**.
-- Testes: `dotnet test ProjectVictory.sln` com **344 aprovados, 0 ignorados, 0 falhas** (executados no fim da Fila 6).
+- Testes: `dotnet test ProjectVictory.sln` com **344 aprovados, 0 ignorados, 0 falhas** no commit desta revisão; **348** depois das ressalvas do `PV-PERSIST-011` (mesma branch).
 
 ## Alterações feitas por esta revisão
 

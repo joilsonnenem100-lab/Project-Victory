@@ -24,6 +24,9 @@ public interface IPendingSupplyConsumption
     (int HealthPotions, int ManaPotions) Peek(Guid characterId);
 
     (int HealthPotions, int ManaPotions) Take(Guid characterId);
+
+    // Revisão do PV-PERSIST-011: retira só o que foi gravado (o que entrar depois continua pendente).
+    void Subtract(Guid characterId, int healthPotions, int manaPotions);
 }
 
 public sealed class PendingSupplyConsumption : IPendingSupplyConsumption
@@ -53,6 +56,26 @@ public sealed class PendingSupplyConsumption : IPendingSupplyConsumption
 
     public (int HealthPotions, int ManaPotions) Take(Guid characterId) =>
         _pending.TryRemove(characterId, out var value) ? value : (0, 0);
+
+    public void Subtract(Guid characterId, int healthPotions, int manaPotions)
+    {
+        while (_pending.TryGetValue(characterId, out var current))
+        {
+            var next = (Math.Max(0, current.HealthPotions - healthPotions), Math.Max(0, current.ManaPotions - manaPotions));
+
+            if (next is (0, 0))
+            {
+                if (((ICollection<KeyValuePair<Guid, (int, int)>>)_pending).Remove(new KeyValuePair<Guid, (int, int)>(characterId, current)))
+                {
+                    return;
+                }
+            }
+            else if (_pending.TryUpdate(characterId, next, current))
+            {
+                return;
+            }
+        }
+    }
 }
 
 // PV-PERSIST-011: registro (em memória) dos checkpoints feitos — observabilidade e testes.
@@ -63,12 +86,24 @@ public interface ICheckpointLog
     IReadOnlyList<CheckpointReason> For(Guid characterId);
 }
 
+// Revisão do PV-PERSIST-011 (ressalva 3): guarda só os últimos `MaximumPerCharacter` registros por
+// personagem (memória limitada). O número de personagens continua sem limite (mesmo padrão dos
+// demais stores em memória; R-044).
 public sealed class CheckpointLog : ICheckpointLog
 {
+    public const int MaximumPerCharacter = 32;
+
     private readonly ConcurrentDictionary<Guid, ConcurrentQueue<CheckpointReason>> _entries = new();
 
-    public void Record(Guid characterId, CheckpointReason reason) =>
-        _entries.GetOrAdd(characterId, _ => new ConcurrentQueue<CheckpointReason>()).Enqueue(reason);
+    public void Record(Guid characterId, CheckpointReason reason)
+    {
+        var queue = _entries.GetOrAdd(characterId, _ => new ConcurrentQueue<CheckpointReason>());
+        queue.Enqueue(reason);
+
+        while (queue.Count > MaximumPerCharacter && queue.TryDequeue(out _))
+        {
+        }
+    }
 
     public IReadOnlyList<CheckpointReason> For(Guid characterId) =>
         _entries.TryGetValue(characterId, out var queue) ? queue.ToList() : [];
@@ -115,7 +150,9 @@ public sealed class CheckpointService : ICheckpointService
         CheckpointReason reason,
         CancellationToken cancellationToken = default)
     {
-        var (healthPotions, manaPotions) = _pendingSupplies.Take(characterId);
+        // Revisão do PV-PERSIST-011 (ressalva 2): lê o pendente, GRAVA e só então o retira — se a
+        // gravação falhar, o débito continua pendente (não se perde).
+        var (healthPotions, manaPotions) = _pendingSupplies.Peek(characterId);
 
         if (healthPotions + manaPotions > 0)
         {
@@ -127,6 +164,8 @@ public sealed class CheckpointService : ICheckpointService
             RemovePotions(character, SupplyCatalog.ManaPotionId, manaPotions);
 
             await _characterRepository.UpdateAsync(character, cancellationToken);
+
+            _pendingSupplies.Subtract(characterId, healthPotions, manaPotions);
         }
 
         if (runtimeId != Guid.Empty

@@ -28,6 +28,7 @@ public sealed class SaveStrategyTests
     {
         public int CharacterWrites;
         public int RuntimeWrites;
+        public List<Guid> RuntimeCheckpointIds { get; } = [];
     }
 
     private sealed class CountingCharacterRepository(ICharacterRepository inner, WriteCounter counter) : ICharacterRepository
@@ -67,14 +68,16 @@ public sealed class SaveStrategyTests
         public Task SaveCheckpointAsync(Guid runtimeId, int health, int mana, CancellationToken cancellationToken = default)
         {
             counter.RuntimeWrites++;
+            counter.RuntimeCheckpointIds.Add(runtimeId);
             return inner.SaveCheckpointAsync(runtimeId, health, mana, cancellationToken);
         }
     }
 
-    // Semente cujo encounter é o Giant Spider (luta longa: muitas rodadas sem morte de monstro).
-    private static int SeedForGiantSpider()
+    // Semente cujo encounter é o de índice `index` (o último é o Giant Spider: luta longa).
+    private static int SeedForGiantSpider() => SeedForTemplate(SpiderCaveCatalog.EncounterTemplates.Count - 1);
+
+    private static int SeedForTemplate(int index)
     {
-        var index = SpiderCaveCatalog.EncounterTemplates.Count - 1;
         for (var seed = 1; ; seed++)
         {
             if (new SeededRandomSource(seed).NextInclusive(0, SpiderCaveCatalog.EncounterTemplates.Count - 1) == index)
@@ -84,32 +87,74 @@ public sealed class SaveStrategyTests
         }
     }
 
-    [Fact]
-    public async Task CombatRounds_DoNotWrite_OnlyCheckpointsDo()
+    private sealed record World(ServiceProvider Provider, IServiceScope Scope, WriteCounter Counter, Guid CharacterId, Guid RuntimeId) : IAsyncDisposable
+    {
+        public T Get<T>() where T : notnull => Scope.ServiceProvider.GetRequiredService<T>();
+
+        public async ValueTask DisposeAsync()
+        {
+            Scope.Dispose();
+            await Provider.DisposeAsync();
+        }
+    }
+
+    private static async Task<World> NewWorld(int seed, int healthPotions, int? potionBelowPercent)
     {
         var counter = new WriteCounter();
         var services = new ServiceCollection();
         services.AddProjectVictorySmokeTestServices();
         var databaseName = $"save-{Guid.NewGuid():N}";
         services.AddDbContext<ProjectVictoryDbContext>(o => o.UseInMemoryDatabase(databaseName));
-        services.AddSingleton(new CombatSettings(SeedForGiantSpider()));
-        services.AddSingleton(new SupplySettings(5, 0));
+        services.AddSingleton(new CombatSettings(seed));
+        services.AddSingleton(new SupplySettings(healthPotions, 0));
         services.AddScoped<CharacterRepository>();
         services.AddScoped<RuntimeRepository>();
         services.AddScoped<ICharacterRepository>(sp => new CountingCharacterRepository(sp.GetRequiredService<CharacterRepository>(), counter));
         services.AddScoped<IRuntimeRepository>(sp => new CountingRuntimeRepository(sp.GetRequiredService<RuntimeRepository>(), counter));
-        await using var provider = services.BuildServiceProvider();
-        using var scope = provider.CreateScope();
+        var provider = services.BuildServiceProvider();
+        var scope = provider.CreateScope();
         scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
 
         var characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
             .Handle(new CreateCharacterCommand("V" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
         var enter = await scope.ServiceProvider.GetRequiredService<EnterGameHandler>().Handle(new EnterGameCommand());
-        await scope.ServiceProvider.GetRequiredService<SetSupplyPolicyHandler>()
-            .Handle(new SetSupplyPolicyCommand(characterId, 90, null));
+
+        if (potionBelowPercent is { } percent)
+        {
+            // A ativação da política grava UMA vez (mudança de configuração do jogador, PV-PERSIST-010);
+            // essa escrita é na tabela SupplyPolicies e fica fora destas contagens.
+            await scope.ServiceProvider.GetRequiredService<SetSupplyPolicyHandler>()
+                .Handle(new SetSupplyPolicyCommand(characterId, percent, null));
+        }
+
+        return new World(provider, scope, counter, characterId, enter.RuntimeId);
+    }
+
+    private static async Task<List<AttackEncounterResult>> Fight(World world, Guid encounterId, Action<AttackEncounterResult, (int, int)>? perRound = null)
+    {
+        var rounds = new List<AttackEncounterResult>();
+
+        for (var i = 0; i < 300 && rounds.LastOrDefault()?.CombatFinished != true; i++)
+        {
+            var before = (world.Counter.CharacterWrites, world.Counter.RuntimeWrites);
+            var round = await world.Get<AttackEncounterHandler>().Handle(new AttackEncounterCommand(encounterId));
+            rounds.Add(round);
+            perRound?.Invoke(round, before);
+        }
+
+        return rounds;
+    }
+
+    [Fact]
+    public async Task CombatRounds_DoNotWrite_OnlyCheckpointsDo()
+    {
+        await using var world = await NewWorld(SeedForGiantSpider(), 5, 90);
+        var counter = world.Counter;
+        var characterId = world.CharacterId;
+        var scope = world.Scope;
 
         var hunt = await scope.ServiceProvider.GetRequiredService<ExecuteHuntHandler>()
-            .Handle(new ExecuteHuntCommand(characterId, enter.RuntimeId));
+            .Handle(new ExecuteHuntCommand(characterId, world.RuntimeId));
         var log = scope.ServiceProvider.GetRequiredService<ICheckpointLog>();
         Assert.Equal([CheckpointReason.HuntStart], log.For(characterId));
 
@@ -150,6 +195,72 @@ public sealed class SaveStrategyTests
         Assert.Equal((0, 0), potionsUsed);
         var character = await scope.ServiceProvider.GetRequiredService<ICharacterRepository>().GetByIdAsync(characterId);
         Assert.Equal(5 - potionTurns, character!.Inventory.Items.Count(item => item.ItemDefinitionId == SupplyCatalog.HealthPotionId));
+    }
+
+    // Revisão do PV-PERSIST-011 (ressalva 5): vitória explícita — checkpoints de recompensa e de
+    // conclusão; a XP gravada pelo Reward Pipeline fica (não é sobrescrita pelo checkpoint).
+    [Fact]
+    public async Task Victory_RewardAndConclusionCheckpoints_ExperienceKept()
+    {
+        await using var world = await NewWorld(SeedForTemplate(0), 0, null);
+        var hunt = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+
+        var rounds = await Fight(world, hunt.Encounter.Id);
+
+        Assert.Equal(nameof(HuntEndReason.Victory), rounds[^1].HuntEndReason);
+        var log = world.Get<ICheckpointLog>().For(world.CharacterId);
+        Assert.Equal(CheckpointReason.HuntStart, log[0]);
+        Assert.Contains(CheckpointReason.Reward, log);
+        Assert.Equal(CheckpointReason.HuntConclusion, log[^1]);
+
+        var character = await world.Get<ICharacterRepository>().GetByIdAsync(world.CharacterId);
+        Assert.Equal(rounds.Sum(r => (long)r.Experience), character!.Experience.Value);
+        Assert.True(character.Experience.Value > 0);
+    }
+
+    // Revisão do PV-PERSIST-011 (ressalva 5): morte explícita — sem recompensa, checkpoint de
+    // conclusão grava a cópia do Runtime com a vida já restaurada (Cidade Principal).
+    [Fact]
+    public async Task Death_ConclusionCheckpoint_SavesRestoredRuntime()
+    {
+        await using var world = await NewWorld(SeedForGiantSpider(), 0, null);
+        var hunt = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+
+        var rounds = await Fight(world, hunt.Encounter.Id);
+
+        Assert.Equal(nameof(HuntEndReason.Death), rounds[^1].HuntEndReason);
+        var log = world.Get<ICheckpointLog>().For(world.CharacterId);
+        Assert.Equal(new[] { CheckpointReason.HuntStart, CheckpointReason.HuntConclusion }, log);
+
+        var saved = await world.Get<IRuntimeRepository>().GetByCharacterIdAsync(world.CharacterId);
+        var character = await world.Get<ICharacterRepository>().GetByIdAsync(world.CharacterId);
+        Assert.Equal(character!.MaximumHealth.Value, saved!.Health);
+    }
+
+    // Revisão do PV-PERSIST-011 (ressalva 1, Server Authority): o checkpoint usa o Runtime do servidor,
+    // nunca o RuntimeId enviado no corpo da requisição.
+    [Fact]
+    public async Task StartCheckpoint_IgnoresTheRuntimeIdFromTheRequest()
+    {
+        await using var world = await NewWorld(SeedForTemplate(0), 0, null);
+
+        await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, Guid.NewGuid()));
+
+        Assert.Equal(new[] { world.RuntimeId }, world.Counter.RuntimeCheckpointIds);
+    }
+
+    [Fact]
+    public void Subtract_RemovesOnlyWhatWasSaved()
+    {
+        var pending = new PendingSupplyConsumption();
+        var characterId = Guid.NewGuid();
+        pending.Add(characterId, 3, 1);
+
+        pending.Subtract(characterId, 2, 1);
+        Assert.Equal((1, 0), pending.Peek(characterId));
+
+        pending.Subtract(characterId, 1, 0);
+        Assert.Equal((0, 0), pending.Peek(characterId));
     }
 
     [Fact]

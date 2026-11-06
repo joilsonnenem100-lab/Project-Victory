@@ -14,10 +14,10 @@ public interface IRuntimeRepository
         CancellationToken cancellationToken = default);
 
     // PV-PERSIST-011: grava a cópia do Runtime (vida/mana atuais) num checkpoint (Handbook §19).
-    // Padrão: sem efeito (dublês de teste); o RuntimeRepository (EF) grava.
+    // Revisão (ressalva 4): sem corpo padrão — toda implementação precisa gravar de fato.
     Task SaveCheckpointAsync(
         Guid runtimeId,
         int health,
         int mana,
-        CancellationToken cancellationToken = default) => Task.CompletedTask;
+        CancellationToken cancellationToken = default);
 }
