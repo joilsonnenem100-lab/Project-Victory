@@ -79,7 +79,7 @@ Testes automatizados: **3 escritos** (`Application.Tests`: 1; `SmokeTests`: 2), 
 # Dívida técnica e risco verificados
 
 Detalhe e evidências em `docs/architecture/PV-ANALYSIS-2026-11-05.md`. Itens críticos:
-- **Segurança (Handbook §23–24):** só `Character`, `Game/enter` e `Item` exigem `[Authorize]`; `Hunt`, `HuntSession`, `Inventory`, `Runtime`, `Gameplay` e `Location` não exigem (→ `PV-SEC-001`). ~~Chave JWT padrão fixa no código; SQLite com caminho fixo; log com dados sensíveis habilitado.~~ **Resolvido em `PV-PLATFORM-002`:** chave JWT sem valor padrão (user-secrets em Development, `Jwt__Key` fora dele; ausente ou < 32 caracteres derruba o startup), `Issuer/Audience` validados, connection string e CORS por configuração, log sensível do EF só em Development. Guia: `developer-guide/guides/configuracao-local.md`. *A chave antiga continua no histórico do git (repositório público) e não deve ser reutilizada em nenhum ambiente.*
+- **Segurança (Handbook §23–24):** ~~só `Character`, `Game/enter` e `Item` exigem `[Authorize]`; `Hunt`, `HuntSession`, `Inventory`, `Runtime`, `Gameplay` e `Location` não exigem.~~ **Resolvido em `PV-SEC-001`:** todos esses controllers exigem token; `PlayerOwnershipGuard` (Application) garante que personagem, runtime, hunt session e encounter pertencem à conta do token (outra conta → 403). Públicos por desenho: cadastro/login (`Account`) e `Playable/status`. Contrato: `docs/contracts/active/PV-SEC-001.md`. ~~Chave JWT padrão fixa no código; SQLite com caminho fixo; log com dados sensíveis habilitado.~~ **Resolvido em `PV-PLATFORM-002`:** chave JWT sem valor padrão (user-secrets em Development, `Jwt__Key` fora dele; ausente ou < 32 caracteres derruba o startup), `Issuer/Audience` validados, connection string e CORS por configuração, log sensível do EF só em Development. Guia: `developer-guide/guides/configuracao-local.md`. *A chave antiga continua no histórico do git (repositório público) e não deve ser reutilizada em nenhum ambiente.*
 - **Inicialização:** ~~o `Program.cs` não aplica migrations; o banco `projectvictory.db` versionado é o que faz um clone rodar hoje.~~ **Resolvido em `PV-PLATFORM-001`:** em Development, o `Program.cs` aplica as 14 migrations (`Database.MigrateAsync()`) antes do seed; `projectvictory.db` não é mais versionado. `NomeDaMigration` (nome-placeholder, já aplicada) continua intocada — não renomear. **Restante:** fora de Development nada cria o schema (um banco vazio em Production falha no seed) → **`PV-PLATFORM-004`**. ~~O caminho do banco é relativo ao diretório de trabalho~~ → configurável via `ConnectionStrings:ProjectVictory` desde o `PV-PLATFORM-002` (o valor padrão continua relativo).
 - **Concorrência/estado:** `HuntRepository` é `List<>` singleton (não thread-safe); `CombatContextRepository` idem; `CombatResultStore` está registrado como *scoped* guardando estado (padrão do FIX-001).
 - **Reward não chega ao inventário** (encontrado em `PV-QA-001` parte 1): `ApplyRewardHandler` (`src/ProjectVictory.Application/Reward/ApplyRewardHandler.cs`) aplica só a experiência e ignora `RewardResult.Drops` e `RewardResult.Gold`; nenhum item ou ouro chega ao personagem. O teste `RewardInventoryIntegrationTest.ApplyReward_Should_Add_Item_To_Character_Inventory` documenta o comportamento esperado e está com Skip aprovado pelo dono até a correção. Resolução: **`PV-REWARD-010`** (M2, Reward Pipeline real; ADR-008, 024, 037, 038). Remover o Skip faz parte do aceite desse contrato.
@@ -143,6 +143,20 @@ Execuções feitas com a DLL da API a partir de `bin/Debug/net10.0`, banco em pa
 | Production com chave de 12 caracteres | Startup encerra: `...Jwt:Key fraca: tem 12 caracteres; o mínimo é 32...` |
 | Production com chave válida (via variável de ambiente), sobre **cópia do banco temporário já migrado** pela execução em Development (fora de Development nada cria o schema — `PV-PLATFORM-004`) | Login 200; CORS **não** libera `http://localhost:5173` (lista vazia); log do EF com parâmetros mascarados (`'?'`), modo sensível desligado |
 | Busca pelo valor da chave antiga na árvore atual | 0 ocorrências (permanece só no histórico do git) |
+
+## Validação de autorização — `PV-SEC-001`, 2026-11-06
+
+API em Development (DLL de `bin/Debug/net10.0`, banco temporário via `ConnectionStrings__ProjectVictory`), duas contas: A (dono do personagem) e B.
+
+| Verificação | Resultado |
+|---|---|
+| `dotnet build ProjectVictory.sln` | Verde, 0 erros, 6 avisos NU1903 |
+| `dotnet test ProjectVictory.sln` | 0 falhas: `Application.Tests` 1/1; `SmokeTests` **5 passaram** (fluxo principal + 4 novos de posse) + 1 ignorado (`PV-REWARD-010`) |
+| Sem token: `hunt/execute`, `hunt/attack`, `hunt-session/start|stop`, `runtime/create|activity|location`, `gameplay/action`, `location/actions`, `inventory/{id}` | **401** em todos |
+| Dono A: `game/enter`, `hunt/execute`, `hunt/attack`, `hunt-session/start|stop`, `runtime/activity`, `inventory/{id}` | **200** em todos |
+| Conta B sobre recursos de A: `hunt/execute`, `hunt/attack`, `hunt-session/start|stop`, `runtime/create|activity|location`, `gameplay/action`, `inventory/{id}` | **403** em todos; corpo `{"title":"Forbidden","status":403}` (sem detalhes do recurso) |
+| Públicos | `playable/status` 200; `account/login` 200 sem token |
+| `hunt/attack` do dono | Agora devolve o resultado real do combate (antes, sem `await`, serializava o `Task`) |
 
 ## Ainda pendentes
 
