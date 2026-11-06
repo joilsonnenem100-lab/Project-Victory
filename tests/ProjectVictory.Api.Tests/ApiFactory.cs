@@ -1,7 +1,9 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Xunit;
 
 namespace ProjectVictory.Api.Tests;
 
@@ -21,6 +23,13 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         Path.Combine(Path.GetTempPath(), "pv-api-tests-" + Guid.NewGuid().ToString("N"));
 
 
+    private readonly string? _previousJwtKey =
+        Environment.GetEnvironmentVariable("Jwt__Key");
+
+    private readonly string? _previousConnectionString =
+        Environment.GetEnvironmentVariable("ConnectionStrings__ProjectVictory");
+
+
     public ApiFactory()
     {
         Directory.CreateDirectory(_databaseDirectory);
@@ -29,6 +38,14 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         Environment.SetEnvironmentVariable(
             "ConnectionStrings__ProjectVictory",
             "Data Source=" + Path.Combine(_databaseDirectory, "api-tests.db"));
+    }
+
+
+    protected override void ConfigureWebHost(
+        IWebHostBuilder builder)
+    {
+        // Explícito: o MigrateAsync() do startup só roda em Development (PV-PLATFORM-001).
+        builder.UseEnvironment("Development");
     }
 
 
@@ -68,6 +85,9 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     {
         base.Dispose(disposing);
 
+        Environment.SetEnvironmentVariable("Jwt__Key", _previousJwtKey);
+        Environment.SetEnvironmentVariable("ConnectionStrings__ProjectVictory", _previousConnectionString);
+
         // Só a pasta temporária criada por este fixture.
         try
         {
@@ -86,4 +106,13 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     private sealed record LoginPayload(
         Guid AccountId,
         string Token);
+}
+
+
+// Todas as classes que sobem a API compartilham uma única instância (e não rodam em paralelo),
+// porque a configuração entra por variáveis de ambiente do processo.
+[CollectionDefinition(Name)]
+public sealed class ApiCollection : ICollectionFixture<ApiFactory>
+{
+    public const string Name = "Api";
 }

@@ -9,7 +9,8 @@ using Xunit;
 namespace ProjectVictory.Api.Tests;
 
 // PV-QA-001 parte 2: autenticação (401) e posse de recursos (403) do PV-SEC-001, pela API real.
-public sealed class AuthorizationHttpTests : IClassFixture<ApiFactory>
+[Collection(ApiCollection.Name)]
+public sealed class AuthorizationHttpTests
 {
     private readonly ApiFactory _factory;
 
@@ -24,12 +25,12 @@ public sealed class AuthorizationHttpTests : IClassFixture<ApiFactory>
         { "GET", "/api/character" },
         { "POST", "/api/character" },
         { "POST", "/api/game/enter" },
-        { "GET", $"/api/item/{Guid.NewGuid()}" },
+        { "GET", "/api/item/11111111-1111-1111-1111-111111111111" },
         { "POST", "/api/hunt/execute" },
         { "POST", "/api/hunt/attack" },
         { "POST", "/api/hunt-session/start" },
         { "POST", "/api/hunt-session/stop" },
-        { "GET", $"/api/inventory/{Guid.NewGuid()}" },
+        { "GET", "/api/inventory/22222222-2222-2222-2222-222222222222" },
         { "POST", "/api/runtime/create" },
         { "POST", "/api/runtime/activity" },
         { "POST", "/api/runtime/location" },

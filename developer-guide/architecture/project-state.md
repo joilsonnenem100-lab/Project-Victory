@@ -43,7 +43,7 @@ Objetivo: reconciliar documentação e código, decidir as revisões pendentes, 
 | Projetos `ProjectVictory.Runtime` e `ProjectVictory.Shared` | **Vazios** (somente `.csproj`) | 0 arquivos `.cs` |
 | Client | Telas de login, cadastro, personagem, entrada, jogo, inventário, recompensa | `src/ProjectVictory.Client/src/pages` |
 
-Testes automatizados (após `PV-QA-001` parte 2, 2026-11-06): **80** no `.sln` — `Application.Tests` 1; `Domain.Tests` 22; `Runtime.Tests` 17; `SmokeTests` 11 (1 com Skip aprovado pelo PO até o `PV-REWARD-010`); `Api.Tests` 29 (HTTP com `WebApplicationFactory` + `JwtSettings`). **79 passam, 1 ignorado, 0 falhas.** Detalhe em Pendências de Validação.
+Testes automatizados (após `PV-QA-001` parte 2, 2026-11-06): **92** no `.sln` — `Application.Tests` 1; `Domain.Tests` 22; `Runtime.Tests` 17; `SmokeTests` 11 (1 com Skip aprovado pelo PO até o `PV-REWARD-010`); `Api.Tests` 41 (HTTP com `WebApplicationFactory`, `JwtSettings` e convenção de `[Authorize]` por reflexão). **91 passam, 1 ignorado, 0 falhas.** Detalhe em Pendências de Validação.
 
 ---
 
@@ -76,6 +76,7 @@ Testes automatizados (após `PV-QA-001` parte 2, 2026-11-06): **80** no `.sln` �
 | R-011 | Ordem do PO: "verificação de dono do personagem pelo token, nunca pelo corpo ou rota" × `PV-SEC-001` D1/D2, que mantêm `characterId` no corpo/rota como **seletor de recurso conferido contra a conta do token** | Ordem do PO (2026-11-06) × `docs/contracts/active/PV-SEC-001.md` | Leitura do Arquiteto: o dono vem sempre do token; o id só escolhe qual personagem da conta. A leitura literal exigiria um conceito de "personagem selecionado" no servidor (contrato novo) e mudaria o cliente | **PO confirma** a leitura ou pede o contrato novo |
 | R-012 | `ExecuteGameplayLoopCommand` (`src/ProjectVictory.Application/Game/ExecuteGameplayLoopCommand.cs`) recebe `AccountId` como parâmetro; nenhum controller o expõe hoje | Server Authority (`CLAUDE.md`) | Se for exposto, a conta deve vir de `ICurrentPlayerContext`, nunca do corpo (risco latente, revisão do `PV-SEC-001`) | Nenhum enquanto não exposto |
 | R-013 | `ADR-002` ("suporte ao modo Hunt Offline") e `knowledge-base/loot.md` (LOCKED, "regras de Hunt Offline previamente definidas") × decisão do PO de não haver Hunt Offline (`DEC-20261106-05`, ADR-057) | ADR-002, `loot.md` × ADR-057 | ADR-057 prevalece (decisão mais recente, com aceite do PO). Notas nos documentos só por revisão documentada (`loot.md` é LOCKED) | Revisão documental futura |
+| R-014 | Composição de DI duplicada: `Program.cs` × `tests/ProjectVictory.SmokeTests/TestServiceCollectionExtensions.cs`. O `DependencyInjectionTests` valida só a cópia de teste; ~16 serviços do `Program.cs` não estão no DI de teste | Revisão do `PV-QA-001` parte 2 | Contrato futuro: extrair um método de composição compartilhado em `src` (ex.: `AddProjectVictoryApplication()`) usado pela API e pelos testes. Até lá, a validação do container real vem do `Api.Tests` (Development + `ValidateOnBuild`) | Contrato próprio (M1/M2) |
 
 ---
 
@@ -169,15 +170,17 @@ API em Development (DLL de `bin/Debug/net10.0`, banco temporário via `Connectio
 |---|---|---|---|
 | `Application.Tests` | 1 | 1/1 | Pipeline de resultado de gameplay (pré-existente) |
 | `Domain.Tests` (novo conteúdo) | 22 | 22/22 | Value objects (`Experience`, `Level`, `Health`, `Mana`, `AccountId`), `Inventory`, `Skills`, ciclo de vida de `HuntSession` |
-| `Runtime.Tests` (novo conteúdo) | 17 | 17/17 | `RuntimeActivityTransitionRules` (Domain/Runtime). O projeto `ProjectVictory.Runtime` continua vazio; o teste passou a referenciar também `ProjectVictory.Domain` |
+| `Runtime.Tests` (novo conteúdo) | 17 | 17/17 | `RuntimeActivityTransitionRules` (Domain/Runtime). O projeto `ProjectVictory.Runtime` continua vazio; o teste passou a referenciar também `ProjectVictory.Domain`. Quando `ProjectVictory.Runtime` ganhar código, estes testes migram para `Domain.Tests` (ou o tipo migra para Runtime por contrato) |
 | `SmokeTests` | 11 | 10 passam, 1 ignorado | Fluxo principal, 8 testes de posse (`PV-SEC-001`) e **`DependencyInjectionTests`**: todo serviço registrado no DI de teste precisa ser construível (`ValidateOnBuild` + `ValidateScopes`) |
-| `Api.Tests` (projeto novo) | 29 | 29/29 | API real em memória (`WebApplicationFactory`, Development, SQLite temporário, chave JWT aleatória por execução): **401 sem token** em 15 endpoints (todos menos `Account`); `Account` público; token com issuer, audience ou chave errados → 401; **outra conta → 403** em inventory, hunt-session/start, hunt/execute, runtime/create e gameplay/action, sem expor o recurso; `JwtSettings.Validate` (chave ausente/curta/limite de 32, Issuer/Audience, mensagens Development × fora dele) |
+| `Api.Tests` (projeto novo) | 41 | 41/41 | API real em memória (`WebApplicationFactory`, Development, SQLite temporário, chave JWT aleatória por execução): **401 sem token** em 15 endpoints (todos menos `Account`); `Account` público; token com issuer, audience ou chave errados → 401; **outra conta → 403** em inventory, hunt-session/start, hunt/execute, runtime/create e gameplay/action, sem expor o recurso; `JwtSettings.Validate` (chave ausente/curta/limite de 32, Issuer/Audience, mensagens Development × fora dele); **convenção por reflexão**: todo controller exceto `Account` tem `[Authorize]` e nenhuma ação tem `[AllowAnonymous]` (endpoint novo nasce protegido) |
 
 `dotnet build ProjectVictory.sln`: verde, 0 erros, 8 avisos — todos NU1903 (`SQLitePCLRaw.lib.e_sqlite3` 2.1.11), 2 por projeto em API, Persistence, SmokeTests e Api.Tests.
 
 **Defasagem encontrada pelo teste de DI:** o `SmokeTests` registrava `AttackEncounterHandler` sem `ICombatResultStore`, `FinalizeHuntAfterCombatHandler` e a cadeia de reward/loot. Corrigido só em `tests/` (mesmos registros do `Program.cs`). Nenhum arquivo de `src/` foi alterado neste contrato.
 
-**Não coberto:** falha de startup em Production sem chave por teste de integração (o `Program.cs` lê a configuração antes do `Build()`, e variáveis de ambiente são globais ao processo de teste); coberto pelo teste unitário de `JwtSettings.Validate` e pela validação manual do `PV-PLATFORM-002`.
+**Cobertura implícita:** o `WebApplicationFactory` sobe a API em Development, onde o host liga `ValidateOnBuild`/`ValidateScopes` — o container **real** do `Program.cs` é validado a cada execução do `Api.Tests`. Controllers não são serviços registrados: suas dependências só são resolvidas quando uma requisição chega.
+
+**Não coberto:** 403 por HTTP nos caminhos de runtime/hunt session/encounter (`runtime/activity|location`, `hunt-session/stop`, `hunt/attack`) — cobertos no nível de handler (`OwnershipAuthorizationTests`); token expirado e token sem a claim de conta. Falha de startup em Production sem chave por teste de integração (o `Program.cs` lê a configuração antes do `Build()`, e variáveis de ambiente são globais ao processo de teste); coberto pelo teste unitário de `JwtSettings.Validate` e pela validação manual do `PV-PLATFORM-002`.
 
 ## Ainda pendentes
 
