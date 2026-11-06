@@ -56,3 +56,13 @@ Resultado da solução: build com 0 avisos; **295 aprovados, 0 ignorados, 0 falh
 - **Ressalva 6 (aplicada):** comentário de `ApplyArea` reescrito.
 
 Resultado depois da correção: build com 0 avisos; **297 aprovados, 0 ignorados, 0 falhas** (Application 23, Domain 108, Runtime 17, Smoke 65, Api 84).
+
+## Revisão final (`pv-architecture-reviewer`): APROVADO COM RESSALVAS
+
+B1, B2 e as ressalvas 2 a 6 conferidos. Ressalvas novas:
+1. **Aplicada:** teste direto `ClassSkillCombatTests.ResolveSkill_NotEnoughMana_NotExecuted_NoRandomConsumed` (guard de mana do resolver, 0 sorteios); o teste antigo virou `…_NotEnoughMana_SelectorChoosesNoSkill` (o seletor já filtra por mana).
+2. **Registrada:** o método padrão `ICombatResolver.ResolveSkill` devolve `NotExecuted`. Um resolver que não o implemente deixa de executar skills em área (antes passavam por `ResolveAction`). Hoje só afeta os fakes de teste (`FakeResolver`, `RandomDamageResolver`, `ZeroDamageResolver`); é seguro, e para usar skills em área o resolver precisa implementar o método.
+3. R-038 nas perguntas ao PO (`RELATORIO-FILA-4.md`).
+4. Sem ação: o BOM do `Application.Tests.csproj` saiu no diff.
+
+Resultado: build com 0 avisos; **298 aprovados, 0 ignorados, 0 falhas** (Smoke 66).

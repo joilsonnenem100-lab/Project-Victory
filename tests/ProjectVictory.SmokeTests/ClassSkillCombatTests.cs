@@ -46,8 +46,51 @@ public sealed class ClassSkillCombatTests
         Assert.Equal(0, session.Player.CurrentMana);
     }
 
+    private sealed class CountingRandom : IRandomSource
+    {
+        public int Calls { get; private set; }
+
+        public double NextDouble()
+        {
+            Calls++;
+            return 0.5;
+        }
+
+        public int NextInclusive(int minInclusive, int maxInclusive)
+        {
+            Calls++;
+            return minInclusive;
+        }
+    }
+
+    // Revisão final do PV-COMBAT-013 (ressalva 1): o guard de mana do resolver — sem mana, a skill
+    // em área não executa e NÃO consome número aleatório (determinismo).
     [Fact]
-    public void AreaSkill_RealResolver_NotEnoughMana_NoSkillNoRandomConsumed()
+    public void ResolveSkill_NotEnoughMana_NotExecuted_NoRandomConsumed()
+    {
+        var resolver = new CombatResolver(new ProvisionalTibiaLikeDamageFormula(), new ProvisionalSupplyEffects());
+        var groundShaker = ClassSkillTable.ForClass(CharacterClass.Knight).Single(s => s.Name == "Ground Shaker");
+        var session = Session(playerMana: groundShaker.ManaCost - 1, monsters: 3);
+        var random = new CountingRandom();
+
+        var result = resolver.ResolveSkill(session.Player, groundShaker, session.Monsters, random);
+
+        Assert.False(result.Executed);
+        Assert.Empty(result.Hits);
+        Assert.Equal(0, random.Calls);
+
+        // Com mana suficiente: um sorteio de dano por alvo, custo único.
+        var paid = Session(playerMana: groundShaker.ManaCost, monsters: 3);
+        var ok = resolver.ResolveSkill(paid.Player, groundShaker, paid.Monsters, new CountingRandom());
+        Assert.True(ok.Executed);
+        Assert.Equal(3, ok.Hits.Count);
+        Assert.Equal(groundShaker.ManaCost, ok.ManaCost);
+        Assert.All(ok.Hits, h => Assert.Equal(0, h.Outcome.ManaCost));
+    }
+
+    // Com pouca mana o seletor nem escolhe skill (o round segue só com o ataque básico).
+    [Fact]
+    public void AreaSkill_RealResolver_NotEnoughMana_SelectorChoosesNoSkill()
     {
         var session = Session(playerMana: 5, monsters: 3);
 
