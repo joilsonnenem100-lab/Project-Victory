@@ -1,6 +1,6 @@
 # PV-COMBAT-012 — Regras de dano e ação (combate real)
 
-Status: **IMPLEMENTADO** (branch `chief/m3-combat-012`) — fórmula e atributos **PROVISÓRIOS**
+Status: **IMPLEMENTADO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/m3-hunt-010`). Branch `chief/m3-combat-012` — fórmula e atributos **PROVISÓRIOS**
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 3", item 5).
 Lastro:
 - ADR-006 (Basic Attack + Secondary Action);
@@ -66,3 +66,17 @@ Resultado da solução: build com 0 avisos; **222 aprovados, 0 ignorados, 0 falh
 1. Fórmula oficial de dano e defesa (`ascension.md` diz "pendente"). Até lá vale a PROVISÓRIA.
 2. Atributos de combate por classe (arma, armadura e defesa iniciais, custo e força da habilidade).
 3. Quem começa o combate (hoje é sempre o jogador) e a política da ação secundária do jogador (hoje: usa a habilidade sempre que tem mana).
+4. **Mecânica do encounter** (revisão, ressalva 2): vitória = **todos** os monstros do encounter mortos (antes, o primeiro morto encerrava), e a recompensa é **por monstro morto**, entregue na hora. Confirmar.
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+O revisor rodou a suíte (222 aprovados). Ressalvas tratadas no branch `chief/m3-hunt-010`:
+1. Pipeline de encerramento: resolvido pelo `PV-HUNT-010` (`EndHuntHandler`). A dependência morta `FinalizeHuntAfterCombatHandler` foi removida do ataque; o handler continua registrado (Regra Aditiva).
+2. Vitória com todos mortos e recompensa por monstro são mecânica → **pergunta 4 ao PO** (acima).
+3. O perfil de reserva de monstro sem dado vira pendência explícita do `PV-CONTENT-011`.
+4. Regras de ação na Infrastructure → **R-028**.
+5. Teste do bloqueio de `Combat:FixedSeed` fora de Development (`CombatSeedConfigurationTests`); derrota e XP de vários monstros testados no `PV-HUNT-010`. O aviso usa `Console.Error`, porque é emitido antes de o logger existir.
+6. A resposta HTTP usa o DTO `CombatTurnDto` em vez do tipo do Domain.
+7. Derrota pendente: resolvida pelo `PV-HUNT-010` (a Hunt fica `Failed`; HP e Mana cheios na cidade).
+8. `CombatantFactory.cs` separado em três arquivos (`IMonsterCombatProfileProvider.cs`, `DefaultCombatActionSelector.cs`).
+9. Concorrência no mesmo encounter → **R-029**.

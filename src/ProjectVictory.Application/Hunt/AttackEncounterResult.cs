@@ -18,4 +18,34 @@ public sealed record AttackEncounterResult(
     int Level,
     IReadOnlyList<RewardDrop> Drops,
     // PV-COMBAT-012: turnos executados nesta rodada (aditivo).
-    IReadOnlyList<ProjectVictory.Domain.Combat.TurnBased.CombatTurnLogEntry>? Turns = null);
+    IReadOnlyList<CombatTurnDto>? Turns = null,
+    // PV-HUNT-010: motivo do encerramento da Hunt nesta rodada (Victory, Death…), se houve (aditivo).
+    string? HuntEndReason = null,
+    bool ReturnedToCity = false);
+
+// PV-COMBAT-012 (revisão, ressalva 6): DTO do turno na resposta HTTP — a API não expõe tipos do Domain.
+public sealed record CombatTurnDto(
+    int Turn,
+    Guid ActorId,
+    string ActorName,
+    Guid TargetId,
+    string TargetName,
+    string Kind,
+    int Damage,
+    int Healing,
+    int TargetHealthAfter,
+    int ActorHealthAfter)
+{
+    public static CombatTurnDto From(ProjectVictory.Domain.Combat.TurnBased.CombatTurnLogEntry entry) =>
+        new(
+            entry.Turn,
+            entry.ActorId,
+            entry.ActorName,
+            entry.TargetId,
+            entry.TargetName,
+            entry.Kind.ToString(),
+            entry.Damage,
+            entry.Healing,
+            entry.TargetHealthAfter,
+            entry.ActorHealthAfter);
+}

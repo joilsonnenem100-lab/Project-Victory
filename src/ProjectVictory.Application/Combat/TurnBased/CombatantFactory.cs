@@ -6,17 +6,6 @@ using CharacterEntity = ProjectVictory.Domain.Entities.Character;
 
 namespace ProjectVictory.Application.Combat.TurnBased;
 
-// PV-COMBAT-012: atributos de combate de um monstro (Level + perfil), vindos de dados.
-public sealed record MonsterCombatDefinition(
-    int Level,
-    CombatProfile Profile);
-
-// PV-COMBAT-012 / PV-CONTENT-011: fonte dos atributos de combate dos monstros.
-public interface IMonsterCombatProfileProvider
-{
-    MonsterCombatDefinition Get(Guid monsterId);
-}
-
 // PV-COMBAT-012: monta os participantes do combate a partir do personagem, do estado de runtime
 // (vida e mana atuais) e do encounter. Não contém regra de dano.
 public sealed class CombatantFactory
@@ -67,30 +56,5 @@ public sealed class CombatantFactory
             0,
             0,
             definition.Profile);
-    }
-}
-
-// PV-COMBAT-012: Secondary Action padrão (ADR-006).
-// - Jogador: usa a habilidade inicial da classe se tiver mana. *** PROVISÓRIO *** — a política do
-//   jogador vira configuração própria; poções entram no PV-SUPPLY-010.
-// - Monstro: nenhuma (Monster AI é o PV-MONSTER-010, M4).
-public sealed class DefaultCombatActionSelector : ICombatActionSelector
-{
-    public CombatActionKind? SelectSecondaryAction(
-        CombatSession session,
-        Combatant actor)
-    {
-        ArgumentNullException.ThrowIfNull(actor);
-
-        if (actor.Side != CombatSide.Player)
-        {
-            return null;
-        }
-
-        var cost = actor.Profile.AbilityManaCost;
-
-        return cost > 0 && actor.CurrentMana >= cost
-            ? CombatActionKind.ClassAbility
-            : null;
     }
 }

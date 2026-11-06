@@ -22,12 +22,12 @@ public sealed class AttackEncounterHandler
     private readonly IHuntRepository _huntRepository;
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
     private readonly ICombatResultStore _combatResultStore;
-    private readonly FinalizeHuntAfterCombatHandler _finalizeHuntAfterCombatHandler;
     private readonly PlayerOwnershipGuard _ownershipGuard;
     private readonly ICharacterRepository _characterRepository;
     private readonly CombatantFactory _combatantFactory;
     private readonly CombatOrchestrator _orchestrator;
     private readonly RewardResolutionHandler _rewardResolutionHandler;
+    private readonly EndHuntHandler _endHuntHandler;
 
 
     public AttackEncounterHandler(
@@ -35,19 +35,19 @@ public sealed class AttackEncounterHandler
         IHuntRepository huntRepository,
         IRuntimeExecutionStateStore runtimeExecutionStateStore,
         ICombatResultStore combatResultStore,
-        FinalizeHuntAfterCombatHandler finalizeHuntAfterCombatHandler,
         PlayerOwnershipGuard ownershipGuard,
         ICharacterRepository characterRepository,
         CombatantFactory combatantFactory,
         CombatOrchestrator orchestrator,
-        RewardResolutionHandler rewardResolutionHandler)
+        RewardResolutionHandler rewardResolutionHandler,
+        EndHuntHandler endHuntHandler)
     {
+        _endHuntHandler = endHuntHandler;
         _ownershipGuard = ownershipGuard;
         _encounterStateStore = encounterStateStore;
         _huntRepository = huntRepository;
         _runtimeExecutionStateStore = runtimeExecutionStateStore;
         _combatResultStore = combatResultStore;
-        _finalizeHuntAfterCombatHandler = finalizeHuntAfterCombatHandler;
         _characterRepository = characterRepository;
         _combatantFactory = combatantFactory;
         _orchestrator = orchestrator;
@@ -150,15 +150,19 @@ public sealed class AttackEncounterHandler
             experienceGained += reward.ExperienceAmount ?? 0;
         }
 
+        // PV-HUNT-010: vitória e morte encerram a Hunt pelo MESMO pipeline (ADR-012).
+        EndHuntResult? ending = null;
+
         switch (report.Outcome)
         {
             case CombatSessionOutcome.Victory:
                 encounter.Victory();
-                hunt.CompleteAfterCombat();
+                ending = await _endHuntHandler.Handle(new EndHuntCommand(hunt.Id, HuntEndReason.Victory), cancellationToken);
                 break;
 
             case CombatSessionOutcome.Defeat:
                 encounter.Defeat();
+                ending = await _endHuntHandler.Handle(new EndHuntCommand(hunt.Id, HuntEndReason.Death), cancellationToken);
                 break;
         }
 
@@ -188,6 +192,8 @@ public sealed class AttackEncounterHandler
             0,
             characterAfter?.Level.Value ?? character.Level.Value,
             [],
-            report.Log);
+            report.Log.Select(CombatTurnDto.From).ToList(),
+            ending?.Reason.ToString(),
+            ending?.ReturnedToCity ?? false);
     }
 }

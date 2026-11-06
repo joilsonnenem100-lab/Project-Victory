@@ -120,6 +120,9 @@ public static class ProjectVictoryServiceCollectionExtensions
         services.AddScoped<GameplayResultPipeline>();
         services.AddScoped<AttackEncounterHandler>();
 
+        // PV-HUNT-010: pipeline único de encerramento da Hunt (ADR-012).
+        services.AddScoped<EndHuntHandler>();
+
         // Runtime, World e Gameplay.
         services.AddScoped<CreateRuntimeExecutionHandler>();
         services.AddScoped<UpdateRuntimeActivityHandler>();
