@@ -31,4 +31,6 @@ Resultado: build com 0 avisos; **311 aprovados, 0 ignorados, 0 falhas** (Applica
 
 ## Pendências
 
+- A `ClassIdentityTable` ainda não tem consumidor fora do teste (é descritiva, `DEC-20261106-29`); será a fonte das skills principais quando o dano por skill for ligado (R-039).
+
 R-040 (Magic Level inicial 10 × 0 do Tibia) e R-039 (scaling por skill) continuam; o PO decide quando ligar dano por Magic Level/Distance/Fist.

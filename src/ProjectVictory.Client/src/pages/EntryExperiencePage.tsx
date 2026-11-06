@@ -102,7 +102,7 @@ export default function EntryExperiencePage({ character, onEnterWorld }: Props)
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", color: "#8b949e" }}>
                         <span>Title:</span>
-                        <span style={{ color: "#fff", fontWeight: "bold" }}>{character?.title ?? "Novice"}</span>
+                        <span style={{ color: "#fff", fontWeight: "bold" }}>{character?.title ?? "-"}</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", color: "#8b949e" }}>
                         <span>Experience:</span>

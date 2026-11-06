@@ -17,4 +17,5 @@ O cliente não exibia nenhum atributo inventado (grep em `src/ProjectVictory.Cli
 
 - `npm run build` (Vite): **verde**.
 - `npm run typecheck`: **não verde, por problema de ambiente anterior** — o `node_modules` local não tem `@types/react` instalado (está no `package.json`), e o `tsc` acusa 444 erros já na base (`TS7016`/`TS7026`: JSX e módulos React sem tipos). Com as mudanças: 458; os **14 a mais são todos `TS7026`** (os elementos JSX novos), da mesma causa. Nenhum erro de tipo nos campos novos. Ação recomendada: `npm install` no cliente (fora do escopo desta fila).
+- Revisão final: o fallback `"Novice"` da `EntryExperiencePage` virou `"-"` (o rótulo pertence à configuração do servidor).
 - Teste no navegador: **não executado** (sem redesign; a API já é coberta por `Api.Tests/LevelTitleHttpTests`).

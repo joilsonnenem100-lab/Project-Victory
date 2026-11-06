@@ -8,8 +8,8 @@ Método: grep em todo o repositório (`*.cs`, `*.ts`, `*.tsx`, `*.md`) por Stren
 
 | Item | Onde | Existe no Tibia? | Ação |
 |---|---|---|---|
-| `Strength`, `Dexterity`, `Intelligence`, `Vitality` (classe `Attributes`) | `src/ProjectVictory.Domain/Entities/Attributes.cs` | **Não** | **Remover** a classe (`PV-CHAR-012`) |
-| `Character.Attributes` (propriedade, sempre `new Attributes()`) | `src/ProjectVictory.Domain/Entities/Character.cs` | **Não** | **Remover** (`PV-CHAR-012`) |
+| `Strength`, `Dexterity`, `Intelligence`, `Vitality` (classe `Attributes`) | `src/ProjectVictory.Domain/Entities/Attributes.cs` | **Não** | **Removida** (`PV-CHAR-012`, commit `a131122`) |
+| `Character.Attributes` (propriedade, sempre `new Attributes()`) | `src/ProjectVictory.Domain/Entities/Character.cs` | **Não** | **Removida** (`PV-CHAR-012`, commit `a131122`) |
 | Skills: Fist, Club, Sword, Axe, Distance, Shielding, MagicLevel, Fishing | `src/ProjectVictory.Domain/Entities/Skills.cs` | Sim | **Manter**. *Divergência:* Magic Level inicial = 10 no código; no Tibia é 0 → **R-040** (mudar sem fórmula de dano por ML alteraria o dano de Sorcerer/Druid; ligado ao R-039) |
 | Level, Experience | `Character`, `ExperienceCurve` | Sim | Manter |
 | HP e Mana (derivados por `AttributeCurve`, ADR-029) | `Domain/Character/AttributeCurve.cs`, `CharacterClassDefinition.cs` | Sim | Manter ("Attribute" no nome é só o termo do ADR-029) |
@@ -18,10 +18,10 @@ Método: grep em todo o repositório (`*.cs`, `*.ts`, `*.tsx`, `*.md`) por Stren
 | `BasicCombatAttributes(Health, Attack, Defense)` | `Domain/Combat/BasicCombatAttributes.cs` | Health sim; Attack/Defense existem como valores de arma/escudo | Manter. **Sem uso** no código → candidato a limpeza futura (pergunta ao PO) |
 | Monstros: vida, ataque, armadura, defesa, XP | `Domain/Entities/Monster.cs`, `SpiderCaveCatalog` | Sim | Manter |
 | Banco (tabela `Characters`) | snapshot de migrations | Não guarda `Attributes` nem `Skills` | **Nenhuma migration** necessária |
-| DTOs da API | `src/ProjectVictory.API` | Nenhum DTO expõe `Attributes` | Nada a remover; título/tier entram no `PV-PROG-013` |
-| Cliente React | `src/ProjectVictory.Client/src` (`models/character.ts`, painéis de personagem) | Mostra só nome, Level, Experience e status | Nada a remover; título/tier no `PV-CLIENT-020` |
+| DTOs da API | `src/ProjectVictory.API` | Nenhum DTO expõe `Attributes` | Nada a remover; `title`/`titleTier` acrescentados (`PV-PROG-013`, commit `ca0e5b4`) |
+| Cliente React | `src/ProjectVictory.Client/src` (`models/character.ts`, painéis de personagem) | Mostra só nome, Level, Experience e status | Nada a remover; título/tier exibidos (`PV-CLIENT-020`, commit `ee610fc`) |
 | Testes | `tests/*` | Nenhum teste usa `Attributes` | Nada a remover |
-| Ascension da Fila 4 (`AscensionRules`, `Ascension:LevelStep/Maximum`, `RequiredAscension`) | Domain, Application, API, `appsettings.json` | — (regra superada pelo `DEC-20261106-30`) | **Substituir** por títulos/tier em configuração (`PV-PROG-013`) |
+| Ascension da Fila 4 (`AscensionRules`, `Ascension:LevelStep/Maximum`, `RequiredAscension`) | Domain, Application, API, `appsettings.json` | — (regra superada pelo `DEC-20261106-30`) | **Substituída** por títulos/tier em configuração (`PV-PROG-013`, commit `ca0e5b4`) |
 
 ## Documentação
 
@@ -49,7 +49,7 @@ Método: grep em todo o repositório (`*.cs`, `*.ts`, `*.tsx`, `*.md`) por Stren
 
 ## Resultado
 
-- **Código a remover:** só a classe `Attributes` e a propriedade `Character.Attributes` (`PV-CHAR-012`).
+- **Código removido:** só a classe `Attributes` e a propriedade `Character.Attributes` (`PV-CHAR-012`, commit `a131122`).
 - **Schema:** não muda; nenhuma migration.
 - **Ascension da Fila 4:** substituída por títulos/tier (`PV-PROG-013`).
 - **Docs:** 3 documentos com texto tachado (manifesto) e 6 emendados.

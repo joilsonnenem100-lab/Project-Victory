@@ -56,7 +56,8 @@ public static class ProjectVictoryServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(rewardSettings);
 
-        // PV-PROG-013: títulos por Level (a API passa o provedor que lê a configuração).
+        // PV-PROG-013: títulos por Level. Padrão: FixedLevelTitleProvider (tabela do DEC-20261106-30); o host
+        // pode passar outro aqui ou substituí-lo depois (a API usa Replace com o provedor de configuração).
         services.AddSingleton(levelTitles ?? ProjectVictory.Application.Progression.FixedLevelTitleProvider.Default);
 
         // PV-SUPPLY-010: poções (política do jogador, consumo, fim de suprimento, poções iniciais).

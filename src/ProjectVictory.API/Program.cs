@@ -179,9 +179,12 @@ builder.Services.AddProjectVictoryCore(
 // PV-PROG-013 (DEC-20261106-30): títulos por Level lidos da configuração ("LevelTitles") a cada
 // consulta — trocar rótulos/faixas no appsettings.json não exige recompilar nem reiniciar.
 // Revisão: registrado pela DI (recebe IConfiguration e ILogger); substitui o padrão da composição.
-builder.Services.AddSingleton<
-    ProjectVictory.Application.Progression.ILevelTitleProvider,
-    ProjectVictory.API.Configuration.ConfigurationLevelTitleProvider>();
+// Revisão final da Fila 5: Replace deixa explícita a substituição (um único registro no container).
+Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace(
+    builder.Services,
+    ServiceDescriptor.Singleton<
+        ProjectVictory.Application.Progression.ILevelTitleProvider,
+        ProjectVictory.API.Configuration.ConfigurationLevelTitleProvider>());
 
 var app =
     builder.Build();
