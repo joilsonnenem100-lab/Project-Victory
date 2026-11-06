@@ -38,7 +38,7 @@ Nenhum arquivo C# foi alterado: o ambiente de análise não tem `dotnet`, logo n
 
 ## `projectvictory.db` fora do versionamento (R-010) — `PV-PLATFORM-001`, branch `chief/m1-platform-001`
 - `git rm --cached src/ProjectVictory.API/projectvictory.db` (o arquivo **continua no disco** de quem fez a remoção) e `.gitignore` com `projectvictory.db`, `*.db-shm` e `*.db-wal`.
-- O schema passa a ser criado pelo `Database.Migrate()` no startup em **Development** (`Program.cs`). Um clone limpo sobe a API com as 14 migrations aplicadas e o seed de itens.
+- O schema passa a ser criado pelo `Database.MigrateAsync()` no startup em **Development** (`Program.cs`). Um clone limpo sobe a API com as 14 migrations aplicadas e o seed de itens.
 - O arquivo continua no histórico do git (commits anteriores); não houve reescrita de histórico.
 
 > ⚠️ **AVISO — clones já existentes perdem o banco local no `git pull`/merge.** Quando um commit deixa de rastrear um arquivo, o git **apaga** esse arquivo da árvore de trabalho de quem recebe o commit. Em qualquer máquina que já tenha o repositório, **antes** do `git pull` ou do merge desta mudança, copie o banco para **fora do repositório**:
@@ -55,6 +55,6 @@ Nenhum arquivo C# foi alterado: o ambiente de análise não tem `dotnet`, logo n
   ```
   dotnet run --project src/ProjectVictory.API
   ```
-  O `dotnet run` usa a pasta do projeto como diretório de trabalho (verificado em 2026-11-05: content root `src/ProjectVictory.API`), e o perfil `http` do `launchSettings.json` define `ASPNETCORE_ENVIRONMENT=Development` (porta 5250). Resultado: banco em `src/ProjectVictory.API/projectvictory.db`, migrations aplicadas.
+  O `dotnet run --project` usa a pasta do projeto como diretório de trabalho — **verificado** em 2026-11-05 (execução a partir de outra pasta, com `--no-launch-profile`: content root `src/ProjectVictory.API`, nenhum banco criado na pasta de origem). Que o perfil `http` aplica `ASPNETCORE_ENVIRONMENT=Development` (porta 5250) é **lido do `launchSettings.json`, não executado** nesta validação. Resultado esperado: banco em `src/ProjectVictory.API/projectvictory.db`, migrations aplicadas.
 - **Evite** executar a DLL diretamente (`dotnet ProjectVictory.API.dll`) de outra pasta: o banco seria criado na pasta corrente. Com `--no-launch-profile` o ambiente vira Production e o `Migrate()` **não** roda.
 - Tornar o caminho do banco configurável é escopo do `PV-PLATFORM-002`.

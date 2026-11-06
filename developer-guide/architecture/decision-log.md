@@ -423,3 +423,5 @@ Status: **Pendente** — ver `ADR-057` (PROPOSED). A parte de Game Design perten
 Status: Accepted (Arquitetura)
 
 `node_modules/` e `dist/` deixam de ser versionados; binários e listagens sem valor de fonte são removidos; `projectvictory.db` permanece até o `PV-PLATFORM-001`. Lastro: Regra Aditiva (nenhuma funcionalidade removida) e clone limpo como pré-requisito de baseline.
+
+*Atualização (2026-11-05): `projectvictory.db` removido do versionamento em `PV-PLATFORM-001`, após a aplicação das migrations no startup em Development — ver `docs/architecture/CLEANUP-MANIFEST-2026-11-05.md`.*
