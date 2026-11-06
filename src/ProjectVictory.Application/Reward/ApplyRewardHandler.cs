@@ -8,12 +8,24 @@ public sealed class ApplyRewardHandler
     private readonly IRewardProcessor _rewardProcessor;
     private readonly ICharacterRepository _characterRepository;
     private readonly RewardSettings _settings;
+    private readonly IExperienceDistributor _experienceDistributor;
 
     public ApplyRewardHandler(
         IRewardProcessor rewardProcessor,
         ICharacterRepository characterRepository,
         RewardSettings settings)
+        : this(rewardProcessor, characterRepository, settings, EvenSplitExperienceDistributor.Instance)
     {
+    }
+
+    // PV-XP-010 (ADR-007): a Experience final passa pela Experience Distribution.
+    public ApplyRewardHandler(
+        IRewardProcessor rewardProcessor,
+        ICharacterRepository characterRepository,
+        RewardSettings settings,
+        IExperienceDistributor experienceDistributor)
+    {
+        _experienceDistributor = experienceDistributor ?? throw new ArgumentNullException(nameof(experienceDistributor));
         _rewardProcessor = rewardProcessor;
         _characterRepository = characterRepository;
         _settings = settings;
@@ -44,11 +56,16 @@ public sealed class ApplyRewardHandler
             _settings.ExperienceRate.Apply(
                 Math.Max(0, reward.Experience));
 
+        // PV-XP-010: este handler aplica a recompensa a UM personagem; a distribuição com 1 participante
+        // devolve o total (mesmo XP de antes).
         if (experience > 0)
         {
-            character.GainExperience(
-                new ProjectVictory.Domain.ValueObjects.Experience(
-                    experience));
+            foreach (var share in _experienceDistributor.Distribute(experience, [character.Id]))
+            {
+                character.GainExperience(
+                    new ProjectVictory.Domain.ValueObjects.Experience(
+                        share.Amount));
+            }
         }
 
         // PV-REWARD-010: drops e ouro chegam ao Inventory do personagem (lacuna do PV-QA-001).

@@ -12,6 +12,7 @@ public sealed class RewardResolutionHandler
     private readonly ApplyLootToCharacterInventoryHandler _applyLootHandler;
     private readonly ILootDefinitionProvider _lootDefinitionProvider;
     private readonly RewardSettings _settings;
+    private readonly IExperienceDistributor _experienceDistributor;
 
 
     public RewardResolutionHandler(
@@ -20,7 +21,23 @@ public sealed class RewardResolutionHandler
         ApplyLootToCharacterInventoryHandler applyLootHandler,
         ILootDefinitionProvider lootDefinitionProvider,
         RewardSettings settings)
+        : this(progressionHandler, lootResolutionHandler, applyLootHandler, lootDefinitionProvider, settings,
+            EvenSplitExperienceDistributor.Instance)
     {
+    }
+
+
+    // PV-XP-010 (ADR-007): a Experience final passa pela Experience Distribution antes de ser aplicada.
+    public RewardResolutionHandler(
+        ApplyResolvedRewardToCharacterHandler progressionHandler,
+        LootResolutionHandler lootResolutionHandler,
+        ApplyLootToCharacterInventoryHandler applyLootHandler,
+        ILootDefinitionProvider lootDefinitionProvider,
+        RewardSettings settings,
+        IExperienceDistributor experienceDistributor)
+    {
+        _experienceDistributor =
+            experienceDistributor ?? throw new ArgumentNullException(nameof(experienceDistributor));
         _lootDefinitionProvider =
             lootDefinitionProvider;
         _settings =
@@ -81,11 +98,31 @@ public sealed class RewardResolutionHandler
                 combatResult.Id);
 
 
-        await _progressionHandler.Handle(
-            new ApplyResolvedRewardToCharacterCommand(
-                reward.CharacterId,
-                reward.ExperienceAmount),
-            cancellationToken);
+        // PV-XP-010 (ADR-007/024): a Experience FINAL é repartida pela Experience Distribution e cada
+        // parte é aplicada pelo Reward Pipeline (único que muda Experience). Hoje há 1 jogador por
+        // Hunt: o único participante é o personagem do combate e recebe o total (mesmo XP de antes).
+        if (reward.ExperienceAmount is > 0)
+        {
+            IReadOnlyList<Guid> participants = [reward.CharacterId];
+
+            foreach (var share in _experienceDistributor.Distribute(reward.ExperienceAmount.Value, participants))
+            {
+                await _progressionHandler.Handle(
+                    new ApplyResolvedRewardToCharacterCommand(
+                        share.CharacterId,
+                        share.Amount),
+                    cancellationToken);
+            }
+        }
+        else
+        {
+            // Sem Experience (derrota, sem definição ou 0): mesma chamada de antes (não altera nada).
+            await _progressionHandler.Handle(
+                new ApplyResolvedRewardToCharacterCommand(
+                    reward.CharacterId,
+                    reward.ExperienceAmount),
+                cancellationToken);
+        }
 
 
         return reward;

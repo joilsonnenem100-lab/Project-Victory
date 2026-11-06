@@ -126,6 +126,8 @@ public sealed class SupplyAwareCombatActionSelector : ICombatActionSelector
     private readonly CombatSupplyContext _supplies;
     private readonly DefaultCombatActionSelector _fallback;
 
+    // Compatibilidade/testes de unidade: monstros só com ataque básico. Produção (DI) usa o construtor
+    // com IMonsterAI, que lê os dados do catálogo.
     public SupplyAwareCombatActionSelector(CombatSupplyContext supplies)
         : this(supplies, new DataDrivenMonsterAI(BasicAttackOnlyBehaviorProvider.Instance))
     {
@@ -184,7 +186,9 @@ public sealed class SupplyConsumptionObserver : ICombatActionObserver
 
     public void OnActionExecuted(CombatSession session, CombatTurnAction action, CombatActionOutcome outcome)
     {
-        if (action.Kind is CombatActionKind.UseHealthPotion or CombatActionKind.UseManaPotion)
+        // Revisão do PV-MONSTER-010 (ressalva 1): só poções usadas PELO JOGADOR saem do inventário dele.
+        if (action.Actor.Side == CombatSide.Player
+            && action.Kind is CombatActionKind.UseHealthPotion or CombatActionKind.UseManaPotion)
         {
             _supplies.Consume(action.Kind);
         }

@@ -17,6 +17,8 @@ public sealed class DefaultCombatActionSelector : ICombatActionSelector
     {
     }
 
+    // Compatibilidade/testes de unidade: monstros só com ataque básico. Produção (DI) usa o construtor
+    // com IMonsterAI, que lê os dados do catálogo.
     public DefaultCombatActionSelector(ProjectVictory.Domain.Combat.Rules.SkillSelectionPolicy policy)
         : this(policy, new DataDrivenMonsterAI(BasicAttackOnlyBehaviorProvider.Instance))
     {

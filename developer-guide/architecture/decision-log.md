@@ -788,3 +788,10 @@ Status: **Accepted (Arquiteto)** — implementa o ADR-005/006 no `PV-MONSTER-010
 - O comportamento de cada monstro é a lista de regras `MonsterActionRule` (Secondary Action + chance) na **definição de dados** do monstro; uma única `DataDrivenMonsterAI` lê os dados e sorteia com a semente do encounter.
 - O comportamento atual (só ataque básico) foi migrado para dados (`MonsterBehavior.BasicAttackOnly`); sem regras a IA não consome aleatoriedade, então os resultados não mudam.
 - Habilidades de monstro (números, chances) são **balanceamento do PO** — hoje nenhuma.
+
+## DEC-20261106-34 — Experience Distribution (decisão do Arquiteto, Fila 6)
+
+Status: **Accepted (Arquiteto)** — implementa o ADR-007 no `PV-XP-010`; regra de grupo **PROVISÓRIA** (PO)
+
+- A Experience **final** (depois do XP rate) passa pela `IExperienceDistributor`, que só reparte; cada parte é aplicada pelo Reward Pipeline (ADR-024).
+- Regra provisória: divisão igual, resto aos primeiros; com 1 participante (hoje) recebe tudo — mesmo XP de antes.

@@ -21,12 +21,15 @@ public sealed record MonsterActionRule
             throw new ArgumentOutOfRangeException(nameof(chancePercent), "Chance must be between 1 and 100.");
         }
 
-        if (kind == CombatActionKind.BasicAttack)
+        // Revisão do PV-MONSTER-010 (ressalva 1): a regra de monstro é uma HABILIDADE da espécie
+        // (ADR-005). Basic Attack é sempre executado (ADR-006); poções e a habilidade de classe são do
+        // jogador e não podem ser regras de monstro.
+        if (kind != CombatActionKind.UseSkill)
         {
-            throw new ArgumentException("The basic attack is always executed; it is not a monster rule (ADR-006).", nameof(kind));
+            throw new ArgumentException("A monster rule must be a UseSkill ability (ADR-005/006).", nameof(kind));
         }
 
-        if (kind == CombatActionKind.UseSkill && skill is null)
+        if (skill is null)
         {
             throw new ArgumentException("A UseSkill rule needs the skill data.", nameof(skill));
         }

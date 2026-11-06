@@ -119,6 +119,9 @@ public static class ProjectVictoryServiceCollectionExtensions
         services.AddScoped<ApplyResolvedRewardToCharacterHandler>();
         services.AddScoped<RewardResolutionHandler>();
 
+        // PV-XP-010 (ADR-007): Experience Distribution (regra de grupo PROVISÓRIA: divisão igual).
+        services.AddSingleton<IExperienceDistributor, EvenSplitExperienceDistributor>();
+
         // Account, Character, Game.
         services.AddScoped<CreateAccountHandler>();
         services.AddScoped<LoginHandler>();

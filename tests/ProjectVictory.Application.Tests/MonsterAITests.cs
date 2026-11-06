@@ -111,13 +111,4 @@ public sealed class MonsterAITests
         Assert.Equal("Bite", monsterSkill.SkillName);
         Assert.Equal(500 - 1 - 9, session.Player.CurrentHealth); // ataque básico (1) + Bite (9)
     }
-
-    [Fact]
-    public void Rules_AreValidated()
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new MonsterActionRule(CombatActionKind.UseSkill, 0, Bite));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new MonsterActionRule(CombatActionKind.UseSkill, 101, Bite));
-        Assert.Throws<ArgumentException>(() => new MonsterActionRule(CombatActionKind.UseSkill, 50));
-        Assert.Throws<ArgumentException>(() => new MonsterActionRule(CombatActionKind.BasicAttack, 50));
-    }
 }

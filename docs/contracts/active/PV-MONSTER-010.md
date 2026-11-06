@@ -39,3 +39,12 @@ Resultado: build com 0 avisos; **317 aprovados, 0 ignorados, 0 falhas** (Applica
 
 - Habilidades de monstro (dados novos no `SpiderCaveCatalog`, campo `Behavior`): nenhuma hoje. É decisão de balanceamento do PO.
 - **R-043:** uma habilidade de monstro hoje usaria `SkillDefinition`, que tem `Class` (classe de jogador). Uma definição neutra de habilidade de monstro fica para o contrato de skills de monstro.
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q6-xp-010`
+
+1. Regra de monstro só `UseSkill`; consumo de poção só para ações do jogador.
+2. Teste de que a DI usa a `IMonsterAI` registrada.
+3. Comentários nos construtores antigos.
+4. Validação testada no `Domain.Tests`.
+5/6. Registrados no relatório da Fila 6 (roadmap marcado no modo fila; contrato derivado da ordem do PO).
+7. R-043 mantido.
