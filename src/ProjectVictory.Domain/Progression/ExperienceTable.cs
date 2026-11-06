@@ -13,6 +13,9 @@ public sealed class ExperienceTable
     // ADR-026: cada Ascension possui limite de Level 500.
     public const int MaximumLevelPerAscension = 500;
 
+    // ADR-026: só a primeira Ascension existe até a troca de Ascension ter contrato (PV-GOV-006 D4).
+    public const int FirstAscension = 1;
+
     private static readonly Lazy<ExperienceTable> StandardTable =
         new(() => FromCurve(MaximumLevelPerAscension));
 
@@ -32,7 +35,7 @@ public sealed class ExperienceTable
 
         _minimumExperienceByLevel = Validate(entries);
 
-        Entries = entries.ToArray();
+        Entries = Array.AsReadOnly(entries.ToArray());
     }
 
     // Construtor anterior ao PV-PROG-011 (Level → Experience mínima), mantido pela Regra Aditiva.
@@ -107,6 +110,20 @@ public sealed class ExperienceTable
         return _minimumExperienceByLevel[level - 1];
     }
 
+    // Experience máxima do Level (experience-table.md, "Estrutura"): derivada da mínima do
+    // Level seguinte − 1; null no último Level, cujo intervalo é aberto (ADR-023).
+    public long? GetMaximumExperience(int level)
+    {
+        if (level < 1 || level > MaximumLevel)
+        {
+            throw new ArgumentOutOfRangeException(nameof(level));
+        }
+
+        return level == MaximumLevel
+            ? null
+            : _minimumExperienceByLevel[level] - 1;
+    }
+
     // Experience que falta para o próximo Level; null quando já está no último Level da tabela.
     public long? GetExperienceToNextLevel(long experience)
     {
@@ -121,6 +138,8 @@ public sealed class ExperienceTable
     }
 
     // API anterior ao PV-PROG-011, mantida pela Regra Aditiva: Level fora da tabela → 0.
+    // Retorna int: lança OverflowException se o mínimo do Level passar de int.MaxValue
+    // (não acontece na tabela padrão: XP(500) = 2.058.474.800). Use GetMinimumExperience.
     public int GetRequiredExperience(int level)
     {
         if (level < 1 || level > MaximumLevel)
@@ -138,6 +157,14 @@ public sealed class ExperienceTable
         {
             throw new ArgumentException(
                 "Experience Table must have at least one level.",
+                nameof(entries));
+        }
+
+        // "Último nível válido" (experience-table.md): nenhuma tabela passa do teto da Ascension (ADR-026).
+        if (entries.Count > MaximumLevelPerAscension)
+        {
+            throw new ArgumentException(
+                "Experience Table cannot exceed the Level limit of an Ascension.",
                 nameof(entries));
         }
 

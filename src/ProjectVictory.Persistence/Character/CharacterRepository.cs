@@ -307,11 +307,9 @@ public sealed class CharacterRepository : ICharacterRepository
                 new Mana(
                     state.Mana),
 
+                // PV-PROG-010: state.Level não é lido; o Level é derivado da Experience.
                 new Experience(
-                    state.Experience),
-
-                new Level(
-                    state.Level));
+                    state.Experience));
 
 
         foreach (var item in state.InventoryItems)

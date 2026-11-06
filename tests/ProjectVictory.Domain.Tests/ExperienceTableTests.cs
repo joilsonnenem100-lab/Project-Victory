@@ -130,3 +130,41 @@ public sealed class ExperienceTableTests
         Assert.Equal(3, new LevelCalculator().Calculate(new Experience(250)).Value);
     }
 }
+
+// Ressalvas da revisão do PV-PROG-011.
+public sealed class ExperienceTableReviewTests
+{
+    [Fact]
+    public void MaximumExperience_IsDerived_AndOpenAtLastLevel()
+    {
+        Assert.Equal(99, ExperienceTable.Standard.GetMaximumExperience(1));
+        Assert.Equal(199, ExperienceTable.Standard.GetMaximumExperience(2));
+        Assert.Null(ExperienceTable.Standard.GetMaximumExperience(500));
+    }
+
+    [Fact]
+    public void Table_CannotExceedAscensionLimit()
+    {
+        Assert.Throws<ArgumentException>(() => ExperienceTable.FromCurve(501));
+    }
+
+    [Fact]
+    public void GetRequiredExperience_ThrowsOverflow_WhenMinimumExceedsInt()
+    {
+        var table = new ExperienceTable(new[]
+        {
+            new ExperienceTableEntry(1, 0),
+            new ExperienceTableEntry(2, 3_000_000_000L)
+        });
+
+        Assert.Throws<OverflowException>(() => table.GetRequiredExperience(2));
+    }
+
+    [Fact]
+    public void Entries_CannotBeMutatedByCast()
+    {
+        var entries = ExperienceTable.Standard.Entries;
+
+        Assert.False(entries is ExperienceTableEntry[]);
+    }
+}

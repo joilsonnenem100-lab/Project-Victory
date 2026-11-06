@@ -41,7 +41,16 @@ public sealed class Character : AggregateRoot
 
     public CharacterExperience Experience { get; private set; }
 
-    public CharacterLevel Level { get; private set; }
+    // ADR-026: Ascension atual. Só a primeira existe até a troca de Ascension ter contrato
+    // próprio (PV-GOV-006 D4); por isso ainda não é persistida.
+    public const int FirstAscension = ExperienceTable.FirstAscension;
+
+    public int Ascension => FirstAscension;
+
+    // PV-PROG-010: Level derivado de Experience + Ascension + Experience Table (ADR-027, ADR-028).
+    // Não é fonte de verdade e não é armazenado no agregado.
+    public CharacterLevel Level =>
+        new(ExperienceTable.ForAscension(Ascension).GetLevel(Experience.Value));
 
     public Inventory Inventory { get; }
 
@@ -59,15 +68,13 @@ public sealed class Character : AggregateRoot
         string name,
         Health health,
         Mana mana,
-        CharacterExperience experience,
-        CharacterLevel level)
+        CharacterExperience experience)
         : base(id)
     {
         ArgumentNullException.ThrowIfNull(accountId);
         ArgumentNullException.ThrowIfNull(health);
         ArgumentNullException.ThrowIfNull(mana);
         ArgumentNullException.ThrowIfNull(experience);
-        ArgumentNullException.ThrowIfNull(level);
 
         AccountId = accountId;
         Name = name;
@@ -76,7 +83,6 @@ public sealed class Character : AggregateRoot
         MaximumHealth = health;
         MaximumMana = mana;
         Experience = experience;
-        Level = level;
 
         Inventory = new Inventory();
         Equipment = new Equipment();
@@ -96,8 +102,7 @@ public sealed class Character : AggregateRoot
         CharacterClassDefinition definition,
         Health health,
         Mana mana,
-        CharacterExperience experience,
-        CharacterLevel level)
+        CharacterExperience experience)
         : base(id)
     {
         ArgumentNullException.ThrowIfNull(accountId);
@@ -105,7 +110,6 @@ public sealed class Character : AggregateRoot
         ArgumentNullException.ThrowIfNull(health);
         ArgumentNullException.ThrowIfNull(mana);
         ArgumentNullException.ThrowIfNull(experience);
-        ArgumentNullException.ThrowIfNull(level);
 
         AccountId = accountId;
         Name = name;
@@ -119,7 +123,6 @@ public sealed class Character : AggregateRoot
         MaximumMana = mana;
 
         Experience = experience;
-        Level = level;
 
         Inventory = new Inventory();
         Equipment = new Equipment();
@@ -133,7 +136,7 @@ public sealed class Character : AggregateRoot
 
         Experience =
             new CharacterExperience(
-                Experience.Value + experience.Value);
+                checked(Experience.Value + experience.Value));
     }
 
     public LevelValidationResult ValidateLevel(int requestedLevel)
@@ -156,23 +159,14 @@ public sealed class Character : AggregateRoot
                 "Character level validation failed.");
         }
 
-        var levelsGained =
-            requestedLevel - Level.Value;
-
-        if (levelsGained > 0 && _classDefinition is not null)
+        // PV-PROG-010: o Level é derivado da Experience (ADR-027) e não pode ser definido.
+        // ApplyLevel só confirma o Level atual. O crescimento de Vida/Mana máximas por Level
+        // passa a ser atributo derivado (ADR-029), fora do escopo do M2 (ver project-state.md).
+        if (requestedLevel != Level.Value)
         {
-            MaximumHealth =
-                new Health(
-                    MaximumHealth.Value +
-                    (_classDefinition.HealthGrowth * levelsGained));
-
-            MaximumMana =
-                new Mana(
-                    MaximumMana.Value +
-                    (_classDefinition.ManaGrowth * levelsGained));
+            throw new InvalidOperationException(
+                "Level is derived from Experience (ADR-027) and cannot be set directly.");
         }
-
-        Level = new CharacterLevel(requestedLevel);
     }
 
     public EvolutionValidationResult ValidateEvolution()

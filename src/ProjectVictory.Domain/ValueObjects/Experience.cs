@@ -6,9 +6,11 @@ namespace ProjectVictory.Domain.ValueObjects;
 
 public sealed class Experience : ValueObject
 {
-    public int Value { get; }
+    // PV-PROG-010: long (DEC-20261106-10) — a Experience absoluta passa do limite de int
+    // depois do Level 500 (ADR-023: nunca reinicia).
+    public long Value { get; }
 
-    public Experience(int value)
+    public Experience(long value)
     {
         if (value < 0)
         {

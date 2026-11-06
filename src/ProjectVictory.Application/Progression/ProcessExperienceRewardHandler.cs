@@ -37,7 +37,7 @@ public sealed class ProcessExperienceRewardHandler
                 experience);
 
         // PV-PROG-011: tabela gerada pela curva do DEC-20261106-10 (antes: tabela de um Level só).
-        var table = ExperienceTable.Standard;
+        var table = ExperienceTable.ForAscension(ExperienceTable.FirstAscension);
 
         var growthResult =
             _growthProcessor.Process(

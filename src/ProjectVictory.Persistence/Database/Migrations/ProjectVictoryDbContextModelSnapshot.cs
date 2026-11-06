@@ -15,7 +15,7 @@ namespace ProjectVictory.Persistence.Database.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
             modelBuilder.Entity("ProjectVictory.Persistence.Account.PersistentAccountState", b =>
                 {
@@ -51,7 +51,7 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.Property<int>("CharacterClass")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Experience")
+                    b.Property<long>("Experience")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Health")

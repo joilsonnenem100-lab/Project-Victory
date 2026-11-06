@@ -6,4 +6,4 @@ public sealed record EnterGameResult(
     Guid RuntimeId,
     string CharacterName,
     int Level,
-    int Experience);
+    long Experience);

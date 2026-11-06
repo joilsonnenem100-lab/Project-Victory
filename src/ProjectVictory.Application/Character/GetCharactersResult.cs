@@ -10,7 +10,7 @@ public sealed class GetCharactersResult
 
     public int Level { get; init; }
 
-    public int Experience { get; init; }
+    public long Experience { get; init; }
 
     public IReadOnlyList<string> AvailableAbilities { get; init; }
         = [];

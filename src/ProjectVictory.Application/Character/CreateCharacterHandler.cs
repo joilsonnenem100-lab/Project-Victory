@@ -60,9 +60,7 @@ public sealed class CreateCharacterHandler
                 new Mana(
                     definition.InitialMana),
 
-                new CharacterExperience(0),
-
-                new Level(1));
+                new CharacterExperience(0));
 
 
 

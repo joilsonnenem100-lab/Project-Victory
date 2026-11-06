@@ -33,7 +33,7 @@ public sealed class ProgressionProcessor : IProgressionProcessor
     private static int CalculateLevel(
         int experience)
     {
-        return ExperienceTable.Standard.GetLevel(
+        return ExperienceTable.ForAscension(ExperienceTable.FirstAscension).GetLevel(
             experience);
     }
 }

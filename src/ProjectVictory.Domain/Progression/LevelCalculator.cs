@@ -9,7 +9,7 @@ public sealed class LevelCalculator
 
         // PV-PROG-011: o Level vem da Experience Table (ADR-025), não de fórmula própria.
         var calculatedLevel =
-            ExperienceTable.Standard.GetLevel(
+            ExperienceTable.ForAscension(ExperienceTable.FirstAscension).GetLevel(
                 experience.Amount);
 
         return new Level(

@@ -19,9 +19,10 @@ public sealed class PersistentCharacterState
 
     public int Mana { get; set; }
 
+    // PV-PROG-010: cache do Level derivado (PV-GOV-006 D2; level.md). Gravado, nunca lido como verdade.
     public int Level { get; set; }
 
-    public int Experience { get; set; }
+    public long Experience { get; set; }
 
     public List<PersistentItemInstanceState> InventoryItems { get; set; } = new();
 }
