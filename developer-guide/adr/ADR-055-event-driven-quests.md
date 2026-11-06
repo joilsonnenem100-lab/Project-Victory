@@ -45,7 +45,7 @@ Custos:
 
 # Restrições
 
-- Quest não altera estado de outro agregado (Aggregate Ownership).
+- Quest não altera estado de outro agregado (Aggregate Ownership — `CLAUDE.md` e `developer-guide/architecture/architecture-rules.md`).
 - Eventos são tipados, nunca string (ADR-049).
 
 ---

@@ -1,6 +1,6 @@
 # PV-GOV-007 — Aplicação das propostas do PV-GOV-005 (ADRs e documentos LOCKED)
 
-Status: **CONCLUÍDO** (branch `chief/q2-gov-007`; só `.md`)
+Status: **CONCLUÍDO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/q2-gov-008`). Branch `chief/q2-gov-007`; só `.md`
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 2", item 1). Revisão formal de documentos LOCKED **autorizada pelo Arquiteto-Chefe**, registrada como `DEC-20261106-13`.
 Lastro: `docs/architecture/PV-GOV-005-RELATORIO-2026-11-06.md`; `roadmap.md`/`CLAUDE.md` (LOCKED só muda por revisão documentada); R-006, R-008, R-013.
 

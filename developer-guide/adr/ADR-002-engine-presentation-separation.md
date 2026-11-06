@@ -36,7 +36,7 @@ Benefícios:
 - suporte a múltiplos clientes;
 - suporte ao modo Hunt Offline;
 
-  *Nota de emenda (2026-11-06, `PV-GOV-007` / `DEC-20261106-13`, R-013): não existe Hunt Offline. Por decisão do PO (`DEC-20261106-05`), registrada no `ADR-057` (ACCEPTED), a Hunt **termina ao desconectar** e o progresso offline vem **só do Offline Training de skills**. O texto acima foi mantido por histórico e não vale mais.*
+  *Nota de emenda (2026-11-06, `PV-GOV-007` / `DEC-20261106-13`, R-013): não existe Hunt Offline. Por decisão do PO (`DEC-20261106-05`), registrada no `ADR-057` (ACCEPTED), a Hunt **termina ao desconectar** e o progresso offline vem **só do Offline Training de skills**. O item acima ("suporte ao modo Hunt Offline") foi mantido por histórico e não vale mais.*
 
 - maior segurança;
 - menor possibilidade de exploração.
