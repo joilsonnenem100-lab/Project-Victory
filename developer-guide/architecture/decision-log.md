@@ -571,3 +571,9 @@ Status: **Accepted (Arquiteto-Chefe)** — revisão arquitetural documentada aut
 - Os arquivos com travessão "—" no nome **não** foram renomeados; o mapa de renomeação continua no relatório do `PV-GOV-005`.
 
 Lastro: `roadmap.md` e `CLAUDE.md` (módulo LOCKED só muda por revisão arquitetural documentada), ADR-016 deste log (documentação é do Arquiteto).
+
+## DEC-20261106-14 — Projeto de composição de DI (PV-ARCH-001)
+
+Status: **Accepted (Arquiteto)**
+
+Criado `src/ProjectVictory.Composition`: raiz de composição de DI (`AddProjectVictoryCore`) usada pela API e pelos testes, para resolver o R-014. Referencia Domain, Application, Infrastructure e Persistence; **não contém regra de negócio** e não é uma camada nova da Clean Architecture. Motivo: Infrastructure e Persistence não se referenciam, e acoplá-las só para compor o DI violaria a separação atual. Ficam no host: DbContext, identidade do jogador, JWT, CORS, controllers e tratamento de erro HTTP. Detalhes: `docs/contracts/active/PV-ARCH-001.md`.

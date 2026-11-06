@@ -1,6 +1,6 @@
 # PV-ARCH-001 — Composição de DI única (R-014)
 
-Status: **IMPLEMENTADO** (branch `chief/q2-arch-001`)
+Status: **IMPLEMENTADO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/q2-platform-004`). Branch `chief/q2-arch-001`. Registro: `DEC-20261106-14`.
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 2", item 4). Lastro: R-014 (`project-state.md`); Clean Architecture (`CLAUDE.md`: a API só traduz HTTP); revisão do `PV-QA-001` parte 2.
 
 ## Problema
@@ -33,3 +33,13 @@ O `Program.cs` e `tests/ProjectVictory.SmokeTests/TestServiceCollectionExtension
 Build com 0 avisos. Todos os testes verdes: **167 aprovados, 0 ignorados, 0 falhas**. São os 166 anteriores (todos ainda passam) mais 1 controle novo pedido na revisão do `PV-QA-003`. O `Api.Tests` sobe a API real em Development (`ValidateOnBuild`) com a composição nova.
 
 Neste branch também entraram as ressalvas da revisão do `PV-QA-003` (dois controles e notas no R-018).
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+O revisor conferiu por script os 54 pares (tempo de vida, serviço): idênticos. Também rodou build e testes (167 aprovados). Ressalvas aplicadas no branch `chief/q2-platform-004`:
+1. `Program.cs`: `using`s sem uso removidos e linha em branco duplicada removida. O BOM da linha 1 (introduzido por engano neste contrato; o original não tinha) foi removido.
+2. Separador no texto do R-018.
+3. Projeto `Composition` registrado no `decision-log.md` (`DEC-20261106-14`) e na tabela de estado do `project-state.md`.
+4. Comentário no `DependencyInjectionTests`: as implementações de produção sobrescritas (`RewardProcessor`, `SystemRandomSource`) são validadas pelo `ValidateOnBuild` e pelo `Api.Tests`.
+5. A lista manual de handlers só de teste continua (ligada ao R-016) e está registrada.
+6. Status atualizado.

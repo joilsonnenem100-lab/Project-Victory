@@ -1,45 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjectVictory.API.Authentication;
+using ProjectVictory.API.Database;
 using ProjectVictory.API.Middleware;
 using ProjectVictory.API.Session;
 using ProjectVictory.Composition;
-using ProjectVictory.Application.Encounter;
-using ProjectVictory.Application.Account;
-using ProjectVictory.Application.Character;
-using ProjectVictory.Application.Combat;
-using ProjectVictory.Application.Game;
-using ProjectVictory.Application.Gameplay;
-using ProjectVictory.Application.Hunt;
-using ProjectVictory.Application.Inventory;
-using ProjectVictory.Application.Item;
-using ProjectVictory.Application.Loot;
-using ProjectVictory.Application.Progression;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Application.Session;
-using ProjectVictory.Application.VerticalSlice;
-using ProjectVictory.Domain.Account;
-using ProjectVictory.Domain.Character;
-using ProjectVictory.Domain.Combat;
-using ProjectVictory.Domain.Hunt;
-using ProjectVictory.Domain.Items;
-using ProjectVictory.Domain.Loot;
-using ProjectVictory.Infrastructure.Loot;
-using ProjectVictory.Infrastructure.Services;
-using ProjectVictory.Persistence.Account;
-using ProjectVictory.Persistence.Character;
-using ProjectVictory.Persistence.Combat;
 using ProjectVictory.Persistence.Database;
 using ProjectVictory.Persistence.Database.Seed;
-using ProjectVictory.Persistence.Hunt;
-using ProjectVictory.Persistence.Item;
-using ProjectVictory.Persistence.Runtime;
 using System.Text;
 using System.Text.Json.Serialization;
-using ProjectVictory.Application.Runtime;
-using ProjectVictory.Application.World;
-using ProjectVictory.Domain.World;
 
 var builder =
     WebApplication.CreateBuilder(args);
@@ -82,7 +54,6 @@ builder.Services.AddScoped<
 
 builder.Services.AddScoped<
     JwtTokenGenerator>();
-
 
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 
@@ -181,10 +152,31 @@ using (var scope = app.Services.CreateScope())
             .GetRequiredService<ProjectVictoryDbContext>();
 
     // PV-PLATFORM-001: em Development, aplica as migrations existentes antes do seed,
-    // para que um clone limpo suba com o schema criado. Fora de Development nada muda.
-    if (app.Environment.IsDevelopment())
+    // para que um clone limpo suba com o schema criado.
+    // PV-PLATFORM-004: fora de Development, só aplica se a chave explícita
+    // "Database:ApplyMigrationsOnStartup" estiver ligada (padrão: desligada, appsettings.json).
+    var applyMigrationsOutsideDevelopment =
+        app.Configuration.GetValue<bool>(DatabaseStartupSettings.ApplyMigrationsOnStartupKey);
+
+    if (DatabaseStartupSettings.ShouldApplyMigrations(
+            app.Environment.IsDevelopment(),
+            applyMigrationsOutsideDevelopment))
     {
         await context.Database.MigrateAsync();
+    }
+    else
+    {
+        var pending =
+            (await context.Database.GetPendingMigrationsAsync()).ToList();
+
+        if (pending.Count > 0)
+        {
+            app.Logger.LogWarning(
+                "Há {Count} migration(s) pendente(s) e a aplicação automática está desligada fora de Development. Aplique-as no deploy (dotnet ef database update / bundle) ou ligue {Key}=true. Pendentes: {Pending}",
+                pending.Count,
+                DatabaseStartupSettings.ApplyMigrationsOnStartupKey,
+                string.Join(", ", pending));
+        }
     }
 
     await ItemDefinitionSeed.ExecuteAsync(

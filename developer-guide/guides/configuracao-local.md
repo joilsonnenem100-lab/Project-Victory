@@ -13,6 +13,7 @@ Contrato: `PV-PLATFORM-002`. Vale para `src/ProjectVictory.API`.
 | `Jwt:Audience` | `appsettings.json` (`ProjectVictory.Client`) | Sim | Validado no token |
 | `ConnectionStrings:ProjectVictory` | `appsettings.json` (`Data Source=projectvictory.db`) | Sim | Caminho relativo ao diretório de trabalho (ver `CLEANUP-MANIFEST-2026-11-05.md`) |
 | `Cors:AllowedOrigins` | `appsettings.Development.json` (`http://localhost:5173`) | Não | Vazio fora de Development: nenhuma origem liberada |
+| `Database:ApplyMigrationsOnStartup` | `appsettings.json` (`false`) ou variável `Database__ApplyMigrationsOnStartup` | Não | Só vale **fora** de Development: `true` aplica as migrations no startup (`PV-PLATFORM-004`). Em Development elas são aplicadas sempre. Ver `developer-guide/guides/deploy.md` |
 | `Progression:ExperienceRate` | `appsettings.json` (`1.0`) ou variável `Progression__ExperienceRate` | Não (padrão 1x) | XP rate do servidor (`DEC-20261106-12`). Deve ser maior que zero, senão a API **não sobe**. Nenhum endpoint lê ou altera o valor; a tela de administração é o `PV-ADMIN-010` (M8) |
 
 Ordem de precedência (padrão do ASP.NET Core): `appsettings.json` → `appsettings.{Ambiente}.json` → user-secrets (só em Development) → variáveis de ambiente → linha de comando.
@@ -62,4 +63,4 @@ Cors__AllowedOrigins__0=https://<origem do client>
 
 Comportamento verificado em 2026-11-05: sem `Jwt__Key` ou com chave de menos de 32 caracteres, a API encerra no startup com mensagem clara. `EnableSensitiveDataLogging` e `LogTo(Console)` do EF ficam **desligados** fora de Development.
 
-**Limitação conhecida:** fora de Development o schema **não** é criado nem atualizado automaticamente (o `MigrateAsync()` roda só em Development — `PV-PLATFORM-001`). A estratégia de migrations em produção é um contrato próprio do roadmap.
+~~**Limitação conhecida:** fora de Development o schema **não** é criado nem atualizado automaticamente (o `MigrateAsync()` roda só em Development — `PV-PLATFORM-001`). A estratégia de migrations em produção é um contrato próprio do roadmap.~~ **Resolvido em `PV-PLATFORM-004`:** fora de Development o startup aplica as migrations só com `Database__ApplyMigrationsOnStartup=true` (padrão: desligado); a alternativa é `dotnet ef database update`/bundle no deploy. Detalhes em `developer-guide/guides/deploy.md`.

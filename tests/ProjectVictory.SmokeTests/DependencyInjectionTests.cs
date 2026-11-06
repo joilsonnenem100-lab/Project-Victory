@@ -8,6 +8,9 @@ namespace ProjectVictory.SmokeTests;
 // handler já registrado aqui ganha dependência nova e o DI de teste não acompanha, este teste falha.
 // PV-ARCH-001: desde então o DI de teste usa o mesmo AddProjectVictoryCore do Program.cs, então
 // este teste também valida a composição real da API (R-014 resolvida).
+// Os dublês (TestRewardProcessor, FixedRandomSource) sobrescrevem RewardProcessor e SystemRandomSource:
+// GetRequiredService resolve só o último registro; as implementações de produção são validadas pelo
+// ValidateOnBuild abaixo e pela API real no Api.Tests (revisão do PV-ARCH-001).
 public sealed class DependencyInjectionTests
 {
     [Fact]

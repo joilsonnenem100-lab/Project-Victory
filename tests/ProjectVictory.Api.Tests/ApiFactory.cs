@@ -30,8 +30,26 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         Environment.GetEnvironmentVariable("ConnectionStrings__ProjectVictory");
 
 
+    private readonly string _environment;
+
+
+    // PV-PLATFORM-004: caminho do banco SQLite temporário deste fixture.
+    public string DatabasePath =>
+        Path.Combine(_databaseDirectory, "api-tests.db");
+
+
+    // xUnit cria o fixture pelo construtor sem parâmetros (Development).
     public ApiFactory()
+        : this("Development")
     {
+    }
+
+
+    // PV-PLATFORM-004: permite subir a API em outro ambiente (ex.: Production).
+    internal ApiFactory(string environment)
+    {
+        _environment = environment;
+
         Directory.CreateDirectory(_databaseDirectory);
 
         Environment.SetEnvironmentVariable("Jwt__Key", JwtKey);
@@ -44,8 +62,9 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(
         IWebHostBuilder builder)
     {
-        // Explícito: o MigrateAsync() do startup só roda em Development (PV-PLATFORM-001).
-        builder.UseEnvironment("Development");
+        // Explícito: o MigrateAsync() do startup roda sempre em Development (PV-PLATFORM-001)
+        // e, fora dele, só com Database:ApplyMigrationsOnStartup ligado (PV-PLATFORM-004).
+        builder.UseEnvironment(_environment);
     }
 
 
