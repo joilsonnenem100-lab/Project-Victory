@@ -18,6 +18,7 @@ using ProjectVictory.Persistence.Character;
 using ProjectVictory.Persistence.Combat;
 using ProjectVictory.Persistence.Database;
 using ProjectVictory.Persistence.Hunt;
+using ProjectVictory.Persistence.Runtime;
 
 namespace ProjectVictory.SmokeTests;
 
@@ -42,6 +43,9 @@ public static class TestServiceCollectionExtensions
         services.AddSingleton<IHuntRepository, HuntRepository>();
         services.AddSingleton<IEncounterStateStore, EncounterStateStore>();
         services.AddSingleton<IRuntimeExecutionStateStore, RuntimeExecutionStateStore>();
+
+        // Mesmo registro da API (Program.cs): exigido por CreateRuntimeExecutionHandler.
+        services.AddScoped<IRuntimeRepository, RuntimeRepository>();
 
         services.AddSingleton<ICombatContextRepository, CombatContextRepository>();
 
