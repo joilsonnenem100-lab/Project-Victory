@@ -33,5 +33,28 @@ Nenhum arquivo C# foi alterado: o ambiente de análise não tem `dotnet`, logo n
 ## Higiene do repositório GitHub (R-010) — aplicada na branch `chief/m0-baseline-cleanup`
 - `.gitignore`: adicionados `node_modules/`, `dist/` e `*.swp`.
 - Removidos do **controle** do git (os arquivos continuam no disco de quem já os tem; rode `npm install` no client após o merge, pois o git remove `node_modules` da árvore de trabalho ao aplicar esta remoção): **2.440 arquivos** em `src/ProjectVictory.Client/` (2.438 de `node_modules` e 2 de `dist`). *Corrigido em PV-GOV-002: a contagem anterior ("113 de `dist`", total 2.551) contava em duplicidade 111 arquivos de pastas `dist/` internas a `node_modules`; conferido no commit `ec1a1e0` — 2.441 arquivos alterados = 2.440 remoções + `.gitignore`.*
-- **Mantido de propósito:** `src/ProjectVictory.API/projectvictory.db` (ver Análise §4.7). Sai depois do `PV-PLATFORM-001`.
+- **Mantido de propósito:** `src/ProjectVictory.API/projectvictory.db` (ver Análise §4.7). Sai depois do `PV-PLATFORM-001`. *Atualização: removido do controle em `PV-PLATFORM-001` — ver seção abaixo.*
 - Os mesmos 5 itens apagados e 4 movidos descritos acima foram aplicados com `git rm` / `git mv` (histórico dos arquivos movidos preservado).
+
+## `projectvictory.db` fora do versionamento (R-010) — `PV-PLATFORM-001`, branch `chief/m1-platform-001`
+- `git rm --cached src/ProjectVictory.API/projectvictory.db` (o arquivo **continua no disco** de quem fez a remoção) e `.gitignore` com `projectvictory.db`, `*.db-shm` e `*.db-wal`.
+- O schema passa a ser criado pelo `Database.Migrate()` no startup em **Development** (`Program.cs`). Um clone limpo sobe a API com as 14 migrations aplicadas e o seed de itens.
+- O arquivo continua no histórico do git (commits anteriores); não houve reescrita de histórico.
+
+> ⚠️ **AVISO — clones já existentes perdem o banco local no `git pull`/merge.** Quando um commit deixa de rastrear um arquivo, o git **apaga** esse arquivo da árvore de trabalho de quem recebe o commit. Em qualquer máquina que já tenha o repositório, **antes** do `git pull` ou do merge desta mudança, copie o banco para **fora do repositório**:
+>
+> ```
+> cp src/ProjectVictory.API/projectvictory.db ~/projectvictory.db.backup
+> ```
+>
+> Depois do pull, para manter as contas de teste, copie de volta para `src/ProjectVictory.API/projectvictory.db` (agora ignorado pelo git). Sem a cópia, a API recria um banco **vazio** no próximo startup em Development (contas e personagens de teste se perdem).
+
+### Como rodar a API usando o banco de `src/ProjectVictory.API`
+- A connection string é relativa (`Data Source=projectvictory.db`): o banco fica no **diretório de trabalho** do processo.
+- **Forma recomendada** (a partir da raiz do repositório):
+  ```
+  dotnet run --project src/ProjectVictory.API
+  ```
+  O `dotnet run` usa a pasta do projeto como diretório de trabalho (verificado em 2026-11-05: content root `src/ProjectVictory.API`), e o perfil `http` do `launchSettings.json` define `ASPNETCORE_ENVIRONMENT=Development` (porta 5250). Resultado: banco em `src/ProjectVictory.API/projectvictory.db`, migrations aplicadas.
+- **Evite** executar a DLL diretamente (`dotnet ProjectVictory.API.dll`) de outra pasta: o banco seria criado na pasta corrente. Com `--no-launch-profile` o ambiente vira Production e o `Migrate()` **não** roda.
+- Tornar o caminho do banco configurável é escopo do `PV-PLATFORM-002`.

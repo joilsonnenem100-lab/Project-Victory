@@ -71,7 +71,7 @@ Testes automatizados: **3 escritos** (`Application.Tests`: 1; `SmokeTests`: 2), 
 | R-006 | Estado oficial declarado em `project-state.md`, mas 4 documentos ainda apontam `CURRENT_CONTEXT.md` (histórico) | `PROJECT_CONTEXT.md`, `AI_WORKFLOW.md`, `architecture-checklist.md`, `README_DEVELOPMENT.md` | Ordem de leitura fixada no `CLAUDE.md`. Edição dos documentos LOCKED aguarda revisão formal (M0) | Nenhum |
 | R-007 | Pastas `Application/Architecture`, `Playtest`, `Production` (42 arquivos) modelam processos de governança como handlers que ecoam booleanos; **sem referência** em nenhum outro ponto | Código × Clean Architecture (Application = casos de uso do jogo) | Remoção **somente após `dotnet build` verde**; contrato de limpeza em M1 | Build |
 | R-009 | Duas séries de ADR com a mesma numeração (`decision-log.md` ADR-001…018 × `developer-guide/adr/` ADR-001…057) | decision-log × pasta adr | Novas decisões usam prefixo `DEC-`; unificação aguarda decisão | Dono/Arquiteto |
-| R-010 | Higiene do repositório: `node_modules`/`dist` (2.440 arquivos; corrigido em PV-GOV-002), 3 binários/listagens e `projectvictory.db` versionados; `.gitignore` incompleto | Clone do GitHub | `node_modules/` e `dist/` ignorados e removidos do controle; binários removidos (ver `CLEANUP-MANIFEST`). `projectvictory.db` sai **depois** do `PV-PLATFORM-001` (migração no startup) | Nenhum |
+| R-010 | Higiene do repositório: `node_modules`/`dist` (2.440 arquivos; corrigido em PV-GOV-002), 3 binários/listagens e `projectvictory.db` versionados; `.gitignore` incompleto | Clone do GitHub | `node_modules/` e `dist/` ignorados e removidos do controle; binários removidos (ver `CLEANUP-MANIFEST`). `projectvictory.db` sai **depois** do `PV-PLATFORM-001` (migração no startup). ✅ **Concluído em `PV-PLATFORM-001`:** `projectvictory.db` fora do controle e no `.gitignore` (aviso de backup no `CLEANUP-MANIFEST`) | Nenhum |
 | R-008 | Numeração de ADR: faltam 026, 044, 048; ADR-055 existe vazio; `docs/history/Sprint-054..056.md` vazios | `developer-guide/adr/` | Preencher ou declarar formalmente como reservados/descartados | Dono |
 
 ---
@@ -80,7 +80,7 @@ Testes automatizados: **3 escritos** (`Application.Tests`: 1; `SmokeTests`: 2), 
 
 Detalhe e evidências em `docs/architecture/PV-ANALYSIS-2026-11-05.md`. Itens críticos:
 - **Segurança (Handbook §23–24):** só `Character`, `Game/enter` e `Item` exigem `[Authorize]`; `Hunt`, `HuntSession`, `Inventory`, `Runtime`, `Gameplay` e `Location` não exigem. Chave JWT padrão fixa no código; SQLite com caminho fixo; log com dados sensíveis habilitado.
-- **Inicialização:** o `Program.cs` não aplica migrations; existem 14 migrations (uma com nome-placeholder `NomeDaMigration`, já aplicada — não renomear). O banco `projectvictory.db` versionado é o que faz um clone rodar hoje.
+- **Inicialização:** ~~o `Program.cs` não aplica migrations; o banco `projectvictory.db` versionado é o que faz um clone rodar hoje.~~ **Resolvido em `PV-PLATFORM-001`:** em Development, o `Program.cs` aplica as 14 migrations (`Database.MigrateAsync()`) antes do seed; `projectvictory.db` não é mais versionado. `NomeDaMigration` (nome-placeholder, já aplicada) continua intocada — não renomear. **Restante:** fora de Development nada cria o schema (um banco vazio em Production falha no seed) e o caminho do banco é relativo ao diretório de trabalho — ambos para o `PV-PLATFORM-002` (configuração).
 - **Concorrência/estado:** `HuntRepository` é `List<>` singleton (não thread-safe); `CombatContextRepository` idem; `CombatResultStore` está registrado como *scoped* guardando estado (padrão do FIX-001).
 - **Reward não chega ao inventário** (encontrado em `PV-QA-001` parte 1): `ApplyRewardHandler` (`src/ProjectVictory.Application/Reward/ApplyRewardHandler.cs`) aplica só a experiência e ignora `RewardResult.Drops` e `RewardResult.Gold`; nenhum item ou ouro chega ao personagem. O teste `RewardInventoryIntegrationTest.ApplyReward_Should_Add_Item_To_Character_Inventory` documenta o comportamento esperado e está com Skip aprovado pelo dono até a correção. Resolução: **`PV-REWARD-010`** (M2, Reward Pipeline real; ADR-008, 024, 037, 038). Remover o Skip faz parte do aceite desse contrato.
 - **DI de teste mantido à mão:** `tests/ProjectVictory.SmokeTests/TestServiceCollectionExtensions.cs` replica registros do `Program.cs` e já ficou defasado uma vez (faltava `IRuntimeRepository`; corrigido em `PV-QA-001` parte 1). Risco de nova defasagem quando handlers ganharem dependências.
@@ -117,9 +117,21 @@ Encaminhamento: correção do SmokeTests dentro de `PV-QA-001` e atualização d
 
 Nenhum arquivo de `src/` foi alterado. A falha do SmokeTests registrada na tabela anterior está resolvida.
 
+## Validação de startup do banco — `PV-PLATFORM-001`, 2026-11-05
+
+| Verificação | Resultado |
+|---|---|
+| `ModelSnapshot` × modelo do `DbContext` (6 DbSets + tabela owned `PersistentItemInstanceState`) | `dotnet ef migrations has-pending-model-changes` (dotnet-ef 10.0.10): **"No changes have been made to the model since the last migration."** Sem divergência; nenhuma migration nova gerada |
+| `projectvictory.db` do repositório (lido de cópia) | 14 migrations no `__EFMigrationsHistory` (EF 10.0.0) |
+| Clone limpo simulado (pasta temporária vazia, Development) | API sobe; 14 migrations aplicadas; 7 tabelas + histórico criadas; seed `Training Sword`; `POST /api/account` 200 e `POST /api/account/login` 200 |
+| Banco existente (cópia do `projectvictory.db`) | "No migrations were applied"; cadastro e login 200 |
+| `projectvictory.db` do repositório | Hash MD5 inalterado durante os testes; mantido no disco após o `git rm --cached` |
+| `dotnet build ProjectVictory.sln` | Verde, 0 erros, 6 avisos NU1903 |
+| `dotnet test ProjectVictory.sln` (inclui SmokeTests) | 0 falhas: `Application.Tests` 1/1; `SmokeTests` 1 passou + 1 ignorado (`PV-REWARD-010`) |
+
 ## Ainda pendentes
 
-- Que o `ModelSnapshot` e as 14 migrations refletem o modelo atual do `DbContext` (6 DbSets: Accounts, Characters, Monsters, Items, HuntSessions, RuntimeStates).
+- ~~Que o `ModelSnapshot` e as 14 migrations refletem o modelo atual do `DbContext`.~~ Verificado em `PV-PLATFORM-001` (tabela acima).
 - Execução do fluxo no navegador (`COMO USAR O SMOKE TEST.txt`).
 
 ---
