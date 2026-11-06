@@ -8,8 +8,8 @@ namespace ProjectVictory.Api.Tests;
 
 // PV-PERSIST-010 (M5): "reiniciar a API não perde Account, Character, Inventory, Runtime".
 // Um SEGUNDO host (DI, singletons e memória novos) sobe sobre o MESMO banco SQLite de teste — nunca o
-// banco real do PO — e o estado permanente volta: conta (login), personagem (Level/XP/ouro), Runtime
-// e a política de poções (antes só em memória).
+// banco real do PO — e o estado permanente volta: conta (login), personagem (Level/XP), Runtime e a
+// política de poções (antes só em memória). O primeiro host é PARADO antes do segundo subir.
 [Collection("Api")]
 public sealed class RestartPersistenceHttpTests
 {
@@ -35,6 +35,15 @@ public sealed class RestartPersistenceHttpTests
         var before = (await client.GetFromJsonAsync<JsonElement>("/api/character")).EnumerateArray()
             .Single(c => c.GetProperty("characterId").GetGuid() == characterId);
 
+        // Revisão do PV-PERSIST-010 (ressalva 3): a política também fica ATIVA antes do reinício.
+        using (var firstScope = first.Services.CreateScope())
+        {
+            Assert.Equal(new SupplyPolicy(40, 25), firstScope.ServiceProvider.GetRequiredService<ISupplyPolicyStore>().ActivatePending(characterId));
+        }
+
+        // Revisão (ressalva 1): o primeiro host para antes do segundo subir.
+        await first.Services.GetRequiredService<Microsoft.Extensions.Hosting.IHost>().StopAsync();
+
         // "Reinício": um host novo sobre o mesmo banco (o primeiro não guarda nada que o segundo veja).
         using var restarted = first.WithWebHostBuilder(_ => { });
         var again = restarted.CreateClient();
@@ -53,6 +62,6 @@ public sealed class RestartPersistenceHttpTests
         Assert.Equal(runtimeId, (await runtimes.GetByCharacterIdAsync(characterId))!.RuntimeId); // Runtime persistido (semi-permanente)
 
         var policies = scope.ServiceProvider.GetRequiredService<ISupplyPolicyStore>();
-        Assert.Equal(new SupplyPolicy(40, 25), policies.ActivatePending(characterId));
+        Assert.Equal(new SupplyPolicy(40, 25), policies.GetActive(characterId));
     }
 }

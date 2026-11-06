@@ -809,3 +809,10 @@ Status: **Accepted (Arquiteto)** — `PV-PERSIST-010`, Handbook §17
 
 - A política de poções (`PV-SUPPLY-010`) é configuração do jogador → **Permanente**; passa de memória para EF Core (tabela `SupplyPolicies`, migration nova e aditiva `20261106220713_SupplyPolicies`).
 - Os demais stores seguem a classificação do `PV-STATE-001` (temporários em memória; Runtime vivo em memória com checkpoint persistido).
+
+## DEC-20261106-37 — Save Strategy por checkpoints (decisão do Arquiteto, Fila 6)
+
+Status: **Accepted (Arquiteto)** — implementa o Handbook §19 no `PV-PERSIST-011`
+
+- Checkpoints em início da Hunt, recompensa, conclusão (pipeline único) e logout (este sem chamador até o M6, R-048).
+- Rodada de combate é ação pequena: o consumo de poções fica pendente em memória e é gravado no próximo checkpoint (risco aceito: queda do servidor perde o débito das poções desde o último checkpoint).

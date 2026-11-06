@@ -79,7 +79,7 @@ Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (
 
 **Saída:** combate com resultado não trivial, determinístico e coberto por testes de Domain/Application; cliente continua consumindo o mesmo contrato de resultado.
 
-**Fila 6 (ordem do PO e do Arquiteto-Chefe, 2026-11-06; M4 e M5)** — branches `chief/q6-*` a partir da `main` (que contém a Fila 5): ✅ `PV-MONSTER-010` (Monster AI por dados) · ✅ `PV-XP-010` (Experience Distribution) · ✅ `PV-SPAWN-010` (Spawn System) · ✅ `PV-PERSIST-010` (persistência EF Core; migration `SupplyPolicies`) · `PV-PERSIST-011` (Save Strategy) · revisão de fechamento do M4. Status final em `docs/architecture/RELATORIO-FILA-6.md`.
+**Fila 6 (ordem do PO e do Arquiteto-Chefe, 2026-11-06; M4 e M5)** — branches `chief/q6-*` a partir da `main` (que contém a Fila 5): ✅ `PV-MONSTER-010` (Monster AI por dados) · ✅ `PV-XP-010` (Experience Distribution) · ✅ `PV-SPAWN-010` (Spawn System) · ✅ `PV-PERSIST-010` (persistência EF Core; migration `SupplyPolicies`) · ✅ `PV-PERSIST-011` (Save Strategy por checkpoints) · revisão de fechamento do M4. Status final em `docs/architecture/RELATORIO-FILA-6.md`.
 
 **Fila 5 (ordem do PO e do Arquiteto-Chefe, 2026-11-06 à noite)** — branches `chief/q5-*` a partir da `main` (que contém a Fila 4): ✅ `PV-GOV-010` (inventário de atributos; `DEC-20261106-26…32`) · ✅ `PV-PROG-013` (títulos e tier por Level, em configuração) · ✅ `PV-CHAR-012` (atributos só do Tibia; sem migration) · ✅ `PV-CLEAN-004` (R-038: 9 Commands/Results órfãos removidos) · ✅ `PV-CLIENT-020` (cliente exibe título/tier; sem redesign). Status final em `docs/architecture/RELATORIO-FILA-5.md`.
 

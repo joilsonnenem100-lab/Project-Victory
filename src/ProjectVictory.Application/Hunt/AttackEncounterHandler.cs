@@ -1,3 +1,4 @@
+using ProjectVictory.Application.Checkpoint;
 using ProjectVictory.Application.Combat.TurnBased;
 using ProjectVictory.Application.Reward;
 using ProjectVictory.Application.Session;
@@ -31,6 +32,8 @@ public sealed class AttackEncounterHandler
     private readonly EndHuntHandler _endHuntHandler;
     private readonly ISupplyPolicyStore _supplyPolicies;
     private readonly CombatSupplyContext _supplies;
+    private readonly IPendingSupplyConsumption _pendingSupplies;
+    private readonly ICheckpointService _checkpoints;
 
 
     public AttackEncounterHandler(
@@ -45,8 +48,13 @@ public sealed class AttackEncounterHandler
         RewardResolutionHandler rewardResolutionHandler,
         EndHuntHandler endHuntHandler,
         ISupplyPolicyStore supplyPolicies,
-        CombatSupplyContext supplies)
+        CombatSupplyContext supplies,
+        // PV-PERSIST-011: consumo pendente e checkpoints (Handbook §19).
+        IPendingSupplyConsumption pendingSupplies,
+        ICheckpointService checkpoints)
     {
+        _pendingSupplies = pendingSupplies;
+        _checkpoints = checkpoints;
         _supplyPolicies = supplyPolicies;
         _supplies = supplies;
         _endHuntHandler = endHuntHandler;
@@ -125,10 +133,14 @@ public sealed class AttackEncounterHandler
             .Where(item => SupplyCatalog.IsPotion(item.ItemDefinitionId))
             .ToList();
 
+        // PV-PERSIST-011: poções já usadas e ainda não gravadas (pendentes até o próximo checkpoint)
+        // não estão mais disponíveis.
+        var unsaved = _pendingSupplies.Peek(character.Id);
+
         _supplies.Load(
             policy,
-            potions.Count(item => item.ItemDefinitionId == SupplyCatalog.HealthPotionId),
-            potions.Count(item => item.ItemDefinitionId == SupplyCatalog.ManaPotionId));
+            Math.Max(0, potions.Count(item => item.ItemDefinitionId == SupplyCatalog.HealthPotionId) - unsaved.HealthPotions),
+            Math.Max(0, potions.Count(item => item.ItemDefinitionId == SupplyCatalog.ManaPotionId) - unsaved.ManaPotions));
         var aliveBefore = session.Monsters.Where(m => !m.IsDead).Select(m => m.Id).ToHashSet();
 
         var report = _orchestrator.ExecuteRound(session);
@@ -148,18 +160,19 @@ public sealed class AttackEncounterHandler
         runtimeContext.CharacterState.UpdateHealth(session.Player.CurrentHealth);
         runtimeContext.CharacterState.UpdateMana(session.Player.CurrentMana);
 
-        // PV-SUPPLY-010: poções usadas na rodada saem do inventário (antes das recompensas, que
-        // recarregam o personagem).
-        if (_supplies.HealthPotionsUsed + _supplies.ManaPotionsUsed > 0)
-        {
-            RemovePotions(character, SupplyCatalog.HealthPotionId, _supplies.HealthPotionsUsed);
-            RemovePotions(character, SupplyCatalog.ManaPotionId, _supplies.ManaPotionsUsed);
-
-            await _characterRepository.UpdateAsync(character, cancellationToken);
-        }
+        // PV-SUPPLY-010 + PV-PERSIST-011 (Handbook §19): poções usadas na rodada saem do inventário,
+        // mas a rodada é "ação pequena" — o consumo fica PENDENTE e é gravado no próximo checkpoint
+        // (recompensa ou conclusão). Antes: gravava o personagem a cada rodada com poção.
+        _pendingSupplies.Add(character.Id, _supplies.HealthPotionsUsed, _supplies.ManaPotionsUsed);
 
         // Monstros mortos nesta rodada → Reward Pipeline (um CombatResult de vitória por monstro).
         var killed = session.Monsters.Where(m => m.IsDead && aliveBefore.Contains(m.Id)).ToList();
+
+        // PV-PERSIST-011: checkpoint de RECOMPENSA antes do Reward Pipeline (que recarrega o personagem).
+        if (killed.Count > 0)
+        {
+            await _checkpoints.SaveAsync(character.Id, hunt.RuntimeId, CheckpointReason.Reward, cancellationToken);
+        }
         long experienceGained = 0;
 
         foreach (var monster in killed)
@@ -229,22 +242,5 @@ public sealed class AttackEncounterHandler
             ending?.ReturnedToCity ?? false,
             ending?.ReturnCity,
             ending?.DeathNotice);
-    }
-
-    private static void RemovePotions(
-        ProjectVictory.Domain.Entities.Character character,
-        Guid potionDefinitionId,
-        int amount)
-    {
-        var instances = character.Inventory.Items
-            .Where(item => item.ItemDefinitionId == potionDefinitionId)
-            .Take(amount)
-            .Select(item => item.Id)
-            .ToList();
-
-        foreach (var instanceId in instances)
-        {
-            character.Inventory.RemoveItem(instanceId);
-        }
     }
 }

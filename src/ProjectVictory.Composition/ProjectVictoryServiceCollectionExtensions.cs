@@ -121,6 +121,12 @@ public static class ProjectVictoryServiceCollectionExtensions
         services.AddScoped<ApplyResolvedRewardToCharacterHandler>();
         services.AddScoped<RewardResolutionHandler>();
 
+        // PV-PERSIST-011 (Handbook §19): checkpoints em início, recompensa, conclusão e logout; o
+        // consumo de poções por rodada fica pendente em memória (Temporário) até o próximo checkpoint.
+        services.AddSingleton<ProjectVictory.Application.Checkpoint.IPendingSupplyConsumption, ProjectVictory.Application.Checkpoint.PendingSupplyConsumption>();
+        services.AddSingleton<ProjectVictory.Application.Checkpoint.ICheckpointLog, ProjectVictory.Application.Checkpoint.CheckpointLog>();
+        services.AddScoped<ProjectVictory.Application.Checkpoint.ICheckpointService, ProjectVictory.Application.Checkpoint.CheckpointService>();
+
         // PV-XP-010 (ADR-007): Experience Distribution (regra de grupo PROVISÓRIA: divisão igual).
         services.AddSingleton<IExperienceDistributor, EvenSplitExperienceDistributor>();
 

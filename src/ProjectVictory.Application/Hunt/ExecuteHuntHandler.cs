@@ -22,6 +22,7 @@ public sealed class ExecuteHuntHandler
 
     private readonly PlayerOwnershipGuard _ownershipGuard;
     private readonly ProjectVictory.Application.Combat.TurnBased.ICombatSeedProvider _seedProvider;
+    private readonly ProjectVictory.Application.Checkpoint.ICheckpointService _checkpoints;
 
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
@@ -30,8 +31,11 @@ public sealed class ExecuteHuntHandler
         EncounterGenerator encounterGenerator,
         IRuntimeExecutionStateStore runtimeExecutionStateStore,
         PlayerOwnershipGuard ownershipGuard,
-        ProjectVictory.Application.Combat.TurnBased.ICombatSeedProvider seedProvider)
+        ProjectVictory.Application.Combat.TurnBased.ICombatSeedProvider seedProvider,
+        // PV-PERSIST-011: checkpoint de INÍCIO (Handbook §19).
+        ProjectVictory.Application.Checkpoint.ICheckpointService checkpoints)
     {
+        _checkpoints = checkpoints;
         _seedProvider = seedProvider;
         _ownershipGuard = ownershipGuard;
 
@@ -91,6 +95,13 @@ public sealed class ExecuteHuntHandler
 
         _encounterStateStore.Add(
             encounter);
+
+        // PV-PERSIST-011: checkpoint de início da Hunt (cópia do Runtime antes do primeiro combate).
+        await _checkpoints.SaveAsync(
+            character.Id,
+            command.RuntimeId,
+            ProjectVictory.Application.Checkpoint.CheckpointReason.HuntStart,
+            cancellationToken);
 
         var target =
             encounter.GetCurrentTarget();

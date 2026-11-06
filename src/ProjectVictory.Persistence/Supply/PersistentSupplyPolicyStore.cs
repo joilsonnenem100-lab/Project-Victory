@@ -25,6 +25,10 @@ public sealed class PersistentSupplyPolicyState
 // se perdia ao reiniciar a API. Mesma semântica do DEC-20261106-03 (pendente → ativa no próximo turno).
 // Grava só quando o jogador muda a configuração (SetPending) ou quando a pendente é ativada (uma vez
 // por mudança) — nunca a cada turno (PV-PERSIST-011).
+// Atenção (revisão do PV-PERSIST-010, ressalva 6): SaveChanges grava tudo o que estiver rastreado no
+// DbContext da requisição (unidade de trabalho compartilhada). Hoje os repositórios gravam a partir
+// do objeto de domínio, então nada alheio é gravado por acidente; uma variante assíncrona da
+// interface fica registrada como melhoria (R-047).
 public sealed class PersistentSupplyPolicyStore : ISupplyPolicyStore
 {
     private readonly ProjectVictoryDbContext _context;
@@ -39,11 +43,28 @@ public sealed class PersistentSupplyPolicyStore : ISupplyPolicyStore
         ArgumentNullException.ThrowIfNull(policy);
 
         var row = Find(characterId) ?? Add(characterId);
+        Apply(row, policy);
+
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateException) when (_context.Entry(row).State == Microsoft.EntityFrameworkCore.EntityState.Added)
+        {
+            // Revisão do PV-PERSIST-010 (ressalva 4): outra requisição criou a linha ao mesmo tempo.
+            // Descarta a inserção, relê a linha existente e grava como atualização.
+            _context.Entry(row).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            var existing = Find(characterId) ?? throw new InvalidOperationException("Supply policy row not found.");
+            Apply(existing, policy);
+            _context.SaveChanges();
+        }
+    }
+
+    private static void Apply(PersistentSupplyPolicyState row, SupplyPolicy policy)
+    {
         row.HasPending = true;
         row.PendingHealthPotionBelowPercent = policy.HealthPotionBelowPercent;
         row.PendingManaPotionBelowPercent = policy.ManaPotionBelowPercent;
-
-        _context.SaveChanges();
     }
 
     public SupplyPolicy ActivatePending(Guid characterId)

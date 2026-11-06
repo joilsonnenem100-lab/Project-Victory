@@ -60,4 +60,29 @@ public sealed class RuntimeRepository : IRuntimeRepository
             state.Health,
             state.Mana);
     }
+
+    // PV-PERSIST-011: atualiza a cópia persistida do Runtime só em checkpoint (nunca por rodada).
+    public async Task SaveCheckpointAsync(
+        Guid runtimeId,
+        int health,
+        int mana,
+        CancellationToken cancellationToken = default)
+    {
+        var state =
+            await _context.RuntimeStates
+                .FirstOrDefaultAsync(
+                    x => x.RuntimeId == runtimeId,
+                    cancellationToken);
+
+        if (state is null)
+        {
+            return;
+        }
+
+        state.Health = health;
+        state.Mana = mana;
+
+        await _context.SaveChangesAsync(
+            cancellationToken);
+    }
 }

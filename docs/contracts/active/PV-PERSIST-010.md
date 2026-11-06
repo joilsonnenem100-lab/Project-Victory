@@ -59,3 +59,7 @@ Ver a seção de revisão do contrato `PV-SPAWN-010`: ids de instância e monstr
 ## Pendências
 
 - Recovery do Runtime vivo a partir do checkpoint (`PV-RUNTIME-011`, M6) e "última Hunt escolhida" (M6, ADR-057 v1.2).
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q6-persist-011`
+
+O revisor rodou a suíte (342 aprovados) e confirmou a classificação (só o `SupplyPolicyStore` estava fora do lugar) e a migration aditiva. Ressalvas aplicadas: reinício com o primeiro host parado; política ativa conferida após o reinício; comentário do teste corrigido; corrida no primeiro `SetPending` tratada; R-047 (FK futura e variante assíncrona). Detalhes no contrato `PV-PERSIST-011`.

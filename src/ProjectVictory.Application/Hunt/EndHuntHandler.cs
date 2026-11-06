@@ -50,12 +50,16 @@ public sealed class EndHuntHandler
     private readonly IHuntRepository _huntRepository;
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
     private readonly ICharacterRepository _characterRepository;
+    private readonly ProjectVictory.Application.Checkpoint.ICheckpointService _checkpoints;
 
     public EndHuntHandler(
         IHuntRepository huntRepository,
         IRuntimeExecutionStateStore runtimeExecutionStateStore,
-        ICharacterRepository characterRepository)
+        ICharacterRepository characterRepository,
+        // PV-PERSIST-011: checkpoint de CONCLUSÃO (Handbook §19).
+        ProjectVictory.Application.Checkpoint.ICheckpointService checkpoints)
     {
+        _checkpoints = checkpoints;
         _huntRepository = huntRepository;
         _runtimeExecutionStateStore = runtimeExecutionStateStore;
         _characterRepository = characterRepository;
@@ -107,6 +111,14 @@ public sealed class EndHuntHandler
                 GameplayContext = new RuntimeGameplayContext(RuntimeActivity.Idle),
                 WorldContext = MainCity
             });
+
+        // PV-PERSIST-011: checkpoint de conclusão — grava o consumo pendente e a cópia do Runtime
+        // (vida/mana já restauradas na morte), uma vez, ao fim da Hunt.
+        await _checkpoints.SaveAsync(
+            hunt.CharacterId,
+            hunt.RuntimeId,
+            ProjectVictory.Application.Checkpoint.CheckpointReason.HuntConclusion,
+            cancellationToken);
 
         return new EndHuntResult(
             hunt.Id,
