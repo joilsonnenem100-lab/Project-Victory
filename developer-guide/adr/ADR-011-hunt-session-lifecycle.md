@@ -86,3 +86,9 @@ Ver também:
 
 - developer-guide/domain/hunt.md
 - developer-guide/domain/spawn-system.md
+
+---
+
+# Nota de emenda (2026-11-06)
+
+Ver `ADR-057` (ACCEPTED): o **Runtime State** do personagem é persistível em checkpoints e recuperável; a **Hunt Session** continua efêmera e **não** é recuperada — ao desconectar, a Hunt termina pelo pipeline único (decisão do PO, `DEC-20261106-05`). O texto acima permanece válido para a Hunt Session.

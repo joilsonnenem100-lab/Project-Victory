@@ -418,7 +418,7 @@ Status: Accepted (Arquitetura) — **aguarda aprovação do Product Owner no M0*
 
 Status: **Pendente** — ver `ADR-057` (PROPOSED). A parte de Game Design pertence ao Product Owner (ADR-016 deste log).
 
-*Atualização (2026-11-06): PO escolheu B3 com restrição de XP offline; escopo do ganho offline em aberto — ver `DEC-20261106-05`.*
+*Atualização (2026-11-06): decidida pelo PO — ao desconectar a Hunt termina (B1) e o progresso offline vem só do Offline Training de skills; ver `DEC-20261106-05`.*
 
 ## DEC-20261105-07 — Higiene do repositório
 
@@ -481,19 +481,13 @@ Consequência de arquitetura: "fim de suprimento" é um novo **motivo** de encer
 
 ## DEC-20261106-05 — Desconexão durante a Hunt (ADR-057, Parte B)
 
-Status: **Parcialmente decidida — pergunta aberta ao Product Owner**
+Status: **Accepted (Product Owner)**
 
-O PO escolheu **B3 — a Hunt continua offline**, **com a restrição: nenhum ganho offline de experiência em Hunts.**
+**Com o jogador offline a Hunt NÃO rende nada.** Ao desconectar, a Hunt **termina** pelo **pipeline único de encerramento** (ADR-012). O progresso offline vem **somente do Offline Training de skills** (módulo LOCKED, Fase 2 do `roadmap.md`; regras em `knowledge-base/training.md`).
 
-**Em aberto:** o que a Hunt rende offline além de XP. Opções apresentadas ao PO:
+Equivale à opção **B1** do `ADR-057` para a Hunt, **mais Offline Training**. `ADR-057` passa a **ACCEPTED**. Substitui a pendência de `DEC-20261105-06`.
 
-| Opção | Comportamento offline |
-|---|---|
-| a | Loot e lucro continuam, **sem XP** |
-| b | A Hunt **termina** ao desconectar |
-| c | Só **treino offline de skills** (módulo Offline Training, LOCKED na Fase 2 do `roadmap.md`) |
-
-Bloqueia **apenas o M6** (`roadmap-to-playable.md`). `ADR-057` permanece **PROPOSED** até a resposta. Substitui a pendência de `DEC-20261105-06`.
+*Histórico: uma versão anterior desta entrada, no mesmo dia, registrava "B3 com restrição de XP offline" e uma pergunta aberta; o PO a corrigiu em 2026-11-06 para a decisão acima, e a pergunta aberta deixou de existir.*
 
 ## DEC-20261106-06 — Escopo social inicial
 

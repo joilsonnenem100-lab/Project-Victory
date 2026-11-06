@@ -1,7 +1,7 @@
 # ADR-057 - Hunt Session Ephemerality and Runtime State Persistence
 
-Status: PROPOSED
-Version: 1.0
+Status: ACCEPTED
+Version: 1.1
 Data: 2026-11-05
 Autor: Arquitetura (Chefe de Arquitetura)
 Decisor da parte de Game Design: Product Owner (ver `decision-log.md`, ADR-016)
@@ -54,17 +54,33 @@ Recomendação do Arquiteto: **B3 limitado** (teto de tempo/ganho), por ser a ú
 
 ---
 
-# Situação da decisão (2026-11-06, `PV-GOV-004`)
+# Decisão final (2026-11-06, `PV-GOV-004`)
 
-Status continua **PROPOSED**. Só passa a **ACCEPTED** quando o Product Owner responder a pergunta aberta da Parte B.
+Status: **ACCEPTED**.
 
-- **Parte A — aprovada pelo Arquiteto.** Separação Hunt Session (efêmera) × Runtime State/Checkpoint (persistível), persistência só em checkpoints e recovery criando nova Hunt Session.
-- **Parte B — B3 com restrição de XP offline; escopo do ganho offline pendente de resposta do PO.** O PO escolheu **B3 (Hunt continua offline)** com a restrição **"nenhum ganho offline de experiência em Hunts"** (`decision-log.md`, `DEC-20261106-05`). Em aberto, o que a Hunt rende offline além de XP:
-  - a) loot e lucro sem XP;
-  - b) a Hunt termina ao desconectar;
-  - c) só treino offline de skills (Offline Training, Fase 2).
-- A recomendação original "B3 limitado (teto de tempo/ganho)" fica substituída pela restrição do PO; o teto de tempo/ganho será definido junto com a resposta, se a opção escolhida render algo offline.
-- Bloqueia apenas o **M6** (`roadmap-to-playable.md`); a restrição "Nenhuma implementação de M6 inicia antes desta ADR estar ACCEPTED" continua valendo.
+## Parte B — decidida pelo Product Owner: **B1 + Offline Training**
+
+`decision-log.md`, `DEC-20261106-05`:
+
+- Com o jogador **offline, a Hunt não rende nada**.
+- Ao **desconectar**, a Hunt **termina** pelo **pipeline único de encerramento** (ADR-012) — a desconexão é só mais um motivo de encerramento, como morte, fim de suprimento ou saída manual.
+- O progresso offline vem **somente do Offline Training de skills** (Fase 2, LOCKED; `knowledge-base/training.md`).
+
+*Histórico: uma versão anterior desta seção, no mesmo dia, registrava "B3 com restrição de XP offline" e status PROPOSED; foi substituída pela decisão acima. A recomendação original do Arquiteto ("B3 limitado") não foi adotada.*
+
+## Parte A — aprovada pelo Arquiteto, **simplificada** pela decisão B1
+
+Como a Hunt **não é recuperada**, o checkpoint de recovery **se limita ao estado do personagem e do Runtime** (localização, vida/mana, atividade, recursos), **sem recuperar Hunt Session**. Ficam **simplificados** (texto original mantido acima como histórico):
+
+- "Runtime State / Checkpoint ... guarda o suficiente para reconstruir uma nova Hunt Session" → passa a guardar o suficiente para reconstruir o **Runtime** do personagem; nenhuma Hunt é recriada a partir dele.
+- "Recovery cria uma **nova** Hunt Session a partir do checkpoint" → **não se aplica**: recovery reconstrói o Runtime; o jogador inicia uma nova Hunt por comando.
+- Persistência só em checkpoints (Handbook §19) e Hunt Session efêmera (ADR-011) — **mantidos**.
+- `PersistentHuntSessionState` continua a precisar de revisão (M5/M6): a sessão não é recuperável; o que for útil vira checkpoint de Runtime ou histórico.
+
+## Consistência com outras ADRs
+
+- **ADR-011 / ADR-012:** a decisão B1 **confirma** "nunca restaurada após desconexão" e "nenhuma recuperação de Hunt após desconexão". As notas de emenda nesses ADRs apenas apontam para cá (Runtime State persistível ≠ Hunt Session).
+- **ADR-002 / ADR-004** citam um "futuro modo Hunt Offline" como benefício possível da separação Engine/cliente. Pela decisão do PO, **Hunt Offline não está planejado**; a separação continua valendo (a Hunt roda no servidor enquanto o jogador está conectado).
 
 ---
 

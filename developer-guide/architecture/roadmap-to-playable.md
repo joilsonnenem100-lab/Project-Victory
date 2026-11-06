@@ -24,7 +24,7 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 | Item | Lastro |
 |---|---|
 | Aprovar `project-state.md` v2.0 e este roadmap | `roadmap.md` (Roadmap Rules 1–5) |
-| Decidir **ADR-057** (Hunt Session × Runtime State/Checkpoint) — *2026-11-06: Parte A aprovada pelo Arquiteto; Parte B = B3 sem XP offline; escopo do ganho offline **aguardando PO** (`DEC-20261106-05`)* | R-001; ADR-011/012; Handbook V3 §17–19 |
+| Decidir **ADR-057** (Hunt Session × Runtime State/Checkpoint) — ✅ *ACCEPTED em 2026-11-06: B1 (Hunt termina ao desconectar) + Offline Training de skills (`DEC-20261106-05`)* | R-001; ADR-011/012; Handbook V3 §17–19 |
 | Formalizar R-005, R-006, R-008 no `decision-log.md`; preencher/descartar ADR-026/044/048/055 | `ARCHITECTURE-GOVERNANCE` |
 | **Dono roda `dotnet build` e `dotnet test`** na solução e informa o resultado (baseline) — ✅ **executado em 2026-11-05 (PV-GOV-002)**; resultado em `project-state.md`, Pendências de Validação | Regra Aditiva ("builds continuam passando") |
 | Dono sobe API + client e percorre `COMO USAR O SMOKE TEST.txt`; informa onde quebra | `ENGINEERING-HANDOFF` (validação manual quando mais eficiente) |
@@ -88,18 +88,30 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 
 **Saída:** reiniciar a API não perde Account, Character, Inventory, Runtime/checkpoints; testes de persistência após reinício (já exigido em `PV-VS-2.0-044`).
 
-## M6 — Runtime contínuo e Hunt Loop *(depende de ADR-057 — bloqueado pela pergunta aberta do PO)*
+## M6 — Hunt Loop contínuo, encerramento ao desconectar e Offline Training *(ADR-057 ACCEPTED)*
 
-> **Bloqueio:** o PO escolheu B3 (Hunt continua offline) **sem ganho offline de XP**, mas ainda não respondeu o que a Hunt rende offline: a) loot e lucro sem XP; b) Hunt termina ao desconectar; c) só treino offline de skills (`DEC-20261106-05`). Nenhum contrato do M6 é emitido antes da resposta e de ADR-057 ACCEPTED. M1–M5 seguem normalmente.
+Decisão do PO (`DEC-20261106-05`, ADR-057): **enquanto conectado**, a Hunt roda em loop; **ao desconectar**, termina pelo pipeline único (ADR-012); **offline**, só o Offline Training de skills progride. A Hunt nunca é recuperada.
 
 | Contrato | Conteúdo | Lastro |
 |---|---|---|
-| `PV-RUNTIME-010` Game Session + Runtime Coordinator | Coordenação de experiência contínua sem inflar handlers | Handbook §9–10; `KNOWN-GAPS` |
-| `PV-HUNT-011` Hunt Loop contínuo | Hunt Definition → Session → Encounter Generator → Combat → Reward → Progression → novo loop; ciclo Starting→Active→Ending→Finished | Handbook §11; ADR-012, 045, 046 |
-| `PV-RUNTIME-011` Recovery | Servidor inicia → carrega estado → reconstrói contexto → continua | Handbook §18; ADR-057; `PV-RUNTIME-002-A` |
-| `PV-PROG-012` Offline progression | Aplicar progresso ocioso ao reconectar, pelo Reward Pipeline | Roadmap Fase 2 (Offline Training LOCKED) |
+| `PV-RUNTIME-010` Game Session + Runtime Coordinator | Coordenação de experiência contínua **enquanto o jogador está conectado**, sem inflar handlers; detecta a desconexão (fim da sessão do jogador) | Handbook §9–10; `KNOWN-GAPS` |
+| `PV-HUNT-011` Hunt Loop contínuo | Hunt Definition → Session → Encounter Generator → Combat → Reward → Progression → novo loop; ciclo Starting→Active→Ending→Finished; **mede o tempo da Hunt** (início/fim) para o XP/hora do Analyzer | Handbook §11; ADR-012, 045, 046 |
+| `PV-HUNT-012` Encerramento ao desconectar | Desconexão é **motivo de encerramento** da Hunt pelo **mesmo** pipeline de morte, fim de suprimento e saída manual; jogador volta à cidade; nenhuma perda de loot ou XP já obtidos | ADR-012; ADR-057; `DEC-20261106-04/05` |
+| `PV-RUNTIME-011` Recovery do Runtime | Servidor inicia → carrega checkpoint do **personagem e do Runtime** → reconstrói contexto. **Não** recupera Hunt Session (ADR-057, Parte A simplificada) | Handbook §18; ADR-057; `PV-RUNTIME-002-A` |
+| `PV-TRAIN-010` Offline Training de skills | Implementar o módulo LOCKED da Fase 2 conforme `knowledge-base/training.md`: 1 Training ativo por personagem; item de Training com **cargas** que definem a duração; durante o Training o personagem não caça, não recebe EXP nem combate; mesmo funcionamento online e offline (sem bônus); progresso calculado **no servidor** e aplicado a `Skills` (Fist, Club, Sword, Axe, Distance, Shielding, Magic Level); Training < Hunt em velocidade; cancelamento sem penalidade | `roadmap.md` Fase 2 (LOCKED); `knowledge-base/training.md` (LOCKED); `DEC-20261106-05` |
 
-**Saída:** o loop roda sem cliques repetidos e sobrevive a logout/reinício conforme ADR-057.
+**Saída:** o loop roda sem cliques repetidos enquanto o jogador está conectado; desconectar encerra a Hunt pelo pipeline único; reiniciar o servidor recupera personagem e Runtime (sem Hunt); Offline Training progride skills offline.
+
+### Dúvidas para o Product Owner antes do `PV-TRAIN-010` (não bloqueiam M1–M5)
+
+Levantadas na leitura de `roadmap.md` (Fase 2), `knowledge-base/training.md` e `src/ProjectVictory.Domain/Entities/Skills.cs`; o próprio `training.md` lista "fórmula de progresso; consumo de cargas; tipos de Training Items; diferenças Free/Premium; interface visual; balanceamento" como pendências futuras.
+
+1. **Como o jogador obtém o item de Training?** (compra em NPC, item inicial, drop) — compra em NPC depende de comércio, que está na Fase 7/8.
+2. **Início do Offline Training:** o jogador precisa iniciar o Training antes de sair, ou ele começa sozinho ao desconectar? (Pelo `training.md`, Training e Hunt são exclusivos.)
+3. **Skill do Monk:** o `training.md` lista "First Fighting"; o código tem `Fist`. Confirmar que o Monk treina **Fist Fighting** e se treina mais alguma skill.
+4. **Velocidade e teto:** quanto mais lento que a Hunt (regra "Hunt > Training") e se existe limite de horas offline acumuladas.
+5. **Free × Premium:** existe diferença no Training nesta fase, ou fica para depois?
+6. **Tolerância de queda de conexão:** uma queda curta de rede já encerra a Hunt, ou há uma janela de reconexão (ex.: alguns segundos) antes do encerramento?
 
 ## M7 — Event System
 
@@ -130,7 +142,7 @@ O Analyzer é **entregue em M8 (UI)** e **não bloqueia M1 a M4**. Ele consome d
 | **Preços de compra e venda NPC nas definições de item** (dado, não comércio) | `PV-CONTENT-010` (M8), sobre as definições de item; o campo pode ser acrescentado já no `PV-REWARD-010` (M2) quando o Reward passar a usar definições reais | Só o **dado** de preço. Comércio com NPC continua na Fase 7/8 (`roadmap.md`) — Guardião de Escopo |
 | **Modelo de suprimentos (poções)** — o que é gasto e quando | `PV-SUPPLY-010` (M3) | **Decidido pelo PO em 2026-11-06:** só poção de vida e de mana, uso configurável, aplicado no próximo turno (`DEC-20261106-02/03`). O débito do Analyzer = poções gastas × preço de compra no NPC |
 | **Valor do loot no lucro** | `PV-HUD-ANALYZER-010` (M8) | **Preço de venda ao NPC — PROVISÓRIO** (recomendação do Arquiteto, aguardando confirmação do PO: `DEC-20261106-08`) |
-| **Medição de tempo da Hunt** (início, pausas, fim) para XP/hora | `PV-HUNT-011` (M6, Hunt Loop contínuo) | Depende da política de desconexão (`ADR-057`, decisão do PO): o tempo offline conta ou não para XP/hora |
+| **Medição de tempo da Hunt** (início, pausas, fim) para XP/hora | `PV-HUNT-011` (M6, Hunt Loop contínuo) | Política decidida (`ADR-057` ACCEPTED): a Hunt só existe enquanto o jogador está conectado, então XP/hora usa apenas tempo online |
 | XP e loot reais da Hunt | `PV-REWARD-010` (M2), `PV-XP-010` (M4) | Hoje o Reward é stub (XP 0); sem eles o Analyzer mostraria zeros |
 
 **Saída = Primeiro Teste Jogável** (definição no topo).
