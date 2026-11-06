@@ -45,6 +45,8 @@ Entretanto, existe o sistema de Ascension.
 Cada Ascension possui limite de Level 500.
 
 > *Emenda (2026-11-06, `DEC-20261106-19`): **SUPERADO.** Não há Level máximo nem limite por Ascension; o Level nunca volta a 1. A Ascension é derivada do Level (uma nova a cada 500 Levels, máximo atual 4, em configuração).*
+>
+> *Emenda (2026-11-06, Fila 5, `DEC-20261106-30`): a regra acima de Ascension foi **SUPERADA** pelos títulos por Level, em configuração: Level 1–499 **Novice** (tier 0) · 500–999 **Ascension 1** (tier 1) · 1000–1499 **Ascension 2** (tier 2) · 1500–1999 **Ascension 3** (tier 3) · 2000–2499 **Ascension 4** (tier 4) · 2500 em diante **Legend** (tier 5, permanente, sem teto de Level). Hunt areas exigem tier mínimo (Spider Cave = tier 0).*
 
 Após atingir este limite o jogador poderá evoluir gratuitamente para a próxima Ascension.
 

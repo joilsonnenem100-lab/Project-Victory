@@ -229,7 +229,7 @@ Fire Damage Suffix
 
 =
 
-Flaming Sword of Strength
+~~Flaming Sword of Strength~~ *(exemplo removido, `DEC-20261106-27`: Strength não existe; um afixo só pode mexer em atributo do Tibia, ex.: Sword Fighting)*
 
 ------------------------------------------------------------------------
 
@@ -249,11 +249,11 @@ Um afixo possui:
 
 Exemplo:
 
-Strong III
+~~Strong III~~
 
-Strength:
+~~Strength:~~
 
-10-20
+~~10-20~~ *(removido, `DEC-20261106-27`)*
 
 ------------------------------------------------------------------------
 
@@ -283,17 +283,17 @@ Afixos podem possuir níveis.
 
 Exemplo:
 
-Strength I
+~~Strength I~~
 
-+5
+~~+5~~
 
-Strength II
+~~Strength II~~
 
-+10
+~~+10~~
 
-Strength III
+~~Strength III~~
 
-+20
+~~+20~~ *(removido, `DEC-20261106-27`: o tier de afixo vale para atributos do Tibia, ex.: Sword Fighting I/II/III)*
 
 ------------------------------------------------------------------------
 

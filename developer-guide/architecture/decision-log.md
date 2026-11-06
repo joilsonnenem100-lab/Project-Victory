@@ -642,6 +642,8 @@ Implementação: `PV-CHAR-011`.
 
 ## DEC-20261106-19 — Ascension derivada do Level; Level sem teto
 
+> *Emenda (Fila 5, `DEC-20261106-30`): a regra "Ascension 1 inicial, nova a cada 500, máximo 4" foi **SUPERADA** pelos **títulos por Level** (Novice, Ascension 1–4, Legend). Continua valendo: Level derivado da Experience, sem teto e sem reset.*
+
 Status: **Accepted (Product Owner)** — **supera** o texto anterior do `ADR-026`, `knowledge-base/progression.md` (seções Level/Ascension) e as decisões que citavam "Levels 1 a 500" (`DEC-20261106-10`, `PV-PROG-011`); o **R-022 fica sem efeito**
 
 - **Ascension 1** é a inicial. Uma nova Ascension é **desbloqueada automaticamente a cada 500 Levels**: Ascension 2 no Level 500, 3 no 1000 e 4 no 1500.
@@ -714,3 +716,65 @@ Status: **Accepted (Product Owner)**
 - os 5 handlers mortos que encerram a Hunt por fora do pipeline (R-031) → `PV-CLEAN-003`.
 
 Cada remoção vai num commit isolado e reversível, depois de um `grep` sem nenhuma referência, com build e testes verdes e registro no `CLEANUP-MANIFEST`.
+
+## DEC-20261106-26 — Atributos do personagem = somente os do Tibia
+
+Status: **Accepted (Product Owner)** — Fila 5
+
+- **Skills:** Level, Magic Level, Fist Fighting, Club Fighting, Sword Fighting, Axe Fighting, Distance Fighting, Shielding, Fishing.
+- **Status:** HP e Mana.
+- **Sem Capacidade** (reforça o `DEC-20261106-17`).
+
+Inventário e ações: `PV-GOV-010` (`docs/architecture/PV-GOV-010-INVENTARIO-ATRIBUTOS.md`).
+
+## DEC-20261106-27 — Remover atributos e stats que não existem no Tibia
+
+Status: **Accepted (Product Owner)** — Fila 5
+
+Remover do projeto **Força, Destreza, Inteligência, Vitalidade, Sorte, Attack Speed** e qualquer outro atributo ou stat inventado (sem equivalente no Tibia).
+
+## DEC-20261106-28 — Exceção formal à Regra Aditiva para o DEC-20261106-27
+
+Status: **Accepted (Product Owner)** — Fila 5
+
+O PO **autoriza** a remoção/substituição desses atributos em código, DTOs, testes, docs e UI, como **exceção formal** à Regra Aditiva (`PROJECT-VICTORY-ARCHITECTURE-RULES.md`). Condições:
+- cada remoção listada em `docs/architecture/CLEANUP-MANIFEST-2026-11-06.md`;
+- nenhum arquivo inteiro apagado sem estar listado;
+- nenhuma migration existente editada (se o schema mudar, **uma** migration nova; se destrutiva, parar e registrar para o Arquiteto).
+
+## DEC-20261106-29 — Identidade das classes (descritiva, sem mecânica elemental)
+
+Status: **Accepted (Product Owner)** — Fila 5
+
+- **Druid:** mago da natureza; dano de **terra e gelo**.
+- **Sorcerer:** **energia e fogo**.
+- **Monk:** lutador de **Fist Fighting**, com armas de luva e afins.
+- **Knight** e **Paladin:** como já decidido (`DEC-20261106-23`).
+
+É **só dado descritivo**: nenhuma regra elemental (resistência, fraqueza, tipo de dano) entra por esta decisão. O tipo de dano em combate continua `Physical` (`PV-COMBAT-013`).
+
+## DEC-20261106-30 — Títulos por Level (substitui a regra de Ascension da Fila 4; resolve R-034)
+
+Status: **Accepted (Product Owner)** — Fila 5; **supera** a regra de Ascension do `DEC-20261106-19` (nova a cada 500, máximo 4)
+
+- Level 1–499 **Novice** (tier 0) · 500–999 **Ascension 1** (tier 1) · 1000–1499 **Ascension 2** (tier 2) · 1500–1999 **Ascension 3** (tier 3) · 2000–2499 **Ascension 4** (tier 4) · 2500 em diante **Legend** (tier 5, permanente, sem teto de Level).
+- Os **rótulos e faixas ficam em CONFIGURAÇÃO**, trocáveis a qualquer momento **sem recompilar**.
+- **Level** continua derivado da Experience (sem teto); **título** e **tier** são derivados do Level.
+- **Tier numérico:** 0 = Novice; 1 a 4 = Ascensions; 5 = Legend.
+- **Hunt areas** passam a exigir **tier mínimo**; a Spider Cave exige **tier 0**.
+- O **Level NUNCA reseta**.
+- Resolve **R-034** ("5 Ascensions / Legend" × máximo 4): passam a existir 4 Ascensions **e** o título Legend a partir do Level 2500.
+
+Implementação: `PV-PROG-013`.
+
+## DEC-20261106-31 — Remoção autorizada (R-038)
+
+Status: **Accepted (Product Owner)** — Fila 5
+
+Autorizada a remoção dos 9 Commands/Results órfãos dos handlers removidos no `PV-CLEAN-003` → `PV-CLEAN-004` (commit isolado, grep de zero referências, registro no manifesto).
+
+## DEC-20261106-32 — Skills das classes aprovadas como PROVISÓRIAS
+
+Status: **Accepted (Product Owner)** — Fila 5
+
+Os nomes, números e Levels das skills de classe (`PV-COMBAT-013`, `ClassSkillTable`) ficam **aprovados como PROVISÓRIOS**, para balanceamento posterior.

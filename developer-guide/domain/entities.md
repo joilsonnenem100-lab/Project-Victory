@@ -200,13 +200,13 @@ Os seguintes conceitos serão implementados como Value Objects:
 - Gold
 - Damage
 - Defense
-- AttackSpeed
+- ~~AttackSpeed~~ *(removido: não existe no Tibia, `DEC-20261106-27`)*
 - MovementSpeed
 - CriticalChance
 - CriticalDamage
 - DropChance
 - Weight
-- Capacity
+- ~~Capacity~~ *(removido: sem Capacidade, `DEC-20261106-17/26`)*
 - RespawnTime
 - Duration
 - Percentage

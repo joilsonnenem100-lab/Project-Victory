@@ -2,6 +2,8 @@
 
 ## Status
 
+> *Emenda (2026-11-06, Fila 5, `DEC-20261106-26`): conjunto oficial de atributos = Skills do Tibia (Level, Magic Level, Fist, Club, Sword, Axe, Distance Fighting, Shielding, **Fishing**) + Status (HP, Mana). Sem Capacidade; sem Força, Destreza, Inteligência, Vitalidade, Sorte ou Attack Speed.*
+
 Documento de consolidação das decisões de Product Owner relacionadas ao
 sistema de atributos do personagem.
 

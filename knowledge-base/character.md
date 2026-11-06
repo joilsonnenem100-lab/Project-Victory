@@ -179,6 +179,8 @@ O Level é baseado na EXP acumulada.
 
 # Ascension
 
+> *Emenda (2026-11-06, Fila 5, `DEC-20261106-30`; revisão formal do documento LOCKED; resolve R-034): o modelo abaixo ("5 Ascensions", "Legend = Level 500 + Ascension 5") foi **SUPERADO**. Títulos por Level, em configuração: Level 1–499 **Novice** (tier 0) · 500–999 **Ascension 1** (tier 1) · 1000–1499 **Ascension 2** (tier 2) · 1500–1999 **Ascension 3** (tier 3) · 2000–2499 **Ascension 4** (tier 4) · 2500 em diante **Legend** (tier 5, permanente, sem teto de Level). O Level é derivado da Experience, nunca reseta e não tem teto.*
+
 O personagem possui:
 
 ```
@@ -214,6 +216,8 @@ Level sem limite máximo
 ---
 
 # Sistema de Poder
+
+> *Emenda (2026-11-06, Fila 5, `DEC-20261106-26/27`): os atributos do personagem são **somente os do Tibia** — Skills: Level, Magic Level, Fist, Club, Sword, Axe, Distance Fighting, Shielding, Fishing; Status: HP e Mana; sem Capacidade. Força, Destreza, Inteligência, Vitalidade, Sorte e Attack Speed **não existem** (nem "inicialmente").*
 
 O personagem não possui atributos tradicionais.
 

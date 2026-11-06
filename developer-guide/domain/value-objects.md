@@ -76,9 +76,9 @@ Representa defesa.
 
 ---
 
-## AttackSpeed
+## ~~AttackSpeed~~
 
-Representa velocidade de ataque.
+~~Representa velocidade de ataque.~~ *Removido (Fila 5, `DEC-20261106-27`): não existe no Tibia.*
 
 ---
 
@@ -122,9 +122,9 @@ Representa peso.
 
 ---
 
-## Capacity
+## ~~Capacity~~
 
-Representa capacidade máxima.
+~~Representa capacidade máxima.~~ *Removido (Fila 5, `DEC-20261106-17/26`): o jogo não tem Capacidade.*
 
 ---
 

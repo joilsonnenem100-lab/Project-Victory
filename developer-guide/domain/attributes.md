@@ -4,6 +4,8 @@ Status: DRAFT
 
 Version: 1.0
 
+> **Emenda (2026-11-06, Fila 5, `DEC-20261106-26/27`):** não existem "atributos base" além dos do Tibia. Os atributos do personagem são as **Skills** (Level, Magic Level, Fist, Club, Sword, Axe, Distance Fighting, Shielding, Fishing) e o **Status** (HP e Mana, derivados por Attribute Curve, ADR-029). A classe `Attributes` (Strength, Dexterity, Intelligence, Vitality) foi removida do código no `PV-CHAR-012`. Onde este documento diz "Base Attributes", leia HP/Mana derivados.
+
 ---
 
 # Objetivo
