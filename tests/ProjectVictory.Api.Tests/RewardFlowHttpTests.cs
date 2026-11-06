@@ -22,7 +22,18 @@ public sealed class RewardFlowHttpTests
     {
         for (var seed = 1; ; seed++)
         {
-            if (new ProjectVictory.Domain.Primitives.SeededRandomSource(seed).NextInclusive(0, 4) == 0)
+            // Revisão do PV-CONTENT-011: lê o tamanho e a posição do encounter do catálogo.
+            var templates = ProjectVictory.Infrastructure.Content.SpiderCaveCatalog.EncounterTemplates;
+            var ratEncounter = templates
+                .Select((t, i) => (t, i))
+                .First(x => x.t.SequenceEqual(new[]
+                {
+                    ProjectVictory.Infrastructure.Content.SpiderCaveCatalog.RatId,
+                    ProjectVictory.Infrastructure.Content.SpiderCaveCatalog.CaveRatId,
+                    ProjectVictory.Infrastructure.Content.SpiderCaveCatalog.RatId
+                })).i;
+
+            if (new ProjectVictory.Domain.Primitives.SeededRandomSource(seed).NextInclusive(0, templates.Count - 1) == ratEncounter)
             {
                 return seed;
             }
@@ -46,10 +57,10 @@ public sealed class RewardFlowHttpTests
         }
     }
 
-    private static async Task DefeatRat(ApiFactory _factory)
+    private static async Task DefeatRat(ApiFactory factory)
     {
-        using var client = _factory.CreateClient();
-        var token = await _factory.RegisterAndLoginAsync(client, $"reward-{Guid.NewGuid():N}@test.com");
+        using var client = factory.CreateClient();
+        var token = await factory.RegisterAndLoginAsync(client, $"reward-{Guid.NewGuid():N}@test.com");
         ApiFactory.WithToken(client, token);
 
         var created = await client.PostAsJsonAsync(

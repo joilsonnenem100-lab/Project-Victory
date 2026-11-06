@@ -1,6 +1,6 @@
 # PV-CONTENT-011 — Spider Cave por dados
 
-Status: **IMPLEMENTADO** (branch `chief/m3-content-011`) — balanceamento **PROVISÓRIO**
+Status: **IMPLEMENTADO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas registradas no branch `chief/m3-qa-004`). Branch `chief/m3-content-011` — balanceamento **PROVISÓRIO**
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 3", item 8).
 Lastro:
 - `DEC-20261106-09` (Spider Cave com Rat, Cave Rat, Spider, Poison Spider e Giant Spider, confirmados pelo PO; atributos provisórios);
@@ -66,3 +66,12 @@ Resultado da solução: build com 0 avisos; **251 aprovados, 0 ignorados, 0 falh
 1. Atributos dos 5 monstros (vida, Level, ataque e defesa), XP, ouro e chances.
 2. Os itens de drop novos (nomes, quais monstros os dão) e os preços de venda.
 3. A composição dos encounters da Spider Cave (quais grupos aparecem e com que frequência).
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+O revisor rodou a suíte (251 aprovados) e confirmou `has-pending-model-changes` sem mudanças. Ressalvas:
+1. e 2. Dois tipos de definição de monstro e o construtor antigo do `EncounterGenerator` com dados fixos → **R-032** (`PV-MONSTER-010`).
+3. Semente da composição correlacionada com a do combate → **R-033**.
+4. O teste do Rat agora lê o tamanho e a posição do encounter do catálogo (aplicado no branch `chief/m3-qa-004`).
+5. A descrição do Rat Tail continua em inglês ("Validation loot item"), herdada do M2. Cosmético; fica para uma migration nova junto do ajuste de conteúdo do PO.
+6. A validação na cópia do banco do PO foi feita pelo Arquiteto (registrada acima). O revisor não a reproduziu.
