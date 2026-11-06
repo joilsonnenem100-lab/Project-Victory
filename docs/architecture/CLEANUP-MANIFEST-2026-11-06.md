@@ -39,3 +39,17 @@ Nenhum DTO publicado perdeu campo: a Ascension nunca foi exposta pela API. `GetC
 | Propriedade `Character.Attributes` e as 2 atribuições `Attributes = new Attributes()` nos construtores | `src/ProjectVictory.Domain/Entities/Character.cs` | sempre vazia (valores 0); nunca lida, persistida, exposta em DTO ou exibida |
 
 Nada a remover em Application, Persistence (a tabela `Characters` nunca guardou esses campos → **nenhuma migration**), API (nenhum DTO os expunha), cliente (não exibia) nem testes (nenhum os usava). Teste de guarda novo: `Domain.Tests/TibiaAttributeTests` impede que voltem.
+
+## PV-CLEAN-004 — Commands/Results órfãos (R-038) — branch `chief/q5-clean-004`, commit `844954c`
+
+Autorização: PO, `DEC-20261106-31`. Antes da remoção, grep de cada nome em `src` e `tests` (`*.cs`, `*.csproj`, `*.ts`, `*.tsx`, `*.json`): **zero referências** fora do próprio arquivo. Build com 0 avisos; 311 testes aprovados depois. Commit isolado; reverter: `git revert 844954c`.
+
+- `src/ProjectVictory.Application/Hunt/CancelHuntCommand.cs`
+- `src/ProjectVictory.Application/Hunt/CancelHuntResult.cs`
+- `src/ProjectVictory.Application/Hunt/ExecuteExistingHuntCommand.cs`
+- `src/ProjectVictory.Application/Hunt/ExecuteNextHuntCommand.cs`
+- `src/ProjectVictory.Application/Hunt/ExecuteNextHuntResult.cs`
+- `src/ProjectVictory.Application/Hunt/ProcessHuntExecutionCommand.cs`
+- `src/ProjectVictory.Application/Hunt/ProcessHuntExecutionResult.cs`
+- `src/ProjectVictory.Application/Hunt/ResolveHuntResultCommand.cs`
+- `src/ProjectVictory.Application/Hunt/ResolveHuntResultResult.cs`
