@@ -4,6 +4,7 @@ using ProjectVictory.Application.Game;
 
 namespace ProjectVictory.API.Controllers;
 
+[Authorize] // PV-SEC-001: na classe, para nenhuma ação nova nascer pública
 [Route("api/game")]
 public sealed class GameController : BaseApiController
 {
@@ -17,7 +18,6 @@ public sealed class GameController : BaseApiController
     }
 
 
-    [Authorize]
     [HttpPost("enter")]
     public async Task<IActionResult> Enter()
     {
