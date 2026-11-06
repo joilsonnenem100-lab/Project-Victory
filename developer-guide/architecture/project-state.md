@@ -182,6 +182,27 @@ API em Development (DLL de `bin/Debug/net10.0`, banco temporário via `Connectio
 
 **Não coberto:** 403 por HTTP nos caminhos de runtime/hunt session/encounter (`runtime/activity|location`, `hunt-session/stop`, `hunt/attack`) — cobertos no nível de handler (`OwnershipAuthorizationTests`); token expirado e token sem a claim de conta. Falha de startup em Production sem chave por teste de integração (o `Program.cs` lê a configuração antes do `Build()`, e variáveis de ambiente são globais ao processo de teste); coberto pelo teste unitário de `JwtSettings.Validate` e pela validação manual do `PV-PLATFORM-002`.
 
+## Dependências vulneráveis — `PV-PLATFORM-003`, 2026-11-06
+
+**Decisão:** atualizar o EF Core de **10.0.0 para 10.0.14** (patch da mesma linha 10.0) em vez de fixar a dependência transitiva. O 10.0.14 depende de `SQLitePCLRaw` **2.1.13** (fora da faixa vulnerável), a correção vem pelo canal de manutenção oficial e não fica uma fixação manual para manter. Pacotes alinhados: `Microsoft.EntityFrameworkCore`, `.Sqlite`, `.Design` (API), `.InMemory` (SmokeTests) e `tools/PvDatabaseCheck` (estava em 10.0.10, que ainda puxava o 2.1.11). Nenhuma migration alterada.
+
+| Vulnerabilidade | Pacote (transitivo) | Origem | Situação |
+|---|---|---|---|
+| **CVE-2025-6965** / GHSA-2m69-gcr7-jv3q (alta, NU1903): SQLite nativo empacotado vulnerável; afeta `SQLitePCLRaw.lib.e_sqlite3` `<= 2.1.11` | `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 | `Microsoft.EntityFrameworkCore.Sqlite` 10.0.0 | ✅ Resolvida: 2.1.13 com EF 10.0.14 |
+| **CVE-2026-84008** / GHSA-846f-f764-76mx (alta, NU1903) e **CVE-2026-70162** / GHSA-2fmv-rv2c-59x7 (moderada, NU1902): negação de serviço no .NET; afeta `System.Security.Cryptography.Pkcs` 9.0.0–9.0.20 e 10.0.0–10.0.12 | `System.Security.Cryptography.Pkcs` 9.0.0 | `Microsoft.EntityFrameworkCore.Design` 10.0.0 → `Microsoft.Build.Tasks.Core` 17.14.28 (só no projeto da API) | ✅ Resolvida: com `.Design` 10.0.14 a API não depende mais do `Pkcs` (`dotnet nuget why`) |
+
+**O "7º aviso":** além dos NU1903 do SQLite (um por projeto que usa SQLite, cada um impresso duas vezes pelo restore/build), o projeto da API mostrava avisos do `System.Security.Cryptography.Pkcs` 9.0.0 (NU1903 e NU1902). Esses alertas da base do GitHub Advisory podem aparecer depois de um baseline já registrado, porque a auditoria do NuGet consulta a base no momento do restore; por isso o número de avisos mudou entre execuções. Build completo (`--no-incremental`) da `main` (d94c907) em 2026-11-06: **10 linhas de aviso** (SQLite em API, Persistence e SmokeTests; `Pkcs` alta e moderada na API).
+
+| Verificação (branch `chief/m1-platform-003`) | Resultado |
+|---|---|
+| `dotnet build ProjectVictory.sln --no-incremental` | **Verde, 0 erros, 0 avisos** |
+| `dotnet list package --vulnerable --include-transitive` em API, Persistence, SmokeTests, Api.Tests e `tools/PvDatabaseCheck` | **Nenhum pacote vulnerável** |
+| `dotnet test ProjectVictory.sln` | 0 falhas: 91 passam, 1 ignorado (`PV-REWARD-010`) |
+| `has-pending-model-changes` com EF 10.0.14 | "No changes have been made to the model since the last migration." |
+| Clone limpo (Development, banco temporário) | 14 migrations aplicadas; histórico com `ProductVersion` 10.0.14; cadastro e login 200 |
+
+Observação: o `dotnet-ef` global da máquina está em 10.0.10; funciona com o runtime 10.0.14, mas convém atualizá-lo (`dotnet tool update -g dotnet-ef`) — fora do repositório, não feito.
+
 ## Ainda pendentes
 
 - ~~Que o `ModelSnapshot` e as 14 migrations refletem o modelo atual do `DbContext`.~~ Verificado em `PV-PLATFORM-001` (tabela acima).
