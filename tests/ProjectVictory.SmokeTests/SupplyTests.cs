@@ -112,8 +112,11 @@ public sealed class SupplyTests
         return services.BuildServiceProvider();
     }
 
+    // PV-SUPPLY-011 (DEC-20261106-22): SUBSTITUI "fim de suprimento encerra a Hunt" (PV-SUPPLY-010).
+    // As poções saem do inventário; sem poção o personagem segue sem cura; a Hunt só termina por
+    // vitória do encounter (até o Hunt Loop do M6) ou por morte — nunca por fim de suprimento.
     [Fact]
-    public async Task Potions_AreConsumedFromInventory_AndOutOfSuppliesEndsHuntThroughPipeline()
+    public async Task Potions_AreConsumedFromInventory_AndRunningOutDoesNotEndTheHunt()
     {
         await using var provider = Provider(seed: 11, starterHealthPotions: 2);
         using var scope = provider.CreateScope();
@@ -122,45 +125,37 @@ public sealed class SupplyTests
         var characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
             .Handle(new CreateCharacterCommand("S" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
         var repository = scope.ServiceProvider.GetRequiredService<ICharacterRepository>();
-
-        Assert.Equal(2, (await repository.GetByIdAsync(characterId))!.Inventory.Items.Count(i => i.ItemDefinitionId == SupplyCatalog.HealthPotionId));
-
         var enter = await scope.ServiceProvider.GetRequiredService<EnterGameHandler>().Handle(new EnterGameCommand());
 
-        // Política: usar poção de vida abaixo de 100% (sempre que tiver tomado dano).
         await scope.ServiceProvider.GetRequiredService<SetSupplyPolicyHandler>()
             .Handle(new SetSupplyPolicyCommand(characterId, 100, null));
 
         var hunt = await scope.ServiceProvider.GetRequiredService<ExecuteHuntHandler>()
             .Handle(new ExecuteHuntCommand(characterId, enter.RuntimeId));
 
-        AttackEncounterResult? last = null;
-        for (var i = 0; i < 200 && last?.CombatFinished != true; i++)
+        var rounds = new List<AttackEncounterResult>();
+        for (var i = 0; i < 300 && rounds.LastOrDefault()?.CombatFinished != true; i++)
         {
-            last = await scope.ServiceProvider.GetRequiredService<AttackEncounterHandler>()
-                .Handle(new AttackEncounterCommand(hunt.Encounter.Id));
+            rounds.Add(await scope.ServiceProvider.GetRequiredService<AttackEncounterHandler>()
+                .Handle(new AttackEncounterCommand(hunt.Encounter.Id)));
         }
 
-        var potionTurns = last!.Turns!.Count(t => t.Kind == nameof(CombatActionKind.UseHealthPotion));
+        var potionTurns = rounds.SelectMany(r => r.Turns!).Count(t => t.Kind == nameof(CombatActionKind.UseHealthPotion));
         var potionsLeft = (await repository.GetByIdAsync(characterId))!.Inventory.Items
             .Count(i => i.ItemDefinitionId == SupplyCatalog.HealthPotionId);
 
-        // Semente 11 fixa: o Knight toma dano, bebe as 2 poções (uma por turno, a partir do turno
-        // seguinte ao dano) e a Hunt termina por fim de suprimento, pelo pipeline único.
-        Assert.True(potionTurns > 0);
+        Assert.Equal(2, potionTurns);
         Assert.Equal(0, potionsLeft);
-        Assert.Equal(nameof(HuntEndReason.OutOfSupplies), last.HuntEndReason);
-        Assert.True(last.ReturnedToCity);
 
-        var huntState = (await scope.ServiceProvider.GetRequiredService<IHuntRepository>().GetByIdAsync(hunt.HuntId))!.State;
-        Assert.Equal(HuntState.Completed, huntState);
-
-        var runtime = scope.ServiceProvider.GetRequiredService<IRuntimeExecutionStateStore>().Get(enter.RuntimeId);
-        Assert.Equal(RuntimeActivity.Idle, runtime.GameplayContext!.CurrentActivity);
+        // Acabaram as poções e a Hunt continuou: nenhuma rodada encerrou por fim de suprimento.
+        Assert.DoesNotContain(rounds, r => r.HuntEndReason == nameof(HuntEndReason.OutOfSupplies));
+        Assert.Contains(rounds[^1].HuntEndReason, new[] { nameof(HuntEndReason.Victory), nameof(HuntEndReason.Death) });
+        Assert.True(rounds.Count(r => r.HuntEndReason is not null) == 1);
     }
 
+    // PV-SUPPLY-011: SUBSTITUI "política ligada sem poção encerra na 1ª rodada" — agora a Hunt segue.
     [Fact]
-    public async Task OutOfSupplies_WithPolicyAndNoPotions_EndsAfterFirstRound()
+    public async Task PolicyWithoutPotions_DoesNotEndTheHunt()
     {
         await using var provider = Provider(seed: 3, starterHealthPotions: 0);
         using var scope = provider.CreateScope();
@@ -179,8 +174,7 @@ public sealed class SupplyTests
         var result = await scope.ServiceProvider.GetRequiredService<AttackEncounterHandler>()
             .Handle(new AttackEncounterCommand(hunt.Encounter.Id));
 
-        Assert.Equal(nameof(HuntEndReason.OutOfSupplies), result.HuntEndReason);
-        Assert.True(result.CombatFinished);
-        Assert.Equal("Cancelled", result.CombatState);
+        Assert.NotEqual(nameof(HuntEndReason.OutOfSupplies), result.HuntEndReason);
+        Assert.NotEqual("Cancelled", result.CombatState);
     }
 }

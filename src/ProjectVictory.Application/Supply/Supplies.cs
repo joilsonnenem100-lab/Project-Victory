@@ -111,8 +111,8 @@ public sealed class CombatSupplyContext
         }
     }
 
-    // PV-SUPPLY-010 — *** PROVISÓRIO *** (interpretação de "fim de suprimento", DEC-20261106-04):
-    // acabou o suprimento quando uma poção que a política manda usar chegou a 0 unidades.
+    // PV-SUPPLY-010: "acabou uma poção que a política manda usar". PV-SUPPLY-011 (DEC-20261106-22):
+    // NÃO encerra mais a Hunt; mantido só como informação (ex.: aviso na interface, M8).
     public bool IsOutOfSupplies =>
         (Policy.HealthPotionBelowPercent is not null && HealthPotions == 0)
         || (Policy.ManaPotionBelowPercent is not null && ManaPotions == 0);

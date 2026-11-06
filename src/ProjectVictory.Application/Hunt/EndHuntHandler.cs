@@ -10,6 +10,8 @@ public enum HuntEndReason
 {
     Victory,
     Death,
+    // SUPERADO (DEC-20261106-22): fim de suprimento NÃO encerra mais a Hunt. Mantido no enum pela
+    // Regra Aditiva (valor nunca mais produzido pelo combate).
     OutOfSupplies,
     Manual,
     Disconnect
@@ -25,7 +27,10 @@ public sealed record EndHuntResult(
     HuntState HuntState,
     bool ReturnedToCity,
     int CurrentHealth,
-    int CurrentMana);
+    int CurrentMana,
+    // PV-SUPPLY-011: cidade de retorno (tela inicial) e, na morte, os dados da mensagem.
+    string ReturnCity = ProjectVictory.Application.World.HomeCity.Name,
+    ProjectVictory.Application.World.DeathNotice? DeathNotice = null);
 
 // PV-HUNT-010: o pipeline ÚNICO de encerramento da Hunt (ADR-012: "Todo encerramento utilizará
 // exatamente o mesmo pipeline, independentemente do motivo"; fluxo termina na Cidade Principal).
@@ -38,13 +43,9 @@ public sealed record EndHuntResult(
 //    character.md: "Não existe perda").
 public sealed class EndHuntHandler
 {
-    // *** PROVISÓRIO *** — não existe "Cidade Principal" no mundo semeado (cidades são Fase 7). A
-    // única localização ativa, "Starting Location" (WorldDefinitionSeed), faz o papel de cidade.
-    public static RuntimeWorldContext MainCity { get; } =
-        new(
-            Guid.Parse("10000000-0000-0000-0000-000000000001"),
-            Guid.Parse("20000000-0000-0000-0000-000000000001"),
-            Guid.Parse("30000000-0000-0000-0000-000000000001"));
+    // *** PROVISÓRIO *** — a cidade de retorno é "Victoria" (DEC-20261106-24), em dados
+    // (ProjectVictory.Application.World.HomeCity). Mantido pela Regra Aditiva.
+    public static RuntimeWorldContext MainCity => ProjectVictory.Application.World.HomeCity.Location;
 
     private readonly IHuntRepository _huntRepository;
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
@@ -113,6 +114,9 @@ public sealed class EndHuntHandler
             hunt.State,
             true,
             state.CurrentHealth,
-            state.CurrentMana);
+            state.CurrentMana,
+            ProjectVictory.Application.World.HomeCity.Name,
+            // PV-SUPPLY-011 (DEC-20261106-22): toda morte leva à tela inicial com a mensagem.
+            command.Reason == HuntEndReason.Death ? ProjectVictory.Application.World.DeathNotice.ForDeath() : null);
     }
 }

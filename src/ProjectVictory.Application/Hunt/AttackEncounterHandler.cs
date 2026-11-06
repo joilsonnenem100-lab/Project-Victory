@@ -194,11 +194,8 @@ public sealed class AttackEncounterHandler
                 ending = await _endHuntHandler.Handle(new EndHuntCommand(hunt.Id, HuntEndReason.Death), cancellationToken);
                 break;
 
-            // PV-SUPPLY-010: fim de suprimento encerra a Hunt pelo MESMO pipeline (DEC-20261106-04).
-            case CombatSessionOutcome.Ongoing when _supplies.IsOutOfSupplies:
-                encounter.Cancel();
-                ending = await _endHuntHandler.Handle(new EndHuntCommand(hunt.Id, HuntEndReason.OutOfSupplies), cancellationToken);
-                break;
+            // PV-SUPPLY-011 (DEC-20261106-22): fim de suprimento NÃO encerra a Hunt (antes encerrava,
+            // PV-SUPPLY-010). Sem poção o personagem segue sem cura até morrer.
         }
 
         var target =
@@ -229,7 +226,9 @@ public sealed class AttackEncounterHandler
             [],
             report.Log.Select(CombatTurnDto.From).ToList(),
             ending?.Reason.ToString(),
-            ending?.ReturnedToCity ?? false);
+            ending?.ReturnedToCity ?? false,
+            ending?.ReturnCity,
+            ending?.DeathNotice);
     }
 
     private static void RemovePotions(

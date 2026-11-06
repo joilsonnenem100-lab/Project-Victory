@@ -174,6 +174,14 @@ public sealed class SpiderCaveEndToEndTests
         Assert.True(last.GetProperty("playerDefeated").GetBoolean());
         Assert.Equal("Death", last.GetProperty("huntEndReason").GetString());
         Assert.True(last.GetProperty("returnedToCity").GetBoolean());
+
+        // PV-SUPPLY-011 (DEC-20261106-22/24): toda morte leva à tela inicial ("Victoria") com os dados
+        // da mensagem (conferir poções, runas e o level da Hunt).
+        Assert.Equal("Victoria", last.GetProperty("returnCity").GetString());
+        var notice = last.GetProperty("deathNotice");
+        Assert.Equal("Death", notice.GetProperty("reasonCode").GetString());
+        Assert.Equal("Victoria", notice.GetProperty("returnCity").GetString());
+        Assert.Equal(new[] { "Potions", "Runes", "HuntLevel" }, notice.GetProperty("checks").EnumerateArray().Select(c => c.GetString()));
         Assert.Equal(0, (await CharacterOf(player)).GetProperty("experience").GetInt64()); // nada perdido (nada ganho)
 
         // Na cidade com HP cheio: a próxima Hunt começa e o primeiro turno do jogador acontece
@@ -183,7 +191,9 @@ public sealed class SpiderCaveEndToEndTests
         Assert.Equal(150, firstPlayerTurn.GetProperty("actorHealthAfter").GetInt32());
     }
 
-    private const string ExpectedPotionOutcome = "OutOfSupplies";
+    // PV-SUPPLY-011 (DEC-20261106-22): antes "OutOfSupplies"; agora a Hunt segue sem poção até a
+    // vitória do encounter ou a morte.
+    private const string ExpectedPotionOutcome = "Victory";
     private const int ExpectedPotionTurns = 3;
 
     [Fact]
@@ -227,10 +237,11 @@ public sealed class SpiderCaveEndToEndTests
         Assert.True(rounds[^1].GetProperty("returnedToCity").GetBoolean());
     }
 
+    // PV-SUPPLY-011: SUBSTITUI "fim de suprimento encerra a Hunt" — com a política de mana ligada e
+    // nenhuma poção, a Hunt NÃO termina na primeira rodada.
     [Fact]
-    public async Task OutOfSupplies_EndsHuntThroughSamePipeline_AndReturnsToCity()
+    public async Task NoSupplies_DoesNotEndTheHunt()
     {
-        // Política de mana ligada sem nenhuma poção de mana: fim de suprimento já na primeira rodada.
         using var server = new Server(SeedForTemplate(1), starterHealthPotions: 1);
         var player = await EnterWorld(server.Factory, "Druid");
         using var _ = player.Client;
@@ -242,10 +253,8 @@ public sealed class SpiderCaveEndToEndTests
 
         var round = await Attack(player, encounterId);
 
-        Assert.Equal("OutOfSupplies", round.GetProperty("huntEndReason").GetString());
-        Assert.True(round.GetProperty("returnedToCity").GetBoolean());
-        Assert.True(round.GetProperty("combatFinished").GetBoolean());
-        Assert.Equal("Cancelled", round.GetProperty("combatState").GetString());
+        Assert.NotEqual("OutOfSupplies", round.GetProperty("huntEndReason").GetString());
+        Assert.NotEqual("Cancelled", round.GetProperty("combatState").GetString());
     }
 
     [Fact]

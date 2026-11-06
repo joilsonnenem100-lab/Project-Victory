@@ -21,7 +21,10 @@ public sealed record AttackEncounterResult(
     IReadOnlyList<CombatTurnDto>? Turns = null,
     // PV-HUNT-010: motivo do encerramento da Hunt nesta rodada (Victory, Death…), se houve (aditivo).
     string? HuntEndReason = null,
-    bool ReturnedToCity = false);
+    bool ReturnedToCity = false,
+    // PV-SUPPLY-011: cidade de retorno (tela inicial) e dados da mensagem de morte (aditivos).
+    string? ReturnCity = null,
+    ProjectVictory.Application.World.DeathNotice? DeathNotice = null);
 
 // PV-COMBAT-012 (revisão, ressalva 6): DTO do turno na resposta HTTP — a API não expõe tipos do Domain.
 public sealed record CombatTurnDto(
