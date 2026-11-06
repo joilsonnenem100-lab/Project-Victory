@@ -767,6 +767,8 @@ Status: **Accepted (Product Owner)** — Fila 5; **supera** a regra de Ascension
 
 Implementação: `PV-PROG-013`.
 
+*Nota do Arquiteto (revisão do `PV-PROG-013`):* como esta decisão **supera** a regra de Ascension da Fila 4, o código que a implementava (`AscensionRules`, `RequiredAscension`, chaves `Ascension:*`) foi **substituído** pelo equivalente novo, com cada item listado no `CLEANUP-MANIFEST-2026-11-06.md`. Nenhum DTO publicado perdeu campo (a Ascension nunca foi exposta). Se o PO preferir manter o código antigo, a reversão é um `git revert` do `PV-PROG-013`.
+
 ## DEC-20261106-31 — Remoção autorizada (R-038)
 
 Status: **Accepted (Product Owner)** — Fila 5

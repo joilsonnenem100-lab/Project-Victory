@@ -103,6 +103,10 @@ public sealed class EnterGameHandler
                         Guid.Empty)));
         }
 
+        // Revisão do PV-PROG-013: uma leitura da tabela (rótulo e tier da mesma configuração).
+        var title =
+            character.TitleUnder(_levelTitles.Current);
+
         return new EnterGameResult(
             accountId,
             character.Id,
@@ -110,7 +114,7 @@ public sealed class EnterGameHandler
             character.Name,
             character.Level.Value,
             character.Experience.Value,
-            character.TitleUnder(_levelTitles.Current).Label,
-            character.TitleUnder(_levelTitles.Current).Tier);
+            title.Label,
+            title.Tier);
     }
 }

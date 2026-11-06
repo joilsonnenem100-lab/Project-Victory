@@ -27,6 +27,13 @@ export default function CharacterProgressionPanel(
                 {player.level}
             </p>
 
+            <p>
+                Title:
+                {" "}
+                {player.title ?? "-"}
+                {player.titleTier !== undefined ? ` (tier ${player.titleTier})` : ""}
+            </p>
+
 
             <p>
                 Experience:

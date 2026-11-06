@@ -73,7 +73,7 @@ public sealed class LevelTitleHttpTests
     [Fact]
     public void Provider_WithoutSection_UsesDefaultTable()
     {
-        var provider = new ConfigurationLevelTitleProvider(Config(new()));
+        var provider = new ConfigurationLevelTitleProvider(Config(new()), null);
 
         Assert.Same(LevelTitleTable.Default, provider.Current);
     }
@@ -86,7 +86,7 @@ public sealed class LevelTitleHttpTests
             ["LevelTitles:0:Tier"] = "0", ["LevelTitles:0:Label"] = "Novice", ["LevelTitles:0:MinimumLevel"] = "1",
             ["LevelTitles:1:Tier"] = "1", ["LevelTitles:1:Label"] = "Ascension 1", ["LevelTitles:1:MinimumLevel"] = "500"
         });
-        var provider = new ConfigurationLevelTitleProvider(config);
+        var provider = new ConfigurationLevelTitleProvider(config, null);
 
         Assert.Equal("Ascension 1", provider.Current.For(500).Label);
 
@@ -106,7 +106,7 @@ public sealed class LevelTitleHttpTests
             ["LevelTitles:0:Tier"] = "0", ["LevelTitles:0:Label"] = "Novice", ["LevelTitles:0:MinimumLevel"] = "1",
             ["LevelTitles:1:Tier"] = "1", ["LevelTitles:1:Label"] = "Hero", ["LevelTitles:1:MinimumLevel"] = "10"
         });
-        var provider = new ConfigurationLevelTitleProvider(config);
+        var provider = new ConfigurationLevelTitleProvider(config, null);
         Assert.Equal("Hero", provider.Current.For(10).Label);
 
         config["LevelTitles:1:MinimumLevel"] = "1"; // sobrepõe a primeira faixa → inválida

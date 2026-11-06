@@ -52,32 +52,34 @@ public sealed class GetCharactersHandler
 
         return characters
             .Select(
-                character =>
+                character => (Character: character, Title: character.TitleUnder(titles)))
+            .Select(
+                entry =>
                     new GetCharactersResult
                     {
                         AccountId =
                             accountId,
 
                         CharacterId =
-                            character.Id,
+                            entry.Character.Id,
 
                         Name =
-                            character.Name,
+                            entry.Character.Name,
 
                         Level =
-                            character.Level.Value,
+                            entry.Character.Level.Value,
 
                         Experience =
-                            character.Experience.Value,
+                            entry.Character.Experience.Value,
 
                         Title =
-                            character.TitleUnder(titles).Label,
+                            entry.Title.Label,
 
                         TitleTier =
-                            character.TitleUnder(titles).Tier,
+                            entry.Title.Tier,
 
                         AvailableAbilities =
-                            character.AvailableAbilities
+                            entry.Character.AvailableAbilities
                                 .Select(
                                     ability => ability.Name)
                                 .ToList()

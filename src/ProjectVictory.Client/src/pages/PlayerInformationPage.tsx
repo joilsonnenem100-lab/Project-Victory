@@ -43,6 +43,11 @@ export default function PlayerInformationPage(
                     </p>
 
                     <p className="pv-content-decoration">
+                        Title: {character.title ?? "-"}
+                        {character.titleTier !== undefined ? ` (tier ${character.titleTier})` : ""}
+                    </p>
+
+                    <p className="pv-content-decoration">
                         Experience: {character.experience}
                     </p>
 

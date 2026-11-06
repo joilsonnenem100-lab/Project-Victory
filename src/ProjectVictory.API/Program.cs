@@ -174,10 +174,14 @@ builder.Services.AddProjectVictoryCore(
     // PV-SUPPLY-010: poções iniciais (PROVISÓRIO; padrão 0 = nenhuma).
     new ProjectVictory.Application.Supply.SupplySettings(
         builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterHealthPotionsKey) ?? 0,
-        builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterManaPotionsKey) ?? 0),
-    // PV-PROG-013 (DEC-20261106-30): títulos por Level lidos da configuração ("LevelTitles") a cada
-    // consulta — trocar rótulos/faixas no appsettings.json não exige recompilar nem reiniciar.
-    new ProjectVictory.API.Configuration.ConfigurationLevelTitleProvider(builder.Configuration));
+        builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterManaPotionsKey) ?? 0));
+
+// PV-PROG-013 (DEC-20261106-30): títulos por Level lidos da configuração ("LevelTitles") a cada
+// consulta — trocar rótulos/faixas no appsettings.json não exige recompilar nem reiniciar.
+// Revisão: registrado pela DI (recebe IConfiguration e ILogger); substitui o padrão da composição.
+builder.Services.AddSingleton<
+    ProjectVictory.Application.Progression.ILevelTitleProvider,
+    ProjectVictory.API.Configuration.ConfigurationLevelTitleProvider>();
 
 var app =
     builder.Build();

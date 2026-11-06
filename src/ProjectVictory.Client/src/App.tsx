@@ -181,6 +181,17 @@ function App()
 
 
                     <p>
+                        Title:
+                        {" "}
+                        {
+                            gameState?.title
+                            ??
+                            "-"
+                        }
+                    </p>
+
+
+                    <p>
                         Monster:
                         {" "}
                         {

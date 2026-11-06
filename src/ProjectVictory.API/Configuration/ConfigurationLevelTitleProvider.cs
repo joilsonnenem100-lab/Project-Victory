@@ -11,6 +11,9 @@ namespace ProjectVictory.API.Configuration;
 // tabela válida e avisa no log.
 public sealed class ConfigurationLevelTitleProvider : ILevelTitleProvider
 {
+    // Revisão do PV-PROG-013 (ressalva 5): a chave de configuração fica na API, não no Domain.
+    public const string SectionKey = "LevelTitles";
+
     private readonly IConfiguration _configuration;
 
     private readonly ILogger<ConfigurationLevelTitleProvider>? _logger;
@@ -19,9 +22,12 @@ public sealed class ConfigurationLevelTitleProvider : ILevelTitleProvider
 
     private LevelTitleTable _lastValid = LevelTitleTable.Default;
 
+    // Revisão do PV-PROG-013 (ressalva 1): avisa uma vez por "quebra" da configuração, não a cada consulta.
+    private bool _invalidReported;
+
     public ConfigurationLevelTitleProvider(
         IConfiguration configuration,
-        ILogger<ConfigurationLevelTitleProvider>? logger = null)
+        ILogger<ConfigurationLevelTitleProvider>? logger)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger;
@@ -31,7 +37,7 @@ public sealed class ConfigurationLevelTitleProvider : ILevelTitleProvider
     {
         get
         {
-            var section = _configuration.GetSection(LevelTitleTable.SectionKey);
+            var section = _configuration.GetSection(SectionKey);
             var entries = section.GetChildren().ToList();
 
             if (entries.Count == 0)
@@ -49,16 +55,21 @@ public sealed class ConfigurationLevelTitleProvider : ILevelTitleProvider
                 lock (_gate)
                 {
                     _lastValid = table;
+                    _invalidReported = false;
                 }
 
                 return table;
             }
             catch (Exception exception) when (exception is ArgumentException or FormatException or InvalidOperationException)
             {
-                _logger?.LogWarning(exception, "Configuração LevelTitles inválida; usando a última tabela válida.");
-
                 lock (_gate)
                 {
+                    if (!_invalidReported)
+                    {
+                        _invalidReported = true;
+                        _logger?.LogWarning(exception, "Configuração LevelTitles inválida; usando a última tabela válida.");
+                    }
+
                     return _lastValid;
                 }
             }

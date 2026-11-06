@@ -19,7 +19,7 @@
 
 - **Domain:** `Progression/LevelTitles.cs` — `LevelTitle(Tier, Label, MinimumLevel)` e `LevelTitleTable` (valida: começa no Level 1, tiers 0,1,2… em ordem, faixas sem sobreposição, rótulos não vazios; `For(level)`; o último título vale para sempre). `Character.Title` / `Character.TitleUnder(table)`.
 - **Application:** `ILevelTitleProvider` (+ `FixedLevelTitleProvider.Default`). `GetCharactersHandler` e `EnterGameHandler` usam o provedor.
-- **API:** `Configuration/ConfigurationLevelTitleProvider` lê a seção `LevelTitles` **a cada consulta**; configuração inválida mantém a última tabela válida (aviso no log); sem seção, vale a tabela padrão.
+- **API:** `Configuration/ConfigurationLevelTitleProvider` (registrado pela DI) lê a seção `LevelTitles` **a cada consulta**; configuração inválida mantém a última tabela válida (aviso no log); sem seção, vale a tabela padrão.
 - **Respostas (aditivo):** `GET api/character` e `POST api/game/enter` ganham `title` e `titleTier`. A UI só exibe (`PV-CLIENT-020`).
 - **Hunt areas:** `HuntAreaDefinition.RequiredTitleTier` (padrão 0); `IHuntAreaCatalog.GetAvailable(tier)` devolve as áreas do tier e dos anteriores. **Spider Cave = tier 0.** O nome `TitleTier` evita confusão com o Tier de item (`knowledge-base/world.md`, emendado).
 - **Schema:** inalterado — **nenhuma migration**.
@@ -53,3 +53,14 @@ Lista completa em `docs/architecture/CLEANUP-MANIFEST-2026-11-06.md` (seção PV
 Resultado: build com 0 avisos; **308 aprovados, 0 ignorados, 0 falhas** (Application 23, Domain 113, Runtime 17, Smoke 66, Api 89).
 
 Também nesta branch: as ressalvas da revisão do `PV-GOV-010` (ver o contrato `PV-GOV-010`).
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q5-client-020`
+
+1. **Aplicada:** o provedor é registrado pela DI no `Program.cs` (recebe `ILogger`), substituindo o padrão da composição; o aviso de configuração inválida sai **uma vez** por quebra (volta a avisar só depois de uma configuração válida).
+2. **Aplicada:** `EnterGameHandler` e `GetCharactersHandler` leem a tabela uma vez e calculam o título uma vez (rótulo e tier sempre da mesma tabela).
+3. **Sem mudança (conferido):** o `AuthorizationHttpTests` já está na coleção `"Api"` (`ApiCollection.Name`), então não roda em paralelo com o teste que muda `LevelTitles__0__Label`.
+4. **Registrada:** **R-041** — o tier mínimo da Hunt area ainda não é checado no servidor ao iniciar a Hunt (só existe a Spider Cave, tier 0).
+5. **Aplicada:** a chave `"LevelTitles"` saiu do Domain (`ConfigurationLevelTitleProvider.SectionKey`).
+6. **Aplicada:** nota de superação no contrato `PV-PROG-012`; nota no `DEC-20261106-30` sobre a remoção do código substituído.
+
+Resultado: build com 0 avisos; **311 aprovados**.

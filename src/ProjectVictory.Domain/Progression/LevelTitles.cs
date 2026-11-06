@@ -12,12 +12,10 @@ public sealed record LevelTitle(
     string Label,
     int MinimumLevel);
 
-// Tabela de títulos. Os rótulos e as faixas vêm de CONFIGURAÇÃO (seção "LevelTitles"), trocáveis
-// sem recompilar; esta classe só valida e consulta. `Default` é o valor decidido pelo PO.
+// Tabela de títulos. Os rótulos e as faixas vêm de CONFIGURAÇÃO (lida pela API), trocáveis sem
+// recompilar; esta classe só valida e consulta. `Default` é o valor decidido pelo PO.
 public sealed class LevelTitleTable
 {
-    public const string SectionKey = "LevelTitles";
-
     public static LevelTitleTable Default { get; } = new(
     [
         new LevelTitle(0, "Novice", 1),

@@ -1,5 +1,7 @@
 # PV-PROG-012 — Level sem teto e Ascension derivada do Level
 
+> **SUPERADO (Fila 5):** a parte de Ascension deste contrato (`AscensionRules`, `Ascension:LevelStep/Maximum`, `RequiredAscension`, `Character.Ascension`) foi substituída pelos **títulos por Level** (`DEC-20261106-30`, `PV-PROG-013`); o código substituído foi removido — lista no `docs/architecture/CLEANUP-MANIFEST-2026-11-06.md`. Continua valendo: Level sem teto, curva sem tabela fixa.
+
 Status: **IMPLEMENTADO** (branch `chief/q4-prog-012`)
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 4", item 3).
 Lastro:

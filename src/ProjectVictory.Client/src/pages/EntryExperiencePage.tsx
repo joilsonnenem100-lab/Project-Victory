@@ -6,6 +6,8 @@ interface CharacterInfo
     name?: string;
     level?: number;
     experience?: number;
+    title?: string;
+    titleTier?: number;
 }
 
 interface Props
@@ -97,6 +99,10 @@ export default function EntryExperiencePage({ character, onEnterWorld }: Props)
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", color: "#8b949e" }}>
                         <span>Level:</span>
                         <span style={{ color: "#fff", fontWeight: "bold" }}>{character?.level ?? 1}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", color: "#8b949e" }}>
+                        <span>Title:</span>
+                        <span style={{ color: "#fff", fontWeight: "bold" }}>{character?.title ?? "Novice"}</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", color: "#8b949e" }}>
                         <span>Experience:</span>

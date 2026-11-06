@@ -60,6 +60,14 @@ export default function PlayerStatePanel(
 
 
                 <p>
+                    Title:
+                    {" "}
+                    {player.title ?? "-"}
+                    {player.titleTier !== undefined ? ` (tier ${player.titleTier})` : ""}
+                </p>
+
+
+                <p>
                     Current Experience:
                     {" "}
                     {player.experience}
