@@ -1,4 +1,5 @@
 using ProjectVictory.Application.Progression;
+using ProjectVictory.Domain.Progression;
 
 namespace ProjectVictory.Infrastructure.Services;
 
@@ -27,33 +28,12 @@ public sealed class ProgressionProcessor : IProgressionProcessor
 
 
 
+    // PV-PROG-011: o Level é interpretado pela Experience Table (ADR-025), gerada pela curva
+    // do DEC-20261106-10, sem teto fixo em 5 (teto = Level 500 por Ascension, ADR-026).
     private static int CalculateLevel(
         int experience)
     {
-        if (experience < 100)
-        {
-            return 1;
-        }
-
-
-        if (experience < 300)
-        {
-            return 2;
-        }
-
-
-        if (experience < 600)
-        {
-            return 3;
-        }
-
-
-        if (experience < 1000)
-        {
-            return 4;
-        }
-
-
-        return 5;
+        return ExperienceTable.Standard.GetLevel(
+            experience);
     }
 }

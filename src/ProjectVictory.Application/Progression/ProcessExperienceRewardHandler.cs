@@ -36,11 +36,8 @@ public sealed class ProcessExperienceRewardHandler
                 context,
                 experience);
 
-        var table = new ExperienceTable(
-            new Dictionary<int, int>
-            {
-                { 1, 0 }
-            });
+        // PV-PROG-011: tabela gerada pela curva do DEC-20261106-10 (antes: tabela de um Level só).
+        var table = ExperienceTable.Standard;
 
         var growthResult =
             _growthProcessor.Process(

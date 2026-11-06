@@ -10,13 +10,10 @@ public sealed class GrowthProcessor
         ArgumentNullException.ThrowIfNull(table);
 
 
-        var levelCalculator =
-            new LevelCalculator();
-
-
+        // PV-PROG-011: interpreta a Experience pela tabela recebida (ADR-025).
         var level =
-            levelCalculator.Calculate(
-                new Experience(
+            new Level(
+                table.GetLevel(
                     experienceResult.ExperienceAmount));
 
 

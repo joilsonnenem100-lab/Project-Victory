@@ -7,8 +7,10 @@ public sealed class LevelCalculator
     {
         ArgumentNullException.ThrowIfNull(experience);
 
+        // PV-PROG-011: o Level vem da Experience Table (ADR-025), não de fórmula própria.
         var calculatedLevel =
-            (experience.Amount / 100) + 1;
+            ExperienceTable.Standard.GetLevel(
+                experience.Amount);
 
         return new Level(
             calculatedLevel);
