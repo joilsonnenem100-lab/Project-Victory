@@ -165,34 +165,59 @@ public sealed class OwnershipAndTokenHttpTests
     // PV-SEC-002 (R-018): token válido (assinatura, Issuer, Audience, validade) sem identidade de
     // conta utilizável → 401, inclusive em endpoint que não lê a identidade (playable/status).
     // Antes do PV-SEC-002 este caso respondia 500 nos endpoints que liam a identidade.
-    public static TheoryData<string, string?> InvalidAccountClaims => new()
+    public static TheoryData<string?, string> InvalidAccountClaims
     {
-        { "sem claim", null },
-        { "claim não-Guid", "nao-e-um-guid" },
-        { "claim Guid vazio", Guid.Empty.ToString() }
-    };
+        get
+        {
+            var data = new TheoryData<string?, string>();
 
-    [Theory]
-    [MemberData(nameof(InvalidAccountClaims))]
-    public async Task TokenWithoutUsableAccountClaim_Returns401(string caso, string? accountClaim)
+            foreach (var claim in new string?[] { null, "nao-e-um-guid", Guid.Empty.ToString() })
+            {
+                foreach (var url in new[] { "/api/character", "/api/playable/status" })
+                {
+                    data.Add(claim, url);
+                }
+            }
+
+            return data;
+        }
+    }
+
+    private static string TokenWithAccountClaim(string? accountClaim)
     {
-        Assert.NotNull(caso);
-
         var claims = new List<Claim> { new(ClaimTypes.Name, "sem-conta") };
         if (accountClaim is not null)
         {
             claims.Add(new Claim(ClaimTypes.NameIdentifier, accountClaim));
         }
 
-        var token = CreateToken(claims, DateTime.UtcNow.AddMinutes(-1), DateTime.UtcNow.AddMinutes(10));
+        return CreateToken(claims, DateTime.UtcNow.AddMinutes(-1), DateTime.UtcNow.AddMinutes(10));
+    }
 
-        foreach (var url in new[] { "/api/character", "/api/playable/status" })
-        {
-            using var client = _factory.CreateClient();
+    [Theory]
+    [MemberData(nameof(InvalidAccountClaims))]
+    public async Task TokenWithoutUsableAccountClaim_Returns401(string? accountClaim, string url)
+    {
+        using var client = _factory.CreateClient();
 
-            var response = await ApiFactory.WithToken(client, token).GetAsync(url);
+        var response = await ApiFactory.WithToken(client, TokenWithAccountClaim(accountClaim)).GetAsync(url);
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task PublicLogin_StillWorks_EvenWithTokenWithoutAccountClaim()
+    {
+        // Ressalva da revisão do PV-SEC-002: a falha de autenticação não afeta endpoints públicos.
+        using var anonymous = _factory.CreateClient();
+        var email = $"public-{Guid.NewGuid():N}@test.com";
+        var body = new { email, password = "Senha123!" };
+        (await anonymous.PostAsJsonAsync("/api/account", body)).EnsureSuccessStatusCode();
+
+        using var client = _factory.CreateClient();
+        var login = await ApiFactory.WithToken(client, TokenWithAccountClaim(null))
+            .PostAsJsonAsync("/api/account/login", body);
+
+        Assert.Equal(HttpStatusCode.OK, login.StatusCode);
     }
 }

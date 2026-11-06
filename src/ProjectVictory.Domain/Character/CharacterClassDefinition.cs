@@ -1,5 +1,8 @@
 namespace ProjectVictory.Domain.Character;
 
+// PV-CHAR-010: InitialHealth/InitialMana/HealthGrowth/ManaGrowth alimentam a Attribute Curve
+// (AttributeCurveTable). *** PROVISÓRIO *** — conflitam com knowledge-base/progression.md (R-021);
+// aguardam a decisão do PO.
 public sealed record CharacterClassDefinition(
     CharacterClass Class,
     int InitialHealth,

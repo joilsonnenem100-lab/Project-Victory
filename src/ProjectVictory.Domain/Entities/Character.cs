@@ -35,9 +35,26 @@ public sealed class Character : AggregateRoot
 
     public Mana Mana { get; private set; }
 
-    public Health MaximumHealth { get; private set; }
+    // PV-CHAR-010: Vida e Mana máximas derivadas de Class + Level pela Attribute Curve (ADR-029),
+    // pelo mesmo padrão do Level derivado (ADR-027). Personagem sem definição de classe (construtor
+    // antigo) mantém o máximo recebido na criação.
+    public Health MaximumHealth =>
+        _classDefinition is null
+            ? _fixedMaximumHealth
+            : new Health(
+                AttributeCurveTable.ForClass(CharacterClass, Ascension)
+                    .MaximumHealthAt(Level.Value));
 
-    public Mana MaximumMana { get; private set; }
+    public Mana MaximumMana =>
+        _classDefinition is null
+            ? _fixedMaximumMana
+            : new Mana(
+                AttributeCurveTable.ForClass(CharacterClass, Ascension)
+                    .MaximumManaAt(Level.Value));
+
+    private readonly Health _fixedMaximumHealth;
+
+    private readonly Mana _fixedMaximumMana;
 
     public CharacterExperience Experience { get; private set; }
 
@@ -80,8 +97,8 @@ public sealed class Character : AggregateRoot
         Name = name;
         Health = health;
         Mana = mana;
-        MaximumHealth = health;
-        MaximumMana = mana;
+        _fixedMaximumHealth = health;
+        _fixedMaximumMana = mana;
         Experience = experience;
 
         Inventory = new Inventory();
@@ -119,8 +136,8 @@ public sealed class Character : AggregateRoot
 
         Health = health;
         Mana = mana;
-        MaximumHealth = health;
-        MaximumMana = mana;
+        _fixedMaximumHealth = health;
+        _fixedMaximumMana = mana;
 
         Experience = experience;
 

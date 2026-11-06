@@ -1,6 +1,6 @@
 # PV-SEC-002 — Token sem a claim da conta responde 401 (R-018)
 
-Status: **IMPLEMENTADO** (branch `chief/m3-sec-002`)
+Status: **IMPLEMENTADO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/m3-char-010`). Branch `chief/m3-sec-002`
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 3", item 1; autorizado pelo Arquiteto-Chefe).
 Lastro:
 - R-018 (`project-state.md`), achado do `PV-QA-003`;
@@ -25,3 +25,12 @@ Nenhum endpoint, DTO ou handler da Application mudou. Tokens emitidos pelo `JwtT
 - `Api.Tests/HttpCurrentPlayerContextTests`: claim válida devolve o `AccountId`; ausente, não-GUID ou vazia lançam `PlayerIdentityUnavailableException`.
 
 Resultado da solução: build com 0 avisos; **179 aprovados, 0 ignorados, 0 falhas**.
+
+## Revisão (`pv-architecture-reviewer`, 2026-11-06): APROVADO COM RESSALVAS
+
+O revisor rodou build e testes (179 aprovados). Ressalvas:
+1. A rota exceção → 401 com log de aviso no `ApiExceptionHandler` não tem teste de ponta a ponta, porque o JwtBearer barra antes. Fica coberta pelo teste unitário do `HttpCurrentPlayerContext`. Um teste do handler com logger falso fica para contrato futuro.
+2. **Aplicada:** `PublicLogin_StillWorks_EvenWithTokenWithoutAccountClaim`.
+3. O 401 da defesa em profundidade não traz o header `WWW-Authenticate`. Cosmético; aceito.
+4. **Aplicada:** o teste HTTP virou 6 linhas `MemberData` (claim × URL). Uma falha agora identifica o endpoint.
+5. Empilhamento confirmado: `chief/m3-char-010` nasce de `chief/m3-sec-002`.
