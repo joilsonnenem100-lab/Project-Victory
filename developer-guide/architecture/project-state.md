@@ -218,6 +218,8 @@ Observação: o `dotnet-ef` global da máquina está em 10.0.10; funciona com o 
 
 ## Baseline do cliente — `PV-QA-002`, 2026-11-06
 
+> **Atualização `PV-PLATFORM-005` (2026-11-06):** `@types/react` e `@types/react-dom` 19.3 instalados; `npm audit fix` sem `--force` (vite 7.3.7, postcss 8.5.32, source-map-js 1.2.2, todos patch) → **0 vulnerabilidades**; script `typecheck` (`tsc --noEmit`, fora do build); `tsc` **444 → 7 erros** (código das telas, lista no contrato `PV-PLATFORM-005`, destino `PV-UI-0xx`); `npm run build` verde. Os números abaixo são o baseline anterior.
+
 Executado em `src/ProjectVictory.Client` (Node 24.18.0, npm 11.16.0). **Nenhum código do cliente foi alterado**; `package-lock.json` inalterado (mesmo hash antes e depois do `npm install`).
 
 | Verificação | Resultado |
