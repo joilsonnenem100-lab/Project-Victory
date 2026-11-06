@@ -14,7 +14,9 @@ public sealed record CombatProfile(
     int AttackSkill,
     int WeaponAttack,
     int Armor,
-    int Defense);
+    int Defense,
+    int AbilityManaCost = 0,
+    decimal AbilityDamageMultiplier = 1m);
 
 // PV-COMBAT-010: participante de um combate por turnos (jogador ou monstro).
 // Guarda só estado; nenhuma regra de dano, IA, loot ou XP (ADR-051).

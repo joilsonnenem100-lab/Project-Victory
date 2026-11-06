@@ -16,4 +16,6 @@ public sealed record AttackEncounterResult(
     int Experience,
     int Gold,
     int Level,
-    IReadOnlyList<RewardDrop> Drops);
+    IReadOnlyList<RewardDrop> Drops,
+    // PV-COMBAT-012: turnos executados nesta rodada (aditivo).
+    IReadOnlyList<ProjectVictory.Domain.Combat.TurnBased.CombatTurnLogEntry>? Turns = null);

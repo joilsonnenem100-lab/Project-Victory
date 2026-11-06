@@ -1,6 +1,6 @@
 # PV-COMBAT-011 — Combate por turnos determinístico
 
-Status: **IMPLEMENTADO** (branch `chief/m3-combat-011`)
+Status: **IMPLEMENTADO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/m3-combat-012`; ver `PV-COMBAT-012.md`) (branch `chief/m3-combat-011`)
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 3", item 4): "Combate por turnos determinístico, exatamente 1 participante ativo por turno (ADR-052). Aleatoriedade somente por gerador injetável com semente, para testes determinísticos."
 Lastro: ADR-052 (execução determinística; um participante ativo por turno); ADR-051.
 

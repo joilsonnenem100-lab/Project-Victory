@@ -78,7 +78,13 @@ public static class ProjectVictoryServiceCollectionExtensions
 
         // PV-COMBAT-010/011: Combat Orchestrator, ordem de turnos e seleção da Secondary Action.
         services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.ITurnScheduler, ProjectVictory.Application.Combat.TurnBased.SequentialTurnScheduler>();
-        services.AddScoped<ProjectVictory.Application.Combat.TurnBased.ICombatActionSelector, ProjectVictory.Application.Combat.TurnBased.NoSecondaryActionSelector>();
+        services.AddScoped<ProjectVictory.Application.Combat.TurnBased.ICombatActionSelector, ProjectVictory.Application.Combat.TurnBased.DefaultCombatActionSelector>();
+
+        // PV-COMBAT-012: regras de dano (fórmula PROVISÓRIA), perfis de monstro e efeitos de suprimento.
+        services.AddSingleton<ProjectVictory.Domain.Combat.Rules.IDamageFormula, ProjectVictory.Domain.Combat.Rules.ProvisionalTibiaLikeDamageFormula>();
+        services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.IMonsterCombatProfileProvider, ProjectVictory.Infrastructure.Combat.MonsterCombatProfileProvider>();
+        services.AddSingleton<ProjectVictory.Application.Combat.ISupplyEffects, ProjectVictory.Infrastructure.Combat.ProvisionalSupplyEffects>();
+        services.AddScoped<ProjectVictory.Application.Combat.TurnBased.CombatantFactory>();
         services.AddScoped<ProjectVictory.Application.Combat.TurnBased.CombatOrchestrator>();
         services.AddScoped<IRewardProcessor, RewardProcessor>();
         services.AddScoped<IProgressionProcessor, ProgressionProcessor>();

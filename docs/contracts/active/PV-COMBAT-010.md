@@ -1,6 +1,6 @@
 # PV-COMBAT-010 — Combat Orchestrator
 
-Status: **IMPLEMENTADO** (branch `chief/m3-combat-010`)
+Status: **IMPLEMENTADO** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/m3-combat-012`; ver `PV-COMBAT-012.md`) (branch `chief/m3-combat-010`)
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 3", item 3).
 Lastro:
 - ADR-051 (o Combat Orchestrator coordena; nunca implementa dano, Skills, IA, Loot ou Experience);

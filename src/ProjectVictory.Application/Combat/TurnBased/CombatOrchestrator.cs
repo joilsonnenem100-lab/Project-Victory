@@ -30,7 +30,9 @@ public interface ICombatActionObserver
 
 public sealed record CombatRoundReport(
     IReadOnlyList<CombatTurnLogEntry> Log,
-    CombatSessionOutcome Outcome);
+    CombatSessionOutcome Outcome,
+    // Revisão do PV-COMBAT-010: true quando a rodada parou pelo limite de segurança de turnos.
+    bool TurnLimitReached = false);
 
 // PV-COMBAT-010: Combat Orchestrator (ADR-051). Coordena a sequência de turnos (ADR-052) e as duas
 // etapas de cada turno (ADR-006). NÃO implementa dano, Skills, IA, Loot nem Experience: pede a
@@ -66,8 +68,10 @@ public sealed class CombatOrchestrator
         ArgumentNullException.ThrowIfNull(session);
 
         var log = new List<CombatTurnLogEntry>();
+        var executed = 0;
+        var returnedToPlayer = false;
 
-        for (var executed = 0; executed < MaximumTurnsPerRound && !session.IsFinished; executed++)
+        for (; executed < MaximumTurnsPerRound && !session.IsFinished; executed++)
         {
             ExecuteTurn(session, log);
 
@@ -81,11 +85,14 @@ public sealed class CombatOrchestrator
 
             if (session.ActiveParticipant.Side == CombatSide.Player)
             {
+                returnedToPlayer = true;
                 break;
             }
         }
 
-        return new CombatRoundReport(log, session.Outcome);
+        var limitReached = !session.IsFinished && !returnedToPlayer && executed >= MaximumTurnsPerRound;
+
+        return new CombatRoundReport(log, session.Outcome, limitReached);
     }
 
     private void ExecuteTurn(
@@ -122,6 +129,8 @@ public sealed class CombatOrchestrator
             return;
         }
 
+        // *** PROVISÓRIO *** (revisão do PV-COMBAT-010): poções miram o próprio ator e cura/mana
+        // vão para o ator; cura em aliado e escolha de alvo por IA ficam para o M4.
         var secondaryTarget = secondary is CombatActionKind.UseHealthPotion or CombatActionKind.UseManaPotion
             ? actor
             : session.DefaultTargetFor(actor);
