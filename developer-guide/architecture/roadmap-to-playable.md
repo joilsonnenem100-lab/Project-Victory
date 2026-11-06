@@ -114,6 +114,19 @@ Um jogador, pelo navegador, consegue: **cadastrar → logar → criar personagem
 | `PV-UI-0xx` Navegação | Router real no client no lugar de `useState` por string; tipar `any`; estados de loading/erro | Análise §4.5; contratos `PV-UI-001/002` (histórico git: "Page Composition Rules") |
 | `PV-QA-010` Playtest | Roteiro de playtest, matriz de regressão, critérios de aceite | `ACCEPTANCE_CRITERIA.md`, `PV-VS-2.0-045` |
 | `PV-CONTENT-010` Conteúdo mínimo | Monstros, itens e loot suficientes para ~30 min de jogo | `FIRST_FUN.md`, `PROJECT-VICTORY-CONTENT-PIPELINE-ARCHITECTURE.md` |
+| `PV-HUD-ANALYZER-010` Hunt Analyzer | Aba "Analyzer" do Game HUD: XP obtido, XP/hora, débito, lucro e lucro líquido da Hunt, em tempo real, **calculados no servidor** e só exibidos pelo cliente | `DEC-20261106-01` (PO); ADR-002; `PV-FRONTEND-GAME-HUD-FOUNDATION-001` |
+| `PV-HUD-BATTLE-VIEW-010` Representação visual | Animação central por local (ex.: Spider Cave), duelo automático decorativo, **sem efeito no resultado** | `DEC-20261106-01` (PO); ADR-002 |
+
+### Dependências do Hunt Analyzer (`DEC-20261106-01`)
+
+O Analyzer é **entregue em M8 (UI)** e **não bloqueia M1 a M4**. Ele consome dados que precisam existir antes, entregues pelos marcos que já os tocam:
+
+| Dependência | Onde entra | Observação |
+|---|---|---|
+| **Preços de compra e venda NPC nas definições de item** (dado, não comércio) | `PV-CONTENT-010` (M8), sobre as definições de item; o campo pode ser acrescentado já no `PV-REWARD-010` (M2) quando o Reward passar a usar definições reais | Só o **dado** de preço. Comércio com NPC continua na Fase 7/8 (`roadmap.md`) — Guardião de Escopo |
+| **Modelo de consumo de recursos por Hunt** (o que é gasto: poções, munição etc.) | Contrato próprio após o M3 (combate real) | A regra de **quais recursos são gastos e quando** é **mecânica de jogo → decisão do Product Owner** antes do contrato. Sem ela, o débito fica zerado |
+| **Medição de tempo da Hunt** (início, pausas, fim) para XP/hora | `PV-HUNT-011` (M6, Hunt Loop contínuo) | Depende da política de desconexão (`ADR-057`, decisão do PO): o tempo offline conta ou não para XP/hora |
+| XP e loot reais da Hunt | `PV-REWARD-010` (M2), `PV-XP-010` (M4) | Hoje o Reward é stub (XP 0); sem eles o Analyzer mostraria zeros |
 
 **Saída = Primeiro Teste Jogável** (definição no topo).
 

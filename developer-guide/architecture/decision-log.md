@@ -425,3 +425,25 @@ Status: Accepted (Arquitetura)
 `node_modules/` e `dist/` deixam de ser versionados; binários e listagens sem valor de fonte são removidos; `projectvictory.db` permanece até o `PV-PLATFORM-001`. Lastro: Regra Aditiva (nenhuma funcionalidade removida) e clone limpo como pré-requisito de baseline.
 
 *Atualização (2026-11-05): `projectvictory.db` removido do versionamento em `PV-PLATFORM-001`, após a aplicação das migrations no startup em Development — ver `docs/architecture/CLEANUP-MANIFEST-2026-11-05.md`.*
+
+## DEC-20261106-01 — Hunt Analyzer e representação visual da batalha
+
+Status: **Accepted (Product Owner)** — decisão de Game Design / experiência do jogador (ADR-016 deste log). Registrada pela Arquitetura em `PV-GOV-003`.
+
+**Hunt Analyzer.** Durante e depois da Hunt, a aba **"Analyzer"** do Game HUD mostra, em tempo real:
+
+- **XP obtido** na Hunt;
+- **XP por hora** naquela Hunt;
+- **Débito:** recursos gastos, valorados pelo **preço de compra no NPC**;
+- **Lucro:** recursos e itens encontrados e recebidos;
+- **Lucro líquido** (lucro − débito).
+
+**Representação visual da batalha.** Animação central **por local** (ex.: Spider Cave) mostrando um **duelo automático**, apenas para entretenimento, **sem nenhum efeito no resultado**.
+
+Fundamentos:
+
+- `ADR-002` (Engine é a única fonte de verdade; a Presentation Layer não executa regra de domínio; "a simulação visual do combate não interfere no resultado da Hunt") — todos os números do Analyzer são **calculados pelo servidor** e apenas exibidos pelo cliente; a animação é puramente decorativa.
+- `PV-FRONTEND-GAME-HUD-FOUNDATION-001` (HUD como ambiente contínuo do jogador; estado *Hunting* dentro do HUD; "o frontend deve representar a simulação e seus resultados"). A aba "Analyzer" é **acréscimo** a esse contrato, que hoje não a define.
+- `PROJECT-VICTORY-GAME-PHILOSOPHY` (jogo Idle; combate totalmente automático; evolução por Hunts e Loot).
+
+Consequências para a Arquitetura (dependências e marco de entrega): ver `roadmap-to-playable.md`, M8 (`PV-HUD-ANALYZER-010` e `PV-HUD-BATTLE-VIEW-010`).
