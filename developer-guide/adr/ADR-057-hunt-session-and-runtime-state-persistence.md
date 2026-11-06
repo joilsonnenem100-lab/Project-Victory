@@ -80,7 +80,8 @@ Como a Hunt **não é recuperada**, o checkpoint de recovery **se limita ao esta
 ## Consistência com outras ADRs
 
 - **ADR-011 / ADR-012:** a decisão B1 **confirma** "nunca restaurada após desconexão" e "nenhuma recuperação de Hunt após desconexão". As notas de emenda nesses ADRs apenas apontam para cá (Runtime State persistível ≠ Hunt Session).
-- **ADR-002 / ADR-004** citam um "futuro modo Hunt Offline" como benefício possível da separação Engine/cliente. Pela decisão do PO, **Hunt Offline não está planejado**; a separação continua valendo (a Hunt roda no servidor enquanto o jogador está conectado).
+- **ADR-004 (conflito parcial, emendado):** ADR-004 diz que a Hunt "não depende da permanência do jogador conectado" e que "fechar o cliente não representa o encerramento imediato da Hunt". A decisão B1 **revoga essas frases para a desconexão do jogador**: desconectar encerra a Hunt. O restante do ADR-004 (Hunt pertence à Engine; cliente só inicia, acompanha e apresenta) continua valendo. A diferença entre "fechar a aba" e "fim da sessão do jogador" depende de uma eventual **janela de reconexão** — decisão do PO (dúvida 6 do M6). Nota de emenda no ADR-004.
+- **ADR-002** e `knowledge-base/loot.md` (LOCKED) citam um "modo Hunt Offline" como benefício futuro / regra prevista. Pela decisão do PO, **Hunt Offline não está planejado**; divergência documental registrada em `project-state.md` (R-013). A separação Engine/apresentação do ADR-002 continua integralmente válida.
 
 ---
 
@@ -88,7 +89,7 @@ Como a Hunt **não é recuperada**, o checkpoint de recovery **se limita ao esta
 
 Benefícios:
 - preserva o essencial de ADR-011/012 (Hunt Session efêmera, ciclo único, um único pipeline de encerramento);
-- cumpre Handbook §17–19 e `PV-RUNTIME-002/002-A`;
+- cumpre Handbook §17–19 e `PV-RUNTIME-002/002-A`; *(com a decisão B1: o Handbook §17/§18 — estado semi-permanente e Recovery "continuar" — é atendido **para o Runtime**, não para a Hunt Session, que não é recuperada; o ADR prevalece sobre o Handbook pela hierarquia da fonte da verdade)*
 - remove a contradição entre ADR e código;
 - habilita o Hunt Loop contínuo (Known Gaps).
 

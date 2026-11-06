@@ -416,7 +416,7 @@ Status: Accepted (Arquitetura) — **aguarda aprovação do Product Owner no M0*
 
 ## DEC-20261105-06 — Política de desconexão da Hunt
 
-Status: **Pendente** — ver `ADR-057` (PROPOSED). A parte de Game Design pertence ao Product Owner (ADR-016 deste log).
+Status: **Resolvida por `DEC-20261106-05`** (2026-11-06). *Texto original: "Pendente — ver `ADR-057` (PROPOSED). A parte de Game Design pertence ao Product Owner (ADR-016 deste log)."*
 
 *Atualização (2026-11-06): decidida pelo PO — ao desconectar a Hunt termina (B1) e o progresso offline vem só do Offline Training de skills; ver `DEC-20261106-05`.*
 

@@ -63,7 +63,7 @@ Testes automatizados: **3 escritos** (`Application.Tests`: 1; `SmokeTests`: 2), 
 
 | ID | Conflito | Fontes | Resolução proposta | Gate |
 |---|---|---|---|---|
-| R-001 | Hunt Session **nunca persistida / sem recovery** × Handbook V3 §17–19 (Hunt Session "semi-permanente", Recovery, Checkpoint) × contratos `PV-RUNTIME-002/002-A` × código que persiste | ADR-011, ADR-012 × Handbook V3 × código | **ADR-057 (PROPOSED)**: separar *Hunt Session* (efêmera, ADR-011) de *Runtime State* (persistível) e definir checkpoint/recovery de Hunt para um jogo Idle. Ver `docs/architecture/PV-ANALYSIS-2026-11-05.md` §4. ✅ **RESOLVIDA em 2026-11-06:** `ADR-057` **ACCEPTED** — Parte B (PO): offline a Hunt não rende nada; ao desconectar a Hunt termina pelo pipeline único (B1); progresso offline só pelo Offline Training de skills (`DEC-20261106-05`). Parte A simplificada: checkpoint/recovery só do personagem e do Runtime, sem recuperar Hunt Session. Notas de emenda em ADR-011/012 | Nenhum |
+| R-001 | Hunt Session **nunca persistida / sem recovery** × Handbook V3 §17–19 (Hunt Session "semi-permanente", Recovery, Checkpoint) × contratos `PV-RUNTIME-002/002-A` × código que persiste | ADR-011, ADR-012, **ADR-004** × Handbook V3 × código | **ADR-057 (ACCEPTED em 2026-11-06; PROPOSED na emissão)**: separar *Hunt Session* (efêmera, ADR-011) de *Runtime State* (persistível) e definir checkpoint/recovery de Hunt para um jogo Idle. Ver `docs/architecture/PV-ANALYSIS-2026-11-05.md` §4. ✅ **RESOLVIDA em 2026-11-06:** `ADR-057` **ACCEPTED** — Parte B (PO): offline a Hunt não rende nada; ao desconectar a Hunt termina pelo pipeline único (B1); progresso offline só pelo Offline Training de skills (`DEC-20261106-05`). Parte A simplificada: checkpoint/recovery só do personagem e do Runtime, sem recuperar Hunt Session. Notas de emenda em ADR-011/012 e **ADR-004** (cuja frase "não depende da permanência do jogador conectado" deixa de valer para a desconexão). Handbook §17/§18 atendido só para o Runtime | Nenhum |
 | R-002 | `Level` persistido × Level derivado | ADR-027, ADR-028 × `PersistentCharacterState.Level` | Código deve se conformar ao ADR (hierarquia: ADR > código não aprovado por contrato). Contrato M2 | Nenhum — ADR prevalece |
 | R-003 | Tabela de nível fixa (máx. 5) × Experience Table por Ascension | ADR-025 × `ProgressionProcessor` | Idem R-002 | Nenhum |
 | R-004 | Event Bus tipado exigido × inexistente | ADR-049/050 × Known Gaps | Implementar em M7 (já planejado) | Nenhum |
@@ -75,6 +75,7 @@ Testes automatizados: **3 escritos** (`Application.Tests`: 1; `SmokeTests`: 2), 
 | R-008 | Numeração de ADR: faltam 026, 044, 048; ADR-055 existe vazio; `docs/history/Sprint-054..056.md` vazios | `developer-guide/adr/` | Preencher ou declarar formalmente como reservados/descartados | Dono |
 | R-011 | Ordem do PO: "verificação de dono do personagem pelo token, nunca pelo corpo ou rota" × `PV-SEC-001` D1/D2, que mantêm `characterId` no corpo/rota como **seletor de recurso conferido contra a conta do token** | Ordem do PO (2026-11-06) × `docs/contracts/active/PV-SEC-001.md` | Leitura do Arquiteto: o dono vem sempre do token; o id só escolhe qual personagem da conta. A leitura literal exigiria um conceito de "personagem selecionado" no servidor (contrato novo) e mudaria o cliente | **PO confirma** a leitura ou pede o contrato novo |
 | R-012 | `ExecuteGameplayLoopCommand` (`src/ProjectVictory.Application/Game/ExecuteGameplayLoopCommand.cs`) recebe `AccountId` como parâmetro; nenhum controller o expõe hoje | Server Authority (`CLAUDE.md`) | Se for exposto, a conta deve vir de `ICurrentPlayerContext`, nunca do corpo (risco latente, revisão do `PV-SEC-001`) | Nenhum enquanto não exposto |
+| R-013 | `ADR-002` ("suporte ao modo Hunt Offline") e `knowledge-base/loot.md` (LOCKED, "regras de Hunt Offline previamente definidas") × decisão do PO de não haver Hunt Offline (`DEC-20261106-05`, ADR-057) | ADR-002, `loot.md` × ADR-057 | ADR-057 prevalece (decisão mais recente, com aceite do PO). Notas nos documentos só por revisão documentada (`loot.md` é LOCKED) | Revisão documental futura |
 
 ---
 
@@ -171,7 +172,7 @@ API em Development (DLL de `bin/Debug/net10.0`, banco temporário via `Connectio
 
 # Próximo Objetivo
 
-Executar **M0** (decisões R-001, R-005, R-006, R-008; baseline executável na máquina do dono) e em seguida **M1**. Ver `roadmap-to-playable.md`.
+Executar **M0** (decisões ~~R-001~~ (resolvida em 2026-11-06), R-005, R-006, R-008; baseline executável na máquina do dono) e em seguida **M1**. Ver `roadmap-to-playable.md`.
 
 ---
 
