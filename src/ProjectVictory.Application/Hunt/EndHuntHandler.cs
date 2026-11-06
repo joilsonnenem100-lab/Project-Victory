@@ -30,7 +30,11 @@ public sealed record EndHuntResult(
     int CurrentMana,
     // PV-SUPPLY-011: cidade de retorno (tela inicial) e, na morte, os dados da mensagem.
     string ReturnCity = ProjectVictory.Application.World.HomeCity.Name,
-    ProjectVictory.Application.World.DeathNotice? DeathNotice = null);
+    ProjectVictory.Application.World.DeathNotice? DeathNotice = null,
+    // PV-HUNT-011: medição da Hunt para o XP/hora (aditivo).
+    long ElapsedSeconds = 0,
+    long ExperienceGained = 0,
+    long ExperiencePerHour = 0);
 
 // PV-HUNT-010: o pipeline ÚNICO de encerramento da Hunt (ADR-012: "Todo encerramento utilizará
 // exatamente o mesmo pipeline, independentemente do motivo"; fluxo termina na Cidade Principal).
@@ -51,15 +55,31 @@ public sealed class EndHuntHandler
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
     private readonly ICharacterRepository _characterRepository;
     private readonly ProjectVictory.Application.Checkpoint.ICheckpointService _checkpoints;
+    private readonly IEncounterStateStore _encounters;
+    private readonly IActiveSpawnRegistry _activeSpawns;
+    private readonly ProjectVictory.Application.Spawn.ISpawnSystem _spawnSystem;
+    private readonly IHuntLock _huntLock;
+    private readonly TimeProvider _time;
 
     public EndHuntHandler(
         IHuntRepository huntRepository,
         IRuntimeExecutionStateStore runtimeExecutionStateStore,
         ICharacterRepository characterRepository,
         // PV-PERSIST-011: checkpoint de CONCLUSÃO (Handbook §19).
-        ProjectVictory.Application.Checkpoint.ICheckpointService checkpoints)
+        ProjectVictory.Application.Checkpoint.ICheckpointService checkpoints,
+        // PV-HUNT-011: limpeza da memória (D2), despawn (R-044) e medição da Hunt.
+        IEncounterStateStore encounters,
+        IActiveSpawnRegistry activeSpawns,
+        ProjectVictory.Application.Spawn.ISpawnSystem spawnSystem,
+        IHuntLock huntLock,
+        TimeProvider time)
     {
         _checkpoints = checkpoints;
+        _encounters = encounters;
+        _activeSpawns = activeSpawns;
+        _spawnSystem = spawnSystem;
+        _huntLock = huntLock;
+        _time = time;
         _huntRepository = huntRepository;
         _runtimeExecutionStateStore = runtimeExecutionStateStore;
         _characterRepository = characterRepository;
@@ -120,6 +140,25 @@ public sealed class EndHuntHandler
             ProjectVictory.Application.Checkpoint.CheckpointReason.HuntConclusion,
             cancellationToken);
 
+        // PV-HUNT-011: fim medido; encounters e Spawn Instances da Hunt descartados (D2, ADR-009/047,
+        // fecha o R-044); a Hunt sai da memória (ADR-057: nunca é retomada). Nada já ganho é perdido.
+        var now = _time.GetUtcNow();
+        hunt.MarkEnded(now);
+        var elapsed = hunt.ElapsedAt(now);
+
+        foreach (var encounterId in _encounters.RemoveByHunt(hunt.Id))
+        {
+            _spawnSystem.Despawn(_activeSpawns.Release(encounterId));
+        }
+
+        await _huntRepository.RemoveAsync(hunt.Id, cancellationToken);
+        _huntLock.Release(hunt.Id);
+
+        var elapsedSeconds = (long)Math.Floor(elapsed.TotalSeconds);
+        var experiencePerHour = elapsed.TotalSeconds >= 1
+            ? (long)Math.Floor(hunt.ExperienceGained * 3600d / elapsed.TotalSeconds)
+            : 0;
+
         return new EndHuntResult(
             hunt.Id,
             command.Reason,
@@ -129,6 +168,9 @@ public sealed class EndHuntHandler
             state.CurrentMana,
             ProjectVictory.Application.World.HomeCity.Name,
             // PV-SUPPLY-011 (DEC-20261106-22): toda morte leva à tela inicial com a mensagem.
-            command.Reason == HuntEndReason.Death ? ProjectVictory.Application.World.DeathNotice.ForDeath() : null);
+            command.Reason == HuntEndReason.Death ? ProjectVictory.Application.World.DeathNotice.ForDeath() : null,
+            elapsedSeconds,
+            hunt.ExperienceGained,
+            experiencePerHour);
     }
 }

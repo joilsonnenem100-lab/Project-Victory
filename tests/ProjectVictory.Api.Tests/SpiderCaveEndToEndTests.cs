@@ -143,13 +143,26 @@ public sealed class SpiderCaveEndToEndTests
         var rounds = await FightToTheEnd(player, await StartHunt(player, 0));
         var last = rounds[^1];
 
-        Assert.Equal("Victory", last.GetProperty("huntEndReason").GetString());
-        Assert.True(last.GetProperty("returnedToCity").GetBoolean());
+        // PV-HUNT-011 (DEC-20261106-22, fecha o R-036): a vitória do encounter NÃO encerra a Hunt — o
+        // próximo encounter já vem na resposta; a Hunt termina pela saída manual (pipeline único).
+        Assert.Equal("Victory", last.GetProperty("combatState").GetString());
+        Assert.Equal(JsonValueKind.Null, last.GetProperty("huntEndReason").ValueKind);
+        Assert.False(last.GetProperty("returnedToCity").GetBoolean());
+        Assert.NotEqual(JsonValueKind.Null, last.GetProperty("nextEncounterId").ValueKind);
 
         // XP: soma das definições dos monstros mortos (Rat 10 + Cave Rat 15 + Rat 10), pelo Reward Pipeline.
         var expectedXp = SpiderCaveCatalog.EncounterTemplates[0].Sum(id => SpiderCaveCatalog.Find(id)!.Loot.Experience);
         Assert.Equal(expectedXp, rounds.Sum(r => r.GetProperty("experience").GetInt32()));
         Assert.Equal(expectedXp, (await CharacterOf(player)).GetProperty("experience").GetInt64());
+
+        var huntId = last.GetProperty("nextEncounter").GetProperty("huntId").GetGuid();
+        var leave = await player.Client.PostAsJsonAsync("/api/hunt/leave", new { huntId });
+        leave.EnsureSuccessStatusCode();
+        var ending = await leave.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Manual", ending.GetProperty("reason").GetString());
+        Assert.True(ending.GetProperty("returnedToCity").GetBoolean());
+        Assert.Equal(expectedXp, ending.GetProperty("experienceGained").GetInt64());
+        Assert.Equal(expectedXp, (await CharacterOf(player)).GetProperty("experience").GetInt64()); // nada perdido
 
         // Loot: 2 Rat Tails (100%) no mínimo; Cheese é 50%.
         var inventory = await player.Client.GetFromJsonAsync<JsonElement>($"/api/inventory/{player.CharacterId}");
@@ -193,6 +206,7 @@ public sealed class SpiderCaveEndToEndTests
 
     // PV-SUPPLY-011 (DEC-20261106-22): antes "OutOfSupplies"; agora a Hunt segue sem poção até a
     // vitória do encounter ou a morte.
+    // PV-HUNT-011: desfecho do ENCOUNTER (a vitória não encerra mais a Hunt).
     private const string ExpectedPotionOutcome = "Victory";
     private const int ExpectedPotionTurns = 3;
 
@@ -232,9 +246,11 @@ public sealed class SpiderCaveEndToEndTests
             t => Assert.True(t.GetProperty("healing").GetInt32() > 0));
 
         // Desfecho concreto com esta semente (revisão do PV-QA-004: sem asserção condicional).
-        Assert.Equal(ExpectedPotionOutcome, rounds[^1].GetProperty("huntEndReason").GetString());
+        Assert.Equal(ExpectedPotionOutcome, rounds[^1].GetProperty("combatState").GetString());
         Assert.Equal(ExpectedPotionTurns, potionTurns);
-        Assert.True(rounds[^1].GetProperty("returnedToCity").GetBoolean());
+        // PV-HUNT-011: a Hunt segue (próximo encounter), sem voltar à cidade.
+        Assert.Equal(JsonValueKind.Null, rounds[^1].GetProperty("huntEndReason").ValueKind);
+        Assert.False(rounds[^1].GetProperty("returnedToCity").GetBoolean());
     }
 
     // PV-SUPPLY-011: SUBSTITUI "fim de suprimento encerra a Hunt" — com a política de mana ligada e

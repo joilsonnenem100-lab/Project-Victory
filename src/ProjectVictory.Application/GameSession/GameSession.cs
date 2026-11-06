@@ -50,6 +50,10 @@ public interface IPresenceTracker
 
     void ClearPendingReturn(Guid characterId);
 
+    // Revisão do PV-RUNTIME-010 (ressalva 1): consome o retorno de forma ATÔMICA — só uma chamada
+    // concorrente recebe true (evita duas Hunts com dois heartbeats ao mesmo tempo).
+    bool TryConsumeReturn(Guid characterId, DateTimeOffset now, TimeSpan delay);
+
     void Remove(Guid characterId);
 
     PresenceSnapshot? Get(Guid characterId);
@@ -104,6 +108,21 @@ public sealed class PresenceTracker : IPresenceTracker
                 return;
             }
         }
+    }
+
+    public bool TryConsumeReturn(Guid characterId, DateTimeOffset now, TimeSpan delay)
+    {
+        while (_presence.TryGetValue(characterId, out var current)
+            && current is { Dropped: false, PendingReturn: true }
+            && now - current.OnlineSince > delay)
+        {
+            if (_presence.TryUpdate(characterId, current with { PendingReturn = false }, current))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void Remove(Guid characterId) => _presence.TryRemove(characterId, out _);
@@ -209,9 +228,13 @@ public sealed class HeartbeatHandler
         ArgumentNullException.ThrowIfNull(command);
 
         var accountId = _currentPlayer.AccountId;
-        var character =
-            await _characters.GetByAccountIdAsync(accountId, cancellationToken)
-            ?? throw new InvalidOperationException("No character found for account.");
+        var character = await _characters.GetByAccountIdAsync(accountId, cancellationToken);
+
+        // Revisão do PV-RUNTIME-010 (ressalva 3): conta sem personagem não é erro de servidor.
+        if (character is null)
+        {
+            return new HeartbeatResult(Guid.Empty, "NoCharacter", null, false, null, null);
+        }
 
         var now = _time.GetUtcNow();
         _presence.Touch(accountId, character.Id, now);
@@ -219,13 +242,16 @@ public sealed class HeartbeatHandler
         var running = await _hunts.GetRunningByCharacterIdAsync(character.Id, cancellationToken);
         var runtime = await _runtimes.GetByCharacterIdAsync(character.Id, cancellationToken);
 
-        if (running is null
-            && runtime?.LastHuntArea is not null
-            && _runtimeStates.Contains(runtime.RuntimeId)
-            && _presence.IsReturnDue(character.Id, now, _settings.ReturnDelay))
+        // Revisão do PV-RUNTIME-010 (ressalva 2): se já há Hunt em andamento quando o retorno vence, o
+        // retorno é consumido (não inicia outra Hunt depois que esta acabar).
+        if (running is not null)
         {
-            _presence.ClearPendingReturn(character.Id);
-
+            _presence.TryConsumeReturn(character.Id, now, _settings.ReturnDelay);
+        }
+        else if (runtime?.LastHuntArea is not null
+            && _runtimeStates.Contains(runtime.RuntimeId)
+            && _presence.TryConsumeReturn(character.Id, now, _settings.ReturnDelay))
+        {
             var started = await _executeHunt.Handle(
                 new ExecuteHuntCommand(character.Id, runtime.RuntimeId),
                 cancellationToken);

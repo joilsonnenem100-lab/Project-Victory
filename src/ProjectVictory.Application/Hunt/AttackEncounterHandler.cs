@@ -35,6 +35,12 @@ public sealed class AttackEncounterHandler
     private readonly IPendingSupplyConsumption _pendingSupplies;
     private readonly ICheckpointService _checkpoints;
     private readonly ProjectVictory.Application.GameSession.IGameActivity _activity;
+    private readonly IHuntLock _huntLock;
+    private readonly EncounterGenerator _encounterGenerator;
+    private readonly ICombatSeedProvider _seedProvider;
+    private readonly IActiveSpawnRegistry _activeSpawns;
+    private readonly ProjectVictory.Application.Spawn.ISpawnSystem _spawnSystem;
+    private readonly TimeProvider _time;
 
 
     public AttackEncounterHandler(
@@ -54,9 +60,22 @@ public sealed class AttackEncounterHandler
         IPendingSupplyConsumption pendingSupplies,
         ICheckpointService checkpoints,
         // PV-RUNTIME-010: cada ataque também conta como presença.
-        ProjectVictory.Application.GameSession.IGameActivity activity)
+        ProjectVictory.Application.GameSession.IGameActivity activity,
+        // PV-HUNT-011: Hunt Loop contínuo (próximo encounter pelo Spawn) e serialização por Hunt.
+        IHuntLock huntLock,
+        EncounterGenerator encounterGenerator,
+        ICombatSeedProvider seedProvider,
+        IActiveSpawnRegistry activeSpawns,
+        ProjectVictory.Application.Spawn.ISpawnSystem spawnSystem,
+        TimeProvider time)
     {
+        _time = time;
         _activity = activity;
+        _huntLock = huntLock;
+        _encounterGenerator = encounterGenerator;
+        _seedProvider = seedProvider;
+        _activeSpawns = activeSpawns;
+        _spawnSystem = spawnSystem;
         _pendingSupplies = pendingSupplies;
         _checkpoints = checkpoints;
         _supplyPolicies = supplyPolicies;
@@ -82,6 +101,26 @@ public sealed class AttackEncounterHandler
         await _ownershipGuard.EnsureEncounterAsync(
             command.EncounterId,
             cancellationToken);
+
+        // PV-HUNT-011 (PV-STATE-001 D3): um comando por vez sobre a mesma Hunt (ataque, saída, queda).
+        var huntId = _encounterStateStore.Get(command.EncounterId).HuntId;
+
+        using (await _huntLock.AcquireAsync(huntId, cancellationToken))
+        {
+            // Enquanto esperava, a Hunt pode ter acabado (encounter descartado).
+            if (!_encounterStateStore.Contains(command.EncounterId))
+            {
+                throw new InvalidOperationException("Combat already finished.");
+            }
+
+            return await HandleLocked(command, cancellationToken);
+        }
+    }
+
+    private async Task<AttackEncounterResult> HandleLocked(
+        AttackEncounterCommand command,
+        CancellationToken cancellationToken)
+    {
 
         var encounter =
             _encounterStateStore.Get(
@@ -198,14 +237,23 @@ public sealed class AttackEncounterHandler
             experienceGained += reward.ExperienceAmount ?? 0;
         }
 
-        // PV-HUNT-010: vitória e morte encerram a Hunt pelo MESMO pipeline (ADR-012).
+        // PV-HUNT-011: XP desta rodada entra na conta da Hunt (XP/hora).
+        hunt.RecordExperience(experienceGained);
+
+        // PV-HUNT-010/011: a morte encerra a Hunt pelo pipeline único (ADR-012). A VITÓRIA de um
+        // encounter NÃO encerra mais a Hunt (DEC-20261106-22, fecha o R-036): o encounter vencido é
+        // despawnado e descartado, e o Spawn gera o PRÓXIMO (Hunt Loop contínuo).
         EndHuntResult? ending = null;
+        ActiveEncounter? next = null;
 
         switch (report.Outcome)
         {
             case CombatSessionOutcome.Victory:
                 encounter.Victory();
-                ending = await _endHuntHandler.Handle(new EndHuntCommand(hunt.Id, HuntEndReason.Victory), cancellationToken);
+                _spawnSystem.Despawn(_activeSpawns.Release(encounter.Id));
+                _encounterStateStore.Remove(encounter.Id);
+                next = _encounterGenerator.Generate(hunt.Id, _seedProvider.NextSeed());
+                _encounterStateStore.Add(next);
                 break;
 
             case CombatSessionOutcome.Defeat:
@@ -247,6 +295,23 @@ public sealed class AttackEncounterHandler
             ending?.Reason.ToString(),
             ending?.ReturnedToCity ?? false,
             ending?.ReturnCity,
-            ending?.DeathNotice);
+            ending?.DeathNotice,
+            next?.Id,
+            next is null ? null : ToResult(next),
+            (long)Math.Floor(hunt.ElapsedAt(_time.GetUtcNow()).TotalSeconds),
+            hunt.ExperienceGained);
+    }
+
+    private static EncounterResult ToResult(ActiveEncounter encounter)
+    {
+        var target = encounter.GetCurrentTarget();
+
+        return new EncounterResult(
+            encounter.Id,
+            encounter.HuntId,
+            encounter.CurrentTargetId,
+            target.Name,
+            target.CurrentHealth,
+            target.MaximumHealth);
     }
 }

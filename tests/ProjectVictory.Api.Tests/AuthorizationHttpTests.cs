@@ -29,6 +29,7 @@ public sealed class AuthorizationHttpTests
         { "GET", "/api/item/11111111-1111-1111-1111-111111111111" },
         { "POST", "/api/hunt/execute" },
         { "POST", "/api/hunt/attack" },
+        { "POST", "/api/hunt/leave" }, // PV-HUNT-011
         { "POST", "/api/hunt-session/start" },
         { "POST", "/api/hunt-session/stop" },
         { "GET", "/api/inventory/22222222-2222-2222-2222-222222222222" },

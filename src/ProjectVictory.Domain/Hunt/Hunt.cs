@@ -12,6 +12,16 @@ public sealed class Hunt
 
     public HuntState State { get; private set; }
 
+    // PV-HUNT-011: medição da Hunt para o XP/hora do Analyzer (início, fim, XP ganha na Hunt).
+    public DateTimeOffset? StartedAt { get; private set; }
+
+    public DateTimeOffset? EndedAt { get; private set; }
+
+    public long ExperienceGained { get; private set; }
+
+    public TimeSpan ElapsedAt(DateTimeOffset now) =>
+        StartedAt is { } started ? (EndedAt ?? now) - started : TimeSpan.Zero;
+
 
     public Hunt(
         Guid id,
@@ -48,6 +58,34 @@ public sealed class Hunt
         }
 
         State = HuntState.Running;
+    }
+
+    // PV-HUNT-011: início com horário (o Start() antigo continua, sem horário).
+    public void Start(DateTimeOffset now)
+    {
+        Start();
+        StartedAt = now;
+    }
+
+    // PV-HUNT-011: horário de fim (uma vez; a Hunt já precisa estar encerrada).
+    public void MarkEnded(DateTimeOffset now)
+    {
+        if (State == HuntState.Running || State == HuntState.Created)
+        {
+            throw new InvalidOperationException("Only ended hunts can be marked as ended.");
+        }
+
+        EndedAt ??= now;
+    }
+
+    public void RecordExperience(long amount)
+    {
+        if (amount < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(amount));
+        }
+
+        ExperienceGained = checked(ExperienceGained + amount);
     }
 
 

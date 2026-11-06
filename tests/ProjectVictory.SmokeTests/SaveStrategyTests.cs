@@ -213,7 +213,10 @@ public sealed class SaveStrategyTests
 
         var rounds = await Fight(world, hunt.Encounter.Id);
 
-        Assert.Equal(nameof(HuntEndReason.Victory), rounds[^1].HuntEndReason);
+        // PV-HUNT-011: a vitória do encounter não encerra a Hunt; a saída manual encerra (conclusão).
+        Assert.Equal("Victory", rounds[^1].CombatState);
+        Assert.Null(rounds[^1].HuntEndReason);
+        await world.Get<LeaveHuntHandler>().Handle(new LeaveHuntCommand(hunt.HuntId));
         var log = world.Get<ICheckpointLog>().For(world.CharacterId);
         Assert.Equal(CheckpointReason.HuntStart, log[0]);
         Assert.Contains(CheckpointReason.Reward, log);

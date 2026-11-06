@@ -147,4 +147,24 @@ public sealed class GameSessionTests
         Assert.False(next.ReturnedToLastHunt);
         Assert.Equal(returned.HuntId, next.HuntId);
     }
+
+    // Revisão do PV-RUNTIME-010 (ressalva 1): dois consumos concorrentes → só um vence.
+    [Fact]
+    public void TryConsumeReturn_IsAtomic()
+    {
+        var tracker = new PresenceTracker();
+        var t0 = new DateTimeOffset(2026, 11, 6, 12, 0, 0, TimeSpan.Zero);
+        var characterId = Guid.NewGuid();
+        var accountId = Guid.NewGuid();
+        tracker.Touch(accountId, characterId, t0);
+        tracker.CollectDropped(t0 + TimeSpan.FromMinutes(2), Minute);
+        tracker.Touch(accountId, characterId, t0 + TimeSpan.FromMinutes(3));
+        var later = t0 + TimeSpan.FromMinutes(4);
+
+        var wins = Enumerable.Range(0, 16).AsParallel()
+            .Select(_ => tracker.TryConsumeReturn(characterId, later, TimeSpan.FromSeconds(10)))
+            .Count(won => won);
+
+        Assert.Equal(1, wins);
+    }
 }

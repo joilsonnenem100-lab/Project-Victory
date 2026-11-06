@@ -21,6 +21,8 @@ public sealed class EncounterGenerator
 
     private readonly ISpawnSystem? _spawnSystem;
 
+    private readonly IActiveSpawnRegistry? _activeSpawns;
+
 
     // Composição antiga fixa (Rat, Cave Rat, Rat), mantida pela Regra Aditiva para quem cria o
     // gerador sem catálogo.
@@ -40,6 +42,13 @@ public sealed class EncounterGenerator
     {
         _areas = areas;
         _spawnSystem = spawnSystem ?? throw new ArgumentNullException(nameof(spawnSystem));
+    }
+
+    // PV-HUNT-011 (R-044): as Spawn Instances do encounter ficam no registro de ativas até o despawn.
+    public EncounterGenerator(IHuntAreaCatalog areas, ISpawnSystem spawnSystem, IActiveSpawnRegistry activeSpawns)
+        : this(areas, spawnSystem)
+    {
+        _activeSpawns = activeSpawns ?? throw new ArgumentNullException(nameof(activeSpawns));
     }
 
 
@@ -64,17 +73,26 @@ public sealed class EncounterGenerator
         }
 
 
+        SpawnResult? spawned = null;
+
         var monsters =
             _areas is null
                 ? new List<EncounterMonsterState> { CreateRat(), CreateCaveRat(), CreateRat() }
-                : FromSpawn(huntId, _areas.GetDefault(), seed);
+                : FromSpawn(huntId, _areas.GetDefault(), seed, out spawned);
 
 
-        return new ActiveEncounter(
+        var encounter = new ActiveEncounter(
             Guid.NewGuid(),
             huntId,
             monsters,
             seed);
+
+        if (spawned is not null)
+        {
+            _activeSpawns?.Register(encounter.Id, spawned.Instances);
+        }
+
+        return encounter;
     }
 
 
@@ -83,9 +101,10 @@ public sealed class EncounterGenerator
     private List<EncounterMonsterState> FromSpawn(
         Guid huntId,
         HuntAreaDefinition area,
-        int seed)
+        int seed,
+        out SpawnResult result)
     {
-        var result = _spawnSystem!.SpawnPack(
+        result = _spawnSystem!.SpawnPack(
             new SpawnContext(huntId, area, seed));
 
         return result.Monsters.ToList();

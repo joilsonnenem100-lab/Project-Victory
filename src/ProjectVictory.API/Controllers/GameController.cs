@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectVictory.Application.Game;
+using ProjectVictory.Application.GameSession;
 
 namespace ProjectVictory.API.Controllers;
 
@@ -9,12 +10,12 @@ namespace ProjectVictory.API.Controllers;
 public sealed class GameController : BaseApiController
 {
     private readonly EnterGameHandler _handler;
-    private readonly ProjectVictory.Application.GameSession.HeartbeatHandler _heartbeat;
+    private readonly HeartbeatHandler _heartbeat;
 
 
     public GameController(
         EnterGameHandler handler,
-        ProjectVictory.Application.GameSession.HeartbeatHandler heartbeat)
+        HeartbeatHandler heartbeat)
     {
         _handler = handler;
         _heartbeat = heartbeat;
@@ -26,7 +27,7 @@ public sealed class GameController : BaseApiController
     {
         var result =
             await _heartbeat.Handle(
-                new ProjectVictory.Application.GameSession.HeartbeatCommand());
+                new HeartbeatCommand());
         return Success(result);
     }
 

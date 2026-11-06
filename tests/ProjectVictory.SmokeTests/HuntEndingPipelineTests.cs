@@ -81,8 +81,9 @@ public sealed class HuntEndingPipelineTests
             Assert.True(last.PlayerDefeated);
             Assert.True(last.ReturnedToCity);
 
-            var hunt = await scope.ServiceProvider.GetRequiredService<IHuntRepository>().GetByIdAsync(huntId);
-            Assert.Equal(HuntState.Failed, hunt!.State);
+            // PV-HUNT-011 (PV-STATE-001 D2): a Hunt encerrada sai da memória (antes ficava como Failed).
+            Assert.Null(await scope.ServiceProvider.GetRequiredService<IHuntRepository>().GetByIdAsync(huntId));
+            Assert.False(scope.ServiceProvider.GetRequiredService<IEncounterStateStore>().Contains(last.EncounterId));
 
             var runtime = scope.ServiceProvider.GetRequiredService<IRuntimeExecutionStateStore>().Get(runtimeId);
             var character = await scope.ServiceProvider.GetRequiredService<ICharacterRepository>().GetByIdAsync(characterId);
@@ -98,28 +99,54 @@ public sealed class HuntEndingPipelineTests
     }
 
     [Fact]
-    public async Task Victory_EndsHuntThroughSamePipeline_AndKeepsRewards()
+    // PV-HUNT-011 (DEC-20261106-22, fecha o R-036): SUBSTITUI "a vitória do encounter encerra a Hunt".
+    // Agora a vitória gera o PRÓXIMO encounter; a Hunt termina pela saída manual, pelo MESMO pipeline,
+    // e nada é perdido.
+    public async Task Victory_OfEncounter_ContinuesTheHunt_ManualLeaveEndsThroughSamePipeline_AndKeepsRewards()
     {
         await using var provider = BuildProvider(7);
         using var scope = provider.CreateScope();
         var (characterId, runtimeId) = await NewPlayer(scope, CharacterClass.Knight);
+        var store = scope.ServiceProvider.GetRequiredService<IEncounterStateStore>();
 
-        var (last, huntId) = await FightToTheEnd(scope, characterId, runtimeId, startingHealth: 185);
+        var runtimeBefore = scope.ServiceProvider.GetRequiredService<IRuntimeExecutionStateStore>().Get(runtimeId);
+        runtimeBefore.CharacterState!.UpdateHealth(185);
+        var started = await scope.ServiceProvider.GetRequiredService<ExecuteHuntHandler>()
+            .Handle(new ExecuteHuntCommand(characterId, runtimeId));
+        var monsters = store.Get(started.Encounter.Id).Monsters.Select(m => m.MonsterId).ToList();
 
-        Assert.Equal(nameof(HuntEndReason.Victory), last.HuntEndReason);
-        Assert.True(last.ReturnedToCity);
+        AttackEncounterResult? last = null;
+        for (var i = 0; i < 200 && last?.CombatFinished != true; i++)
+        {
+            last = await scope.ServiceProvider.GetRequiredService<AttackEncounterHandler>()
+                .Handle(new AttackEncounterCommand(started.Encounter.Id));
+        }
 
-        var hunt = await scope.ServiceProvider.GetRequiredService<IHuntRepository>().GetByIdAsync(huntId);
-        Assert.Equal(HuntState.Completed, hunt!.State);
+        // Vitória do encounter: a Hunt continua, com o próximo encounter já gerado pelo Spawn.
+        Assert.Equal("Victory", last!.CombatState);
+        Assert.Null(last.HuntEndReason);
+        Assert.False(last.ReturnedToCity);
+        Assert.NotNull(last.NextEncounterId);
+        Assert.False(store.Contains(started.Encounter.Id));      // o vencido foi descartado
+        Assert.True(store.Contains(last.NextEncounterId!.Value));
+        var huntId = started.HuntId;
+        Assert.Equal(HuntState.Running, (await scope.ServiceProvider.GetRequiredService<IHuntRepository>().GetByIdAsync(huntId))!.State);
+
+        // XP do encounter vencido = soma do XP dos monstros (catálogo).
+        var expectedXp = monsters.Sum(id => (long)ProjectVictory.Infrastructure.Content.SpiderCaveCatalog.Find(id)!.Loot.Experience);
+        Assert.Equal(expectedXp, last.HuntExperienceGained);
+
+        // Saída manual: mesmo pipeline (volta à cidade, aguarda comando), nada é retirado.
+        var ending = await scope.ServiceProvider.GetRequiredService<LeaveHuntHandler>().Handle(new LeaveHuntCommand(huntId));
+        Assert.Equal(HuntEndReason.Manual, ending.Reason);
+        Assert.True(ending.ReturnedToCity);
+        Assert.Equal(expectedXp, ending.ExperienceGained);
 
         var runtime = scope.ServiceProvider.GetRequiredService<IRuntimeExecutionStateStore>().Get(runtimeId);
         Assert.Equal(RuntimeActivity.Idle, runtime.GameplayContext!.CurrentActivity);
         Assert.Equal(EndHuntHandler.MainCity, runtime.WorldContext);
-
-        // PV-CONTENT-011: o encounter vem da Spider Cave (sorteado pela semente). XP final = soma do XP
-        // de cada monstro do encounter (dados do catálogo); nada é retirado no encerramento.
-        var encounter = scope.ServiceProvider.GetRequiredService<IEncounterStateStore>().Get(last.EncounterId);
-        var expectedXp = encounter.Monsters.Sum(m => (long)ProjectVictory.Infrastructure.Content.SpiderCaveCatalog.Find(m.MonsterId)!.Loot.Experience);
+        Assert.Null(await scope.ServiceProvider.GetRequiredService<IHuntRepository>().GetByIdAsync(huntId));
+        Assert.False(store.Contains(last.NextEncounterId.Value));  // o encounter em andamento também saiu
 
         var character = await scope.ServiceProvider.GetRequiredService<ICharacterRepository>().GetByIdAsync(characterId);
         Assert.Equal(expectedXp, character!.Experience.Value);

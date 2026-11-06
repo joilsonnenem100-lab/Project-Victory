@@ -69,4 +69,26 @@ public sealed class EncounterStateStore : IEncounterStateStore
         Console.WriteLine(
             $"[EncounterStateStore] Removed Encounter: {encounterId}");
     }
+
+    public IReadOnlyList<Guid> RemoveByHunt(
+        Guid huntId)
+    {
+        var removed = new List<Guid>();
+
+        foreach (var (id, encounter) in _encounters)
+        {
+            if (encounter.HuntId == huntId && _encounters.TryRemove(id, out _))
+            {
+                removed.Add(id);
+            }
+        }
+
+        return removed;
+    }
+
+    public bool Contains(
+        Guid encounterId) =>
+        _encounters.ContainsKey(encounterId);
+
+    public int Count => _encounters.Count;
 }

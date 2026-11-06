@@ -157,8 +157,11 @@ public sealed class SupplyTests
 
         // Acabaram as poções e a Hunt continuou: nenhuma rodada encerrou por fim de suprimento.
         Assert.DoesNotContain(rounds, r => r.HuntEndReason == nameof(HuntEndReason.OutOfSupplies));
-        Assert.Contains(rounds[^1].HuntEndReason, new[] { nameof(HuntEndReason.Victory), nameof(HuntEndReason.Death) });
-        Assert.True(rounds.Count(r => r.HuntEndReason is not null) == 1);
+        // PV-HUNT-011: o encounter termina em vitória (a Hunt CONTINUA, sem motivo de fim) ou em morte
+        // (a Hunt termina) — nunca por fim de suprimento.
+        Assert.True(rounds[^1].CombatFinished);
+        Assert.True(rounds[^1].HuntEndReason is null or nameof(HuntEndReason.Death));
+        Assert.True(rounds.Count(r => r.HuntEndReason is not null) <= 1);
     }
 
     // PV-SUPPLY-011: SUBSTITUI "política ligada sem poção encerra na 1ª rodada" — agora a Hunt segue.

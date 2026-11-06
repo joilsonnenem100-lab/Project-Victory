@@ -61,6 +61,20 @@ public sealed class HuntController : BaseApiController
             result);
     }
 
+    // PV-HUNT-011 (DEC-20261106-22): saída manual da Hunt (pipeline único; volta à "Victoria").
+    [HttpPost("leave")]
+    public async Task<IActionResult> Leave(
+        [FromBody] LeaveHuntCommand command,
+        [FromServices] LeaveHuntHandler leaveHandler)
+    {
+        var result =
+            await leaveHandler.Handle(
+                command);
+
+        return Success(
+            result);
+    }
+
     // PV-SUPPLY-010: configura o uso de poções (vale a partir do próximo turno). 400 se inválido;
     // 403 se o personagem não for da conta do token.
     [HttpPost("supplies")]

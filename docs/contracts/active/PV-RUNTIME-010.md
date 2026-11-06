@@ -52,3 +52,7 @@ Resultado: build com 0 avisos; **354 aprovados, 0 ignorados, 0 falhas** (Applica
 
 - Hoje só existe uma área (Spider Cave). O retorno usa a área padrão do catálogo, e a área gravada serve para saber **se** houve uma Hunt.
 - Os tempos (60 s, 10 s, varredura de 5 s) estão no `appsettings.json`, seção `GameSession`.
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q7-hunt-011`
+
+Ver a seção "ressalvas da revisão do `PV-RUNTIME-010`" no contrato `PV-HUNT-011`: retorno atômico (teste paralelo), pendência consumida com Hunt em andamento, "NoCharacter" no lugar do 500, R-051 (área padrão e gravação dupla) e `Remove` da presença no logout (`PV-HUNT-012`).

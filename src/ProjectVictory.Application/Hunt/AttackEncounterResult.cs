@@ -24,7 +24,13 @@ public sealed record AttackEncounterResult(
     bool ReturnedToCity = false,
     // PV-SUPPLY-011: cidade de retorno (tela inicial) e dados da mensagem de morte (aditivos).
     string? ReturnCity = null,
-    ProjectVictory.Application.World.DeathNotice? DeathNotice = null);
+    ProjectVictory.Application.World.DeathNotice? DeathNotice = null,
+    // PV-HUNT-011 (aditivos): Hunt Loop contínuo — o próximo encounter gerado ao vencer este, e a
+    // medição da Hunt até agora (tempo e XP) para o XP/hora.
+    Guid? NextEncounterId = null,
+    EncounterResult? NextEncounter = null,
+    long HuntElapsedSeconds = 0,
+    long HuntExperienceGained = 0);
 
 // PV-COMBAT-012 (revisão, ressalva 6): DTO do turno na resposta HTTP — a API não expõe tipos do Domain.
 public sealed record CombatTurnDto(

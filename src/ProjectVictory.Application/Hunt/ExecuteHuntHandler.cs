@@ -26,6 +26,7 @@ public sealed class ExecuteHuntHandler
     private readonly ProjectVictory.Application.GameSession.IGameActivity _activity;
     private readonly IHuntAreaCatalog _areas;
     private readonly IRuntimeRepository _runtimeRepository;
+    private readonly TimeProvider _time;
 
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
@@ -40,8 +41,11 @@ public sealed class ExecuteHuntHandler
         // PV-RUNTIME-010: presença e "última Hunt escolhida" (ADR-057 v1.2).
         ProjectVictory.Application.GameSession.IGameActivity activity,
         IHuntAreaCatalog areas,
-        IRuntimeRepository runtimeRepository)
+        IRuntimeRepository runtimeRepository,
+        // PV-HUNT-011: horário de início (XP/hora).
+        TimeProvider time)
     {
+        _time = time;
         _checkpoints = checkpoints;
         _activity = activity;
         _areas = areas;
@@ -92,7 +96,7 @@ public sealed class ExecuteHuntHandler
                 character.Id,
                 runtimeContext.RuntimeId);
 
-        hunt.Start();
+        hunt.Start(_time.GetUtcNow());
 
         await _huntRepository.AddAsync(
             hunt,

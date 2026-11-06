@@ -155,9 +155,14 @@ public static class ProjectVictoryServiceCollectionExtensions
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(services, TimeProvider.System);
         services.AddSingleton<ProjectVictory.Application.Spawn.ISpawnSystem>(provider =>
             new ProjectVictory.Application.Spawn.StatelessSpawnSystem(provider.GetRequiredService<TimeProvider>()));
+        // PV-HUNT-011: Hunt Loop — locks por Hunt e Spawn Instances ativas (despawn no fim, R-044).
+        services.AddSingleton<IHuntLock, HuntLock>();
+        services.AddSingleton<IActiveSpawnRegistry, ActiveSpawnRegistry>();
         services.AddScoped<EncounterGenerator>(provider => new EncounterGenerator(
             provider.GetRequiredService<IHuntAreaCatalog>(),
-            provider.GetRequiredService<ProjectVictory.Application.Spawn.ISpawnSystem>()));
+            provider.GetRequiredService<ProjectVictory.Application.Spawn.ISpawnSystem>(),
+            provider.GetRequiredService<IActiveSpawnRegistry>()));
+        services.AddScoped<LeaveHuntHandler>();
         services.AddScoped<ExecuteHuntHandler>();
         services.AddScoped<StartHuntSessionHandler>();
         services.AddScoped<StopHuntSessionHandler>();

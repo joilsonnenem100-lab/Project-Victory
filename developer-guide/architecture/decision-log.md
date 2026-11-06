@@ -834,3 +834,11 @@ Status: **Accepted (Arquiteto)** — implementa a diretriz do M6 (ADR-057 v1.2, 
 - Heartbeat HTTP (`POST api/game/heartbeat`), **sem WebSocket**; presença em memória thread-safe; varredura periódica de quedas (Runtime Coordinator).
 - Tempos em configuração (`GameSession`): queda > 60 s, retorno após > 10 s online, varredura a cada 5 s.
 - "Última Hunt escolhida" gravada no checkpoint do Runtime (coluna nova `LastHuntArea`, migration aditiva); o retorno cria uma **nova** Hunt.
+
+## DEC-20261106-40 — Hunt Loop contínuo (decisão do Arquiteto, Fila 7)
+
+Status: **Accepted (Arquiteto)** — implementa o `DEC-20261106-22` no `PV-HUNT-011`; fecha R-036 e R-044
+
+- Vencer um encounter gera o próximo pelo Spawn; a Hunt termina só por morte, saída manual (`POST api/hunt/leave`, novo) ou queda.
+- Fim da Hunt (pipeline único): mede tempo/XP (XP/hora), descarta encounters, despawna as Spawn Instances e tira a Hunt da memória.
+- Comandos sobre a mesma Hunt são serializados (um lock por Hunt).
