@@ -94,6 +94,10 @@ public static class ProjectVictoryServiceCollectionExtensions
         services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.ITurnScheduler, ProjectVictory.Application.Combat.TurnBased.SequentialTurnScheduler>();
         services.AddScoped<ProjectVictory.Application.Combat.TurnBased.ICombatActionSelector, ProjectVictory.Application.Supply.SupplyAwareCombatActionSelector>();
 
+        // PV-MONSTER-010 (ADR-005): Monster AI única, orientada pelos dados de cada monstro.
+        services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.IMonsterBehaviorProvider, ProjectVictory.Infrastructure.Combat.MonsterBehaviorProvider>();
+        services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.IMonsterAI, ProjectVictory.Application.Combat.TurnBased.DataDrivenMonsterAI>();
+
         // PV-COMBAT-012: regras de dano (fórmula PROVISÓRIA), perfis de monstro e efeitos de suprimento.
         services.AddSingleton<ProjectVictory.Domain.Combat.Rules.IDamageFormula, ProjectVictory.Domain.Combat.Rules.ProvisionalTibiaLikeDamageFormula>();
         services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.IMonsterCombatProfileProvider, ProjectVictory.Infrastructure.Combat.MonsterCombatProfileProvider>();

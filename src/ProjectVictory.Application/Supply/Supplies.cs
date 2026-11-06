@@ -124,11 +124,20 @@ public sealed class CombatSupplyContext
 public sealed class SupplyAwareCombatActionSelector : ICombatActionSelector
 {
     private readonly CombatSupplyContext _supplies;
-    private readonly DefaultCombatActionSelector _fallback = new();
+    private readonly DefaultCombatActionSelector _fallback;
 
     public SupplyAwareCombatActionSelector(CombatSupplyContext supplies)
+        : this(supplies, new DataDrivenMonsterAI(BasicAttackOnlyBehaviorProvider.Instance))
+    {
+    }
+
+    // PV-MONSTER-010: monstros escolhem pela Monster AI orientada a dados (ADR-005).
+    public SupplyAwareCombatActionSelector(CombatSupplyContext supplies, IMonsterAI monsterAI)
     {
         _supplies = supplies;
+        _fallback = new DefaultCombatActionSelector(
+            ProjectVictory.Domain.Combat.Rules.SkillSelectionPolicy.Default,
+            monsterAI);
     }
 
     public CombatActionKind? SelectSecondaryAction(CombatSession session, Combatant actor) =>

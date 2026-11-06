@@ -780,3 +780,11 @@ Autorizada a remoção dos 9 Commands/Results órfãos dos handlers removidos no
 Status: **Accepted (Product Owner)** — Fila 5
 
 Os nomes, números e Levels das skills de classe (`PV-COMBAT-013`, `ClassSkillTable`) ficam **aprovados como PROVISÓRIOS**, para balanceamento posterior.
+
+## DEC-20261106-33 — Monster AI orientada a dados (decisão do Arquiteto, Fila 6)
+
+Status: **Accepted (Arquiteto)** — implementa o ADR-005/006 no `PV-MONSTER-010`
+
+- O comportamento de cada monstro é a lista de regras `MonsterActionRule` (Secondary Action + chance) na **definição de dados** do monstro; uma única `DataDrivenMonsterAI` lê os dados e sorteia com a semente do encounter.
+- O comportamento atual (só ataque básico) foi migrado para dados (`MonsterBehavior.BasicAttackOnly`); sem regras a IA não consome aleatoriedade, então os resultados não mudam.
+- Habilidades de monstro (números, chances) são **balanceamento do PO** — hoje nenhuma.
