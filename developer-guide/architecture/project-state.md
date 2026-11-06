@@ -225,13 +225,15 @@ Erros de TypeScript por causa:
 |---|---|---|
 | TS7026 (339), TS7016 (58), TS2503 (29) | 426 | **Faltam `@types/react` e `@types/react-dom`** nas `devDependencies` (React 19 não traz tipos próprios); com `strict: true`, todo JSX vira `any` implícito. Um único ajuste de dependências eliminaria quase todos |
 | TS7006 | 13 | Parâmetros com `any` implícito (ex.: `CharacterCreationPage.tsx:186` `event`, `WorldScenePage.tsx:374` `drop`) |
-| TS2305 | 2 | `pages/WorldScenePage.tsx:27-28` importa `attackEncounter` e `AttackEncounterResult` de `services/huntService.ts`, que **não existem** (o serviço só exporta `startHunt`) |
-| TS2307 | 1 | `components/character/PlayerStatePanel.tsx:1` importa `../models/game`, que **não existe** |
+| TS2305 | 2 | `pages/WorldScenePage.tsx:27-28` importa `attackEncounter` e `AttackEncounterResult` de `services/huntService.ts`, que **não existem** (o serviço só exporta `startHunt`). O endpoint existe no backend (`POST api/hunt/attack`, com verificação de dono): a correção certa é **recriar** `attackEncounter` no serviço, não apagar o uso |
+| TS2307 | 1 | `components/Character/PlayerStatePanel.tsx:1` importa `../models/game` — o arquivo **existe** em `src/models/game.ts`; o erro é o **caminho relativo** (`../` em vez de `../../`). Não criar um `models/game` duplicado |
 | TS2353 | 1 | `services/accountService.ts:100` monta `AccountLoginResult` com a propriedade `token`, que o tipo não declara |
 
-**Código inalcançável:** `pages/GamePage.tsx` (que usa `WorldScenePage`) **não é importado** por `App.tsx` nem por outro arquivo — por isso o `vite build` passa apesar do import quebrado. A navegação real (`App.tsx`) usa Login, Register, CharacterSelection, PlayerInformation, Inventory e RewardFeedback.
+**Código inalcançável** (não importado por nada a partir de `main.tsx`; por isso o `vite build` passa apesar dos imports quebrados): `pages/GamePage.tsx` (e o `WorldScenePage` que só ele usa), `components/Character/PlayerStatePanel.tsx`, `pages/CharacterCreationPage.tsx`, `pages/EntryExperiencePage.tsx`, `services/runtimeService.ts` (`createRuntime`) e o ramo `page === "reward"` do `App.tsx` (nada chama `setPage("reward")`). A criação de personagem funciona por `CharacterSelectionPage.tsx`. A navegação real usa Login, Register, CharacterSelection, PlayerInformation e Inventory.
 
-Encaminhamento (sem corrigir agora, conforme o contrato): `PV-UI-0xx` Navegação (M8) já prevê "tipar `any`"; os itens acima viram escopo desse contrato ou de um `PV-QA-0xx` do cliente — adicionar `@types/react*`, script de typecheck/lint, resolver os imports quebrados e o `GamePage` órfão, e aplicar `npm audit fix` (dependências de build).
+**Autorização (conferido na revisão):** todas as chamadas a endpoints protegidos passam por `api/client.ts` (`apiRequest`), que envia o token; só cadastro e login usam `fetch` direto e são públicos. O cliente **não** quebra com o `PV-SEC-001`. Fora do escopo, para o `PV-UI-0xx`: não há tratamento de 401 (token expirado vira erro genérico, sem voltar ao login) e `accountService.ts` repete `API_URL` fixo.
+
+Encaminhamento (sem corrigir agora, conforme o contrato): **`PV-PLATFORM-005`** (M1, novo — decisão do Arquiteto pela revisão: o equivalente do backend teve contrato no M1) para `npm audit fix` nas dependências de build, `@types/react*` e um script `typecheck` sem bloquear o build; **`PV-UI-0xx`** (M8) para o código: imports quebrados, código inalcançável, tipagem dos `any`, tratamento de 401.
 
 ## Ainda pendentes
 
