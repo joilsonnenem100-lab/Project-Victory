@@ -483,6 +483,8 @@ Status: **Accepted (Product Owner)**
 
 Consequência de arquitetura: "fim de suprimento" é um novo **motivo** de encerramento e passa pelo **mesmo pipeline** de encerramento da Hunt (ADR-012: "Todo encerramento utilizará exatamente o mesmo pipeline, independentemente do motivo"; fluxo termina em "Cidade Principal"). Não cria caminho alternativo.
 
+*Emenda (2026-11-06, `DEC-20261106-22`): **SUPERADO** o trecho "**fim de suprimento** encerra a sessão de Hunt". Sem poção o personagem segue sem cura até morrer; a Hunt termina só por morte, saída manual ou queda de conexão. Toda morte vai à tela inicial com mensagem orientando a checar poções, runas ou o level da Hunt. O restante (volta à cidade, sem cura sem suprimento, sem perda) continua valendo.*
+
 ## DEC-20261106-05 — Desconexão durante a Hunt (ADR-057, Parte B)
 
 Status: **Accepted (Product Owner)**
@@ -490,6 +492,8 @@ Status: **Accepted (Product Owner)**
 **Com o jogador offline a Hunt NÃO rende nada.** Ao desconectar, a Hunt **termina** pelo **pipeline único de encerramento** (ADR-012). O progresso offline vem **somente do Offline Training de skills** (módulo LOCKED, Fase 2 do `roadmap.md`; regras em `knowledge-base/training.md`).
 
 Equivale à opção **B1** do `ADR-057` para a Hunt, **mais Offline Training**. `ADR-057` passa a **ACCEPTED**. Substitui a pendência de `DEC-20261105-06`.
+
+*Emenda (2026-11-06, `DEC-20261106-20/21`): a desconexão só encerra a Hunt depois de **mais de 1 minuto**; ao voltar, depois de mais de 10 s online, o jogador retorna à última Hunt com uma nova Hunt Session. O "Offline Training" virou **Treino com a página aberta**: **não há progresso offline em nenhuma atividade**.*
 
 *Histórico: uma versão anterior desta entrada, no mesmo dia, registrava "B3 com restrição de XP offline" e uma pergunta aberta; o PO a corrigiu em 2026-11-06 para a decisão acima, e a pergunta aberta deixou de existir.*
 
@@ -531,6 +535,8 @@ Além das novas entradas abaixo, o `PV-GOV-006` atualizou: `DEC-20261106-01` (te
 
 ## DEC-20261106-10 — Curva de Experience do M2
 
+*Emenda (2026-11-06, `DEC-20261106-19`): o teto "Levels 1 a 500 por Ascension" foi **superado**. O Level não tem teto e nunca volta a 1; a Ascension é derivada do Level (uma nova a cada 500). A curva continua a mesma.*
+
 Status: **Accepted (Product Owner)** — a curva é Game Design (ADR-016 deste log); o modelo de dados é da Arquitetura e segue os ADRs citados.
 
 - **Curva:** a Experience **total** necessária para estar no Level `L` é
@@ -546,6 +552,8 @@ Status: **Accepted (Product Owner)** — a curva é Game Design (ADR-016 deste l
 Substitui a pendência "Fórmula matemática da experiência / Curva de experiência por Level" de `knowledge-base/progression.md`. Implementação: `PV-PROG-011` e `PV-PROG-010` (M2); o XP rate, no `PV-REWARD-010` (M2).
 
 ## DEC-20261106-11 — Mesma curva em todas as Ascensions
+
+*Emenda (2026-11-06, `DEC-20261106-19`): o teto "Levels 1 a 500 por Ascension" foi **superado**. O Level não tem teto e nunca volta a 1; a Ascension é derivada do Level (uma nova a cada 500). A curva continua a mesma.*
 
 Status: **Accepted (Product Owner)**
 
@@ -579,3 +587,130 @@ Lastro: `roadmap.md` e `CLAUDE.md` (módulo LOCKED só muda por revisão arquite
 Status: **Accepted (Arquiteto)**
 
 Criado `src/ProjectVictory.Composition`: raiz de composição de DI (`AddProjectVictoryCore`) usada pela API e pelos testes, para resolver o R-014. Referencia Domain, Application, Infrastructure e Persistence; **não contém regra de negócio** e não é uma camada nova da Clean Architecture. Motivo: Infrastructure e Persistence não se referenciam, e acoplá-las só para compor o DI violaria a separação atual. Ficam no host: DbContext, identidade do jogador, JWT, CORS, controllers e tratamento de erro HTTP. Detalhes: `docs/contracts/active/PV-ARCH-001.md`.
+
+---
+
+# Decisões do Product Owner — 2026-11-06, tarde (registradas em `PV-GOV-009`, ordem "MODO FILA 4")
+
+Todas são decisões de Game Design do PO (ADR-016 deste log), salvo indicação. A revisão formal dos documentos LOCKED afetados foi **autorizada pelo Arquiteto-Chefe** na mesma ordem. As emendas foram feitas **sem apagar texto**.
+
+## DEC-20261106-15 — Regra permanente: referência Tibia
+
+Status: **Accepted (Product Owner)** — **regra permanente do projeto**
+
+Tabelas e fórmulas de referência (experiência, vida, mana, dano, defesa, treino, capacidade etc.) **seguem o Tibia**, salvo decisão do PO em contrário. Quando o Tibia não tiver o caso, o valor é **PROVISÓRIO** e vira pergunta ao PO.
+
+Nomes provisórios seguem o estilo do Tibia, **preferindo nomes originais ou genéricos** aos nomes exclusivos do Tibia, e ficam **centralizados em dados** para renomear fácil. Registrado também no `CLAUDE.md`.
+
+## DEC-20261106-16 — Combate simples agora; Tibia como base; elementos depois
+
+Status: **Accepted (Product Owner)**
+
+- O combate fica **simples** nesta fase, com as fórmulas do Tibia como base, **adaptadas ao combate por turnos** (ADR-052).
+- Danos e resistências **elementais virão depois**: o **tipo de dano é extensível** e hoje só existe o **físico**.
+
+## DEC-20261106-17 — Sem CAP
+
+Status: **Accepted (Product Owner)**
+
+Não existe capacidade de carga (CAP): o **inventário de drops é ilimitado**.
+
+## DEC-20261106-18 — Vida e Mana seguem o Tibia (resolve R-021)
+
+Status: **Accepted (Product Owner)** — **supera** os valores de `knowledge-base/progression.md` (HP inicial 100 para todas as classes; ganhos fracionários) e resolve o **R-021**
+
+Os valores iniciais e os ganhos por Level seguem o Tibia. Ganhos por Level definidos pelo PO:
+
+| Classe | Vida/Level | Mana/Level |
+|---|---|---|
+| Knight | +15 | +5 |
+| Paladin | +10 | +15 |
+| Druid | +5 | +30 |
+| Sorcerer | +5 | +30 |
+| Monk | +12 | +15 |
+
+**Valores iniciais e níveis baixos — conferidos em fonte pública** (Arquiteto, 2026-11-06). A fonte é o código aberto do NabBot (`cogs/utils/tibia.py`, Apache 2.0), que implementa as fórmulas da TibiaWiki. A TibiaWiki recusou acesso automático (HTTP 402/403) e não pôde ser lida diretamente.
+- **Levels 1 a 7 (sem vocação, como no Tibia):** Vida = 5 × Level + 145 e Mana = 5 × Level + 50. No **Level 1 são 150 de vida e 55 de mana**, com **+5 de vida e +5 de mana** por Level até o 8.
+- **A partir do Level 8:** valem os ganhos da classe acima, a partir de **185 de vida e 90 de mana** no Level 8.
+  - Knight: vida 185 + 15 × (Level − 8); mana 5 × Level + 50.
+  - Paladin: vida 185 + 10 × (Level − 8); mana 90 + 15 × (Level − 8).
+  - Druid e Sorcerer: vida 5 × Level + 145; mana 90 + 30 × (Level − 8).
+  - Todos batem com os ganhos do PO.
+- **Monk: PROVISÓRIO.** A vocação não está na fonte consultada. Ela usa o mesmo padrão até o Level 8, com os ganhos do PO (+12/+15) depois.
+
+Implementação: `PV-CHAR-011`.
+
+## DEC-20261106-19 — Ascension derivada do Level; Level sem teto
+
+Status: **Accepted (Product Owner)** — **supera** o texto anterior do `ADR-026`, `knowledge-base/progression.md` (seções Level/Ascension) e as decisões que citavam "Levels 1 a 500" (`DEC-20261106-10`, `PV-PROG-011`); o **R-022 fica sem efeito**
+
+- **Ascension 1** é a inicial. Uma nova Ascension é **desbloqueada automaticamente a cada 500 Levels**: Ascension 2 no Level 500, 3 no 1000 e 4 no 1500.
+- **Máximo atual: 4.** O jogo suporta expansão futura de conteúdo: o **máximo e o passo ficam em configuração** e o conteúdo de cada Ascension fica em **dados**.
+- O **Level nunca volta a 1** e **não há Level máximo**: a tabela do Tibia continua depois do Level 500.
+- O jogador **escolhe** caçar na Ascension nova ou nas antigas.
+
+Implementação: `PV-PROG-012`.
+
+## DEC-20261106-20 — Conexão e Hunt
+
+Status: **Accepted (Product Owner)** — complementa o `DEC-20261106-05` e o `ADR-057` (Parte B)
+
+- **Queda de mais de 1 minuto** encerra a Hunt pelo **pipeline único** (ADR-012) e cessam os benefícios. **No primeiro minuto, a Hunt segue no servidor.**
+- **Ao voltar**, o jogador cai na **tela inicial**. Se ficar online por **mais de 10 segundos depois de uma queda**, ele **retorna à última Hunt escolhida com uma NOVA Hunt Session**; a anterior não é mantida.
+- **Se a conta deslogar por qualquer outro motivo**, o jogador fica na tela inicial (para poções, equipamentos, inventário).
+- **Diretriz econômica para o M6 (Arquiteto, por ordem do PO):**
+  - **heartbeat** do cliente, **sem WebSocket** (salvo justificativa documentada);
+  - **presença em memória thread-safe**;
+  - a **última Hunt escolhida** como **checkpoint mínimo do Runtime State** (ADR-057 Parte A).
+
+## DEC-20261106-21 — Treino (antigo Offline Training)
+
+Status: **Accepted (Product Owner)** — **altera o significado** do módulo **Offline Training** (Fase 2 do `roadmap.md`, LOCKED; `knowledge-base/training.md`, LOCKED); revisão formal autorizada pelo Arquiteto-Chefe
+
+- O treino **exige a página aberta**, para manter alto o contador de jogadores online.
+- **Queda de mais de 5 minutos** encerra a sessão de treino e cessa a evolução.
+- **Não há progresso offline em nenhuma atividade.**
+- **Item de treino** com **cargas**, comprado ou recebido como recompensa, usado no **centro da cidade** (tela inicial).
+  - **Cada carga dura 1 hora**: uma ferramenta de 10 cargas = 10 horas.
+  - **Cada item treina uma skill:** Sword, Axe, Club, Fist, Distance Fighting e Magic Level. Magic Level é para Sorcerer e Druid e, às vezes, Paladin.
+  - O **ganho por carga depende do Level** e segue a **fórmula de treino do Tibia**.
+- **O Monk treina Fist Fighting** — **PROVISÓRIO** (confirmar).
+
+Emendas: `roadmap.md` (Fase 2), `knowledge-base/training.md`, `ADR-057` (v1.2). O M6 foi atualizado no `roadmap-to-playable.md` (`PV-TRAIN-010`).
+
+## DEC-20261106-22 — Fim de suprimento NÃO encerra a Hunt; toda morte vai à tela inicial
+
+Status: **Accepted (Product Owner)** — **supera** o trecho "fim de suprimento encerra a Hunt" do `DEC-20261106-04` e do `PV-SUPPLY-010`
+
+- A poção é usada quando a vida atinge a porcentagem configurada. **Sem poção**, o personagem **segue sem cura até morrer**.
+- A Hunt termina **somente** por **morte**, **saída manual** ou **queda de conexão** (`DEC-20261106-20`).
+- **Toda morte** envia o personagem à **tela inicial**, com uma **mensagem** orientando a verificar **poções, runas ou o level da Hunt** antes de voltar.
+
+Implementação: `PV-SUPPLY-011`. A tela da mensagem é do M8.
+
+## DEC-20261106-23 — Skills de classe (4 por classe)
+
+Status: **Accepted (Product Owner)** quanto às regras; números e nomes **PROVISÓRIOS** (balanceados pelo Arquiteto)
+
+- **Knight:** 2 skills em área, de dano **baixo**; 2 de alvo único, de dano **médio**; e **ataque básico forte**.
+- **Paladin:** 2 em área e 2 de alvo único, com dano **médio equilibrado** entre elas; e **ataque básico à distância de alvo único muito forte**. Magias Holy e de elementos virão depois.
+- **Sorcerer:** 2 em área e 2 de alvo único, de dano **alto**, com o **Magic Level** como contador do dano final.
+- **Druid e Monk:** o PO não deu regras. **PROVISÓRIO:** 2 em área e 2 de alvo único, dano médio; o Druid escala por Magic Level e o Monk por Fist Fighting.
+
+Implementação: `PV-COMBAT-013`.
+
+## DEC-20261106-24 — Cidade de retorno provisória: "Victoria"
+
+Status: **Accepted (Product Owner)** — nome **PROVISÓRIO**, em dados
+
+A cidade de retorno (tela inicial) passa a se chamar **"Victoria"**, em dados (substitui "Starting Location" no papel de cidade). Os nomes provisórios seguem a regra do `DEC-20261106-15`.
+
+## DEC-20261106-25 — Remoções autorizadas (R-020, R-031)
+
+Status: **Accepted (Product Owner)**
+
+**Autorizadas** as remoções:
+- `src/ProjectVictory.Domain/Playtest/` (R-020) → `PV-CLEAN-002`;
+- os 5 handlers mortos que encerram a Hunt por fora do pipeline (R-031) → `PV-CLEAN-003`.
+
+Cada remoção vai num commit isolado e reversível, depois de um `grep` sem nenhuma referência, com build e testes verdes e registro no `CLEANUP-MANIFEST`.

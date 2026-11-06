@@ -4,6 +4,14 @@ Version: 1.0
 
 Status: LOCKED
 
+> **Emenda (2026-11-06, `DEC-20261106-21`, revisão formal autorizada pelo Arquiteto-Chefe):** o treino **exige a página aberta** (não existe treino offline nem progresso offline em nenhuma atividade). Queda de mais de 5 minutos encerra a sessão de treino.
+> - **Item de treino com cargas**, comprado ou recebido como recompensa, usado no **centro da cidade** (tela inicial). **1 carga = 1 hora** (10 cargas = 10 horas).
+> - **Cada item treina uma skill:** Sword, Axe, Club, Fist, Distance Fighting e Magic Level (Sorcerer e Druid, às vezes Paladin).
+> - **O ganho por carga depende do Level** e segue a **fórmula de treino do Tibia**.
+> - O Monk treina Fist Fighting (PROVISÓRIO).
+>
+> O texto abaixo foi mantido por histórico; onde conflitar, vale esta emenda.
+
 Last Sprint: SPRINT-020
 
 ---

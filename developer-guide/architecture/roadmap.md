@@ -86,7 +86,7 @@ Módulos:
 
 - Skill Progression
 - Trainer
-- Offline Training
+- Offline Training *(emenda 2026-11-06, `DEC-20261106-21`: passa a ser **Treino com a página aberta**, item de cargas (1 h por carga), uma skill por item, fórmula do Tibia; não há progresso offline)*
 - Skill Progress
 
 ---

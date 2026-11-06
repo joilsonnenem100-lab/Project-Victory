@@ -2,7 +2,9 @@
 
 Status: ACCEPTED
 
-Version: 1.0
+Version: 1.1
+
+> **Emenda v1.1 (2026-11-06, `DEC-20261106-19`, revisão formal autorizada pelo Arquiteto-Chefe):** o modelo abaixo foi **SUPERADO** quanto ao Level. **A Ascension é DERIVADA do Level**: Ascension 1 inicial; uma nova a cada 500 Levels (2 no 500, 3 no 1000, 4 no 1500). O máximo atual é 4, com máximo e passo em configuração e conteúdo por dados. **O Level nunca volta a 1 e não há Level máximo**; o desbloqueio é automático e o jogador escolhe a Ascension em que caça. Os itens "Level retorna para 1", "limite de Level 500" e "Em aberto: como o Level volta a 1" deixam de valer (R-022 sem efeito). O texto original foi mantido por histórico.
 
 Data: 2026-11-06 · Aceite: Product Owner (ordem de 2026-11-06, registrada em `PV-GOV-006`)
 

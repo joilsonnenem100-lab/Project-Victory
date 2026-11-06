@@ -1,5 +1,7 @@
 # PV-SUPPLY-010 — Poções de vida e de mana
 
+> **SUPERADO em parte (2026-11-06, `DEC-20261106-22`):** o item "fim de suprimento encerra a Hunt" (escopo 6 e pergunta 2) **não vale mais**. Sem poção o personagem segue sem cura até morrer, e a Hunt termina só por morte, saída manual ou queda de conexão. A implementação está no `PV-SUPPLY-011`.
+
 Status: **IMPLEMENTADO (servidor)** — revisado pelo `pv-architecture-reviewer` (APROVADO COM RESSALVAS; ressalvas aplicadas no branch `chief/m3-content-011`). Branch `chief/m3-supply-010` — valores e duas interpretações **PROVISÓRIOS**
 Emitido por: Arquitetura, 2026-11-06 (ordem "MODO FILA 3", item 7).
 Lastro:

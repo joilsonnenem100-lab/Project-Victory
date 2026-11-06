@@ -44,6 +44,8 @@ Entretanto, existe o sistema de Ascension.
 
 Cada Ascension possui limite de Level 500.
 
+> *Emenda (2026-11-06, `DEC-20261106-19`): **SUPERADO.** Não há Level máximo nem limite por Ascension; o Level nunca volta a 1. A Ascension é derivada do Level (uma nova a cada 500 Levels, máximo atual 4, em configuração).*
+
 Após atingir este limite o jogador poderá evoluir gratuitamente para a próxima Ascension.
 
 ---
@@ -78,6 +80,8 @@ O acesso às novas regiões é opcional.
 ---
 
 # HP
+
+> *Emenda (2026-11-06, `DEC-20261106-18`): os valores de HP e Mana abaixo foram **SUPERADOS**. Vida e Mana seguem o Tibia: Level 1 = 150 de vida e 55 de mana; +5/+5 por Level até o 8; depois, os ganhos da classe (Knight +15/+5, Paladin +10/+15, Druid e Sorcerer +5/+30, Monk +12/+15).*
 
 HP inicial:
 
@@ -160,6 +164,8 @@ Cada vocação possui penalidades naturais ao evoluir Skills que não pertencem 
 # Trainer
 
 O Trainer funciona apenas online.
+
+> *Emenda (2026-11-06, `DEC-20261106-21`): o treino exige a **página aberta**, com um item de cargas (1 hora por carga) usado no centro da cidade; queda de mais de 5 min encerra o treino.*
 
 Não consome Gold.
 

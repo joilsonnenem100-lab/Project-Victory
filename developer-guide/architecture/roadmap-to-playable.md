@@ -79,6 +79,8 @@ Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (
 
 **Saída:** combate com resultado não trivial, determinístico e coberto por testes de Domain/Application; cliente continua consumindo o mesmo contrato de resultado.
 
+**Fila 4 (ordem do PO, 2026-11-06 à tarde)** — branches `chief/q4-*` a partir da `main` (que contém a Fila 3): `PV-GOV-009` (decisões do PO) · `PV-CHAR-011` (Vida/Mana Tibia) · `PV-PROG-012` (Level sem teto, Ascension derivada) · `PV-SUPPLY-011` (fim de suprimento não encerra; morte → tela inicial) · `PV-COMBAT-013` (4 skills por classe) · `PV-CLEAN-002`/`003` (remoções autorizadas). Status final em `docs/architecture/RELATORIO-FILA-4.md`.
+
 **Fila 3 (ordem do PO, 2026-11-06)** — execução do M3 com pré-requisitos, branches `chief/m3-*` (nascem de `chief/m1-clean-001`; a `main` ainda não o contém): ✅ `PV-SEC-002` (R-018; revisado) · ✅ `PV-CHAR-010` (Vida/Mana derivadas, ADR-029; valores PROVISÓRIOS, R-021) · ✅ `PV-COMBAT-010` (orquestrador; integração no 011/012) · ✅ `PV-COMBAT-011` (semente por encounter; `Combat:FixedSeed` só para testes) · ✅ `PV-COMBAT-012` (combate real no ataque; fórmula e atributos PROVISÓRIOS) · ✅ `PV-HUNT-010` (pipeline único `EndHuntHandler`; cidade PROVISÓRIA) · ✅ `PV-SUPPLY-010` (poções; valores e interpretações PROVISÓRIOS) · ✅ `PV-CONTENT-011` (Spider Cave por dados; balanceamento PROVISÓRIO) · ✅ `PV-QA-004` (ponta a ponta na Spider Cave pela API real) · ⏭️ `PV-CLEAN-002` (**pulado**: a linha "R-020: AUTORIZADO" não constava na ordem). Status final em `docs/architecture/RELATORIO-FILA-3.md`.
 
 ## M4 — Gameplay Foundation (Fase 6) *(na ordem oficial: Monster AI → Experience Distribution → Spawn)*
@@ -101,6 +103,25 @@ Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (
 **Saída:** reiniciar a API não perde Account, Character, Inventory, Runtime/checkpoints; testes de persistência após reinício (já exigido em `PV-VS-2.0-044`).
 
 ## M6 — Hunt Loop contínuo, encerramento ao desconectar e Offline Training *(ADR-057 ACCEPTED)*
+
+> **Atualização 2026-11-06 (`DEC-20261106-20/21/22`, ADR-057 v1.2) — vale sobre o texto abaixo:**
+> - **Conexão:** queda de **mais de 1 minuto** encerra a Hunt (pipeline único); no primeiro minuto a Hunt segue. Ao voltar, o jogador cai na tela inicial; depois de mais de 10 s online após uma queda, retorna à **última Hunt escolhida** com uma **nova** Hunt Session. Qualquer outro logout → tela inicial.
+> - **Diretriz econômica:** heartbeat do cliente **sem WebSocket** (salvo justificativa documentada), **presença em memória thread-safe**, **última Hunt escolhida** como checkpoint mínimo do Runtime State (Parte A). Entra no `PV-RUNTIME-010` e no `PV-HUNT-012`.
+> - **Fim de suprimento NÃO encerra a Hunt** (`DEC-20261106-22`): o `PV-HUNT-012` encerra só por queda (> 1 min), além da morte e da saída manual.
+> - **`PV-TRAIN-010` vira "Treino com a página aberta"** (`DEC-20261106-21`):
+>   - item de cargas, **1 h por carga**, uma skill por item (Sword, Axe, Club, Fist, Distance, Magic Level);
+>   - ganho por carga pela fórmula de treino do Tibia, conforme o Level;
+>   - usado no centro da cidade (tela inicial);
+>   - queda de **mais de 5 min** encerra o treino;
+>   - **não há progresso offline**.
+>
+>   Respostas às dúvidas abaixo:
+>   1. o item é comprado ou recebido como recompensa;
+>   2. não existe treino offline;
+>   3. o Monk treina Fist Fighting (**PROVISÓRIO**, confirmar);
+>   4. vale a fórmula do Tibia, sem progresso offline;
+>   5. Free × Premium continua aberta;
+>   6. a tolerância é de 1 min (Hunt) e 5 min (treino).
 
 Decisão do PO (`DEC-20261106-05`, ADR-057): **enquanto conectado**, a Hunt roda em loop; **ao desconectar**, termina pelo pipeline único (ADR-012); **offline**, só o Offline Training de skills progride. A Hunt nunca é recuperada.
 

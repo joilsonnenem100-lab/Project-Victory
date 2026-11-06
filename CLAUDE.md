@@ -22,6 +22,7 @@ MMORPG Idle inspirado em Tibia: progressão automática por Hunts. Backend ASP.N
 Se duas fontes conflitam, **não escolha por intuição**: registre o conflito em `project-state.md` (seção Revisões Pendentes) e resolva por ADR.
 
 ## Regras inegociáveis
+- **Referência Tibia (regra permanente, `DEC-20261106-15`):** tabelas e fórmulas de referência (experiência, vida, mana, dano, defesa, treino…) seguem o Tibia, salvo decisão do PO em contrário. Sem caso no Tibia → valor PROVISÓRIO e pergunta ao PO. Nomes provisórios: estilo Tibia, preferindo nomes originais ou genéricos, centralizados em dados.
 - **Nada de achismo.** Toda decisão cita o documento que a sustenta (ADR, contrato, regra, Handbook). Sem citação, não é decisão — é pergunta ao dono.
 - **Contrato antes de código.** Fluxo: Arquitetura → Contrato → Engenharia → Implementação → Build → Teste → Validação → Aceite. Engenharia não toma decisão arquitetural.
 - **Aditivo.** Implementar = adicionar. Nunca remover/substituir comportamento validado, endpoint, DTO, handler, tela ou persistência sem decisão arquitetural documentada + contrato + validação de impacto (`PROJECT-VICTORY-ARCHITECTURE-RULES.md`).
