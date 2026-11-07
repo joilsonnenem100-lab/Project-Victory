@@ -164,7 +164,9 @@ public sealed class EndHuntHandler
 
         var elapsedSeconds = (long)Math.Floor(elapsed.TotalSeconds);
 
-        await _events.PublishAsync(
+        // PV-EVENT-012 (R-060): o fim da Hunt já foi gravado — assinantes do HuntEndedEvent são
+        // NOTIFICADOS com falha isolada (não geram erro depois do commit).
+        await _events.PublishNotificationAsync(
             new ProjectVictory.Domain.Events.HuntEndedEvent(hunt.Id, hunt.CharacterId, command.Reason.ToString(), elapsedSeconds, hunt.ExperienceGained),
             cancellationToken);
         var experiencePerHour = elapsed.TotalSeconds >= 1

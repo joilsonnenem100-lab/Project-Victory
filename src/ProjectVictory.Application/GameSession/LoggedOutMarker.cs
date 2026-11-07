@@ -20,8 +20,10 @@ public sealed class LoggedOutMarker
 
     public async Task MarkAsync(Guid characterId, Guid runtimeId, CancellationToken cancellationToken = default)
     {
-        _presence.Remove(characterId);
+        // Revisão do PV-RUNTIME-013 (ressalva 1): marca ANTES de remover — um Touch concorrente é ignorado
+        // pelo próprio tracker enquanto houver marca.
         _presence.MarkLoggedOut(characterId);
+        _presence.Remove(characterId);
 
         if (runtimeId != Guid.Empty)
         {
@@ -30,9 +32,13 @@ public sealed class LoggedOutMarker
     }
 
     // Só grava quando havia marca (sem escrita extra em cada "entrar"/início de Hunt).
-    public async Task ClearAsync(Guid characterId, Guid runtimeId, CancellationToken cancellationToken = default)
+    // Revisão do PV-RUNTIME-013 (ressalva 3): `persisted` = a marca lida do checkpoint; grava `false`
+    // também quando só o banco a tinha (memória e banco não divergem).
+    public async Task ClearAsync(Guid characterId, Guid runtimeId, CancellationToken cancellationToken = default, bool persisted = false)
     {
-        if (_presence.ClearLoggedOut(characterId) && runtimeId != Guid.Empty)
+        var hadMark = _presence.ClearLoggedOut(characterId);
+
+        if ((hadMark || persisted) && runtimeId != Guid.Empty)
         {
             await _runtimes.SaveLoggedOutAsync(runtimeId, false, cancellationToken);
         }

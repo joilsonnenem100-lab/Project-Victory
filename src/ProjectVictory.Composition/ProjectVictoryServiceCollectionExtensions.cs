@@ -127,7 +127,14 @@ public static class ProjectVictoryServiceCollectionExtensions
             services, ProjectVictory.Application.GameSession.GameSessionSettings.Default);
         services.AddSingleton<ProjectVictory.Application.GameSession.IPresenceTracker, ProjectVictory.Application.GameSession.PresenceTracker>();
         services.AddScoped<ProjectVictory.Application.GameSession.IGameActivity, ProjectVictory.Application.GameSession.GameActivity>();
-        services.AddScoped<ProjectVictory.Application.GameSession.GameSessionCoordinator>();
+        // PV-EVENT-012 (R-060): um escopo de DI por queda (o coordenador usa o construtor com a fábrica).
+        services.AddSingleton<ProjectVictory.Application.GameSession.IDisconnectScopeFactory, ProjectVictory.Composition.ServiceScopeDisconnectScopeFactory>();
+        services.AddScoped(provider => new ProjectVictory.Application.GameSession.GameSessionCoordinator(
+            provider.GetRequiredService<ProjectVictory.Application.GameSession.IPresenceTracker>(),
+            provider.GetRequiredService<ProjectVictory.Application.GameSession.GameSessionSettings>(),
+            provider.GetRequiredService<TimeProvider>(),
+            provider.GetServices<ProjectVictory.Application.GameSession.IDisconnectHandler>(),
+            provider.GetRequiredService<ProjectVictory.Application.GameSession.IDisconnectScopeFactory>()));
         services.AddScoped<ProjectVictory.Application.GameSession.HeartbeatHandler>();
 
         // PV-PERSIST-011 (Handbook §19): checkpoints em início, recompensa, conclusão e logout; o
@@ -161,6 +168,10 @@ public static class ProjectVictoryServiceCollectionExtensions
 
         // PV-EVENT-010/011 (ADR-049/050): Event Bus tipado (só Domain Events) e seus handlers.
         services.AddScoped<ProjectVictory.Application.Events.IEventBus, ProjectVictory.Application.Events.InProcessEventBus>();
+        // PV-EVENT-012 (ADR-058): destino das falhas de assinantes isolados (notificações pós-commit).
+        services.AddSingleton<ProjectVictory.Composition.LoggingEventFailureSink>();
+        services.AddSingleton<ProjectVictory.Application.Events.IEventFailureSink>(provider =>
+            provider.GetRequiredService<ProjectVictory.Composition.LoggingEventFailureSink>());
         services.AddScoped<ProjectVictory.Application.Events.IAsyncEventHandler<ProjectVictory.Domain.Events.CombatCompletedEvent>, ProjectVictory.Application.Reward.RewardOnCombatCompleted>();
         services.AddSingleton<ProjectVictory.Application.Spawn.SpawnLifecycleCounter>();
         services.AddSingleton<ProjectVictory.Application.Events.IEventHandler<ProjectVictory.Domain.Events.SpawnInstanceActivatedEvent>>(

@@ -26,8 +26,42 @@ public interface IEventBus
         where TEvent : EngineEvent;
 
     // Despacho assíncrono: handlers síncronos e depois os assíncronos, na ordem de registro, aguardados.
+    // ADR-058: "síncrono" = o publisher só continua depois de TODOS os assinantes (aguardados; nunca
+    // fire-and-forget). A falha de um assinante volta para o publisher.
     Task PublishAsync<TEvent>(TEvent domainEvent, CancellationToken cancellationToken = default)
         where TEvent : EngineEvent;
+
+    // PV-EVENT-012 (R-060; ADR-058): NOTIFICAÇÃO de um fato já gravado (ex.: fim da Hunt, depois do
+    // commit). Também aguarda todos os assinantes, mas a falha de um assinante é ISOLADA: vai para o
+    // IEventFailureSink e não volta para o publisher nem impede os demais assinantes.
+    Task PublishNotificationAsync<TEvent>(TEvent domainEvent, CancellationToken cancellationToken = default)
+        where TEvent : EngineEvent;
+}
+
+// PV-EVENT-012: destino das falhas de assinantes isolados (o host registra no log). A Application
+// não conhece log; a composição fornece a implementação.
+public interface IEventFailureSink
+{
+    void Report(EngineEvent domainEvent, Type subscriber, Exception error);
+}
+
+// Padrão em memória (testes e composição sem host): guarda as últimas falhas.
+public sealed class RecordingEventFailureSink : IEventFailureSink
+{
+    public const int Maximum = 64;
+
+    private readonly System.Collections.Concurrent.ConcurrentQueue<(EngineEvent Event, Type Subscriber, Exception Error)> _failures = new();
+
+    public IReadOnlyList<(EngineEvent Event, Type Subscriber, Exception Error)> Failures => _failures.ToList();
+
+    public void Report(EngineEvent domainEvent, Type subscriber, Exception error)
+    {
+        _failures.Enqueue((domainEvent, subscriber, error));
+
+        while (_failures.Count > Maximum && _failures.TryDequeue(out _))
+        {
+        }
+    }
 }
 
 // Implementação em processo: resolve os handlers do TIPO pela DI do escopo atual.
@@ -74,6 +108,44 @@ public sealed class InProcessEventBus : IEventBus
         foreach (var handler in Handlers<IAsyncEventHandler<TEvent>>())
         {
             await handler.HandleAsync(domainEvent, cancellationToken);
+        }
+    }
+
+    public async Task PublishNotificationAsync<TEvent>(TEvent domainEvent, CancellationToken cancellationToken = default)
+        where TEvent : EngineEvent
+    {
+        ArgumentNullException.ThrowIfNull(domainEvent);
+
+        // Sem destino para as falhas, isolar seria engolir o erro: nesse caso o comportamento é o do
+        // PublishAsync (a falha volta ao publisher).
+        if (_services.GetService(typeof(IEventFailureSink)) is not IEventFailureSink sink)
+        {
+            await PublishAsync(domainEvent, cancellationToken);
+            return;
+        }
+
+        foreach (var handler in Handlers<IEventHandler<TEvent>>())
+        {
+            try
+            {
+                handler.Handle(domainEvent);
+            }
+            catch (Exception error) when (!cancellationToken.IsCancellationRequested)
+            {
+                sink.Report(domainEvent, handler.GetType(), error);
+            }
+        }
+
+        foreach (var handler in Handlers<IAsyncEventHandler<TEvent>>())
+        {
+            try
+            {
+                await handler.HandleAsync(domainEvent, cancellationToken);
+            }
+            catch (Exception error) when (!cancellationToken.IsCancellationRequested)
+            {
+                sink.Report(domainEvent, handler.GetType(), error);
+            }
         }
     }
 }

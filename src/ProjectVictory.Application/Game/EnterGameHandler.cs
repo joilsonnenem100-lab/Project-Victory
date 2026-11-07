@@ -76,7 +76,7 @@ public sealed class EnterGameHandler
             }
 
             // PV-RUNTIME-013 (R-054): entrar de novo encerra a marca de logout (memória e checkpoint).
-            await _loggedOut.ClearAsync(character.Id, runtime.RuntimeId, cancellationToken);
+            await _loggedOut.ClearAsync(character.Id, runtime.RuntimeId, cancellationToken, runtime.LoggedOut);
         }
         else
         {

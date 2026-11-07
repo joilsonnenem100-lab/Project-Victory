@@ -112,6 +112,7 @@ public sealed class LogoutHandler
     private readonly IPresenceTracker _presence;
     private readonly IRuntimeExecutionStateStore _runtimes;
     private readonly ProjectVictory.Application.GameSession.LoggedOutMarker _loggedOut;
+    private readonly IHuntStartGate _startGate;
 
     public LogoutHandler(
         ICurrentPlayerContext currentPlayer,
@@ -123,8 +124,11 @@ public sealed class LogoutHandler
         IPresenceTracker presence,
         IRuntimeExecutionStateStore runtimes,
         // PV-RUNTIME-013 (R-054): marca de logout (memória + checkpoint do Runtime).
-        ProjectVictory.Application.GameSession.LoggedOutMarker loggedOut)
+        ProjectVictory.Application.GameSession.LoggedOutMarker loggedOut,
+        // Revisão do PV-RUNTIME-013 (ressalva 2): logout e início de Hunt do MESMO personagem serializados.
+        IHuntStartGate startGate)
     {
+        _startGate = startGate;
         _loggedOut = loggedOut;
         _currentPlayer = currentPlayer;
         _characters = characters;
@@ -146,6 +150,10 @@ public sealed class LogoutHandler
         {
             return new LogoutResult(Guid.Empty, false, ProjectVictory.Application.World.HomeCity.Name, null);
         }
+
+        // Revisão do PV-RUNTIME-013 (ressalva 2): sob o portão de início, nenhuma Hunt nasce entre o
+        // encerramento e a marca de deslogado.
+        using var startGate = await _startGate.AcquireAsync(character.Id, cancellationToken);
 
         EndHuntResult? ending = null;
         var running = await _hunts.GetRunningByCharacterIdAsync(character.Id, cancellationToken);

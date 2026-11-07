@@ -61,6 +61,8 @@ Todo Domain Event:
 
 ---
 
+> **Emenda (2026-11-06, `ADR-058`, `PV-EVENT-012`):** "síncrono" = o publisher aguarda todos os assinantes (handlers assíncronos **aguardados** cumprem a regra; sem fire-and-forget). "Nunca são obrigatórios" vale para o **publisher** (não depende de assinante); um assinante pode ser obrigatório para a **composição** (ex.: Reward), garantido por teste de composição. Notificações pós-commit (`PublishNotificationAsync`) isolam a falha do assinante.
+
 # Event Bus
 
 O Event Bus:

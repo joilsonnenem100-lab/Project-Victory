@@ -905,3 +905,11 @@ Status: **Accepted (ordem conjunta do PO e do Arquiteto-Chefe da Fila 8, item c)
 Status: **Accepted (ordem conjunta do PO e do Arquiteto-Chefe da Fila 8, item d; a parte de mecânica é do PO pelo ADR-016 e vem na ordem assinada por ele)** — confirma o comportamento do `DEC-20261106-41`; aplicada no `PV-HUNT-013`
 
 - `POST api/game/logout` encerra a Hunt como saída manual (status `Completed`), sem retorno automático à última Hunt.
+
+## DEC-20261106-50 — Semântica de despacho do Event Bus e escopo por queda (decisão do Arquiteto, Fila 8)
+
+Status: **Accepted (Arquiteto, ADR-016: arquitetura)** — `ADR-058` (novo, ACCEPTED); aplicada no `PV-EVENT-012`; fecha o R-058 e o R-060
+
+- Bus "síncrono" = aguardado (handlers assíncronos aguardados cumprem o `events.md`); publisher nunca depende de assinante; assinante obrigatório é regra da composição, garantida por teste.
+- Notificação pós-commit (`PublishNotificationAsync`, usada no `HuntEndedEvent`): falha de assinante isolada e registrada no log.
+- Varredura de quedas: um escopo de DI (DbContext) por queda.

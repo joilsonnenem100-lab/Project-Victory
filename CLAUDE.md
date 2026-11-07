@@ -55,7 +55,7 @@ cd src/ProjectVictory.Client && npm install && npm run dev
 
 ## Convenções
 - Documentação e comentários em português; identificadores em inglês.
-- IDs: contratos `PV-<ÁREA>-NNN`, work items `PV-VS-NNN`, ADRs `ADR-NNN` (**próximo livre: ADR-058**). ADR-044 e ADR-048 são **NOT USED** (reservados, não reutilizar); ADR-026 ACCEPTED (`PV-GOV-006`); ADR-055 PROPOSED (`PV-GOV-007`). Decisões datadas do PO/Arquiteto: `DEC-AAAAMMDD-NN` no `decision-log.md`.
+- IDs: contratos `PV-<ÁREA>-NNN`, work items `PV-VS-NNN`, ADRs `ADR-NNN` (**próximo livre: ADR-059**). ADR-044 e ADR-048 são **NOT USED** (reservados, não reutilizar); ADR-026 ACCEPTED (`PV-GOV-006`); ADR-055 PROPOSED (`PV-GOV-007`). Decisões datadas do PO/Arquiteto: `DEC-AAAAMMDD-NN` no `decision-log.md`.
 - Commits pequenos, mensagem `PV-<ID> - <resumo>`.
 - Registro do que foi apagado/movido: `docs/architecture/CLEANUP-MANIFEST-2026-11-05.md`.
 

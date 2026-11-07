@@ -79,7 +79,19 @@ public sealed class PresenceTracker : IPresenceTracker
 {
     private readonly ConcurrentDictionary<Guid, PresenceSnapshot> _presence = new();
 
-    public void Touch(Guid accountId, Guid characterId, DateTimeOffset now) =>
+    // Revisão do PV-RUNTIME-013 (ressalva 1): personagem deslogado não ganha presença (um heartbeat que
+    // passou pela conferência antes do logout não recria a presença depois dele).
+    public void Touch(Guid accountId, Guid characterId, DateTimeOffset now)
+    {
+        if (_loggedOut.ContainsKey(characterId))
+        {
+            return;
+        }
+
+        TouchCore(accountId, characterId, now);
+    }
+
+    private void TouchCore(Guid accountId, Guid characterId, DateTimeOffset now) =>
         _presence.AddOrUpdate(
             characterId,
             _ => new PresenceSnapshot(accountId, characterId, now, now, false, false),
@@ -95,6 +107,13 @@ public sealed class PresenceTracker : IPresenceTracker
         {
             if (current.Dropped || now - current.LastSeen <= timeout)
             {
+                continue;
+            }
+
+            // Revisão do PV-RUNTIME-013 (ressalva 1): presença que sobrou de um deslogado não vira queda.
+            if (_loggedOut.ContainsKey(characterId))
+            {
+                ((ICollection<KeyValuePair<Guid, PresenceSnapshot>>)_presence).Remove(new KeyValuePair<Guid, PresenceSnapshot>(characterId, current));
                 continue;
             }
 
@@ -177,23 +196,49 @@ public interface IDisconnectHandler
     Task HandleAsync(PresenceSnapshot dropped, CancellationToken cancellationToken = default);
 }
 
+// PV-EVENT-012 (fecha o R-060): um ESCOPO de DI (e portanto um DbContext) por queda — a falha no
+// tratamento de uma queda não deixa alterações parciais rastreadas para o SaveChanges da seguinte.
+public interface IDisconnectScope : IAsyncDisposable
+{
+    IEnumerable<IDisconnectHandler> Handlers { get; }
+}
+
+public interface IDisconnectScopeFactory
+{
+    IDisconnectScope Create();
+}
+
 public sealed class GameSessionCoordinator
 {
     private readonly IPresenceTracker _presence;
     private readonly GameSessionSettings _settings;
     private readonly TimeProvider _time;
     private readonly IEnumerable<IDisconnectHandler> _disconnectHandlers;
+    private readonly IDisconnectScopeFactory? _scopes;
 
+    // Sem fábrica de escopos (testes de unidade): os handlers recebidos atendem todas as quedas.
     public GameSessionCoordinator(
         IPresenceTracker presence,
         GameSessionSettings settings,
         TimeProvider time,
         IEnumerable<IDisconnectHandler> disconnectHandlers)
+        : this(presence, settings, time, disconnectHandlers, null)
+    {
+    }
+
+    // PV-EVENT-012 (R-060): composição oficial — um escopo novo por queda.
+    public GameSessionCoordinator(
+        IPresenceTracker presence,
+        GameSessionSettings settings,
+        TimeProvider time,
+        IEnumerable<IDisconnectHandler> disconnectHandlers,
+        IDisconnectScopeFactory? scopes)
     {
         _presence = presence;
         _settings = settings;
         _time = time;
         _disconnectHandlers = disconnectHandlers;
+        _scopes = scopes;
     }
 
     // Quedas cujo tratamento falhou (observabilidade e testes).
@@ -218,9 +263,21 @@ public sealed class GameSessionCoordinator
         {
             try
             {
-                foreach (var handler in _disconnectHandlers)
+                if (_scopes is null)
                 {
-                    await handler.HandleAsync(presence, cancellationToken);
+                    foreach (var handler in _disconnectHandlers)
+                    {
+                        await handler.HandleAsync(presence, cancellationToken);
+                    }
+                }
+                else
+                {
+                    await using var scope = _scopes.Create();
+
+                    foreach (var handler in scope.Handlers)
+                    {
+                        await handler.HandleAsync(presence, cancellationToken);
+                    }
                 }
 
                 handled.Add(presence);
