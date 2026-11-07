@@ -12,9 +12,9 @@ Ordem do PO e do Arquiteto-Chefe, 2026-11-07. Worktree `C:/pvn`. Baseline de ent
 | 4 | PV-GOV-017 | feito (Fila 9) | `feature/pv-gov-017-backlog-po` | 129d112 |
 | 5 | PV-GOV-018 | feito (Fila 9) | `feature/pv-gov-018-agentes-economia` | 9d1dc11 |
 | 6 | PV-GOV-019 | feito (Fila 9) | `feature/pv-gov-019-game-session-handbook` | c7c495f |
-| 7 | PV-HUD-ANALYZER-010 (servidor) | feito — build 0 avisos, 420 testes verdes (verificado pelo Chefe); migration aditiva `HuntAnalyzerSummaries`; revisão em andamento | `feature/n1-hud-analyzer-010` | 9688df5 |
-| 8 | PV-ADMIN-010 | em andamento | `feature/n1-admin-010` | — |
-| 9 | PV-COMBAT-014 | pendente | — | — |
+| 7 | PV-HUD-ANALYZER-010 (servidor) | feito — build 0 avisos, 420 testes verdes (verificado pelo Chefe); migration aditiva `HuntAnalyzerSummaries`; revisão APROVADO COM RESSALVAS (R1–R4, aplicadas na branch do item 9) | `feature/n1-hud-analyzer-010` | 9688df5 |
+| 8 | PV-ADMIN-010 | feito — build 0 avisos, 433 testes verdes (verificado pelo Chefe); migration aditiva `ServerExperienceRate`; revisão em andamento | `feature/n1-admin-010` | 648eb6e |
+| 9 | PV-COMBAT-014 (+ ressalvas R1–R4 do item 7) | em andamento | `feature/n1-combat-014` | — |
 | 10 | PV-CONTENT-012 | pendente | — | — |
 | 11 | PV-LEGACY-001 | pendente | — | — |
 | 12 | PV-QA-010 | pendente | — | — |
