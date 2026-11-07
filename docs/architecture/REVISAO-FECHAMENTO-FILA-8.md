@@ -24,6 +24,11 @@ Anexo do `RELATORIO-FILA-8.md`. Critério único (o mesmo da Fila 7, `DEC-202611
 - Testes: `SmokeTests/RuntimeRecoveryTests`, `RestartAsDropTests`, `LogoutMarkAndHuntAreaTests`; E2E `Api.Tests/Fila8EndToEndTests` e `ContinuousHuntEndToEndTests` (reinício real do host).
 - Revisões: R-055 e R-056 fechadas. Dívida aceita (não contradiz o documento): R-063 (contexto em memória não recalculado no enter; leitura em lote inclui inventário).
 
+## Notas da revisão final (ressalvas do revisor)
+- **DEC-48 PROVISÓRIO dentro do LOCK do Recovery:** o valor "vida 0 → vida e Mana cheias" é **dado de regra** num ponto único (`RuntimeReconstruction`); se o PO mudar a regra, troca-se esse ponto por contrato, **sem** revisão do LOCK (a arquitetura — carregar, reconstruir, continuar — não muda).
+- **Por que Recovery trava sem documento de domínio próprio e Game Session não:** o Recovery é regido por documentos que o código cumpre sem conflito (Handbook §18/§19, ADR-057 Parte A). O Game Session tem **conflito** com o seu documento (Handbook §10); sem decisão sobre esse conflito, o documento de domínio próprio é o caminho para fixar o que vale.
+- O oráculo da vida 0 no E2E lê o checkpoint gravado (prova indireta); a reconstrução em si é provada no smoke (`RestartAsDropTests.HealthZeroInTheCheckpoint_ComesBackWithFullHealthAndMana`).
+
 ## Game Session + Runtime Coordinator — o que falta para o LOCK
 1. **Handbook §10 × código:** o documento diz que o Runtime Coordinator coordena Hunt → Encounter → Combat → Reward. No código, o `GameSessionCoordinator` só detecta quedas; a cadeia do Hunt Loop está no `AttackEncounterHandler` + Event Bus. Precisa de decisão documentada (emenda/ADR: o Hunt Loop é o coordenador da cadeia e o Game Session cuida da presença) ou de ajuste no código.
 2. **Documento de domínio do módulo** (`developer-guide/domain/game-session.md`) não existe: escrever com as regras do ADR-057 v1.2 e da Fila 8 (presença, queda, retorno, logout, deslogado).

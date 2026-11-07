@@ -20,7 +20,7 @@ O código está **à frente** da documentação de estado anterior: o Vertical S
 
 # Sprint Atual
 
-Nome: **Fila 8 — concluída** (relatório `docs/architecture/RELATORIO-FILA-8.md`) (ordem do PO e do Arquiteto, 2026-11-06, modo econômico): `PV-GOV-012` (INDEX de uma página), `PV-HUNT-013`, `PV-RUNTIME-012`, `PV-RUNTIME-013`, `PV-EVENT-012`, `PV-QA-007`, `PV-GOV-013`. Decisões `DEC-20261106-45…49`. Resumo vivo: `docs/INDEX.md`.
+Nome: **Fila 8 — concluída** (relatório `docs/architecture/RELATORIO-FILA-8.md`) (ordem do PO e do Arquiteto, 2026-11-06, modo econômico): `PV-GOV-012` (INDEX de uma página), `PV-HUNT-013`, `PV-RUNTIME-012`, `PV-RUNTIME-013`, `PV-EVENT-012`, `PV-QA-007`, `PV-GOV-013`. Decisões `DEC-20261106-45…51` e `ADR-058`. Resumo vivo: `docs/INDEX.md`.
 ~~Nome: **Fila 2** (ordem do PO de 2026-11-06): fechamento do M1 e governança — `PV-GOV-007/008`, `PV-QA-003`, `PV-ARCH-001`, `PV-PLATFORM-004/005`, `PV-CI-001`, `PV-CLEAN-001`. Depois: **M3 — Combate real**.~~ (Filas 2–7 encerradas; relatórios em `docs/architecture/historico/`.)
 *Histórico:* M0 — Baseline e Governança (2026-11-05); M1 (2026-11-05/06); M2 (2026-11-06, `docs/architecture/historico/RELATORIO-M2.md`).
 

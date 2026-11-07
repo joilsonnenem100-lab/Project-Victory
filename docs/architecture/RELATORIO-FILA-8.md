@@ -10,7 +10,7 @@ Branches empilhadas a partir da `main` (`39f0a75`), worktree `C:/pv8`, push de c
 | 4 | PV-RUNTIME-013 — área escolhida de verdade (R-051, R-041); heartbeat pós-logout (R-054) | ✅ | Aprovado c/ ressalvas (aplicadas) |
 | 5 | PV-EVENT-012 — ADR-058 (R-058); escopo de DI por queda (R-060) | ✅ | Aprovado c/ ressalvas (aplicadas) |
 | 6 | PV-QA-007 — E2E pela API real das 4 decisões | ✅ | Aprovado c/ ressalvas (aplicadas/registradas) |
-| 7 | PV-GOV-013 — LOCK: **Event System e Recovery LOCKED**; Game Session em REVIEW | ✅ | revisão documentada |
+| 7 | PV-GOV-013 — LOCK: **Event System e Recovery LOCKED**; Game Session em REVIEW | ✅ | Aprovado c/ ressalvas (aplicadas) |
 
 **Build:** 0 avisos, 0 erros em todas as branches. **Testes:** 381 → **410 aprovados, 0 ignorados, 0 falhas** (Application 31, Domain 120, Runtime 17, Smoke 134, Api 108), executados por mim ao fim de cada item.
 **Migrations:** 1 nova e aditiva — `20261107024024_RuntimeLoggedOut` (`AddColumn<bool> LoggedOut`, padrão `false`; `Down` remove).

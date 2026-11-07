@@ -5,7 +5,7 @@ Version: 1.0
 Data: 2026-11-06
 Autor: Arquitetura (Chefe de Arquitetura) — decisão de arquitetura (ADR-016); sem efeito de Game Design
 Contrato: `PV-EVENT-012` (Fila 8). Resolve o R-058; parte do R-060.
-Relaciona: ADR-049 (Typed Event Bus), ADR-050 (Domain Events), `developer-guide/domain/events.md` (DRAFT)
+Relaciona: ADR-049 (Typed Event Bus), ADR-050 (Domain Events), `developer-guide/domain/events.md` (DRAFT na emissão; **LOCKED** em 2026-11-06 pelo `PV-GOV-013`)
 
 ---
 
