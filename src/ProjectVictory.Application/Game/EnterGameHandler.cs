@@ -67,8 +67,8 @@ public sealed class EnterGameHandler
 
         if (character is null)
         {
-            throw new InvalidOperationException(
-                "No character found for account.");
+            // PV-FIX-001 (R-069): exceção tipada (404 na API); continua sendo InvalidOperationException.
+            throw new NoCharacterForAccountException();
         }
 
         var runtime =

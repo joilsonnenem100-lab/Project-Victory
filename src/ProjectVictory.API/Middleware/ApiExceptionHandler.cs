@@ -136,6 +136,25 @@ public sealed class ApiExceptionHandler : IExceptionHandler
         }
 
 
+        // PV-FIX-001 (R-069): "entrar no mundo" sem personagem na conta → 404 (antes: 500 genérico).
+        if (exception is ProjectVictory.Application.Game.NoCharacterForAccountException)
+        {
+            httpContext.Response.StatusCode =
+                StatusCodes.Status404NotFound;
+
+            await httpContext.Response.WriteAsJsonAsync(
+                new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Not Found",
+                    Detail = exception.Message
+                },
+                cancellationToken);
+
+            return true;
+        }
+
+
         httpContext.Response.StatusCode =
             StatusCodes.Status500InternalServerError;
 
