@@ -86,6 +86,14 @@ public sealed class CombatResolver : ICombatResolver
                 }
 
                 var missing = action.Actor.MaximumHealth - action.Actor.CurrentHealth;
+
+                // Ressalva C da revisão do PV-COMBAT-014: com vida cheia não há o que curar — a spell
+                // não é lançada e NÃO gasta Mana (antes: Executed com cura 0 e Mana gasta).
+                if (missing <= 0)
+                {
+                    return CombatActionOutcome.NotExecuted;
+                }
+
                 var healing = Math.Min(spell.RawHealingFor(action.Actor.Level, action.Actor.MaximumHealth), missing);
 
                 return new CombatActionOutcome(0, healing, 0, spell.ManaCost, true);

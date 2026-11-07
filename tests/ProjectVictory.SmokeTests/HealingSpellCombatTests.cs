@@ -156,6 +156,64 @@ public sealed class HealingSpellCombatTests
             second.Log.Select(e => (e.Kind, e.Damage, e.Healing, e.TargetHealthAfter)));
     }
 
+    // Ressalva C da revisão do PV-COMBAT-014: vida cheia → NotExecuted, sem gastar Mana.
+    [Fact]
+    public void Resolver_AtFullHealth_DoesNotCastAndSpendsNoMana()
+    {
+        var full = Player(maxHealth: 200, health: 200, mana: 100);
+
+        var outcome = Resolver().ResolveAction(new CombatTurnAction(full, full, CombatActionKind.UseHealingSpell), new CountingRandom());
+
+        Assert.False(outcome.Executed);
+        Assert.Equal(0, outcome.Healing);
+        Assert.Equal(0, outcome.ManaCost);
+        Assert.Equal(100, full.CurrentMana);
+    }
+
+    // Ressalva A da revisão do PV-COMBAT-014: o seletor RESOLVIDO PELA COMPOSIÇÃO REAL (DI) escolhe a
+    // spell de cura com a vida abaixo do limite e Mana suficiente — prova que a política está ligada.
+    [Fact]
+    public void Composition_ResolvedSelector_ChoosesHealingSpell_WhenBelowLimitWithMana()
+    {
+        var services = new ServiceCollection();
+        services.AddProjectVictorySmokeTestServices();
+        using var provider = services.BuildServiceProvider();
+        using var scope = provider.CreateScope();
+
+        var selector = scope.ServiceProvider.GetRequiredService<ICombatActionSelector>();
+        Assert.IsType<SupplyAwareCombatActionSelector>(selector);
+
+        var hurt = Player(maxHealth: 200, health: 90, mana: 100); // 45% < 50% (limite padrão)
+        Assert.Equal(CombatActionKind.UseHealingSpell, selector.SelectSecondaryChoice(Session(hurt), hurt)!.Kind);
+
+        // Acima do limite: não escolhe a spell.
+        var fine = Player(maxHealth: 200, health: 150, mana: 100);
+        Assert.NotEqual(CombatActionKind.UseHealingSpell, selector.SelectSecondaryChoice(Session(fine), fine)?.Kind);
+
+        // Sem Mana: não escolhe a spell.
+        var dry = Player(maxHealth: 200, health: 90, mana: KnightHeal.ManaCost - 1);
+        Assert.NotEqual(CombatActionKind.UseHealingSpell, selector.SelectSecondaryChoice(Session(dry), dry)?.Kind);
+    }
+
+    // Ressalva A: o orquestrador resolvido pela composição cura o jogador ferido de ponta a ponta.
+    [Fact]
+    public void Composition_ResolvedOrchestrator_HealsHurtPlayer()
+    {
+        var services = new ServiceCollection();
+        services.AddProjectVictorySmokeTestServices();
+        using var provider = services.BuildServiceProvider();
+        using var scope = provider.CreateScope();
+
+        var orchestrator = scope.ServiceProvider.GetRequiredService<CombatOrchestrator>();
+        var player = Player(level: 1, maxHealth: 200, health: 40, mana: 100);
+
+        var report = orchestrator.ExecuteRound(Session(player, seed: 7));
+
+        var heal = Assert.Single(report.Log, e => e.Kind == CombatActionKind.UseHealingSpell);
+        Assert.Equal(player.Id, heal.TargetId);
+        Assert.True(heal.Healing > 0);
+    }
+
     [Fact]
     public void Composition_RegistersTheDefaultPolicy()
     {

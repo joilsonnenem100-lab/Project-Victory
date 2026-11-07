@@ -18,7 +18,7 @@ Monstros: inalterado (Monster AI).
 
 ## Leituras PROVISÓRIAS (onde trocar)
 1. **Hipótese de trabalho: "% fixa da vida" = % da vida MÁXIMA** (PO-DECISOES-BASE, "Ponto a confirmar com o PO"). Trocar em `HealingSpellDefinition.RawHealingFor` (`Domain/Combat/Rules/ClassHealingSpells.cs`).
-2. **Faixas de Level e porcentagens** — todas as vocações: Level 1 → 10 %, 20 → 15 %, 50 → 20 %, 100 → 25 %; **Druid** (PO-01, "cura própria"): +5 pontos em cada faixa (15/20/25/30 %). Trocar em `ClassHealingSpellTable.StandardBands` / `DruidBands`.
+2. **Faixas de Level e porcentagens** — todas as vocações: Level 1 → 10 %, 20 → 15 %, 50 → 20 %, 100 → 25 %; **Druid** (PO-01, "cura própria"): +5 pontos em cada faixa (15/20/25/30 %) — **inferência do PO-01** (o PO-01 diz só "cura própria"; o bônus de +5 pontos não está escrito em lugar nenhum; levado às perguntas ao PO abaixo). Trocar em `ClassHealingSpellTable.StandardBands` / `DruidBands`.
 3. **Custo de Mana = 20** para todas as vocações. Trocar em `ClassHealingSpellTable.DefaultManaCost` (ou por linha da tabela).
 4. **Nomes** (genéricos, estilo Tibia): Wound Mending (Knight), Divine Mending (Paladin), Arcane Mending (Sorcerer), Nature Mending (Druid), Inner Mending (Monk). Trocar em `ClassHealingSpellTable.All`.
 5. **Limite do seletor = 50 % da vida máxima.** Trocar por configuração `Combat:HealingSpellBelowPercent` (0 desliga) ou em `HealingSpellPolicy.DefaultBelowPercent`.
@@ -39,3 +39,13 @@ Cliente (mostrar a cura no log/HUD; opção do jogador para a spell); spells de 
 - `Domain.Tests/ClassHealingSpellTableTests` (12): 1 spell por vocação com custo de Mana; tabela por faixa de Level (1, 19, 20, 49, 50, 99, 100, 500); Druid +5; cura bruta (arredondamento e mínimo 1); política (limite, desligada, 0).
 - `SmokeTests/HealingSpellCombatTests` (7), com o `CombatResolver` real: cura = % da vida máxima pela faixa e custa Mana sem consumir aleatoriedade; cura limitada ao máximo; sem Mana (ou sem spell) não cura; seletor (spell primeiro com Mana; poção de vida como reserva; poção de vida entre os limites; poção de Mana; política desligada = comportamento antigo; sem Mana não escolhe a spell); orquestrador (a spell cura o próprio ator, gasta Mana, e duas execuções com a mesma semente geram o mesmo log); composição registra o limite padrão.
 - Resultado: build 0 avisos; **455 testes** verdes (436 + 12 + 7).
+
+## Ressalvas da revisão (A–D) — Fila Noturna 1, commit próprio
+- **A — cura ligada na composição real:** confirmada, sem correção de código. `SmokeTests/HealingSpellCombatTests`: `Composition_ResolvedSelector_ChoosesHealingSpell_WhenBelowLimitWithMana` (o `ICombatActionSelector` resolvido pelo DI é o `SupplyAwareCombatActionSelector` e escolhe `UseHealingSpell` com vida 45 % e Mana; não escolhe acima do limite nem sem Mana) e `Composition_ResolvedOrchestrator_HealsHurtPlayer` (o `CombatOrchestrator` do DI cura o jogador ferido). Pela API real: `Api.Tests/HealingSpellConfigurationTests.DefaultConfiguration_IsFiftyPercent_AndTheResolvedSelectorUsesIt`.
+- **B — configuração inválida derruba o startup:** `Api.Tests/HealingSpellConfigurationTests.OutOfRange_FailsStartup` (-1 e 101; a falha tem de vir do `InvalidOperationException` que cita `Combat:HealingSpellBelowPercent`) e `ServerConfiguration_ChangesTheLimit` (30), no padrão do `ExperienceRateConfigurationTests`.
+- **C — vida cheia:** o `CombatResolver` devolvia `Executed` com cura 0 e gastava Mana; agora devolve `NotExecuted` sem gastar Mana (`Resolver_AtFullHealth_DoesNotCastAndSpendsNoMana`). O seletor já não escolhia a spell com vida cheia (só abaixo do limite), então nenhum desfecho de combate pela composição muda.
+- **D — provisório do Druid:** marcado como **inferência do PO-01** (leitura 2 acima).
+
+## Perguntas ao PO
+1. **Bônus de cura do Druid (inferência do PO-01):** o PO-01 diz que o Druid tem "cura própria"; a implementação dá **+5 pontos percentuais** em cada faixa (15/20/25/30 % contra 10/15/20/25 % das outras vocações). Confirma esse bônus, outro valor, ou nenhum bônus (a "cura própria" seria só a spell que todas as vocações já têm pelo PO-53)?
+2. "% fixa da vida" = % da vida **máxima** (leitura 1) — confirmar.
