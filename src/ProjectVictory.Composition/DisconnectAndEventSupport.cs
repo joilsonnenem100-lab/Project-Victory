@@ -47,3 +47,24 @@ public sealed class LoggingEventFailureSink : IEventFailureSink
             subscriber.Name, domainEvent.GetType().Name, domainEvent.EventId);
     }
 }
+
+// PV-HUD-ANALYZER-010 (ressalva R1): falhas de observadores do Reward (ex.: Hunt Analyzer) vão para o
+// log do host e ficam registradas em memória; a entrega da recompensa segue normalmente.
+public sealed class LoggingRewardObserverFailureSink : ProjectVictory.Application.Reward.IRewardObserverFailureSink
+{
+    private readonly ILogger<LoggingRewardObserverFailureSink>? _logger;
+
+    public LoggingRewardObserverFailureSink(ILogger<LoggingRewardObserverFailureSink>? logger = null)
+    {
+        _logger = logger;
+    }
+
+    public ProjectVictory.Application.Reward.RecordingRewardObserverFailureSink Recorded { get; } = new();
+
+    public void Report(Type observer, Guid characterId, Exception error)
+    {
+        Recorded.Report(observer, characterId, error);
+        _logger?.LogError(error, "Observador {Observer} do Reward falhou (personagem {CharacterId}); falha isolada, recompensa entregue.",
+            observer.Name, characterId);
+    }
+}

@@ -30,3 +30,10 @@ Cliente (aba "Analyzer"); preço congelado por item; consumo de suprimentos alé
 
 ## Testes
 Domain.Tests `HuntAnalyzerCalculatorTests` (fórmulas, XP/hora com 0 s, lucro líquido negativo). SmokeTests `HuntAnalyzerSmokeTests` (apuração + resumo gravado e corte em N pelo assinante). Api.Tests `HuntAnalyzerHttpTests` (401 sem token; 403 personagem de outra conta; Analyzer durante a Hunt com XP depois de um encounter vencido; histórico depois de sair da Hunt). Resultado: build 0 avisos; 420 testes verdes (410 + 4 unidade + 2 smoke + 3 E2E + 1 caso novo da convenção de autorização dos controllers).
+
+## Ressalvas da revisão (R1–R4), aplicadas em 2026-11-07
+- **R1:** `RewardResolutionHandler` isola a falha do `IRewardDeliveryObserver` (try/catch); a falha vai para `IRewardObserverFailureSink` (novo, opcional, no módulo Reward) e a composição registra no log do host (`LoggingRewardObserverFailureSink`). A recompensa é entregue normalmente.
+- **R2:** `HuntAnalyzerHistoryStore.AddAsync` desanexa do change tracker as linhas do resumo quando a gravação falha (a falha continua indo ao sink do ADR-058); o próximo `SaveChanges` do mesmo escopo não regrava a linha.
+- **R3:** `HuntAnalyzerHttpTests.UnknownCharacter_Is403`.
+- **R4:** no ramo de fim de Hunt dentro do primeiro encounter, o fim só pode ser por morte e o monstro não foi derrotado: `huntExperience > 0` não cabe; o teste confere `Death` e XP = 0.
+- Testes: +2 smoke (`RewardObserverFailure_IsIsolatedAndLogged_RewardStillDelivered`, `HistoryStore_SaveFailure_DetachesTheRow_SoItIsNotSavedAgain`) e +1 E2E. Build 0 avisos; 436 verdes.

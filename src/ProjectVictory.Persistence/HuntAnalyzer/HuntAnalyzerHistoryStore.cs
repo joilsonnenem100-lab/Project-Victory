@@ -54,40 +54,59 @@ public sealed class HuntAnalyzerHistoryStore : IHuntAnalyzerHistoryStore
         ArgumentNullException.ThrowIfNull(summary);
         ArgumentOutOfRangeException.ThrowIfLessThan(keep, 1);
 
-        var existing = await _context.HuntAnalyzerSummaries.FindAsync([summary.HuntId], cancellationToken);
-        var row = existing ?? new PersistentHuntAnalyzerSummaryState { HuntId = summary.HuntId };
-
-        row.CharacterId = summary.CharacterId;
-        row.EndReason = summary.EndReason;
-        row.EndedAtUnixMilliseconds = summary.EndedAt.ToUnixTimeMilliseconds();
-        row.ExperienceGained = summary.Report.ExperienceGained;
-        row.ElapsedSeconds = summary.Report.ElapsedSeconds;
-        row.ExperiencePerHour = summary.Report.ExperiencePerHour;
-        row.Debit = summary.Report.Debit;
-        row.LootValue = summary.Report.LootValue;
-        row.Gold = summary.Report.Gold;
-        row.Profit = summary.Report.Profit;
-        row.NetProfit = summary.Report.NetProfit;
-        row.SuppliesUsed = summary.Report.SuppliesUsed;
-        row.ItemsLooted = summary.Report.ItemsLooted;
-
-        if (existing is null)
+        // Ressalva R2: o DbContext é o do escopo do EndHunt (assinante isolado, ADR-058). Se a gravação
+        // falhar, as linhas do resumo saem do change tracker, para não ficarem presas e serem regravadas
+        // pelo próximo SaveChanges do mesmo escopo. A falha continua indo para o publisher (sink/log).
+        try
         {
-            _context.HuntAnalyzerSummaries.Add(row);
-        }
+            var existing = await _context.HuntAnalyzerSummaries.FindAsync([summary.HuntId], cancellationToken);
+            var row = existing ?? new PersistentHuntAnalyzerSummaryState { HuntId = summary.HuntId };
 
-        await _context.SaveChangesAsync(cancellationToken);
+            row.CharacterId = summary.CharacterId;
+            row.EndReason = summary.EndReason;
+            row.EndedAtUnixMilliseconds = summary.EndedAt.ToUnixTimeMilliseconds();
+            row.ExperienceGained = summary.Report.ExperienceGained;
+            row.ElapsedSeconds = summary.Report.ElapsedSeconds;
+            row.ExperiencePerHour = summary.Report.ExperiencePerHour;
+            row.Debit = summary.Report.Debit;
+            row.LootValue = summary.Report.LootValue;
+            row.Gold = summary.Report.Gold;
+            row.Profit = summary.Report.Profit;
+            row.NetProfit = summary.Report.NetProfit;
+            row.SuppliesUsed = summary.Report.SuppliesUsed;
+            row.ItemsLooted = summary.Report.ItemsLooted;
 
-        var surplus = await _context.HuntAnalyzerSummaries
-            .Where(x => x.CharacterId == summary.CharacterId)
-            .OrderByDescending(x => x.EndedAtUnixMilliseconds)
-            .Skip(keep)
-            .ToListAsync(cancellationToken);
+            if (existing is null)
+            {
+                _context.HuntAnalyzerSummaries.Add(row);
+            }
 
-        if (surplus.Count > 0)
-        {
-            _context.HuntAnalyzerSummaries.RemoveRange(surplus);
             await _context.SaveChangesAsync(cancellationToken);
+
+            var surplus = await _context.HuntAnalyzerSummaries
+                .Where(x => x.CharacterId == summary.CharacterId)
+                .OrderByDescending(x => x.EndedAtUnixMilliseconds)
+                .Skip(keep)
+                .ToListAsync(cancellationToken);
+
+            if (surplus.Count > 0)
+            {
+                _context.HuntAnalyzerSummaries.RemoveRange(surplus);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+        catch
+        {
+            DetachSummaries();
+            throw;
+        }
+    }
+
+    private void DetachSummaries()
+    {
+        foreach (var entry in _context.ChangeTracker.Entries<PersistentHuntAnalyzerSummaryState>().ToList())
+        {
+            entry.State = EntityState.Detached;
         }
     }
 

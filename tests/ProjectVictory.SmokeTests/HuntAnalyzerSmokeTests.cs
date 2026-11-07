@@ -6,6 +6,12 @@ using ProjectVictory.Application.Events;
 using ProjectVictory.Application.Game;
 using ProjectVictory.Application.Hunt;
 using ProjectVictory.Application.HuntAnalyzer;
+using ProjectVictory.Application.Reward;
+using ProjectVictory.Composition;
+using ProjectVictory.Domain.Combat;
+using ProjectVictory.Domain.Hunt;
+using ProjectVictory.Persistence.HuntAnalyzer;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using ProjectVictory.Domain.Character;
 using ProjectVictory.Domain.Events;
 using ProjectVictory.Domain.Items;
@@ -30,7 +36,7 @@ public sealed class HuntAnalyzerSmokeTests
         }
     }
 
-    private static async Task<World> NewWorld(HuntAnalyzerSettings? settings = null)
+    private static async Task<World> NewWorld(HuntAnalyzerSettings? settings = null, Action<IServiceCollection>? configure = null)
     {
         var clock = new ManualTimeProvider();
         var services = new ServiceCollection();
@@ -44,6 +50,8 @@ public sealed class HuntAnalyzerSmokeTests
         {
             services.AddSingleton(settings);
         }
+
+        configure?.Invoke(services);
 
         var provider = services.BuildServiceProvider();
         var scope = provider.CreateScope();
@@ -128,5 +136,79 @@ public sealed class HuntAnalyzerSmokeTests
         Assert.Equal(-106, analyzer.NetProfit);
         Assert.Equal(1200, analyzer.ExperiencePerHour);
         Assert.Null(tally.Get(hunts[2])); // apuração descartada no fim da Hunt
+    }
+
+    // Ressalva R1: a falha do observador do Reward (ex.: Analyzer) é isolada e registrada; a recompensa
+    // (XP da Hunt) continua sendo entregue.
+    private sealed class ThrowingObserver : IRewardDeliveryObserver
+    {
+        public void OnLootDelivered(CombatResult combatResult, LootResolutionResult loot) =>
+            throw new InvalidOperationException("observador quebrado (teste)");
+    }
+
+    [Fact]
+    public async Task RewardObserverFailure_IsIsolatedAndLogged_RewardStillDelivered()
+    {
+        await using var world = await NewWorld(configure: s => s.AddScoped<IRewardDeliveryObserver, ThrowingObserver>());
+        var hunt = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+
+        AttackEncounterResult? last = null;
+        for (var i = 0; i < 300 && last?.CombatFinished != true; i++)
+        {
+            last = await world.Get<AttackEncounterHandler>().Handle(new AttackEncounterCommand(hunt.Encounter.Id));
+        }
+
+        Assert.Equal("Victory", last!.CombatState);
+        Assert.True(last.HuntExperienceGained > 0);
+        // Uma falha registrada por entrega de loot (o encounter pode ter mais de um monstro).
+        var failures = world.Get<LoggingRewardObserverFailureSink>().Recorded.Failures;
+        Assert.NotEmpty(failures);
+        Assert.All(failures, failure =>
+        {
+            Assert.Equal(typeof(ThrowingObserver), failure.Observer);
+            Assert.Equal(world.CharacterId, failure.CharacterId);
+        });
+    }
+
+    // Ressalva R2: se a gravação do resumo falhar, a linha sai do change tracker e não é regravada pelo
+    // próximo SaveChanges do mesmo DbContext (o do escopo do EndHunt).
+    private sealed class FailFirstSaveInterceptor : SaveChangesInterceptor
+    {
+        public int Calls { get; private set; }
+
+        public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+            DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
+        {
+            if (Calls++ == 0)
+            {
+                throw new InvalidOperationException("falha de gravação (teste)");
+            }
+
+            return base.SavingChangesAsync(eventData, result, cancellationToken);
+        }
+    }
+
+    [Fact]
+    public async Task HistoryStore_SaveFailure_DetachesTheRow_SoItIsNotSavedAgain()
+    {
+        var interceptor = new FailFirstSaveInterceptor();
+        var options = new DbContextOptionsBuilder<ProjectVictoryDbContext>()
+            .UseInMemoryDatabase($"analyzer-r2-{Guid.NewGuid():N}")
+            .AddInterceptors(interceptor)
+            .Options;
+        await using var context = new ProjectVictoryDbContext(options);
+        var store = new HuntAnalyzerHistoryStore(context);
+        var characterId = Guid.NewGuid();
+        var report = new HuntAnalyzerReport(10, 60, 600, 0, 0, 0, 0, 0, 0, 0);
+        var failed = new HuntAnalyzerSummary(Guid.NewGuid(), characterId, "Manual", DateTimeOffset.UnixEpoch.AddMinutes(1), report);
+        var saved = new HuntAnalyzerSummary(Guid.NewGuid(), characterId, "Manual", DateTimeOffset.UnixEpoch.AddMinutes(2), report);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => store.AddAsync(failed, 10));
+        Assert.Empty(context.ChangeTracker.Entries<PersistentHuntAnalyzerSummaryState>());
+
+        await store.AddAsync(saved, 10);
+
+        var history = await store.GetRecentAsync(characterId, 10);
+        Assert.Equal([saved.HuntId], history.Select(h => h.HuntId));
     }
 }

@@ -55,6 +55,18 @@ public sealed class HuntAnalyzerHttpTests
         }
     }
 
+    // Ressalva R3: personagem inexistente também é 403 (não revela ids; PlayerOwnershipGuard, PV-SEC-001).
+    [Fact]
+    public async Task UnknownCharacter_Is403()
+    {
+        var player = await NewPlayer();
+        using var client = player.Client;
+        var unknown = Guid.NewGuid();
+
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync($"/api/hunt/analyzer/{unknown}")).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync($"/api/hunt/analyzer/{unknown}/history")).StatusCode);
+    }
+
     [Fact]
     public async Task DuringTheHunt_IsLive_AfterLeaving_HistoryHasTheSummary()
     {
@@ -111,6 +123,14 @@ public sealed class HuntAnalyzerHttpTests
 
             (await client.PostAsJsonAsync("/api/hunt/leave", new { huntId })).EnsureSuccessStatusCode();
             endReason = "Manual";
+        }
+        else
+        {
+            // Ressalva R4: a Hunt terminou dentro do PRIMEIRO encounter. Fim por morte = o único monstro
+            // não foi derrotado, então o Reward Pipeline não entregou XP: "huntExperience > 0" não cabe
+            // aqui; o que se confere é XP = 0 (e o histórico abaixo repete esse valor).
+            Assert.Equal("Death", endReason);
+            Assert.Equal(0, huntExperience);
         }
 
         var history = await client.GetFromJsonAsync<JsonElement>($"/api/hunt/analyzer/{player.CharacterId}/history");

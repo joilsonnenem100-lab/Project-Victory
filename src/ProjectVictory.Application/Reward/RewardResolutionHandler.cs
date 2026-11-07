@@ -15,6 +15,7 @@ public sealed class RewardResolutionHandler
     private readonly IExperienceDistributor _experienceDistributor;
     private readonly IRewardDeliveryObserver? _deliveryObserver;
     private readonly IExperienceRateProvider? _experienceRateProvider;
+    private readonly IRewardObserverFailureSink? _observerFailures;
 
 
     public RewardResolutionHandler(
@@ -41,8 +42,11 @@ public sealed class RewardResolutionHandler
         IRewardDeliveryObserver? deliveryObserver = null,
         // PV-ADMIN-010 (aditivo, opcional): XP rate efetivo (valor do administrador ou configuração).
         // Sem provedor: o XP rate da configuração, como antes.
-        IExperienceRateProvider? experienceRateProvider = null)
+        IExperienceRateProvider? experienceRateProvider = null,
+        // PV-HUD-ANALYZER-010 R1 (aditivo, opcional): destino das falhas do observador (log do host).
+        IRewardObserverFailureSink? observerFailures = null)
     {
+        _observerFailures = observerFailures;
         _experienceRateProvider = experienceRateProvider;
         _deliveryObserver = deliveryObserver;
         _experienceDistributor =
@@ -59,6 +63,24 @@ public sealed class RewardResolutionHandler
 
         _applyLootHandler =
             applyLootHandler;
+    }
+
+
+    private void NotifyObserver(CombatResult combatResult, LootResolutionResult lootResult)
+    {
+        if (_deliveryObserver is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _deliveryObserver.OnLootDelivered(combatResult, lootResult);
+        }
+        catch (Exception error) when (error is not OperationCanceledException)
+        {
+            _observerFailures?.Report(_deliveryObserver.GetType(), combatResult.CharacterId, error);
+        }
     }
 
 
@@ -81,7 +103,8 @@ public sealed class RewardResolutionHandler
             cancellationToken);
 
         // PV-HUD-ANALYZER-010: avisa o observador (só leitura) do loot e do ouro entregues.
-        _deliveryObserver?.OnLootDelivered(combatResult, lootResult);
+        // Ressalva R1: a falha do observador é isolada (vai para o sink/log) e não afeta o Reward.
+        NotifyObserver(combatResult, lootResult);
 
 
         // PV-REWARD-010: XP da definição do monstro × XP rate do servidor (DEC-20261106-12).

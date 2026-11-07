@@ -226,6 +226,10 @@ public static class ProjectVictoryServiceCollectionExtensions
             services, ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerSettings.Default);
         services.AddSingleton<ProjectVictory.Application.HuntAnalyzer.IHuntAnalyzerTally, ProjectVictory.Application.HuntAnalyzer.InMemoryHuntAnalyzerTally>();
         services.AddScoped<IRewardDeliveryObserver, ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerLootObserver>();
+        // PV-HUD-ANALYZER-010 R1: falha do observador isolada e registrada no log (não derruba o Reward).
+        services.AddSingleton<ProjectVictory.Composition.LoggingRewardObserverFailureSink>();
+        services.AddSingleton<ProjectVictory.Application.Reward.IRewardObserverFailureSink>(provider =>
+            provider.GetRequiredService<ProjectVictory.Composition.LoggingRewardObserverFailureSink>());
         services.AddScoped<ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerPricing>();
         services.AddScoped<ProjectVictory.Application.HuntAnalyzer.IHuntAnalyzerHistoryStore, ProjectVictory.Persistence.HuntAnalyzer.HuntAnalyzerHistoryStore>();
         services.AddScoped<ProjectVictory.Application.HuntAnalyzer.GetHuntAnalyzerHandler>();
