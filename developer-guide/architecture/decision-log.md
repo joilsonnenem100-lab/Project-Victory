@@ -856,7 +856,7 @@ Status: **Accepted (Arquiteto)** — implementa ADR-057 v1.2 / `DEC-20261106-20`
 Status: **Accepted (Arquiteto)** — `PV-RUNTIME-011`, Handbook §18, ADR-057
 
 - No startup, depois das migrations: recarrega personagem + Runtime dos checkpoints e reconstrói o contexto na tela inicial (Idle), vida/mana limitadas ao máximo; Runtime órfão é ignorado; falha registrada sem derrubar o servidor.
-- Hunt Session não é recuperada; reinício do servidor não dispara o retorno automático à última Hunt (pergunta ao PO).
+- Hunt Session não é recuperada; ~~reinício do servidor não dispara o retorno automático à última Hunt (pergunta ao PO).~~ *Emendado pelo `DEC-20261106-47` (Fila 8): o reinício vale como queda.*
 
 ## DEC-20261106-43 — Event Bus tipado e Domain Events (decisão do Arquiteto, Fila 7)
 

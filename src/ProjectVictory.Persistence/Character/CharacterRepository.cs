@@ -99,6 +99,28 @@ public sealed class CharacterRepository : ICharacterRepository
 
 
 
+    // PV-RUNTIME-012 (R-056): uma consulta para o lote inteiro (Recovery do startup).
+    public async Task<IReadOnlyList<DomainCharacter>> GetByIdsAsync(
+        IReadOnlyCollection<Guid> ids,
+        CancellationToken cancellationToken = default)
+    {
+        if (ids.Count == 0)
+        {
+            return [];
+        }
+
+        var states =
+            await _context.Characters
+                .AsNoTracking()
+                .Include(x => x.InventoryItems)
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync(cancellationToken);
+
+        return states.Select(RestoreCharacter).ToList();
+    }
+
+
+
     public async Task<DomainCharacter?> GetByAccountIdAsync(
         Guid accountId,
         CancellationToken cancellationToken = default)

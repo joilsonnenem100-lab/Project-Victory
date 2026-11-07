@@ -61,6 +61,10 @@ public interface IPresenceTracker
     // Revisão do PV-HUNT-012 (ressalva 2): desfaz a marcação de queda (o tratamento falhou), para a
     // próxima varredura detectar de novo. Não mexe no LastSeen.
     void UnmarkDropped(Guid characterId);
+
+    // PV-RUNTIME-012 (DEC-20261106-47): reinício do servidor = queda. O Recovery marca o personagem
+    // como caído; o próximo Touch (heartbeat) começa a contagem do retorno, como numa queda comum.
+    void MarkDroppedByRestart(Guid accountId, Guid characterId, DateTimeOffset now);
 }
 
 public sealed class PresenceTracker : IPresenceTracker
@@ -141,6 +145,9 @@ public sealed class PresenceTracker : IPresenceTracker
             }
         }
     }
+
+    public void MarkDroppedByRestart(Guid accountId, Guid characterId, DateTimeOffset now) =>
+        _presence[characterId] = new PresenceSnapshot(accountId, characterId, now, now, true, false);
 
     public PresenceSnapshot? Get(Guid characterId) =>
         _presence.TryGetValue(characterId, out var current) ? current : null;

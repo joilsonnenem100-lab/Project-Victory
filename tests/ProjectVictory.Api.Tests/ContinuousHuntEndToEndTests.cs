@@ -15,7 +15,8 @@ namespace ProjectVictory.Api.Tests;
 // - Hunt contínua com 2+ encounters (PV-HUNT-011);
 // - queda > 1 min encerra; queda curta (inclusive exatamente 60 s) não encerra (PV-HUNT-012);
 // - ao voltar: tela inicial; > 10 s online → NOVA Hunt na última Hunt escolhida (PV-RUNTIME-010);
-// - reinício do servidor: personagem e Runtime voltam, a Hunt não (PV-RUNTIME-011, ADR-057).
+// - reinício do servidor: personagem e Runtime voltam, a Hunt não (PV-RUNTIME-011, ADR-057); o
+//   reinício vale como queda — retorno após > 10 s online (PV-RUNTIME-012, DEC-20261106-47).
 // O tempo é controlado por um relógio manual injetado no host; a varredura automática fica desligada
 // (GameSession:SweepIntervalSeconds = 0) e é disparada pelo teste.
 [Collection("Api")]
@@ -210,7 +211,9 @@ public sealed class ContinuousHuntEndToEndTests
     }
 
     [Fact]
-    public async Task ServerRestart_CharacterAndRuntimeBack_HuntNot_NoAutomaticReturn()
+    // PV-RUNTIME-012 (DEC-20261106-47): o reinício passou a valer como QUEDA — antes este teste fixava
+    // "sem retorno automático" (pergunta ao PO da Fila 7, respondida na Fila 8).
+    public async Task ServerRestart_CharacterAndRuntimeBack_HuntNot_ReturnsAfter10sOnlineLikeADrop()
     {
         using var server = new Server();
         var player = await EnterWorld(server);
@@ -234,13 +237,18 @@ public sealed class ContinuousHuntEndToEndTests
         Assert.Equal(xp, character.GetProperty("experience").GetInt64());
         Assert.Equal(JsonValueKind.Null, (await Heartbeat(again)).GetProperty("huntId").ValueKind);
 
-        // O reinício não é uma "queda" detectada: sem retorno automático (pergunta ao PO no relatório).
-        server.Clock.Advance(TimeSpan.FromSeconds(30));
+        // Reinício = queda: depois de MAIS que 10 s online, NOVA Hunt na última Hunt escolhida.
+        server.Clock.Advance(TimeSpan.FromSeconds(10));
         Assert.False((await Heartbeat(again)).GetProperty("returnedToLastHunt").GetBoolean());
+        server.Clock.Advance(TimeSpan.FromSeconds(1));
+        var returned = await Heartbeat(again);
+        Assert.True(returned.GetProperty("returnedToLastHunt").GetBoolean());
+        Assert.Equal("Spider Cave", returned.GetProperty("lastHuntArea").GetString());
+        Assert.NotEqual(hunt.GetProperty("huntId").GetGuid(), returned.GetProperty("huntId").GetGuid());
 
-        // O jogador pode começar uma nova Hunt normalmente.
+        // O Runtime é o mesmo; com a Hunt de retorno em andamento, outra Hunt é recusada (DEC-20261106-46).
         var runtimeId = (await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>()).GetProperty("runtimeId").GetGuid();
         Assert.Equal(player.RuntimeId, runtimeId);
-        Assert.Equal(HttpStatusCode.OK, (await client.PostAsJsonAsync("/api/hunt/execute", new { characterId = player.CharacterId, runtimeId })).StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, (await client.PostAsJsonAsync("/api/hunt/execute", new { characterId = player.CharacterId, runtimeId })).StatusCode);
     }
 }

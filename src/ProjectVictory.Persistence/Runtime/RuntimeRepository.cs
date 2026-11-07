@@ -44,9 +44,11 @@ public sealed class RuntimeRepository : IRuntimeRepository
         var state =
             await _context.RuntimeStates
                 .AsNoTracking()
-                .FirstOrDefaultAsync(
-                    x => x.CharacterId == characterId,
-                    cancellationToken);
+                .Where(x => x.CharacterId == characterId)
+                // PV-RUNTIME-012 (R-056): ordem determinística — com mais de um Runtime do mesmo
+                // personagem (índice não único), vale o primeiro por RuntimeId, o mesmo do Recovery.
+                .OrderBy(x => x.RuntimeId)
+                .FirstOrDefaultAsync(cancellationToken);
 
         if (state is null)
         {
@@ -114,6 +116,9 @@ public sealed class RuntimeRepository : IRuntimeRepository
         CancellationToken cancellationToken = default) =>
         await _context.RuntimeStates
             .AsNoTracking()
+            // PV-RUNTIME-012 (R-056): ordem determinística (personagem, Runtime).
+            .OrderBy(state => state.CharacterId)
+            .ThenBy(state => state.RuntimeId)
             .Select(state => new RuntimeRecoveryData(
                 state.RuntimeId,
                 state.CharacterId,

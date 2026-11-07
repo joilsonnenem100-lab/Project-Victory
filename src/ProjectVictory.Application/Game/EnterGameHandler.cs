@@ -62,20 +62,14 @@ public sealed class EnterGameHandler
         {
             runtimeId = runtime.RuntimeId;
 
-            _runtimeExecutionStateStore.Store(
-                new RuntimeExecutionContext(
-                    runtime.RuntimeId,
-                    runtime.CharacterId,
-                    runtime.Initialized,
-                    new CharacterRuntimeState(
-                        runtime.Health,
-                        runtime.Mana),
-                    new RuntimeGameplayContext(
-                        RuntimeActivity.Idle),
-                    new RuntimeWorldContext(
-                        Guid.Empty,
-                        Guid.Empty,
-                        Guid.Empty)));
+            // PV-RUNTIME-012 (fecha o R-055): o contexto em memória (reconstruído pelo Recovery ou vivo
+            // desta execução) NÃO é mais sobrescrito; sem ele, usa a MESMA reconstrução do Recovery
+            // (tela inicial "Victoria", vida/mana limitadas; vida 0 → cheia, DEC-20261106-48).
+            if (!_runtimeExecutionStateStore.Contains(runtime.RuntimeId))
+            {
+                _runtimeExecutionStateStore.Store(
+                    RuntimeReconstruction.FromCheckpoint(runtime, character));
+            }
         }
         else
         {
