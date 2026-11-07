@@ -70,7 +70,9 @@ public sealed class ApiExceptionHandler : IExceptionHandler
         if (exception is ProjectVictory.Application.Supply.InvalidSupplyPolicyException
             or ProjectVictory.Application.Hunt.InvalidHuntAreaException
             // PV-ADMIN-010: XP rate fora de (0, máximo] → 400.
-            or ProjectVictory.Application.Admin.InvalidExperienceRateException)
+            or ProjectVictory.Application.Admin.InvalidExperienceRateException
+            // PV-CHAR-013: nome fora do formato, classe/gênero/aparência desconhecidos → 400.
+            or ProjectVictory.Application.Character.InvalidCharacterRequestException)
         {
             httpContext.Response.StatusCode =
                 StatusCodes.Status400BadRequest;
@@ -93,7 +95,10 @@ public sealed class ApiExceptionHandler : IExceptionHandler
         if (exception is ProjectVictory.Application.Hunt.HuntAlreadyFinishedException
             or ProjectVictory.Application.Hunt.HuntAlreadyRunningException
             // Revisão do PV-QA-007 (ressalva 1): `automaticReturn` enviado pelo cliente estando deslogado → 409.
-            or ProjectVictory.Application.Hunt.AutomaticReturnCancelledException)
+            or ProjectVictory.Application.Hunt.AutomaticReturnCancelledException
+            // PV-CHAR-013: sem slot livre, classe repetida, nome em uso, exclusão já pendente/não pendente → 409.
+            or ProjectVictory.Application.Character.CharacterCreationConflictException
+            or ProjectVictory.Application.Character.CharacterDeletionConflictException)
         {
             httpContext.Response.StatusCode =
                 StatusCodes.Status409Conflict;

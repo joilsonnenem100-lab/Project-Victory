@@ -73,7 +73,7 @@ public sealed class SpiderCaveEndToEndTests
         var token = await factory.RegisterAndLoginAsync(client, $"e2e-{Guid.NewGuid():N}@test.com");
         ApiFactory.WithToken(client, token);
 
-        var name = $"E{Guid.NewGuid():N}"[..16];
+        var name = TestNames.Unique("E");
         var created = await client.PostAsJsonAsync("/api/character", new { name, characterClass });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();

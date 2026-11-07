@@ -34,7 +34,7 @@ public sealed class RuntimeRecoveryTests
             scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
 
             characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
-                .Handle(new CreateCharacterCommand("R" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
+                .Handle(new CreateCharacterCommand(TestNames.Unique("R"), CharacterClass.Knight));
             runtimeId = (await scope.ServiceProvider.GetRequiredService<EnterGameHandler>().Handle(new EnterGameCommand())).RuntimeId;
             await scope.ServiceProvider.GetRequiredService<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(characterId, runtimeId));
 
@@ -86,7 +86,7 @@ public sealed class RuntimeRecoveryTests
             using var scope = provider.CreateScope();
             scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
             characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
-                .Handle(new CreateCharacterCommand("M" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Sorcerer));
+                .Handle(new CreateCharacterCommand(TestNames.Unique("M"), CharacterClass.Sorcerer));
             var runtimeId = (await scope.ServiceProvider.GetRequiredService<EnterGameHandler>().Handle(new EnterGameCommand())).RuntimeId;
             await scope.ServiceProvider.GetRequiredService<IRuntimeRepository>().SaveCheckpointAsync(runtimeId, 1, 99_999);
         }

@@ -24,7 +24,7 @@ public sealed class HuntAnalyzerHttpTests
     {
         var client = _factory.CreateClient();
         ApiFactory.WithToken(client, await _factory.RegisterAndLoginAsync(client, $"analyzer-{Guid.NewGuid():N}@test.com"));
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"Z{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("Z"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
         var runtimeId = (await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>())

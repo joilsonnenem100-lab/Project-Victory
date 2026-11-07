@@ -94,7 +94,7 @@ public sealed class CoreGameplayFlowSmokeTest
         var characterId =
             await createCharacter.Handle(
                 new CreateCharacterCommand(
-                    "SmokeHero",
+                    TestNames.Unique("Smoke"),
                     CharacterClass.Knight));
 
 

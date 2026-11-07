@@ -260,7 +260,7 @@ public sealed class PotionTiersTests
         scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
 
         var characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
-            .Handle(new CreateCharacterCommand("K" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
+            .Handle(new CreateCharacterCommand(TestNames.Unique("K"), CharacterClass.Knight));
         var repository = scope.ServiceProvider.GetRequiredService<ICharacterRepository>();
 
         int Count(ProjectVictory.Domain.Entities.Character c, Guid id) => c.Inventory.Items.Count(i => i.ItemDefinitionId == id);

@@ -17,7 +17,7 @@ public sealed class TurnBasedCombatHttpTests
         var token = await factory.RegisterAndLoginAsync(client, $"turns-{Guid.NewGuid():N}@test.com");
         ApiFactory.WithToken(client, token);
 
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"T{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("T"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
 

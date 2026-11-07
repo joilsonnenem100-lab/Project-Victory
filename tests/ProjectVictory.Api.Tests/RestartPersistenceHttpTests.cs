@@ -21,7 +21,7 @@ public sealed class RestartPersistenceHttpTests
         var client = first.CreateClient();
         ApiFactory.WithToken(client, await first.RegisterAndLoginAsync(client, email));
 
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"R{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("R"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
 

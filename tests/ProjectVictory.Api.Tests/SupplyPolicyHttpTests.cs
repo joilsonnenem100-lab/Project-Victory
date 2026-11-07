@@ -21,7 +21,7 @@ public sealed class SupplyPolicyHttpTests
         var token = await _factory.RegisterAndLoginAsync(client, $"sup-{Guid.NewGuid():N}@test.com");
         ApiFactory.WithToken(client, token);
 
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"U{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("U"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
 
         return (client, await created.Content.ReadFromJsonAsync<Guid>());

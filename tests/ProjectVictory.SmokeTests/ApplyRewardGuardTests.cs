@@ -26,7 +26,7 @@ public sealed class ApplyRewardGuardTests
         scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
 
         var characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
-            .Handle(new CreateCharacterCommand("G" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
+            .Handle(new CreateCharacterCommand(TestNames.Unique("G"), CharacterClass.Knight));
 
         return (scope.ServiceProvider.GetRequiredService<ApplyRewardHandler>(),
             scope.ServiceProvider.GetRequiredService<ICharacterRepository>(), characterId, scope, provider);

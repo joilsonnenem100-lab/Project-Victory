@@ -95,7 +95,7 @@ public sealed class Fila8EndToEndTests
         var client = server.Current.CreateClient();
         var email = $"q8-{Guid.NewGuid():N}@test.com";
         ApiFactory.WithToken(client, await server.Root.RegisterAndLoginAsync(client, email));
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"Q{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("Q"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
         var runtimeId = (await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>())

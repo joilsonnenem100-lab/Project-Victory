@@ -25,7 +25,7 @@ public sealed class RuntimeIdReuseHttpTests
 
         var created = await client.PostAsJsonAsync(
             "/api/character",
-            new { name = $"S{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+            new { name = TestNames.Unique("S"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
 
         return (client, await created.Content.ReadFromJsonAsync<Guid>());

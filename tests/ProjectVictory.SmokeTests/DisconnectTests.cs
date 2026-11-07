@@ -50,7 +50,7 @@ public sealed class DisconnectTests
         }
 
         var characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
-            .Handle(new CreateCharacterCommand("D" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
+            .Handle(new CreateCharacterCommand(TestNames.Unique("D"), CharacterClass.Knight));
         var enter = await scope.ServiceProvider.GetRequiredService<EnterGameHandler>().Handle(new EnterGameCommand());
 
         return new World(provider, scope, characterId, enter.RuntimeId, clock);

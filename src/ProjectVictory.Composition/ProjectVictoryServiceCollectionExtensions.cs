@@ -126,6 +126,12 @@ public static class ProjectVictoryServiceCollectionExtensions
         services.AddSingleton<ProjectVictory.Application.DailyReward.DailyRewardGate>();
         services.AddScoped<ProjectVictory.Application.DailyReward.IDailyRewardClaimStore, ProjectVictory.Persistence.DailyReward.DailyRewardClaimStore>();
         services.AddScoped<ProjectVictory.Application.DailyReward.GrantDailyRewardHandler>();
+        // PV-CHAR-013 (PO-36 a PO-39): regras de personagem da conta.
+        services.AddSingleton<ProjectVictory.Application.Character.CharacterCreationGate>();
+        services.AddScoped<ProjectVictory.Application.Character.ICharacterProfileStore, ProjectVictory.Persistence.Character.CharacterProfileStore>();
+        services.AddScoped<ProjectVictory.Application.Character.CharacterCreationPolicy>();
+        services.AddScoped<ProjectVictory.Application.Character.GetCharacterSlotsHandler>();
+        services.AddScoped<ProjectVictory.Application.Character.CharacterDeletionHandler>();
         services.AddScoped<IExperienceRateProvider, ExperienceRateProvider>();
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(
             services, ProjectVictory.Application.Admin.AdminSettings.Default);

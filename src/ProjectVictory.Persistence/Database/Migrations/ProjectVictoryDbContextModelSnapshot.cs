@@ -71,7 +71,19 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.Property<int>("CharacterClass")
                         .HasColumnType("INTEGER");
 
+                    b.Property<long?>("DeletedAtUnixMilliseconds")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("DeletionRequestedAtUnixMilliseconds")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("DeletionScheduledForUnixMilliseconds")
+                        .HasColumnType("INTEGER");
+
                     b.Property<long>("Experience")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Gender")
                         .HasColumnType("INTEGER");
 
                     b.Property<long>("Gold")
@@ -90,6 +102,10 @@ namespace ProjectVictory.Persistence.Database.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Outfit")
+                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

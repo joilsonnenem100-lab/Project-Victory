@@ -94,7 +94,7 @@ public sealed class AdminExperienceRateSmokeTests
         {
             scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
             characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
-                .Handle(new CreateCharacterCommand("Admin" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
+                .Handle(new CreateCharacterCommand(TestNames.Unique("Admin"), CharacterClass.Knight));
 
             // Antes de alterar: 1x (Rat = 10 XP), como antes do PV-ADMIN-010.
             var before = await scope.ServiceProvider.GetRequiredService<RewardResolutionHandler>().Handle(Victory(characterId));

@@ -35,7 +35,7 @@ public sealed class HuntEndingPipelineTests
         scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
 
         var characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
-            .Handle(new CreateCharacterCommand("H" + Guid.NewGuid().ToString("N")[..10], characterClass));
+            .Handle(new CreateCharacterCommand(TestNames.Unique("H"), characterClass));
 
         var enter = await scope.ServiceProvider.GetRequiredService<EnterGameHandler>().Handle(new EnterGameCommand());
 

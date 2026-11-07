@@ -17,12 +17,25 @@ public sealed class CreateCharacterHandler
 
     private readonly ICurrentPlayerContext _currentPlayerContext;
 
+    private readonly CharacterCreationPolicy? _policy;
+
+    private readonly ICharacterProfileStore? _profiles;
+
+    private readonly CharacterCreationGate? _gate;
+
 
     public CreateCharacterHandler(
         ICharacterRepository characterRepository,
         ICurrentPlayerContext currentPlayerContext,
-        ProjectVictory.Application.Supply.SupplySettings supplySettings)
+        ProjectVictory.Application.Supply.SupplySettings supplySettings,
+        // PV-CHAR-013 (PO-36 a PO-38, aditivo e opcional): regras da conta (slots, classe, nome, aparência).
+        CharacterCreationPolicy? policy = null,
+        ICharacterProfileStore? profiles = null,
+        CharacterCreationGate? gate = null)
     {
+        _policy = policy;
+        _profiles = profiles;
+        _gate = gate;
         _supplySettings = supplySettings;
         _characterRepository =
             characterRepository;
@@ -37,6 +50,13 @@ public sealed class CreateCharacterHandler
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(command);
+
+        // PV-CHAR-013: criação serializada (limite de slots, classe e nome únicos sem corrida).
+        using var creation = _gate is null ? null : await _gate.AcquireAsync(cancellationToken);
+
+        var appearance = _policy is null
+            ? ((ProjectVictory.Domain.Character.CharacterGender, string)?)null
+            : await _policy.EnsureCanCreateAsync(_currentPlayerContext.AccountId, command, cancellationToken);
 
 
         var definition =
@@ -85,6 +105,11 @@ public sealed class CreateCharacterHandler
         await _characterRepository.AddAsync(
             character,
             cancellationToken);
+
+        if (appearance is { } chosen && _profiles is not null)
+        {
+            await _profiles.SetAppearanceAsync(character.Id, chosen.Item1, chosen.Item2, cancellationToken);
+        }
 
 
         return character.Id;

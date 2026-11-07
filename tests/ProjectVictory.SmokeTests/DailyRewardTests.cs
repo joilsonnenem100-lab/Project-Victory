@@ -53,7 +53,7 @@ public sealed class DailyRewardTests
             using var scope = Provider.CreateScope();
             scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(accountId);
             return await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
-                .Handle(new CreateCharacterCommand("D" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
+                .Handle(new CreateCharacterCommand(TestNames.Unique("D"), CharacterClass.Knight));
         }
 
         public async Task<(int Potions, long Gold)> InventoryOf(Guid characterId)

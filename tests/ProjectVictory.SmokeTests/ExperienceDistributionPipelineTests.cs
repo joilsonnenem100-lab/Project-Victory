@@ -34,7 +34,7 @@ public sealed class ExperienceDistributionPipelineTests
         scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
 
         var characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
-            .Handle(new CreateCharacterCommand("X" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
+            .Handle(new CreateCharacterCommand(TestNames.Unique("X"), CharacterClass.Knight));
         var repository = scope.ServiceProvider.GetRequiredService<ICharacterRepository>();
         var before = (await repository.GetByIdAsync(characterId))!.Experience.Value;
 

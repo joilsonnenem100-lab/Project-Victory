@@ -33,7 +33,7 @@ public sealed class OwnershipAndTokenHttpTests
     {
         var created = await client.PostAsJsonAsync(
             "/api/character",
-            new { name = $"Q{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+            new { name = TestNames.Unique("Q"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         return await created.Content.ReadFromJsonAsync<Guid>();
     }

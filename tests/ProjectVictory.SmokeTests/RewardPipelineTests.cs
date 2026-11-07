@@ -41,7 +41,7 @@ public sealed class RewardPipelineTests
     {
         scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
 
-        var name = "Reward" + Guid.NewGuid().ToString("N")[..10];
+        var name = TestNames.Unique("Reward");
 
         return await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
             .Handle(new CreateCharacterCommand(name, CharacterClass.Knight));

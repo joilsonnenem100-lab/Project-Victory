@@ -23,7 +23,7 @@ public sealed class LegacyGameplayActionHttpTests
         var client = _factory.CreateClient();
         ApiFactory.WithToken(client, await _factory.RegisterAndLoginAsync(client, $"legacy-{Guid.NewGuid():N}@test.com"));
 
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"L{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("L"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
 

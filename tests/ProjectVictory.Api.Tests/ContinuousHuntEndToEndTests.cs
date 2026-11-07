@@ -93,7 +93,7 @@ public sealed class ContinuousHuntEndToEndTests
         var client = server.Factory.CreateClient();
         var email = $"m6-{Guid.NewGuid():N}@test.com";
         ApiFactory.WithToken(client, await server.Root.RegisterAndLoginAsync(client, email));
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"M{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("M"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
         var runtimeId = (await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>())

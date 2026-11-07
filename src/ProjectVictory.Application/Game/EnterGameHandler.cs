@@ -16,6 +16,8 @@ public sealed class EnterGameHandler
     private readonly ProjectVictory.Application.Progression.ILevelTitleProvider _levelTitles;
     private readonly ProjectVictory.Application.GameSession.LoggedOutMarker _loggedOut;
     private readonly ProjectVictory.Application.DailyReward.GrantDailyRewardHandler? _dailyReward;
+    private readonly ProjectVictory.Application.Character.ICharacterProfileStore? _profiles;
+    private readonly TimeProvider _clock;
 
     public EnterGameHandler(
         ICharacterRepository characterRepository,
@@ -27,8 +29,13 @@ public sealed class EnterGameHandler
         // PV-RUNTIME-013 (R-054): "entrar no jogo" encerra a marca de logout.
         ProjectVictory.Application.GameSession.LoggedOutMarker loggedOut,
         // PV-DAILY-010 (PO-60, aditivo e opcional): recompensa diária na primeira entrada do ciclo.
-        ProjectVictory.Application.DailyReward.GrantDailyRewardHandler? dailyReward = null)
+        ProjectVictory.Application.DailyReward.GrantDailyRewardHandler? dailyReward = null,
+        // PV-CHAR-013 (aditivo e opcional): finaliza as exclusões vencidas antes de escolher o personagem.
+        ProjectVictory.Application.Character.ICharacterProfileStore? profiles = null,
+        TimeProvider? clock = null)
     {
+        _profiles = profiles;
+        _clock = clock ?? TimeProvider.System;
         _dailyReward = dailyReward;
         _loggedOut = loggedOut;
         _levelTitles = levelTitles;
@@ -47,6 +54,11 @@ public sealed class EnterGameHandler
 
         var accountId =
             _currentPlayerContext.AccountId;
+
+        if (_profiles is not null)
+        {
+            await _profiles.FinalizeDueDeletionsAsync(accountId, _clock.GetUtcNow(), cancellationToken);
+        }
 
         var character =
             await _characterRepository.GetByAccountIdAsync(

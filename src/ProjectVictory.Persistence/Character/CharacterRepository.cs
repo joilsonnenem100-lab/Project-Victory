@@ -128,8 +128,9 @@ public sealed class CharacterRepository : ICharacterRepository
         var state =
             await _context.Characters
                 .Include(x => x.InventoryItems)
+                // PV-CHAR-013: personagem com exclusão finalizada não pertence mais à conta.
                 .FirstOrDefaultAsync(
-                    x => x.AccountId == accountId,
+                    x => x.AccountId == accountId && x.DeletedAtUnixMilliseconds == null,
                     cancellationToken);
 
 
@@ -151,7 +152,8 @@ public sealed class CharacterRepository : ICharacterRepository
         var states =
             await _context.Characters
                 .Include(x => x.InventoryItems)
-                .Where(x => x.AccountId == accountId)
+                .Where(x => x.AccountId == accountId && x.DeletedAtUnixMilliseconds == null)
+                // PV-CHAR-013: ordem estável dos slots (sem coluna de criação: pela ordem de inserção do SQLite).
                 .ToListAsync(
                     cancellationToken);
 

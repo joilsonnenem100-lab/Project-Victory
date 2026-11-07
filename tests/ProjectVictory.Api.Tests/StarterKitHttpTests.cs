@@ -41,7 +41,7 @@ public sealed class StarterKitHttpTests
         using var client = _factory.CreateClient();
         ApiFactory.WithToken(client, await _factory.RegisterAndLoginAsync(client, $"kit-{Guid.NewGuid():N}@test.com"));
 
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"K{Guid.NewGuid():N}"[..16], characterClass = "Druid" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("K"), characterClass = "Druid" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
 

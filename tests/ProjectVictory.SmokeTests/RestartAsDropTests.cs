@@ -56,7 +56,7 @@ public sealed class RestartAsDropTests
         var accountId = Guid.NewGuid();
         server.Get<TestCurrentPlayerContext>().SetAccount(accountId);
         var characterId = await server.Get<CreateCharacterHandler>()
-            .Handle(new CreateCharacterCommand("R" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
+            .Handle(new CreateCharacterCommand(TestNames.Unique("R"), CharacterClass.Knight));
         var runtimeId = (await server.Get<EnterGameHandler>().Handle(new EnterGameCommand())).RuntimeId;
         var huntId = startHunt
             ? (await server.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(characterId, runtimeId))).HuntId

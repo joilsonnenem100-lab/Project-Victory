@@ -67,7 +67,7 @@ public sealed class RewardFlowHttpTests
 
         var created = await client.PostAsJsonAsync(
             "/api/character",
-            new { name = $"R{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+            new { name = TestNames.Unique("R"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
 

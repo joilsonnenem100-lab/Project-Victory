@@ -138,7 +138,7 @@ public sealed class AdminExperienceRateHttpTests
             Assert.Equal(HttpStatusCode.Forbidden, (await player.PutAsJsonAsync("/api/admin/xp-rate", new { value = 50 })).StatusCode);
 
             // Nova recompensa: derrotar um Rat (10 XP base) entrega 30 XP.
-            var created = await player.PostAsJsonAsync("/api/character", new { name = $"A{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+            var created = await player.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("A"), characterClass = "Knight" });
             created.EnsureSuccessStatusCode();
             var characterId = await created.Content.ReadFromJsonAsync<Guid>();
             var runtimeId = (await (await player.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>())

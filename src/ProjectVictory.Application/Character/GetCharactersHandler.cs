@@ -10,14 +10,21 @@ public sealed class GetCharactersHandler
     private readonly ICurrentPlayerContext _currentPlayerContext;
 
     private readonly ProjectVictory.Application.Progression.ILevelTitleProvider _levelTitles;
+    private readonly ICharacterProfileStore? _profiles;
+    private readonly TimeProvider _clock;
 
 
 
     public GetCharactersHandler(
         ICharacterRepository characterRepository,
         ICurrentPlayerContext currentPlayerContext,
-        ProjectVictory.Application.Progression.ILevelTitleProvider levelTitles)
+        ProjectVictory.Application.Progression.ILevelTitleProvider levelTitles,
+        // PV-CHAR-013 (aditivo e opcional): aparência e exclusão pendente; finaliza as exclusões vencidas.
+        ICharacterProfileStore? profiles = null,
+        TimeProvider? clock = null)
     {
+        _profiles = profiles;
+        _clock = clock ?? TimeProvider.System;
         _characterRepository = characterRepository;
 
         _currentPlayerContext = currentPlayerContext;
@@ -39,6 +46,14 @@ public sealed class GetCharactersHandler
             _currentPlayerContext.AccountId;
 
 
+
+        IReadOnlyDictionary<Guid, CharacterProfile> profiles = new Dictionary<Guid, CharacterProfile>();
+
+        if (_profiles is not null)
+        {
+            await _profiles.FinalizeDueDeletionsAsync(accountId, _clock.GetUtcNow(), cancellationToken);
+            profiles = await _profiles.GetByAccountAsync(accountId, cancellationToken);
+        }
 
         var characters =
             await _characterRepository.GetAllByAccountIdAsync(
@@ -82,7 +97,15 @@ public sealed class GetCharactersHandler
                             entry.Character.AvailableAbilities
                                 .Select(
                                     ability => ability.Name)
-                                .ToList()
+                                .ToList(),
+                        CharacterClass =
+                            entry.Character.CharacterClass.ToString(),
+                        Gender =
+                            (profiles.GetValueOrDefault(entry.Character.Id)?.Gender ?? ProjectVictory.Domain.Character.CharacterGender.Unspecified).ToString(),
+                        Outfit =
+                            profiles.GetValueOrDefault(entry.Character.Id)?.Outfit,
+                        DeletionScheduledFor =
+                            profiles.GetValueOrDefault(entry.Character.Id)?.DeletionScheduledFor
                     })
             .ToList();
     }

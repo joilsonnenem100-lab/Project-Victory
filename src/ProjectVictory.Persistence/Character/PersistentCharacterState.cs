@@ -28,4 +28,16 @@ public sealed class PersistentCharacterState
     public long Gold { get; set; }
 
     public List<PersistentItemInstanceState> InventoryItems { get; set; } = new();
+
+    // PV-CHAR-013 (PO-37/PO-39, colunas aditivas): aparência e exclusão (instantes em ms Unix).
+    // Gender 0 = não informado (personagens anteriores). DeletedAt preenchido = excluído (some da conta).
+    public int Gender { get; set; }
+
+    public string? Outfit { get; set; }
+
+    public long? DeletionRequestedAtUnixMilliseconds { get; set; }
+
+    public long? DeletionScheduledForUnixMilliseconds { get; set; }
+
+    public long? DeletedAtUnixMilliseconds { get; set; }
 }

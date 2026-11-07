@@ -130,7 +130,7 @@ public sealed class AuthorizationHttpTests
         var created =
             await ownerClient.PostAsJsonAsync(
                 "/api/character",
-                new { name = $"H{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+                new { name = TestNames.Unique("H"), characterClass = "Knight" });
 
         created.EnsureSuccessStatusCode();
 

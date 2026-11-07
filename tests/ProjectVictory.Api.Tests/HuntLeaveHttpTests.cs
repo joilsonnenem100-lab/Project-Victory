@@ -14,7 +14,7 @@ public sealed class HuntLeaveHttpTests
     {
         var client = factory.CreateClient();
         ApiFactory.WithToken(client, await factory.RegisterAndLoginAsync(client, $"leave-{Guid.NewGuid():N}@test.com"));
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"L{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("L"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
         var enter = await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>();
@@ -64,7 +64,7 @@ public sealed class HuntLeaveHttpTests
         using var factory = new ApiFactory();
         var client = factory.CreateClient();
         ApiFactory.WithToken(client, await factory.RegisterAndLoginAsync(client, $"second-{Guid.NewGuid():N}@test.com"));
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"S{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("S"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
         var enter = await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>();
@@ -102,7 +102,7 @@ public sealed class HuntLeaveHttpTests
         using var factory = new ApiFactory();
         var client = factory.CreateClient();
         ApiFactory.WithToken(client, await factory.RegisterAndLoginAsync(client, $"area-{Guid.NewGuid():N}@test.com"));
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"A{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("A"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
         var runtimeId = (await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>()).GetProperty("runtimeId").GetGuid();
@@ -134,7 +134,7 @@ public sealed class HuntLeaveHttpTests
         using var factory = new ApiFactory();
         var client = factory.CreateClient();
         ApiFactory.WithToken(client, await factory.RegisterAndLoginAsync(client, $"flag-{Guid.NewGuid():N}@test.com"));
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"F{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("F"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
         var runtimeId = (await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>()).GetProperty("runtimeId").GetGuid();

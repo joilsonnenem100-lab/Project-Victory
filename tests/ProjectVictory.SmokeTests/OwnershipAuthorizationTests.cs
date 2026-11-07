@@ -46,7 +46,7 @@ public sealed class OwnershipAuthorizationTests
                 .GetRequiredService<CreateCharacterHandler>()
                 .Handle(
                     new CreateCharacterCommand(
-                        $"Owner{Guid.NewGuid():N}"[..20],
+                        TestNames.Unique("Owner"),
                         CharacterClass.Knight));
 
         await services

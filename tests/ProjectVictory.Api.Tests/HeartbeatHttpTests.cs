@@ -15,7 +15,7 @@ public sealed class HeartbeatHttpTests
         var client = factory.CreateClient();
         ApiFactory.WithToken(client, await factory.RegisterAndLoginAsync(client, $"hb-{Guid.NewGuid():N}@test.com"));
 
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"B{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("B"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
 

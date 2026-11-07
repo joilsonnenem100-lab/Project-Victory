@@ -36,7 +36,7 @@ public sealed class DailyRewardHttpTests
     {
         using var client = _factory.CreateClient();
         ApiFactory.WithToken(client, await _factory.RegisterAndLoginAsync(client, $"daily-{Guid.NewGuid():N}@test.com"));
-        var created = await client.PostAsJsonAsync("/api/character", new { name = $"Q{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        var created = await client.PostAsJsonAsync("/api/character", new { name = TestNames.Unique("Q"), characterClass = "Knight" });
         created.EnsureSuccessStatusCode();
         var characterId = await created.Content.ReadFromJsonAsync<Guid>();
         var before = (await client.GetFromJsonAsync<JsonElement>($"/api/inventory/{characterId}")).GetProperty("items").GetArrayLength();

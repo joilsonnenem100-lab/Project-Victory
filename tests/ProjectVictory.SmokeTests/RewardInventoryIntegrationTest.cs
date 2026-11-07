@@ -37,7 +37,7 @@ public sealed class RewardInventoryIntegrationTest
         var characterId =
             await createCharacter.Handle(
                 new CreateCharacterCommand(
-                    "LootTestCharacter",
+                    TestNames.Unique("Loot"),
                     CharacterClass.Knight));
 
         var applyReward =

@@ -67,7 +67,7 @@ public sealed class LogoutMarkAndHuntAreaTests
         var accountId = Guid.NewGuid();
         server.Get<TestCurrentPlayerContext>().SetAccount(accountId);
         var characterId = await server.Get<CreateCharacterHandler>()
-            .Handle(new CreateCharacterCommand("L" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Knight));
+            .Handle(new CreateCharacterCommand(TestNames.Unique("L"), CharacterClass.Knight));
         var runtimeId = (await server.Get<EnterGameHandler>().Handle(new EnterGameCommand())).RuntimeId;
         return (accountId, characterId, runtimeId);
     }

@@ -82,6 +82,10 @@ public sealed class ProjectVictoryDbContext : DbContext
             entity.Property(x => x.Name)
                 .IsRequired();
 
+            // PV-CHAR-013: colunas aditivas (aparência e exclusão; Gender 0 nos personagens anteriores).
+            entity.Property(x => x.Outfit)
+                .HasMaxLength(32);
+
             entity.Property(x => x.Level)
                 .IsRequired();
 

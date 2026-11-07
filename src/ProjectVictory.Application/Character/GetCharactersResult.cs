@@ -19,4 +19,13 @@ public sealed class GetCharactersResult
 
     public IReadOnlyList<string> AvailableAbilities { get; init; }
         = [];
+
+    // PV-CHAR-013 (aditivo): classe, aparência e exclusão pendente (data em que o servidor finaliza).
+    public string CharacterClass { get; init; } = string.Empty;
+
+    public string Gender { get; init; } = string.Empty;
+
+    public string? Outfit { get; init; }
+
+    public DateTimeOffset? DeletionScheduledFor { get; init; }
 }
