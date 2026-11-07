@@ -882,26 +882,26 @@ Status: **Accepted (PO)** — aplicada no `PV-GOV-012`
 - Subagentes recebem só os documentos do seu contrato; o revisor lê o diff e o contrato; relatório final de fila com no máximo uma página.
 - Uma fila por sessão. Relatórios de filas encerradas em `docs/architecture/historico/` (`git mv`, registro no manifesto).
 
-## DEC-20261106-46 — Segunda Hunt com outra em andamento é recusada (decisão do Arquiteto, Fila 8)
+## DEC-20261106-46 — Segunda Hunt com outra em andamento é recusada (ordem do PO e do Arquiteto, Fila 8)
 
-Status: **Accepted (Arquiteto, ordem da Fila 8, item a)** — resolve a pergunta do R-052; aplicada no `PV-HUNT-013`
+Status: **Accepted (ordem conjunta do PO e do Arquiteto-Chefe da Fila 8, item a; a parte de mecânica é do PO pelo ADR-016 e vem na ordem assinada por ele)** — resolve a pergunta do R-052; aplicada no `PV-HUNT-013`
 
 - Iniciar uma Hunt quando o personagem já tem uma Hunt em andamento responde **409 Conflict** e **não** encerra a anterior.
 
-## DEC-20261106-47 — Reinício do servidor vale como queda de conexão (decisão do Arquiteto, Fila 8)
+## DEC-20261106-47 — Reinício do servidor vale como queda de conexão (ordem do PO e do Arquiteto, Fila 8)
 
-Status: **Accepted (Arquiteto, ordem da Fila 8, item b)** — emenda o `DEC-20261106-42`; aplicada no `PV-RUNTIME-012`
+Status: **Accepted (ordem conjunta do PO e do Arquiteto-Chefe da Fila 8, item b; a parte de mecânica é do PO pelo ADR-016 e vem na ordem assinada por ele)** — emenda o `DEC-20261106-42`; aplicada no `PV-RUNTIME-012`
 
 - O Recovery do startup agenda, para quem tinha "última Hunt escolhida", o **mesmo** retorno da queda: depois de mais de 10 s online, nova Hunt (nova Hunt Session) na última Hunt escolhida. A Hunt anterior continua não sendo recuperada (ADR-057).
 
-## DEC-20261106-48 — Vida 0 no checkpoint volta com vida e Mana cheias (decisão do Arquiteto, Fila 8, PROVISÓRIO)
+## DEC-20261106-48 — Vida 0 no checkpoint volta com vida e Mana cheias (ordem do PO e do Arquiteto, Fila 8, PROVISÓRIO)
 
-Status: **Accepted (Arquiteto, ordem da Fila 8, item c) — PROVISÓRIO até confirmação do PO** — resolve a pergunta do R-055; aplicada no `PV-RUNTIME-012`
+Status: **Accepted (ordem conjunta do PO e do Arquiteto-Chefe da Fila 8, item c) — PROVISÓRIO por ordem do PO** — resolve a pergunta do R-055; aplicada no `PV-RUNTIME-012`
 
 - Personagem com vida 0 no checkpoint volta na cidade com vida e Mana no máximo. Vida > 0 continua como estava (limitada ao máximo).
 
-## DEC-20261106-49 — Logout conta como saída manual (decisão do Arquiteto, Fila 8)
+## DEC-20261106-49 — Logout conta como saída manual (ordem do PO e do Arquiteto, Fila 8)
 
-Status: **Accepted (Arquiteto, ordem da Fila 8, item d)** — confirma o comportamento do `DEC-20261106-41`; aplicada no `PV-HUNT-013`
+Status: **Accepted (ordem conjunta do PO e do Arquiteto-Chefe da Fila 8, item d; a parte de mecânica é do PO pelo ADR-016 e vem na ordem assinada por ele)** — confirma o comportamento do `DEC-20261106-41`; aplicada no `PV-HUNT-013`
 
 - `POST api/game/logout` encerra a Hunt como saída manual (status `Completed`), sem retorno automático à última Hunt.

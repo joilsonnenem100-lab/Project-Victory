@@ -291,11 +291,20 @@ public sealed class HeartbeatHandler
             && _runtimeStates.Contains(runtime.RuntimeId)
             && _presence.TryConsumeReturn(character.Id, now, _settings.ReturnDelay))
         {
-            var started = await _executeHunt.Handle(
-                new ExecuteHuntCommand(character.Id, runtime.RuntimeId),
-                cancellationToken);
+            try
+            {
+                var started = await _executeHunt.Handle(
+                    new ExecuteHuntCommand(character.Id, runtime.RuntimeId),
+                    cancellationToken);
 
-            return new HeartbeatResult(character.Id, "Online", started.HuntId, true, runtime.LastHuntArea, started.Encounter);
+                return new HeartbeatResult(character.Id, "Online", started.HuntId, true, runtime.LastHuntArea, started.Encounter);
+            }
+            catch (HuntAlreadyRunningException conflict)
+            {
+                // PV-HUNT-013: o jogador iniciou uma Hunt entre a conferência e o retorno — o retorno é
+                // consumido (como na ressalva 2 do PV-RUNTIME-010) e a Hunt dele continua.
+                return new HeartbeatResult(character.Id, "Online", conflict.RunningHuntId, false, runtime.LastHuntArea, null);
+            }
         }
 
         return new HeartbeatResult(character.Id, "Online", running?.Id, false, runtime?.LastHuntArea, null);

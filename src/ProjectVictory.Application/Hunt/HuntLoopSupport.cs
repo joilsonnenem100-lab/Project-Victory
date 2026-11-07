@@ -68,3 +68,36 @@ public sealed class ActiveSpawnRegistry : IActiveSpawnRegistry
 
     public int Count => _active.Count;
 }
+
+// PV-HUNT-013 (DEC-20261106-46): serializa o INÍCIO de Hunt por personagem, para que a conferência
+// "já há Hunt em andamento?" e a criação da nova sejam atômicas (dois inícios simultâneos → um 409).
+// Um semáforo por personagem que já iniciou Hunt (memória limitada ao número de personagens).
+public interface IHuntStartGate
+{
+    Task<IDisposable> AcquireAsync(Guid characterId, CancellationToken cancellationToken = default);
+}
+
+public sealed class HuntStartGate : IHuntStartGate
+{
+    private readonly ConcurrentDictionary<Guid, SemaphoreSlim> _gates = new();
+
+    public async Task<IDisposable> AcquireAsync(Guid characterId, CancellationToken cancellationToken = default)
+    {
+        var semaphore = _gates.GetOrAdd(characterId, _ => new SemaphoreSlim(1, 1));
+        await semaphore.WaitAsync(cancellationToken);
+        return new Releaser(semaphore);
+    }
+
+    private sealed class Releaser(SemaphoreSlim semaphore) : IDisposable
+    {
+        private int _disposed;
+
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) == 0)
+            {
+                semaphore.Release();
+            }
+        }
+    }
+}

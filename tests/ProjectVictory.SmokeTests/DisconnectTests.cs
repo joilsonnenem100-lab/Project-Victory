@@ -142,7 +142,9 @@ public sealed class DisconnectTests
     {
         await using var world = await NewWorld();
         await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
-        await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+        // PV-HUNT-013: o ExecuteHunt recusa a 2ª Hunt (DEC-20261106-46); a 2ª entra direto no repositório,
+        // como faria o caminho legado (R-053), para manter a defesa "encerra TODAS".
+        await AddRunningHuntDirectly(world);
 
         world.Clock.Advance(TimeSpan.FromMinutes(2));
         await world.Get<GameSessionCoordinator>().SweepAsync();
@@ -156,16 +158,80 @@ public sealed class DisconnectTests
     {
         await using var world = await NewWorld();
         var first = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
-        var second = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+        var second = await AddRunningHuntDirectly(world); // PV-HUNT-013: ver Drop_EndsEveryRunningHuntOfTheCharacter
 
         var result = await world.Get<LogoutHandler>().Handle(new LogoutCommand());
 
         Assert.True(result.HuntEnded);
         Assert.Equal(HuntEndReason.Logout, result.Ending!.Reason);
-        Assert.Contains(result.Ending.HuntId, new[] { first.HuntId, second.HuntId }); // é uma das duas
+        Assert.Equal(HuntState.Completed, result.Ending.HuntState); // DEC-20261106-49: saída manual
+        Assert.Contains(result.Ending.HuntId, new[] { first.HuntId, second }); // é uma das duas
         // As DUAS foram encerradas e saíram da memória (revisão do PV-GOV-011, ressalva 4).
         Assert.Null(await world.Get<IHuntRepository>().GetByIdAsync(first.HuntId));
-        Assert.Null(await world.Get<IHuntRepository>().GetByIdAsync(second.HuntId));
+        Assert.Null(await world.Get<IHuntRepository>().GetByIdAsync(second));
+    }
+
+    private static async Task<Guid> AddRunningHuntDirectly(World world)
+    {
+        var extra = new ProjectVictory.Domain.Hunt.Hunt(Guid.NewGuid(), world.CharacterId, world.RuntimeId);
+        extra.Start(world.Clock.GetUtcNow());
+        await world.Get<IHuntRepository>().AddAsync(extra);
+        return extra.Id;
+    }
+
+    // PV-HUNT-013 (DEC-20261106-46, fecha o R-052): segunda Hunt com outra em andamento → recusada,
+    // e a primeira continua (não é encerrada).
+    [Fact]
+    public async Task SecondHunt_WhileOneRuns_IsRefused_AndTheFirstContinues()
+    {
+        await using var world = await NewWorld();
+        var first = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+
+        var refused = await Assert.ThrowsAsync<HuntAlreadyRunningException>(() =>
+            world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId)));
+
+        Assert.Equal(first.HuntId, refused.RunningHuntId);
+        Assert.Equal(first.HuntId, (await world.Get<IHuntRepository>().GetRunningByCharacterIdAsync(world.CharacterId))!.Id);
+        await world.Get<AttackEncounterHandler>().Handle(new AttackEncounterCommand(first.Encounter.Id)); // segue jogável
+
+        // Depois da saída manual, uma nova Hunt é aceita.
+        await world.Get<LeaveHuntHandler>().Handle(new LeaveHuntCommand(first.HuntId));
+        var next = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+        Assert.NotEqual(first.HuntId, next.HuntId);
+    }
+
+    // PV-HUNT-013: inícios simultâneos do mesmo personagem → exatamente um vence (portão por personagem).
+    [Fact]
+    public async Task ConcurrentStarts_OnlyOneHuntIsCreated()
+    {
+        await using var world = await NewWorld();
+        var scopes = Enumerable.Range(0, 6).Select(_ => world.Provider.CreateScope()).ToList();
+        var account = world.Get<TestCurrentPlayerContext>().AccountId;
+
+        try
+        {
+            var attempts = scopes.Select(async scope =>
+            {
+                scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(account);
+                try
+                {
+                    await scope.ServiceProvider.GetRequiredService<ExecuteHuntHandler>()
+                        .Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+                    return true;
+                }
+                catch (HuntAlreadyRunningException)
+                {
+                    return false;
+                }
+            }).ToList();
+
+            var outcomes = await Task.WhenAll(attempts);
+            Assert.Equal(1, outcomes.Count(won => won));
+        }
+        finally
+        {
+            scopes.ForEach(scope => scope.Dispose());
+        }
     }
 
     // Revisão do PV-HUNT-011 (ressalva 5b): conta sem personagem.

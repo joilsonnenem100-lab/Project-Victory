@@ -27,6 +27,7 @@ public sealed class ExecuteHuntHandler
     private readonly IHuntAreaCatalog _areas;
     private readonly IRuntimeRepository _runtimeRepository;
     private readonly TimeProvider _time;
+    private readonly IHuntStartGate _startGate;
 
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
@@ -43,9 +44,12 @@ public sealed class ExecuteHuntHandler
         IHuntAreaCatalog areas,
         IRuntimeRepository runtimeRepository,
         // PV-HUNT-011: horário de início (XP/hora).
-        TimeProvider time)
+        TimeProvider time,
+        // PV-HUNT-013: início atômico por personagem (DEC-20261106-46).
+        IHuntStartGate startGate)
     {
         _time = time;
+        _startGate = startGate;
         _checkpoints = checkpoints;
         _activity = activity;
         _areas = areas;
@@ -84,6 +88,23 @@ public sealed class ExecuteHuntHandler
         {
             throw new InvalidOperationException(
                 "Character not found.");
+        }
+
+        // PV-HUNT-013 (DEC-20261106-46, fecha o R-052): com uma Hunt em andamento, o início é RECUSADO
+        // (409) e a Hunt anterior continua. A conferência e a criação ficam sob o mesmo portão do personagem.
+        using var startGate =
+            await _startGate.AcquireAsync(
+                character.Id,
+                cancellationToken);
+
+        var alreadyRunning =
+            await _huntRepository.GetRunningByCharacterIdAsync(
+                character.Id,
+                cancellationToken);
+
+        if (alreadyRunning is not null)
+        {
+            throw new HuntAlreadyRunningException(alreadyRunning.Id);
         }
 
         var runtimeContext =

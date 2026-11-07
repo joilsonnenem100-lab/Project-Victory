@@ -42,7 +42,8 @@ public sealed record EndHuntResult(
 // exatamente o mesmo pipeline, independentemente do motivo"; fluxo termina na Cidade Principal).
 //
 // 1. Fecha a Hunt (Victory/OutOfSupplies/Manual/Logout → Completed; Death → Failed; Disconnect → Cancelled).
-//    Logout (PV-HUNT-012) é uma forma de SAÍDA MANUAL (DEC-20261106-22: morte, saída manual ou queda).
+//    Logout (PV-HUNT-012) é uma forma de SAÍDA MANUAL (DEC-20261106-22: morte, saída manual ou queda);
+//    confirmado no PV-HUNT-013 (DEC-20261106-49): Completed, sem retorno automático.
 // 2. Leva o jogador de volta à cidade e o deixa aguardando comando (atividade Idle).
 // 3. Na morte: Vida e Mana cheias (knowledge-base/character.md, LOCKED: "Morte → Cidade Principal →
 //    HP cheio → Mana cheia").

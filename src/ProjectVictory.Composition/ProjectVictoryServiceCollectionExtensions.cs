@@ -169,6 +169,8 @@ public static class ProjectVictoryServiceCollectionExtensions
             provider => provider.GetRequiredService<ProjectVictory.Application.Spawn.SpawnLifecycleCounter>());
         // PV-HUNT-011: Hunt Loop — locks por Hunt e Spawn Instances ativas (despawn no fim, R-044).
         services.AddSingleton<IHuntLock, HuntLock>();
+        // PV-HUNT-013: portão de início de Hunt por personagem (DEC-20261106-46).
+        services.AddSingleton<IHuntStartGate, HuntStartGate>();
         services.AddSingleton<IActiveSpawnRegistry, ActiveSpawnRegistry>();
         services.AddScoped<EncounterGenerator>(provider => new EncounterGenerator(
             provider.GetRequiredService<IHuntAreaCatalog>(),

@@ -163,6 +163,7 @@ Levantadas na leitura de `roadmap.md` (Fase 2), `knowledge-base/training.md` e `
 
 **Fila 8 (ordem do PO e do Arquiteto, 2026-11-06, modo econômico; decisões `DEC-20261106-45…49`)** — branches `chief/q8-*`, worktree `C:/pv8`:
 - ✅ `PV-GOV-012` — `docs/INDEX.md` (uma página), leitura obrigatória pelo INDEX, economia de contexto e uma fila por sessão no `CLAUDE.md`; relatórios das Filas 2–7 em `docs/architecture/historico/`.
+- ✅ `PV-HUNT-013` — 2ª Hunt com outra em andamento → 409, sem encerrar a anterior (R-052); logout = saída manual confirmado; R-053 não limpo (sem teste funcional), registrado.
 
 ## M8 — Experiência do jogador e Primeiro Teste Jogável
 

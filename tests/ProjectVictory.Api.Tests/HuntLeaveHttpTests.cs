@@ -55,4 +55,43 @@ public sealed class HuntLeaveHttpTests
         Assert.Equal("Victoria", body.GetProperty("returnCity").GetString());
         Assert.Equal("Logout", body.GetProperty("ending").GetProperty("reason").GetString());
     }
+
+    // PV-HUNT-013 (DEC-20261106-46, fecha o R-052): 2ª Hunt com outra em andamento → 409; a 1ª continua
+    // (sair dela funciona) e depois uma nova é aceita.
+    [Fact]
+    public async Task SecondHunt_WhileOneRuns_Is409_AndTheFirstContinues()
+    {
+        using var factory = new ApiFactory();
+        var client = factory.CreateClient();
+        ApiFactory.WithToken(client, await factory.RegisterAndLoginAsync(client, $"second-{Guid.NewGuid():N}@test.com"));
+        var created = await client.PostAsJsonAsync("/api/character", new { name = $"S{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        created.EnsureSuccessStatusCode();
+        var characterId = await created.Content.ReadFromJsonAsync<Guid>();
+        var enter = await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>();
+        var start = new { characterId, runtimeId = enter.GetProperty("runtimeId").GetGuid() };
+
+        var first = await client.PostAsJsonAsync("/api/hunt/execute", start);
+        first.EnsureSuccessStatusCode();
+        var huntId = (await first.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("huntId").GetGuid();
+
+        Assert.Equal(HttpStatusCode.Conflict, (await client.PostAsJsonAsync("/api/hunt/execute", start)).StatusCode);
+
+        var leave = await client.PostAsJsonAsync("/api/hunt/leave", new { huntId });
+        leave.EnsureSuccessStatusCode(); // a 1ª não foi encerrada pela recusa
+        Assert.Equal("Manual", (await leave.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("reason").GetString());
+
+        (await client.PostAsJsonAsync("/api/hunt/execute", start)).EnsureSuccessStatusCode();
+    }
+
+    // PV-HUNT-013 (DEC-20261106-49): logout = saída manual — Hunt Completed.
+    [Fact]
+    public async Task Logout_CountsAsManualExit_HuntCompleted()
+    {
+        using var factory = new ApiFactory();
+        var (client, _) = await PlayerInHunt(factory);
+
+        var body = await (await client.PostAsync("/api/game/logout", null)).Content.ReadFromJsonAsync<JsonElement>();
+
+        Assert.Equal("Completed", body.GetProperty("ending").GetProperty("huntState").GetString());
+    }
 }

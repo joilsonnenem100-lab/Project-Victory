@@ -50,7 +50,7 @@ cd src/ProjectVictory.Client && npm install && npm run dev
 ```
 - **Sem `Jwt:Key` a API não sobe** em nenhum ambiente (`PV-PLATFORM-002`). Em Development a chave vem de **user-secrets**; fora dele, da variável `Jwt__Key`. Guia: `developer-guide/guides/configuracao-local.md`. Nunca escreva a chave no repositório (é público).
 - **Projetos de teste** (todos no `.sln`): `ProjectVictory.Application.Tests`, `ProjectVictory.Domain.Tests`, `ProjectVictory.Runtime.Tests`, `ProjectVictory.SmokeTests` (DI + InMemory/SQLite) e `ProjectVictory.Api.Tests` (API real via `WebApplicationFactory`, chave JWT aleatória por execução).
-- **Baseline atual:** a contagem oficial de testes fica em `project-state.md` (seção de testes automatizados); em 2026-11-06, depois do M2, eram **161 aprovados, 0 ignorados, 0 falhas**, com build sem avisos.
+- **Baseline atual:** a contagem oficial de testes fica em `project-state.md` (seção de testes automatizados) e no `docs/INDEX.md`; no início da Fila 8 (2026-11-06) eram **381 aprovados, 0 ignorados, 0 falhas**, com build sem avisos.
 - Nunca declare "build passou" ou "testes verdes" sem tê-los executado; diga "não executado" e peça o resultado. Ao fim de cada contrato, confirme que não sobrou processo `dotnet`/`ProjectVictory.API` (`dotnet build-server shutdown`; no PowerShell: `Get-Process dotnet,ProjectVictory.API`).
 
 ## Convenções
