@@ -146,6 +146,7 @@ Nome: **Fila 8 — concluída** (relatório `docs/architecture/historico/RELATOR
 | R-066 | **Código × PO-36**: até 5 personagens por conta, um por classe, 3 livres e 2 destravados com gemas; a criação de personagem não limita quantidade nem classe repetida | `PO-DECISOES-BASE.md` PO-36 × `CreateCharacter` | Contrato de conta (limite e "um por classe" agora; slots com gemas depois da loja) | Contrato de conta |
 | R-067 | Leitura do XP rate no banco **a cada monstro**: o laço do `RewardResolutionHandler` chama o `ExperienceRateProvider` (uma consulta por recompensa, sem cache) | Revisão do `PV-ADMIN-010` (ressalva R3) | Ler o rate uma vez por resolução (antes do laço) ou cache curto invalidado no `PUT api/admin/xp-rate` | Contrato futuro (dívida aceita; custo baixo hoje) |
 | R-068 | **PO-16 × código**: poções vêm de kit inicial **e recompensa diária**; só o kit existe (`PV-CONTENT-012`) | `PO-DECISOES-BASE.md` PO-16 × `PV-CONTENT-012` | Contrato de recompensa diária simples (quantidade, horário de virada, persistência de "já recebeu hoje") — pergunta ao PO sobre os valores | Antes do Primeiro Teste Jogável (M8) |
+| R-069 | `POST api/game/enter` sem personagem responde **500** genérico (registrado no roteiro do `PV-QA-010`) | Revisão do `PV-QA-010` (ressalva c) | Mapear para 400/404 com exceção tipada, no mesmo contrato do R-061 | Contrato futuro |
 
 ---
 
