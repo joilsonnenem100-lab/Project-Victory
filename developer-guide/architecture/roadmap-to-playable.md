@@ -202,6 +202,66 @@ O Analyzer é **entregue em M8 (UI)** e **não bloqueia M1 a M4**. Ele consome d
 
 **Saída = Primeiro Teste Jogável** (definição no topo).
 
+## Candidatos a contrato derivados do PO-DECISOES-BASE (`PV-GOV-017`, 2026-11-07)
+
+Fonte: `docs/product/PO-DECISOES-BASE.md` v1.1, seção "Backlog derivado" (`DEC-20261107-01`). **Candidatos, não contratos:** nada aqui está autorizado a implementar sem fila do PO; cada um vira contrato `PV-<ÁREA>-NNN` na hora certa. IDs de contrato ficam em aberto.
+
+### Próxima fila de código (candidatos prioritários)
+| Candidato | PO / R | Fase | Observação |
+|---|---|---|---|
+| Spell de cura por vocação + seletor automático | PO-53, PO-01; R-065 | Antes do Primeiro Teste Jogável (M8) | 1 spell por vocação, % fixa da vida (hipótese: vida máxima, confirmar), gasta Mana; o seletor automático escolhe curar. Valores PROVISÓRIOS |
+| Retirada do caminho legado `POST api/gameplay/action` | R-053 | Dívida do M6 | **Começar por teste funcional** do fluxo atual; depois remover (remoção autorizada pelo PO na ordem da Fila 9) |
+| Cliente UI-1: botão de sair da Hunt, seletor de área (`huntArea`), status `LoggedOut` no heartbeat | `RELATORIO-FILA-8` (pendências de cliente); PO-46 | M8 | Sem o botão de sair o cliente atual recebe 409 até morte/logout/queda |
+| Tier da área só informativo | PO-55, PO-09; R-064 | M8 | Retirar o 400 do `ExecuteHuntHandler`; expor o nível recomendado ao cliente |
+
+### Antes do Primeiro Teste Jogável (M8)
+| Candidato | PO |
+|---|---|
+| Poções em três níveis (pequena, média, grande) | PO-15 |
+| Kit inicial e recompensa diária simples (ouro e poções) | PO-16, PO-28 |
+| Opção Trancar item | PO-24 |
+| Hunt Analyzer com histórico das últimas Hunts | PO-47 |
+| Mute visível e opção de desligar sons; música ambiente | PO-48 |
+| Interface responsiva (desktop e celular pelo navegador) | PO-44 |
+| Avisos dentro da página (Hunt terminou, morreu) | PO-46 |
+| Limite de personagens: até 5, um por classe (slots com gemas depois da loja) | PO-36; R-066 |
+
+### Fase 7 (World) em diante
+| Candidato | PO |
+|---|---|
+| Combate elemental (depois do World) | PO-03 |
+| Depósito global | PO-25 |
+| Regiões novas por etapa de Ascension | PO-52, PO-09 |
+| Respawn com atraso curto | PO-14; R-057 |
+
+### Fase 8 (Economy)
+| Candidato | PO |
+|---|---|
+| Taxa pequena fixa no mercado | PO-18 |
+| Sumidouros de ouro (poções, taxas, serviços da cidade) | PO-17 |
+| Aba Recomprar no NPC | PO-24 |
+| Loja de gemas e cosméticos visíveis | PO-19, PO-54 |
+
+### Fase 9 (Systems)
+| Candidato | PO |
+|---|---|
+| Guildas; chat global e de guilda | PO-31, PO-32 |
+| Rankings por categoria; Hall da Fama permanente | PO-33, PO-35 |
+| Bosses | PO-12 |
+| Conquistas com recompensa | PO-51 |
+| Passe Free e passe com gemas | PO-28, PO-54 |
+
+### Conta e operação (sem fase fixa; ordem a decidir pelo PO)
+| Candidato | PO |
+|---|---|
+| Nome no formato do Tibia; exclusão com espera de 7 dias; sem troca de classe; gênero e aparência | PO-38, PO-39, PO-40, PO-37 |
+| Slots 4 e 5 destravados com gemas | PO-36, PO-54 |
+| Eventos de XP em dobro agendados pelo administrador | PO-41 |
+| Proteção contra bots (detecção de padrão e verificação no login) | PO-42 |
+| Manutenção: avisar e encerrar as Hunts pelo pipeline, sem perda | PO-43 |
+| Português e inglês | PO-45 |
+| Item de treino por donate (preço alto); Premium treina um pouco mais rápido | PO-26, PO-27 (entram no `PV-TRAIN-010`) |
+
 ## Depois do M8 — ordem oficial (`roadmap.md`)
 
 Fase 7 World (NPCs, Cities, Maps, Areas, Regions — ADR-013…020, 053, 054) → Fase 8 Economy → Fase 9 Systems → Fase 10 Endgame. Cada uma exige seu próprio detalhamento e contratos na hora certa; **não** detalhar agora (Guardião de Escopo: "Economia não foi criada antes da fundação").
