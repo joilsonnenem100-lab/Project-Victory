@@ -89,7 +89,9 @@ public sealed class ApiExceptionHandler : IExceptionHandler
         // Revisão do PV-HUNT-011 (ressalva 4): Hunt já encerrada → 409.
         // PV-HUNT-013 (DEC-20261106-46): segunda Hunt com outra em andamento → 409 (a anterior continua).
         if (exception is ProjectVictory.Application.Hunt.HuntAlreadyFinishedException
-            or ProjectVictory.Application.Hunt.HuntAlreadyRunningException)
+            or ProjectVictory.Application.Hunt.HuntAlreadyRunningException
+            // Revisão do PV-QA-007 (ressalva 1): `automaticReturn` enviado pelo cliente estando deslogado → 409.
+            or ProjectVictory.Application.Hunt.AutomaticReturnCancelledException)
         {
             httpContext.Response.StatusCode =
                 StatusCodes.Status409Conflict;

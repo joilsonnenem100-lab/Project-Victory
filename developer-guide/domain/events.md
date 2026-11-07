@@ -1,6 +1,6 @@
 # Events
 
-Status: DRAFT
+Status: LOCKED (2026-11-06, `PV-GOV-013`, com a emenda do `ADR-058`; antes: DRAFT)
 
 Version: 1.0
 

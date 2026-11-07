@@ -126,4 +126,21 @@ public sealed class HuntLeaveHttpTests
         var back = await (await client.PostAsync("/api/game/heartbeat", null)).Content.ReadFromJsonAsync<JsonElement>();
         Assert.Equal("Online", back.GetProperty("status").GetString());
     }
+
+    // Revisão do PV-QA-007 (ressalva 1): `automaticReturn` vindo do cliente estando deslogado → 409 (não 500).
+    [Fact]
+    public async Task AutomaticReturnFlagFromClient_WhileLoggedOut_Is409()
+    {
+        using var factory = new ApiFactory();
+        var client = factory.CreateClient();
+        ApiFactory.WithToken(client, await factory.RegisterAndLoginAsync(client, $"flag-{Guid.NewGuid():N}@test.com"));
+        var created = await client.PostAsJsonAsync("/api/character", new { name = $"F{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        created.EnsureSuccessStatusCode();
+        var characterId = await created.Content.ReadFromJsonAsync<Guid>();
+        var runtimeId = (await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>()).GetProperty("runtimeId").GetGuid();
+        (await client.PostAsync("/api/game/logout", null)).EnsureSuccessStatusCode();
+
+        Assert.Equal(HttpStatusCode.Conflict,
+            (await client.PostAsJsonAsync("/api/hunt/execute", new { characterId, runtimeId, automaticReturn = true })).StatusCode);
+    }
 }

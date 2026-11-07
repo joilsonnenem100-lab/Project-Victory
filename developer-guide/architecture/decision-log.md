@@ -913,3 +913,11 @@ Status: **Accepted (Arquiteto, ADR-016: arquitetura)** — `ADR-058` (novo, ACCE
 - Bus "síncrono" = aguardado (handlers assíncronos aguardados cumprem o `events.md`); publisher nunca depende de assinante; assinante obrigatório é regra da composição, garantida por teste.
 - Notificação pós-commit (`PublishNotificationAsync`, usada no `HuntEndedEvent`): falha de assinante isolada e registrada no log.
 - Varredura de quedas: um escopo de DI (DbContext) por queda.
+
+## DEC-20261106-51 — Revisão de LOCK da Fila 8 (decisão do Arquiteto)
+
+Status: **Accepted (Arquiteto)** — `PV-GOV-013`; revisão em `docs/architecture/REVISAO-FECHAMENTO-FILA-8.md`; critério do `DEC-20261106-44`
+
+- **LOCKED:** Event System (Typed Event Bus + Domain Events; `events.md` + `ADR-058`) e Recovery do Runtime (Handbook §18/§19, ADR-057 Parte A).
+- **REVIEW:** Game Session + Runtime Coordinator — falta decisão sobre o Handbook §10 (Coordinator da cadeia Hunt→Combat→Reward), documento de domínio, encounters por área (R-051 resto) e R-062.
+

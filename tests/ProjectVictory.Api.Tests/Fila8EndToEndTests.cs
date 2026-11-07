@@ -139,6 +139,10 @@ public sealed class Fila8EndToEndTests
         await server.RestartAsync();
         var again = await LoginAgain(server, player);
 
+        // Revisão do PV-QA-007 (ressalva 3): o estado carregado no reinício é mesmo o checkpoint com vida 0.
+        Assert.Equal(0, await server.InScope(async services =>
+            (await services.GetRequiredService<IRuntimeRepository>().GetByCharacterIdAsync(player.CharacterId))!.Health));
+
         // Volta: tela inicial; 10 s exatos ainda não; mais de 10 s → NOVA Hunt na última Hunt escolhida.
         Assert.Equal(JsonValueKind.Null, (await Heartbeat(again)).GetProperty("huntId").ValueKind);
         server.Clock.Advance(TimeSpan.FromSeconds(10));
