@@ -55,3 +55,7 @@ Queda curta (até 60 s, inclusive) não encerra nada. Ao voltar, o jogador cai n
 - `HuntLoopTests.LeavingTwice_TheSecondIsRejected`: a segunda saída agora é `OwnershipViolationException` (403), porque a Hunt saiu da memória. O teste é desta fila.
 
 Resultado: build com 0 avisos; **369 aprovados, 0 ignorados, 0 falhas** (Application 31, Domain 120, Runtime 17, Smoke 105, Api 96).
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q7-event-010`
+
+Ver a seção "Também nesta branch" do contrato `PV-EVENT-010-011`: teste do 409, varredura resiliente, R-054, R-027, documentação do logout como saída manual, invariante do lock, `RunningHunts.EndAllAsync` (com a correção de um bug que encerrava só a primeira Hunt), `HuntEndedEvent` e R-030.

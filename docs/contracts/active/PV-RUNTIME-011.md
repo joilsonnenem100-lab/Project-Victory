@@ -25,3 +25,12 @@ Nenhuma migration nova.
 - `Api.Tests/RuntimeRecoveryHttpTests` (API real e banco de teste): o primeiro host para **no meio de uma Hunt**; o segundo sobe e recupera o Runtime no startup, sem "entrar no jogo"; não há Hunt; login e heartbeat funcionam, com `huntId` nulo.
 
 Resultado: build com 0 avisos; **371 aprovados, 0 ignorados, 0 falhas** (Application 31, Domain 120, Runtime 17, Smoke 106, Api 97).
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas/registradas na branch `chief/q7-event-010`
+
+1. **R-055:** o `EnterGame` desfaz a reconstrução do Recovery ("Victoria" e limites). Alinhar exige contrato próprio (muda comportamento validado). A vida 0 no checkpoint também está registrada (PO).
+2. O reuso de `RuntimeId` depois do reinício: o store recuperado já recusa o id; continua aberto só para Runtime órfão e `create` simultâneo.
+3. e 7. **R-056:** escalabilidade do Recovery no startup e ordem com mais de um Runtime por personagem.
+4. O teste agora confere também o limite da **mana** (a). A vida 0 (b) está no R-055. A falha do Recovery sem derrubar o host (c) é coberta pelo try/catch; um teste com repositório que falha fica para o contrato do R-056.
+5. Comentário do `Program.cs` corrigido.
+6. A pergunta "o reinício deve disparar o retorno à última Hunt?" está no `RELATORIO-FILA-7.md`. O Recovery já cumpre a condição `Contains`; só falta a presença.

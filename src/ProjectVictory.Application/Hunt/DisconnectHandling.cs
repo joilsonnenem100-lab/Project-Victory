@@ -7,6 +7,50 @@ using ProjectVictory.Domain.Hunt;
 
 namespace ProjectVictory.Application.Hunt;
 
+// Revisão do PV-HUNT-012 (ressalva 7): encerra TODAS as Hunts em andamento do personagem, cada uma sob
+// o lock da Hunt e reconferindo o estado (invariante do IHuntLock). Devolve o primeiro resultado.
+public static class RunningHunts
+{
+    public const int Limit = 100;
+
+    public static async Task<EndHuntResult?> EndAllAsync(
+        Guid characterId,
+        HuntEndReason reason,
+        IHuntRepository hunts,
+        IHuntLock huntLock,
+        EndHuntHandler endHunt,
+        CancellationToken cancellationToken)
+    {
+        EndHuntResult? first = null;
+
+        for (var round = 0; round < Limit; round++)
+        {
+            var running = await hunts.GetRunningByCharacterIdAsync(characterId, cancellationToken);
+
+            if (running is null)
+            {
+                return first;
+            }
+
+            using (await huntLock.AcquireAsync(running.Id, cancellationToken))
+            {
+                if (await hunts.GetByIdAsync(running.Id, cancellationToken) is { State: HuntState.Running })
+                {
+                    // Sempre encerra (o "??=" só guarda o PRIMEIRO resultado para a resposta).
+                    var result = await endHunt.Handle(new EndHuntCommand(running.Id, reason), cancellationToken);
+                    first ??= result;
+                }
+                else
+                {
+                    huntLock.Release(running.Id);
+                }
+            }
+        }
+
+        throw new InvalidOperationException($"More than {Limit} running hunts for character {characterId}.");
+    }
+}
+
 // PV-HUNT-012 (ADR-012, ADR-057 v1.2, DEC-20261106-20): queda de MAIS de 1 min encerra a Hunt pelo
 // MESMO pipeline (EndHuntHandler), com motivo próprio (Disconnect); o jogador volta à tela inicial
 // "Victoria"; nada já ganho é perdido. Liga o checkpoint de logout/queda da Fila 6 (fecha o R-048).
@@ -36,32 +80,10 @@ public sealed class DisconnectHuntHandler : IDisconnectHandler
     {
         var runtimeId = _runtimes.TryGetByCharacterId(dropped.CharacterId, out var runtime) ? runtime.RuntimeId : Guid.Empty;
 
-        // Revisão do PV-HUNT-011 (ressalva 1): encerra TODAS as Hunts em andamento do personagem (um
-        // cliente que reinicia a Hunt sem sair pode ter deixado mais de uma — R-052).
-        for (var guard = 0; guard < 100; guard++)
-        {
-            var running = await _hunts.GetRunningByCharacterIdAsync(dropped.CharacterId, cancellationToken);
-
-            if (running is null)
-            {
-                break;
-            }
-
-            runtimeId = running.RuntimeId;
-
-            // Mesmo lock do ataque e da saída manual: a queda não corre junto com uma rodada.
-            using (await _huntLock.AcquireAsync(running.Id, cancellationToken))
-            {
-                if (await _hunts.GetByIdAsync(running.Id, cancellationToken) is { State: HuntState.Running })
-                {
-                    await _endHunt.Handle(new EndHuntCommand(running.Id, HuntEndReason.Disconnect), cancellationToken);
-                }
-                else
-                {
-                    _huntLock.Release(running.Id);
-                }
-            }
-        }
+        // Revisão do PV-HUNT-011 (ressalva 1): encerra TODAS as Hunts em andamento do personagem (R-052).
+        var running = await _hunts.GetRunningByCharacterIdAsync(dropped.CharacterId, cancellationToken);
+        runtimeId = running?.RuntimeId ?? runtimeId;
+        await RunningHunts.EndAllAsync(dropped.CharacterId, HuntEndReason.Disconnect, _hunts, _huntLock, _endHunt, cancellationToken);
 
         // Checkpoint de logout/queda (Handbook §19; R-048).
         await _checkpoints.SaveAsync(dropped.CharacterId, runtimeId, CheckpointReason.Logout, cancellationToken);
@@ -127,23 +149,7 @@ public sealed class LogoutHandler
             ?? (_runtimes.TryGetByCharacterId(character.Id, out var runtime) ? runtime.RuntimeId : Guid.Empty);
 
         // Encerra todas as Hunts em andamento do personagem (R-052); a resposta traz a primeira.
-        for (var guard = 0; running is not null && guard < 100; guard++)
-        {
-            using (await _huntLock.AcquireAsync(running.Id, cancellationToken))
-            {
-                if (await _hunts.GetByIdAsync(running.Id, cancellationToken) is { State: HuntState.Running })
-                {
-                    var result = await _endHunt.Handle(new EndHuntCommand(running.Id, HuntEndReason.Logout), cancellationToken);
-                    ending ??= result;
-                }
-                else
-                {
-                    _huntLock.Release(running.Id);
-                }
-            }
-
-            running = await _hunts.GetRunningByCharacterIdAsync(character.Id, cancellationToken);
-        }
+        ending = await RunningHunts.EndAllAsync(character.Id, HuntEndReason.Logout, _hunts, _huntLock, _endHunt, cancellationToken);
 
         await _checkpoints.SaveAsync(character.Id, runtimeId, CheckpointReason.Logout, cancellationToken);
         _presence.Remove(character.Id);

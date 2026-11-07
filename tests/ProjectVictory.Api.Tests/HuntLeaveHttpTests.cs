@@ -24,7 +24,7 @@ public sealed class HuntLeaveHttpTests
     }
 
     [Fact]
-    public async Task Leave_OwnHunt_Ends_SecondTimeIs409_OtherOrUnknownHuntIs403()
+    public async Task Leave_OwnHunt_Ends_OtherUnknownOrAlreadyDiscardedHuntIs403()
     {
         using var factory = new ApiFactory();
         var (owner, huntId) = await PlayerInHunt(factory);

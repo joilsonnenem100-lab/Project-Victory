@@ -5,6 +5,9 @@ namespace ProjectVictory.Application.Hunt;
 
 // PV-HUNT-011 (checklist do PV-STATE-001 D3): serializa os comandos sobre a MESMA Hunt (ataque,
 // saída manual, queda) — um por vez; Hunts diferentes seguem em paralelo.
+// INVARIANTE (revisão do PV-HUNT-012, ressalva 6): Release descarta o semáforo de uma Hunt encerrada
+// mesmo com o dono ainda dentro dele; quem chegar depois ganha um semáforo novo. Por isso TODO comando,
+// depois de pegar o lock, reconfere o estado (Hunt Running / encounter presente) antes de agir.
 public interface IHuntLock
 {
     Task<IDisposable> AcquireAsync(Guid huntId, CancellationToken cancellationToken = default);

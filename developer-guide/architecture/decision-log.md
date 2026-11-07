@@ -857,3 +857,11 @@ Status: **Accepted (Arquiteto)** — `PV-RUNTIME-011`, Handbook §18, ADR-057
 
 - No startup, depois das migrations: recarrega personagem + Runtime dos checkpoints e reconstrói o contexto na tela inicial (Idle), vida/mana limitadas ao máximo; Runtime órfão é ignorado; falha registrada sem derrubar o servidor.
 - Hunt Session não é recuperada; reinício do servidor não dispara o retorno automático à última Hunt (pergunta ao PO).
+
+## DEC-20261106-43 — Event Bus tipado e Domain Events (decisão do Arquiteto, Fila 7)
+
+Status: **Accepted (Arquiteto)** — implementa ADR-049/050 no `PV-EVENT-010/011`; fecha o R-046
+
+- `IEventBus` em processo, despacho pelo TIPO (handlers síncronos e assíncronos), só Domain Events (`EngineEvent`).
+- `CombatCompletedEvent` → Reward Pipeline (Combat não conhece o Reward); ciclo de vida do Spawn e fim da Hunt publicados.
+- Nenhum contrato público alterado.

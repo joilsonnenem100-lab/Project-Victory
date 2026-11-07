@@ -238,8 +238,8 @@ using (var scope = app.Services.CreateScope())
 
     // PV-RUNTIME-011 (Handbook §18; ADR-057): recarrega personagem + Runtime dos checkpoints e
     // reconstrói o contexto em memória (tela inicial, Idle). Hunt Session NÃO é recuperada. Uma falha
-    // aqui (ex.: schema desatualizado fora de Development) é registrada e não derruba o servidor —
-    // o "entrar no jogo" continua reconstruindo o Runtime sob demanda.
+    // DO RECOVERY é registrada e não derruba o servidor — o "entrar no jogo" continua reconstruindo o
+    // Runtime sob demanda. (Schema desatualizado já falharia antes, no seed de itens acima.)
     try
     {
         var recovery =

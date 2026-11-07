@@ -57,6 +57,10 @@ public interface IPresenceTracker
     void Remove(Guid characterId);
 
     PresenceSnapshot? Get(Guid characterId);
+
+    // Revisão do PV-HUNT-012 (ressalva 2): desfaz a marcação de queda (o tratamento falhou), para a
+    // próxima varredura detectar de novo. Não mexe no LastSeen.
+    void UnmarkDropped(Guid characterId);
 }
 
 public sealed class PresenceTracker : IPresenceTracker
@@ -127,6 +131,17 @@ public sealed class PresenceTracker : IPresenceTracker
 
     public void Remove(Guid characterId) => _presence.TryRemove(characterId, out _);
 
+    public void UnmarkDropped(Guid characterId)
+    {
+        while (_presence.TryGetValue(characterId, out var current) && current.Dropped)
+        {
+            if (_presence.TryUpdate(characterId, current with { Dropped = false }, current))
+            {
+                return;
+            }
+        }
+    }
+
     public PresenceSnapshot? Get(Guid characterId) =>
         _presence.TryGetValue(characterId, out var current) ? current : null;
 }
@@ -158,20 +173,37 @@ public sealed class GameSessionCoordinator
         _disconnectHandlers = disconnectHandlers;
     }
 
+    // Quedas cujo tratamento falhou (observabilidade e testes).
+    public int Failures { get; private set; }
+
     // Uma varredura: detecta as quedas (sem sinal por MAIS que o limite) e as entrega aos handlers.
     public async Task<IReadOnlyList<PresenceSnapshot>> SweepAsync(CancellationToken cancellationToken = default)
     {
         var dropped = _presence.CollectDropped(_time.GetUtcNow(), _settings.DisconnectTimeout);
 
+        var handled = new List<PresenceSnapshot>();
+
+        // Revisão do PV-HUNT-012 (ressalva 2): uma queda com erro não impede as outras e volta a ser
+        // detectada na próxima varredura (a Hunt não fica presa em Running).
         foreach (var presence in dropped)
         {
-            foreach (var handler in _disconnectHandlers)
+            try
             {
-                await handler.HandleAsync(presence, cancellationToken);
+                foreach (var handler in _disconnectHandlers)
+                {
+                    await handler.HandleAsync(presence, cancellationToken);
+                }
+
+                handled.Add(presence);
+            }
+            catch (Exception) when (!cancellationToken.IsCancellationRequested)
+            {
+                _presence.UnmarkDropped(presence.CharacterId);
+                Failures++;
             }
         }
 
-        return dropped;
+        return handled;
     }
 }
 

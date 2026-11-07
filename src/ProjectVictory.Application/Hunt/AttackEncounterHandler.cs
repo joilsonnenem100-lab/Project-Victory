@@ -28,7 +28,6 @@ public sealed class AttackEncounterHandler
     private readonly ICharacterRepository _characterRepository;
     private readonly CombatantFactory _combatantFactory;
     private readonly CombatOrchestrator _orchestrator;
-    private readonly RewardResolutionHandler _rewardResolutionHandler;
     private readonly EndHuntHandler _endHuntHandler;
     private readonly ISupplyPolicyStore _supplyPolicies;
     private readonly CombatSupplyContext _supplies;
@@ -41,6 +40,7 @@ public sealed class AttackEncounterHandler
     private readonly IActiveSpawnRegistry _activeSpawns;
     private readonly ProjectVictory.Application.Spawn.ISpawnSystem _spawnSystem;
     private readonly TimeProvider _time;
+    private readonly ProjectVictory.Application.Events.IEventBus _eventBus;
 
 
     public AttackEncounterHandler(
@@ -52,7 +52,6 @@ public sealed class AttackEncounterHandler
         ICharacterRepository characterRepository,
         CombatantFactory combatantFactory,
         CombatOrchestrator orchestrator,
-        RewardResolutionHandler rewardResolutionHandler,
         EndHuntHandler endHuntHandler,
         ISupplyPolicyStore supplyPolicies,
         CombatSupplyContext supplies,
@@ -67,9 +66,12 @@ public sealed class AttackEncounterHandler
         ICombatSeedProvider seedProvider,
         IActiveSpawnRegistry activeSpawns,
         ProjectVictory.Application.Spawn.ISpawnSystem spawnSystem,
-        TimeProvider time)
+        TimeProvider time,
+        // PV-EVENT-011: Combat → Reward por Domain Event.
+        ProjectVictory.Application.Events.IEventBus eventBus)
     {
         _time = time;
+        _eventBus = eventBus;
         _activity = activity;
         _huntLock = huntLock;
         _encounterGenerator = encounterGenerator;
@@ -89,7 +91,6 @@ public sealed class AttackEncounterHandler
         _characterRepository = characterRepository;
         _combatantFactory = combatantFactory;
         _orchestrator = orchestrator;
-        _rewardResolutionHandler = rewardResolutionHandler;
     }
 
 
@@ -221,6 +222,14 @@ public sealed class AttackEncounterHandler
         }
         long experienceGained = 0;
 
+        // PV-EVENT-011 (ADR-049/050): cada monstro morto publica um CombatCompletedEvent; o Reward
+        // Pipeline reage ao evento (RewardOnCombatCompleted). O Combat não chama mais o Reward direto.
+        // A XP da rodada é a diferença de Experience do personagem (o Reward Pipeline é o único que a
+        // altera, ADR-024) — mesmo valor de antes.
+        var experienceBefore = killed.Count == 0
+            ? 0
+            : (await _characterRepository.GetByIdAsync(hunt.CharacterId, cancellationToken))!.Experience.Value;
+
         foreach (var monster in killed)
         {
             var combatResult =
@@ -234,8 +243,22 @@ public sealed class AttackEncounterHandler
 
             _combatResultStore.Store(combatResult);
 
-            var reward = await _rewardResolutionHandler.Handle(combatResult, cancellationToken);
-            experienceGained += reward.ExperienceAmount ?? 0;
+            await _eventBus.PublishAsync(
+                new ProjectVictory.Domain.Events.CombatCompletedEvent(
+                    combatResult.Id,
+                    combatResult.HuntId,
+                    combatResult.EncounterId,
+                    combatResult.CharacterId,
+                    combatResult.OpponentId,
+                    combatResult.Outcome),
+                cancellationToken);
+        }
+
+        if (killed.Count > 0)
+        {
+            experienceGained =
+                (await _characterRepository.GetByIdAsync(hunt.CharacterId, cancellationToken))!.Experience.Value
+                - experienceBefore;
         }
 
         // PV-HUNT-011: XP desta rodada entra na conta da Hunt (XP/hora).

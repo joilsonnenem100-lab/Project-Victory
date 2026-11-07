@@ -39,7 +39,7 @@ public sealed class RuntimeRecoveryTests
             await scope.ServiceProvider.GetRequiredService<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(characterId, runtimeId));
 
             // Checkpoint com vida acima do máximo (ex.: valores antigos) e um Runtime órfão.
-            await scope.ServiceProvider.GetRequiredService<IRuntimeRepository>().SaveCheckpointAsync(runtimeId, 99_999, 5);
+            await scope.ServiceProvider.GetRequiredService<IRuntimeRepository>().SaveCheckpointAsync(runtimeId, 99_999, 99_999);
             await scope.ServiceProvider.GetRequiredService<IRuntimeRepository>().AddAsync(Guid.NewGuid(), Guid.NewGuid(), 10, 10);
         }
 
@@ -64,7 +64,7 @@ public sealed class RuntimeRecoveryTests
 
             var character = await scope.ServiceProvider.GetRequiredService<ICharacterRepository>().GetByIdAsync(characterId);
             Assert.Equal(character!.MaximumHealth.Value, runtime.CharacterState!.CurrentHealth); // limitado ao máximo
-            Assert.Equal(5, runtime.CharacterState.CurrentMana);
+            Assert.Equal(character.MaximumMana.Value, runtime.CharacterState.CurrentMana); // revisão: mana também limitada
 
             // A Hunt NÃO foi recuperada (ADR-057).
             Assert.Null(await scope.ServiceProvider.GetRequiredService<IHuntRepository>().GetRunningByCharacterIdAsync(characterId));

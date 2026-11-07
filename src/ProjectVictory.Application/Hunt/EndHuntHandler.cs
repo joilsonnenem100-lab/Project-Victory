@@ -41,7 +41,8 @@ public sealed record EndHuntResult(
 // PV-HUNT-010: o pipeline ÚNICO de encerramento da Hunt (ADR-012: "Todo encerramento utilizará
 // exatamente o mesmo pipeline, independentemente do motivo"; fluxo termina na Cidade Principal).
 //
-// 1. Fecha a Hunt (Victory/OutOfSupplies/Manual → Completed; Death → Failed; Disconnect → Cancelled).
+// 1. Fecha a Hunt (Victory/OutOfSupplies/Manual/Logout → Completed; Death → Failed; Disconnect → Cancelled).
+//    Logout (PV-HUNT-012) é uma forma de SAÍDA MANUAL (DEC-20261106-22: morte, saída manual ou queda).
 // 2. Leva o jogador de volta à cidade e o deixa aguardando comando (atividade Idle).
 // 3. Na morte: Vida e Mana cheias (knowledge-base/character.md, LOCKED: "Morte → Cidade Principal →
 //    HP cheio → Mana cheia").
@@ -62,6 +63,7 @@ public sealed class EndHuntHandler
     private readonly ProjectVictory.Application.Spawn.ISpawnSystem _spawnSystem;
     private readonly IHuntLock _huntLock;
     private readonly TimeProvider _time;
+    private readonly ProjectVictory.Application.Events.IEventBus _events;
 
     public EndHuntHandler(
         IHuntRepository huntRepository,
@@ -74,8 +76,11 @@ public sealed class EndHuntHandler
         IActiveSpawnRegistry activeSpawns,
         ProjectVictory.Application.Spawn.ISpawnSystem spawnSystem,
         IHuntLock huntLock,
-        TimeProvider time)
+        TimeProvider time,
+        // PV-EVENT-011: o fim da Hunt é publicado como Domain Event.
+        ProjectVictory.Application.Events.IEventBus events)
     {
+        _events = events;
         _checkpoints = checkpoints;
         _encounters = encounters;
         _activeSpawns = activeSpawns;
@@ -157,6 +162,10 @@ public sealed class EndHuntHandler
         _huntLock.Release(hunt.Id);
 
         var elapsedSeconds = (long)Math.Floor(elapsed.TotalSeconds);
+
+        await _events.PublishAsync(
+            new ProjectVictory.Domain.Events.HuntEndedEvent(hunt.Id, hunt.CharacterId, command.Reason.ToString(), elapsedSeconds, hunt.ExperienceGained),
+            cancellationToken);
         var experiencePerHour = elapsed.TotalSeconds >= 1
             ? (long)Math.Floor(hunt.ExperienceGained * 3600d / elapsed.TotalSeconds)
             : 0;

@@ -32,6 +32,7 @@ public interface ISpawnSystem
 public sealed class StatelessSpawnSystem : ISpawnSystem
 {
     private readonly TimeProvider _time;
+    private readonly ProjectVictory.Application.Events.IEventBus? _events;
 
     public StatelessSpawnSystem()
         : this(TimeProvider.System)
@@ -41,6 +42,13 @@ public sealed class StatelessSpawnSystem : ISpawnSystem
     public StatelessSpawnSystem(TimeProvider time)
     {
         _time = time ?? throw new ArgumentNullException(nameof(time));
+    }
+
+    // PV-EVENT-011 (spawn.md "Eventos"; fecha o R-046): publica o ciclo de vida como Domain Events.
+    public StatelessSpawnSystem(TimeProvider time, ProjectVictory.Application.Events.IEventBus events)
+        : this(time)
+    {
+        _events = events ?? throw new ArgumentNullException(nameof(events));
     }
 
     // O pack é escolhido entre os packs da área com um gerador PRÓPRIO criado da semente do encounter
@@ -82,6 +90,8 @@ public sealed class StatelessSpawnSystem : ISpawnSystem
 
             instance.Activate(now);
             instances.Add(instance);
+            _events?.Publish(new ProjectVictory.Domain.Events.SpawnInstanceActivatedEvent(
+                instance.SpawnInstanceId, instance.SpawnDefinitionId, context.HuntId, now));
         }
 
         return new SpawnResult(instances, monsters);
@@ -97,6 +107,8 @@ public sealed class StatelessSpawnSystem : ISpawnSystem
         {
             instance.BeginDespawning();
             instance.Despawn(now);
+            _events?.Publish(new ProjectVictory.Domain.Events.SpawnInstanceDespawnedEvent(
+                instance.SpawnInstanceId, instance.SpawnDefinitionId, now));
         }
     }
 }
