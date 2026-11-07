@@ -15,8 +15,8 @@ Ordem do PO e do Arquiteto-Chefe, 2026-11-07. Worktree `C:/pvn`. Baseline de ent
 | 7 | PV-HUD-ANALYZER-010 (servidor) | feito — build 0 avisos, 420 testes verdes (verificado pelo Chefe); migration aditiva `HuntAnalyzerSummaries`; revisão APROVADO COM RESSALVAS (R1–R4, aplicadas na branch do item 9) | `feature/n1-hud-analyzer-010` | 9688df5 |
 | 8 | PV-ADMIN-010 | feito — build 0 avisos, 433 testes verdes (verificado pelo Chefe); migration aditiva `ServerExperienceRate`; revisão APROVADO COM RESSALVAS (R1 admin só por Id — segurança; R2; R3 dívida — na branch do item 10) | `feature/n1-admin-010` | 648eb6e |
 | 9 | PV-COMBAT-014 (+ ressalvas R1–R4 do item 7) | feito — build 0 avisos, 455 testes verdes (verificado pelo Chefe); sem migration; revisão APROVADO COM RESSALVAS (A–D, na branch do item 11) | `feature/n1-combat-014` | 0278023, 684c8e0, a94d06a |
-| 10 | PV-CONTENT-012 (+ ressalvas do item 8: admin só por Id) | feito — build 0 avisos, 473 testes verdes (verificado pelo Chefe); migration aditiva `PotionTiers` (só InsertData no Up); revisão em andamento | `feature/n1-content-012` | b71acd3, baa31f3, c530229, a888c8d |
-| 11 | PV-LEGACY-001 (+ ressalvas A–D do item 9) | em andamento | `feature/n1-legacy-001` | — |
-| 12 | PV-QA-010 | pendente | — | — |
+| 10 | PV-CONTENT-012 (+ ressalvas do item 8: admin só por Id) | feito — build 0 avisos, 473 testes verdes (verificado pelo Chefe); migration aditiva `PotionTiers` (só InsertData no Up); revisão APROVADO COM RESSALVAS (R1/R2 na branch do item 12) | `feature/n1-content-012` | b71acd3, baa31f3, c530229, a888c8d |
+| 11 | PV-LEGACY-001 (+ ressalvas A–D do item 9) | feito — endpoint `api/gameplay/action` retirado (commit isolado be9e094, manifesto); cadeia interna mantida (usada fora dela → `PV-LEGACY-002`); build 0 avisos, 480 testes verdes (verificado pelo Chefe); revisão em andamento | `feature/n1-legacy-001` | e5dc67c, 694217c, be9e094, 20b8cfa |
+| 12 | PV-QA-010 (+ ressalvas R1/R2 do item 10) | em andamento | `feature/n1-qa-010` | — |
 
 **Leitura registrada:** cada item de código atravessa várias camadas; foi executado por um único agente general-purpose que respeita as camadas (os engenheiros do time só escrevem na própria camada), com contrato escrito antes do código e revisão do `pv-architecture-reviewer` ao fim. Ressalvas de revisão que chegarem depois entram na branch seguinte.
