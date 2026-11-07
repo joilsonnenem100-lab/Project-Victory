@@ -1,6 +1,6 @@
 # Project-Victory — INDEX (leia primeiro)
 
-Uma página. Atualizado em 2026-11-07 (Fila 9 e Fila Noturna 1). Detalhe só quando o item de trabalho o citar.
+Uma página. Atualizado em 2026-11-07 (Fila 9, Fila Noturna 1 e Fila 10). Detalhe só quando o item de trabalho o citar.
 
 ## Estado atual
 - **Jogável pela API:** conta → login → personagem → entrar → Hunt contínua (combate por turnos, IA de monstro, Spawn) → XP/loot reais → Level derivado → queda/logout/reinício sem perda.
@@ -16,6 +16,8 @@ Server Authority (identidade do token) · Aggregate Ownership · Clean Architect
 Servidor: Hunt Analyzer (`api/hunt/analyzer`), admin do XP rate (`api/admin/xp-rate`, admin só por Id em `Admin:Accounts`), spell de cura das 5 classes (PO-53), poções em 3 níveis e kit inicial (PO-15/16), `api/gameplay/action` retirado. **480 testes**, 3 migrations aditivas novas (`HuntAnalyzerSummaries`, `ServerExperienceRate`, `PotionTiers`). Playtest: `docs/playtest/`. Relatório: `docs/architecture/RELATORIO-FILA-NOTURNA-1.md`.
 
 ## Últimas decisões (`developer-guide/architecture/decision-log.md`)
+- `DEC-20261107-05` — PO-56 a PO-61 (`PO-DECISOES-BASE.md` v1.2): Continente livre; gemas = cosméticos + 2 slots + passes; Monster AI atual oficial; cura igual para todas as vocações (sem +5 do Druid); recompensa diária por configuração; remoção do `ExplorationDecisionHandler`.
+- `DEC-20261107-06` — **Monster AI LOCKED** (revisão formal, régua do PO-58); R-050/R-043 suspensos.
 - `DEC-20261107-02` — Varredura de consistência (revisão formal): notas de superação; conflitos com código R-064 (tier ainda bloqueia), R-065 (sem spell de cura), R-066 (sem limite de personagens).
 - `DEC-20261107-03` — `ADR-059`: Hunt Loop + Event Bus fazem a cadeia (Handbook §10 emendado); Game Session continua REVIEW.
 - `DEC-20261107-04` — Remoção autorizada do `api/gameplay/action` (R-053), começando por teste funcional.

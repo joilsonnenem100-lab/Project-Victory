@@ -940,6 +940,8 @@ Status: **Accepted (Product Owner, ADR-016)** — `PV-GOV-014`; fonte: `docs/pro
 - **PO-54 — Dinheiro real compra tempo, não poder exclusivo:** aceleração paga com custo alto (item de treino por donate, slots extras com gemas, passes) é intencional; gemas compram cosméticos visíveis a outros jogadores.
 - **PO-55 — `RequiredTitleTier` informativo:** vira nível recomendado e não bloqueia a entrada (com PO-09: regiões livres).
 
+*Nota de superação (2026-11-07, `DEC-20261107-05`): PO-53 "vida máxima" confirmada e igual para todas as vocações (PO-59); o Continente também é livre (PO-56).*
+
 ## DEC-20261107-02 — Varredura de consistência com o PO-DECISOES-BASE (revisão formal, Fila 9)
 
 Status: **Accepted (Arquiteto, com autorização do PO na ordem da Fila 9 para "alterar ou remover o que for necessário, sempre listado")** — `PV-GOV-015`; mesmo rito do `DEC-20261106-13` (revisão formal de documentos LOCKED)
@@ -962,3 +964,21 @@ Status: **Accepted (Product Owner, ordem da Fila 9, item 4: "retirada do caminho
 - Autoriza retirar `POST api/gameplay/action` e a cadeia `GameplayActionDispatcher` → `StartEncounterCombatHandler` → `CreateCombatContextHandler` (R-053).
 - Condição: o contrato de código **começa por teste funcional** que prove que o fluxo validado (`api/hunt/*`) cobre o que o caminho legado fazia; a lista exata do que sai vai no contrato e no `CLEANUP-MANIFEST`.
 
+## DEC-20261107-05 — Decisões do PO PO-56 a PO-61 (decisão do PO, Fila 10)
+
+Status: **Accepted (Product Owner, ADR-016)** — `PV-GOV-020`; fonte: `docs/product/PO-DECISOES-BASE.md` v1.2
+
+- **PO-56 — Continente livre:** sai a Ascension mínima por Continente (`knowledge-base/world.md`); nível/tier recomendado só informativo. Estende o PO-55 e fecha o ponto deixado em aberto pelo `DEC-20261107-02` ("bloqueio por Continente pendente de confirmação"). Código: R-064 (`PV-HUNT-014`).
+- **PO-57 — Gemas:** cosméticos, 2 slots extras de personagem e passes (exceção confirmada ao "só cosméticos" do PO-19; coerente com PO-54).
+- **PO-58 — Monster AI oficial nesta fase:** só ataque básico definido por dados. O R-050 fica **suspenso** até existirem habilidades de monstro. Base do `DEC-20261107-06` (LOCK).
+- **PO-59 — Cura igual para todas as vocações:** % da vida **máxima**, sem o +5 do Druid (supera a inferência do `PV-COMBAT-014`, pergunta 1). Código: `PV-COMBAT-015`.
+- **PO-60 — Recompensa diária:** lista de itens ao logar, uma vez por dia, a partir de um horário de reset; lista e horário em configuração. Código: R-068 (`PV-DAILY-010`).
+- **PO-61 — Remoção do `ExplorationDecisionHandler`** autorizada (`PV-LEGACY-002`), exceção à Regra Aditiva no mesmo rito do `DEC-20261107-04`.
+
+## DEC-20261107-06 — LOCK da Monster AI por revisão formal (decisão do Arquiteto com base no PO-58, Fila 10)
+
+Status: **Accepted (Arquiteto, ADR-016: arquitetura; régua de produto dada pelo PO-58)** — `PV-GOV-020`; revisão formal documentada exigida pelo `roadmap.md` para mudança de status de módulo
+
+- A régua de LOCK da Monster AI deixa de ser "R-050 + R-043" (revisão de fechamento do M4) e passa a ser **o comportamento oficial desta fase (PO-58):** o `DataDrivenMonsterAI` escolhe a ação por dados (`MonsterActionRule`, lista ordenada por `ChancePercent`) e, sem habilidade de monstro, executa o ataque básico.
+- **Monster AI: REVIEW → LOCKED.** R-050 e R-043 ficam **suspensos** (não fechados): reabrem quando o PO aprovar habilidades de monstro, e esse contrato abrirá a revisão formal que destrava o módulo.
+- `developer-guide/domain/monster-ai.md` (DRAFT) recebe nota: as exigências de cooldown/peso/condição valem para a fase com habilidades de monstro.

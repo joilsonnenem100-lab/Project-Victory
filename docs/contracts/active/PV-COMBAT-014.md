@@ -19,6 +19,7 @@ Monstros: inalterado (Monster AI).
 ## Leituras PROVISÓRIAS (onde trocar)
 1. **Hipótese de trabalho: "% fixa da vida" = % da vida MÁXIMA** (PO-DECISOES-BASE, "Ponto a confirmar com o PO"). Trocar em `HealingSpellDefinition.RawHealingFor` (`Domain/Combat/Rules/ClassHealingSpells.cs`).
 2. **Faixas de Level e porcentagens** — todas as vocações: Level 1 → 10 %, 20 → 15 %, 50 → 20 %, 100 → 25 %; **Druid** (PO-01, "cura própria"): +5 pontos em cada faixa (15/20/25/30 %) — **inferência do PO-01** (o PO-01 diz só "cura própria"; o bônus de +5 pontos não está escrito em lugar nenhum; levado às perguntas ao PO abaixo). Trocar em `ClassHealingSpellTable.StandardBands` / `DruidBands`.
+> *Nota de superação (2026-11-07, `DEC-20261107-05`, PO-59 em `docs/product/PO-DECISOES-BASE.md`): sem bônus do Druid; a mesma tabela para todas as vocações (`PV-COMBAT-015`).*
 3. **Custo de Mana = 20** para todas as vocações. Trocar em `ClassHealingSpellTable.DefaultManaCost` (ou por linha da tabela).
 4. **Nomes** (genéricos, estilo Tibia): Wound Mending (Knight), Divine Mending (Paladin), Arcane Mending (Sorcerer), Nature Mending (Druid), Inner Mending (Monk). Trocar em `ClassHealingSpellTable.All`.
 5. **Limite do seletor = 50 % da vida máxima.** Trocar por configuração `Combat:HealingSpellBelowPercent` (0 desliga) ou em `HealingSpellPolicy.DefaultBelowPercent`.
@@ -47,5 +48,5 @@ Cliente (mostrar a cura no log/HUD; opção do jogador para a spell); spells de 
 - **D — provisório do Druid:** marcado como **inferência do PO-01** (leitura 2 acima).
 
 ## Perguntas ao PO
-1. **Bônus de cura do Druid (inferência do PO-01):** o PO-01 diz que o Druid tem "cura própria"; a implementação dá **+5 pontos percentuais** em cada faixa (15/20/25/30 % contra 10/15/20/25 % das outras vocações). Confirma esse bônus, outro valor, ou nenhum bônus (a "cura própria" seria só a spell que todas as vocações já têm pelo PO-53)?
+1. ✅ *Respondida (2026-11-07, PO-59, `DEC-20261107-05`): nenhum bônus — cura igual para todas as vocações; removido no `PV-COMBAT-015`.* **Bônus de cura do Druid (inferência do PO-01):** o PO-01 diz que o Druid tem "cura própria"; a implementação dá **+5 pontos percentuais** em cada faixa (15/20/25/30 % contra 10/15/20/25 % das outras vocações). Confirma esse bônus, outro valor, ou nenhum bônus (a "cura própria" seria só a spell que todas as vocações já têm pelo PO-53)?
 2. "% fixa da vida" = % da vida **máxima** (leitura 1) — confirmar.

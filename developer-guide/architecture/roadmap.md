@@ -139,7 +139,7 @@ Status: IN PROGRESS
 Módulos:
 
 - Monsters (LOCKED)
-- Monster AI (~~PLANNED~~ REVIEW — implementado no `PV-MONSTER-010`; LOCK depois do R-050 e do R-043 — revisão de fechamento do M4, 2026-11-06: `docs/architecture/historico/REVISAO-FECHAMENTO-M4.md`)
+- Monster AI (~~PLANNED~~ ~~REVIEW~~ **LOCKED** (2026-11-07, `DEC-20261107-06`, PO-58: ataque básico por dados é o comportamento oficial desta fase; R-050/R-043 suspensos até existirem habilidades de monstro) — implementado no `PV-MONSTER-010`; ~~LOCK depois do R-050 e do R-043~~ — revisão de fechamento do M4, 2026-11-06: `docs/architecture/historico/REVISAO-FECHAMENTO-M4.md`)
 - Experience Distribution (~~PLANNED~~ REVIEW — implementado no `PV-XP-010`; LOCK depois do R-045 — mesma revisão)
 - Spawn System (~~PLANNED~~ REVIEW — implementado no `PV-SPAWN-010`; ~~LOCK no M6, depois do R-044/R-046~~ R-044/R-046 fechados na Fila 7; LOCK depois do R-057 — `docs/architecture/historico/REVISAO-FECHAMENTO-FILA-7.md`)
 

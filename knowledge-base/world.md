@@ -63,9 +63,11 @@ Monstros
 
 > *Emenda (2026-11-06, Fila 5, `DEC-20261106-30`; revisão do PV-GOV-010): além do bloqueio por Continente, cada **Hunt area** passa a exigir um **tier de título** mínimo (0 = Novice … 5 = Legend, derivado do Level; Spider Cave = 0). "Tier de título" (`TitleTier`, `RequiredTitleTier` no código) é **outro conceito** do "Tier" de item: o Tier de item continua pertencendo só aos itens. Onde abaixo se lê "Ascension mínima/recomendada", leia o tier de título.*
 
-> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-09/PO-55 em `docs/product/PO-DECISOES-BASE.md`): a Hunt area **não exige** tier de título: `RequiredTitleTier` passa a ser **nível recomendado** (informativo), sem bloquear a entrada. O bloqueio por Continente fica pendente de confirmação do PO (PO-09 diz "regiões livres"; ver relatório da Fila 9).*
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-09/PO-55 em `docs/product/PO-DECISOES-BASE.md`): a Hunt area **não exige** tier de título: `RequiredTitleTier` passa a ser **nível recomendado** (informativo), sem bloquear a entrada. O bloqueio por Continente fica pendente de confirmação do PO (PO-09 diz "regiões livres"; ver relatório da Fila 9).* *(Confirmado em 2026-11-07, PO-56: Continente livre.)*
 
 Cada Continente possui uma Ascension mínima para acesso.
+
+> *Nota de superação (2026-11-07, `DEC-20261107-05`, PO-56 em `docs/product/PO-DECISOES-BASE.md`): o Continente é **livre**: não há Ascension mínima para acesso nem bloqueio no Continente; o nível/tier recomendado é **só informativo**, no Continente e na Hunt.*
 
 O bloqueio acontece no Continente.
 

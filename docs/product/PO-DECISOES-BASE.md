@@ -1,6 +1,6 @@
 # PO-DECISOES-BASE — Decisões de Game Design do Product Owner
 
-Versão: 1.1 · Data: 2026-11-07 · Status: **FONTE DA VERDADE (Game Design)**
+Versão: 1.2 · Data: 2026-11-07 · Status: **FONTE DA VERDADE (Game Design)**
 
 Origem: rodada de 52 perguntas respondidas pelo Product Owner (documento `Perguntas-PO-Project-Victory.docx`, 2026-11-06/07). Autoridade: ADR-016 (o PO decide Game Design, mecânicas, experiência do jogador e universo).
 
@@ -30,7 +30,7 @@ Origem: rodada de 52 perguntas respondidas pelo Product Owner (documento `Pergun
 
 | ID | Pergunta | Decisão | Observação do PO | Aplicação |
 |---|---|---|---|---|
-| PO-09 | Como as regiões se relacionam com os títulos (Novice, Ascension 1...)? | **B**: Regiões livres, com nível recomendado em cada Hunt. | — | RequiredTitleTier deixa de ser requisito e passa a ser informativo. Alerta A2 resolvido: campo informativo, confirmado pelo PO. |
+| PO-09 | Como as regiões se relacionam com os títulos (Novice, Ascension 1...)? | **B**: Regiões livres, com nível recomendado em cada Hunt. | — | RequiredTitleTier deixa de ser requisito e passa a ser informativo. Alerta A2 resolvido: campo informativo, confirmado pelo PO. Vale também para o Continente (PO-56). |
 | PO-10 | O jogo mostra qual Hunt é a melhor? | **B**: Só o nível recomendado. | — | — |
 | PO-11 | Duração máxima de uma Hunt: | **A**: Sem limite enquanto conectado. | — | — |
 | PO-12 | Bosses: | **A**: Só na Fase 9. | — | Bosses só na Fase 9. |
@@ -42,10 +42,10 @@ Origem: rodada de 52 perguntas respondidas pelo Product Owner (documento `Pergun
 | ID | Pergunta | Decisão | Observação do PO | Aplicação |
 |---|---|---|---|---|
 | PO-15 | Tipos de poção: | **B**: Três níveis (pequena, média, grande). | — | Três níveis de poção (pequena, média, grande). |
-| PO-16 | Como obter poções antes de existir comércio? | **A**: Kit inicial e recompensa diária. | — | Kit inicial e recompensa diária (resolve a pendência de como obter poções). |
+| PO-16 | Como obter poções antes de existir comércio? | **A**: Kit inicial e recompensa diária. | — | Kit inicial e recompensa diária (resolve a pendência de como obter poções). Formato da recompensa diária: PO-60. |
 | PO-17 | O que consome ouro (sumidouros)? | **C**: Poções, taxas de mercado e serviços da cidade. | — | Sumidouros de ouro: poções, taxas de mercado e serviços da cidade. |
 | PO-18 | Taxa no mercado universal: | **B**: Taxa pequena fixa. | — | — |
-| PO-19 | Moeda premium (gemas): | **B**: Existe, só para cosméticos. | Faremos uma loja para uso das moedas com donates do jogador para personalizar seu personagem, e exploraremos de alguma forma para que ele mostre seus cosmeticos para outros players para ter incentivo de donates para manter o projeto, que é uma das nossas preocupações. | Gemas: loja de cosméticos paga com donates; cosméticos visíveis a outros jogadores. Ver PO-54 (dinheiro compra tempo). |
+| PO-19 | Moeda premium (gemas): | **B**: Existe, só para cosméticos (exceções: slots extras e passes, PO-57). | Faremos uma loja para uso das moedas com donates do jogador para personalizar seu personagem, e exploraremos de alguma forma para que ele mostre seus cosmeticos para outros players para ter incentivo de donates para manter o projeto, que é uma das nossas preocupações. | Gemas: loja de cosméticos paga com donates; cosméticos visíveis a outros jogadores. Ver PO-54 (dinheiro compra tempo). |
 | PO-20 | Venda de loot ao NPC: | **A**: Preço fixo. | — | — |
 
 ## Itens e equipamentos
@@ -122,8 +122,14 @@ Origem: rodada de 52 perguntas respondidas pelo Product Owner (documento `Pergun
 | PO-53 | Spell de cura (resolve A1) | **Todas as vocações** têm 1 spell de cura que melhora com o Level. A cura é uma **porcentagem fixa da vida**, para balancear por Level sem tabela de números por Level. Cada uso consome Mana. Sem poção de vida, o jogador cura por spell e, como gasta muita Mana para curar e para conjurar skills, usa poção de Mana. **Emenda `DEC-20261106-03`**: a regra "sem suprimento não há cura" passa a valer só para poções; a cura por spell, que gasta Mana, é permitida. |
 | PO-54 | Dinheiro compra tempo (resolve A3) | Filosofia de monetização: **dinheiro real compra tempo, não poder exclusivo**. Quem tem menos horas pode acelerar o progresso pagando, com **custo alto**, para apoiar o projeto. Itens pagos (item de treino por donate, slots extras de personagem com gemas, passes) são intencionais. Use este princípio como base para ideias de captação de renda. Gemas: loja de cosméticos visíveis a outros jogadores como incentivo ao apoio. |
 | PO-55 | Região informativa (resolve A2) | Confirmado: `RequiredTitleTier` fica como dado informativo (nível recomendado), sem bloquear a entrada. |
+| PO-56 | Continente livre | O **Continente também é livre**: sai a exigência de Ascension mínima por Continente; o nível/tier recomendado é **só informativo** (estende PO-09/PO-55 ao Continente). Emenda `world.md`. |
+| PO-57 | Uso das gemas (exceção confirmada) | Gemas servem para **cosméticos, os 2 slots extras de personagem e passes**. Exceção confirmada ao "só cosméticos" do PO-19, coerente com PO-54. |
+| PO-58 | Monster AI desta fase | A Monster AI atual (**só ataque básico, definido por dados**) é **OFICIAL nesta fase**. O R-050 (habilidades de monstro) não se aplica até existirem habilidades de monstro. Base para o LOCK da Monster AI por revisão formal documentada. |
+| PO-59 | Cura igual para todas as vocações | A cura é uma **porcentagem da vida MÁXIMA**, **igual para todas as vocações, Druid incluído** (sai o +5 do Druid). Ajustes futuros de balanceamento. Confirma o "ponto a confirmar" do PO-53. |
+| PO-60 | Recompensa diária | Uma **lista de itens** entregue **ao logar**, **uma vez por dia**, a partir de um **horário pré-estabelecido (reset)**; lista e horário em **configuração**. Detalha a "recompensa diária" do PO-16. |
+| PO-61 | Remoção do ExplorationDecisionHandler | Autorizada a remoção do `ExplorationDecisionHandler` (código morto fora da cadeia, `PV-LEGACY-002`). |
 
-**Ponto a confirmar com o PO (pequeno):** no PO-53, "% fixa da vida" é sobre a **vida máxima** (hipótese de trabalho, pois uma % da vida *atual* curaria menos justamente quando o jogador está pior). Valores da % e custos de Mana: PROVISÓRIOS, a balancear.
+**Ponto a confirmar com o PO (pequeno) — RESOLVIDO por PO-59 (vida máxima, igual para todas as vocações):** no PO-53, "% fixa da vida" é sobre a **vida máxima** (hipótese de trabalho, pois uma % da vida *atual* curaria menos justamente quando o jogador está pior). Valores da % e custos de Mana: PROVISÓRIOS, a balancear.
 
 ## Alertas de consistência
 
@@ -136,10 +142,13 @@ Origem: rodada de 52 perguntas respondidas pelo Product Owner (documento `Pergun
 - **Fase 7 em diante:** combate elemental (depois do World); depósito global; regiões por Ascension de conteúdo; respawn com atraso.
 - **Fase 8 (Economia):** taxa pequena fixa no mercado; sumidouros de ouro; aba Recomprar no NPC; loja de gemas e cosméticos visíveis.
 - **Fase 9:** guildas, chat global e de guilda, rankings por categoria, Hall da Fama permanente, bosses, conquistas com recompensa; passe Free e passe com gemas.
-- **Conta:** 5 slots (3 livres, 2 com gemas); nome no formato do Tibia; exclusão com espera de 7 dias; sem troca de classe.
+- **Recompensa diária (PO-60):** lista de itens em configuração, reset diário em configuração (`PV-DAILY-010`).
+- **Conta:** 5 slots (3 livres, 2 com gemas, PO-57); nome no formato do Tibia; exclusão com espera de 7 dias; sem troca de classe.
 - **Operação:** eventos de XP em dobro agendados pelo administrador; proteção contra bots por detecção de padrão e verificação no login; manutenção encerra as Hunts pelo pipeline, sem perda; português e inglês.
 
 
 ## Última alteração
 
-2026-11-07 — criação a partir das 52 respostas do PO; v1.1 acrescenta PO-53, PO-54 e PO-55 (respostas aos alertas A1, A3 e A2).
+2026-11-07 — v1.2 (`DEC-20261107-05`): PO-56 a PO-61 — Continente livre, uso das gemas, Monster AI oficial nesta fase, cura igual para todas as vocações, recompensa diária, remoção do ExplorationDecisionHandler.
+
+*Anteriores:* 2026-11-07 — criação a partir das 52 respostas do PO; v1.1 acrescenta PO-53, PO-54 e PO-55 (respostas aos alertas A1, A3 e A2).

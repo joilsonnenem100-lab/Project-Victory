@@ -37,6 +37,7 @@ O kit inicial agora vem ligado no `appsettings.json` (comportamento real do jogo
 
 ## Fora do escopo / pendências
 - **Recompensa diária de poções (PO-16): NÃO implementada** — pendência registrada no `project-state.md`.
+> *Nota de superação (2026-11-07, `DEC-20261107-05`, PO-60 em `docs/product/PO-DECISOES-BASE.md`): formato definido (lista de itens em configuração, uma vez por dia ao logar, após o reset); contrato `PV-DAILY-010`.*
 - NPC, comércio, loja, recompra (Fases 7/8); poção como drop de monstro (PO-16 define kit + diária como fontes — pergunta ao PO); cliente (mostrar o nível usado no log/HUD; política por nível).
 
 ## Testes
