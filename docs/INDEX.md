@@ -1,6 +1,6 @@
 # Project-Victory — INDEX (leia primeiro)
 
-Uma página. Atualizado em 2026-11-07 (Fila 9, `PV-GOV-014…019`). Detalhe só quando o item de trabalho o citar.
+Uma página. Atualizado em 2026-11-07 (Fila 9 e Fila Noturna 1). Detalhe só quando o item de trabalho o citar.
 
 ## Estado atual
 - **Jogável pela API:** conta → login → personagem → entrar → Hunt contínua (combate por turnos, IA de monstro, Spawn) → XP/loot reais → Level derivado → queda/logout/reinício sem perda.
@@ -11,6 +11,9 @@ Uma página. Atualizado em 2026-11-07 (Fila 9, `PV-GOV-014…019`). Detalhe só 
 ## Regras vivas (resumo; texto completo no `CLAUDE.md`)
 **Game Design:** `docs/product/PO-DECISOES-BASE.md` é a fonte da verdade de Game Design; só o PO altera; toda alteração atualiza este arquivo, o `decision-log.md`, os documentos afetados (por nota de superação, sem apagar histórico) e o `INDEX.md` (`DEC-20261107-01`; comando `/po-decisao`).
 Server Authority (identidade do token) · Aggregate Ownership · Clean Architecture · Regra Aditiva · Contrato antes de código · Experience é a verdade, Level derivado · Referência Tibia (`DEC-20261106-15`) · Nada de achismo (cite a fonte) · Economia de contexto e uma fila por sessão (`DEC-20261106-45`).
+
+## Fila Noturna 1 (2026-11-07)
+Servidor: Hunt Analyzer (`api/hunt/analyzer`), admin do XP rate (`api/admin/xp-rate`, admin só por Id em `Admin:Accounts`), spell de cura das 5 classes (PO-53), poções em 3 níveis e kit inicial (PO-15/16), `api/gameplay/action` retirado. **480 testes**, 3 migrations aditivas novas (`HuntAnalyzerSummaries`, `ServerExperienceRate`, `PotionTiers`). Playtest: `docs/playtest/`. Relatório: `docs/architecture/RELATORIO-FILA-NOTURNA-1.md`.
 
 ## Últimas decisões (`developer-guide/architecture/decision-log.md`)
 - `DEC-20261107-02` — Varredura de consistência (revisão formal): notas de superação; conflitos com código R-064 (tier ainda bloqueia), R-065 (sem spell de cura), R-066 (sem limite de personagens).
@@ -39,5 +42,4 @@ Server Authority (identidade do token) · Aggregate Ownership · Clean Architect
 | Código | `src/` (Domain, Application, Infrastructure, Persistence, Composition, API, Client) · testes em `tests/` |
 
 ## Próxima fila
-Fila 9 **concluída** (só documentos; relatório `docs/architecture/RELATORIO-FILA-9.md`; a branch `feature/pv-gov-019-game-session-handbook` traz tudo).
-Próxima fila de código (candidatos no `roadmap-to-playable.md`, a decidir pelo PO): spell de cura por vocação (R-065), tier informativo (R-064), cliente UI-1 (sair da Hunt, seletor de área, `LoggedOut`), retirada do `gameplay/action` (R-053); depois `PV-TRAIN-010`.
+Fila Noturna 1 **concluída** (a branch `feature/n1-qa-010` traz a Fila 9 e a Noturna 1). Candidatos (decide o PO): cliente (aba Analyzer, UI-1, exibição da cura, admin), recompensa diária (R-068), `PV-LEGACY-002`, tier informativo (R-064), limite de personagens (R-066), `PV-TRAIN-010`.
