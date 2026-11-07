@@ -111,6 +111,7 @@ public sealed class LogoutHandler
     private readonly ICheckpointService _checkpoints;
     private readonly IPresenceTracker _presence;
     private readonly IRuntimeExecutionStateStore _runtimes;
+    private readonly ProjectVictory.Application.GameSession.LoggedOutMarker _loggedOut;
 
     public LogoutHandler(
         ICurrentPlayerContext currentPlayer,
@@ -120,8 +121,11 @@ public sealed class LogoutHandler
         EndHuntHandler endHunt,
         ICheckpointService checkpoints,
         IPresenceTracker presence,
-        IRuntimeExecutionStateStore runtimes)
+        IRuntimeExecutionStateStore runtimes,
+        // PV-RUNTIME-013 (R-054): marca de logout (memória + checkpoint do Runtime).
+        ProjectVictory.Application.GameSession.LoggedOutMarker loggedOut)
     {
+        _loggedOut = loggedOut;
         _currentPlayer = currentPlayer;
         _characters = characters;
         _hunts = hunts;
@@ -152,7 +156,9 @@ public sealed class LogoutHandler
         ending = await RunningHunts.EndAllAsync(character.Id, HuntEndReason.Logout, _hunts, _huntLock, _endHunt, cancellationToken);
 
         await _checkpoints.SaveAsync(character.Id, runtimeId, CheckpointReason.Logout, cancellationToken);
-        _presence.Remove(character.Id);
+        // PV-RUNTIME-013 (R-054): tira a presença E marca como deslogado (heartbeat ignorado até o próximo
+        // "entrar"/início de Hunt; a marca sobrevive ao reinício). DEC-20261106-49: sem retorno automático.
+        await _loggedOut.MarkAsync(character.Id, runtimeId, cancellationToken);
 
         return new LogoutResult(character.Id, ending is not null, ProjectVictory.Application.World.HomeCity.Name, ending);
     }

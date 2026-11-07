@@ -7,4 +7,6 @@ public sealed record RuntimeRecoveryData(
     int Health,
     int Mana,
     // PV-RUNTIME-010: última Hunt escolhida (aditivo).
-    string? LastHuntArea = null);
+    string? LastHuntArea = null,
+    // PV-RUNTIME-013 (R-054): o jogador fez logout (sem retorno automático, nem após reinício).
+    bool LoggedOut = false);

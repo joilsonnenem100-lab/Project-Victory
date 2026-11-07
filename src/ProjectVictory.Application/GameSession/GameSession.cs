@@ -65,6 +65,14 @@ public interface IPresenceTracker
     // PV-RUNTIME-012 (DEC-20261106-47): reinício do servidor = queda. O Recovery marca o personagem
     // como caído; o próximo Touch (heartbeat) começa a contagem do retorno, como numa queda comum.
     void MarkDroppedByRestart(Guid accountId, Guid characterId, DateTimeOffset now);
+
+    // PV-RUNTIME-013 (R-054): marca de logout (memória) — heartbeat ignorado até o próximo comando de jogo.
+    void MarkLoggedOut(Guid characterId);
+
+    // Devolve true se havia marca.
+    bool ClearLoggedOut(Guid characterId);
+
+    bool IsLoggedOut(Guid characterId);
 }
 
 public sealed class PresenceTracker : IPresenceTracker
@@ -145,6 +153,14 @@ public sealed class PresenceTracker : IPresenceTracker
             }
         }
     }
+
+    private readonly ConcurrentDictionary<Guid, byte> _loggedOut = new();
+
+    public void MarkLoggedOut(Guid characterId) => _loggedOut[characterId] = 0;
+
+    public bool ClearLoggedOut(Guid characterId) => _loggedOut.TryRemove(characterId, out _);
+
+    public bool IsLoggedOut(Guid characterId) => _loggedOut.ContainsKey(characterId);
 
     public void MarkDroppedByRestart(Guid accountId, Guid characterId, DateTimeOffset now) =>
         _presence[characterId] = new PresenceSnapshot(accountId, characterId, now, now, true, false);
@@ -282,6 +298,13 @@ public sealed class HeartbeatHandler
             return new HeartbeatResult(Guid.Empty, "NoCharacter", null, false, null, null);
         }
 
+        // PV-RUNTIME-013 (fecha o R-054): depois do logout o heartbeat NÃO recria a presença (fechar a
+        // página não vira "queda"); só "entrar no jogo" ou iniciar Hunt encerram a marca.
+        if (_presence.IsLoggedOut(character.Id))
+        {
+            return new HeartbeatResult(character.Id, "LoggedOut", null, false, null, null);
+        }
+
         var now = _time.GetUtcNow();
         _presence.Touch(accountId, character.Id, now);
 
@@ -300,8 +323,9 @@ public sealed class HeartbeatHandler
         {
             try
             {
+                // PV-RUNTIME-013 (R-051): volta à área da última Hunt escolhida, não à padrão.
                 var started = await _executeHunt.Handle(
-                    new ExecuteHuntCommand(character.Id, runtime.RuntimeId),
+                    new ExecuteHuntCommand(character.Id, runtime.RuntimeId, runtime.LastHuntArea),
                     cancellationToken);
 
                 return new HeartbeatResult(character.Id, "Online", started.HuntId, true, runtime.LastHuntArea, started.Encounter);
@@ -311,6 +335,12 @@ public sealed class HeartbeatHandler
                 // PV-HUNT-013: o jogador iniciou uma Hunt entre a conferência e o retorno — o retorno é
                 // consumido (como na ressalva 2 do PV-RUNTIME-010) e a Hunt dele continua.
                 return new HeartbeatResult(character.Id, "Online", conflict.RunningHuntId, false, runtime.LastHuntArea, null);
+            }
+            catch (InvalidHuntAreaException)
+            {
+                // PV-RUNTIME-013: a área guardada deixou de existir/estar disponível — o retorno é
+                // consumido sem Hunt (o jogador escolhe outra na tela inicial).
+                return new HeartbeatResult(character.Id, "Online", null, false, runtime.LastHuntArea, null);
             }
         }
 

@@ -66,7 +66,9 @@ public sealed class ApiExceptionHandler : IExceptionHandler
 
 
         // PV-SUPPLY-010: configuração de suprimentos inválida → 400.
-        if (exception is ProjectVictory.Application.Supply.InvalidSupplyPolicyException)
+        // PV-RUNTIME-013 (R-051/R-041): área de Hunt inexistente ou acima do tier → 400.
+        if (exception is ProjectVictory.Application.Supply.InvalidSupplyPolicyException
+            or ProjectVictory.Application.Hunt.InvalidHuntAreaException)
         {
             httpContext.Response.StatusCode =
                 StatusCodes.Status400BadRequest;

@@ -28,6 +28,8 @@ public sealed class ExecuteHuntHandler
     private readonly IRuntimeRepository _runtimeRepository;
     private readonly TimeProvider _time;
     private readonly IHuntStartGate _startGate;
+    private readonly ILevelTitleProvider _levelTitles;
+    private readonly ProjectVictory.Application.GameSession.LoggedOutMarker _loggedOut;
 
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
@@ -46,8 +48,13 @@ public sealed class ExecuteHuntHandler
         // PV-HUNT-011: horário de início (XP/hora).
         TimeProvider time,
         // PV-HUNT-013: início atômico por personagem (DEC-20261106-46).
-        IHuntStartGate startGate)
+        IHuntStartGate startGate,
+        // PV-RUNTIME-013: tier do personagem para a área escolhida (R-041) e fim da marca de logout (R-054).
+        ILevelTitleProvider levelTitles,
+        ProjectVictory.Application.GameSession.LoggedOutMarker loggedOut)
     {
+        _levelTitles = levelTitles;
+        _loggedOut = loggedOut;
         _time = time;
         _startGate = startGate;
         _checkpoints = checkpoints;
@@ -90,6 +97,9 @@ public sealed class ExecuteHuntHandler
                 "Character not found.");
         }
 
+        // PV-RUNTIME-013 (R-051): a área ESCOLHIDA (ou a padrão), validada no servidor antes de tudo.
+        var area = ResolveArea(command.HuntArea, character);
+
         // PV-HUNT-013 (DEC-20261106-46, fecha o R-052): com uma Hunt em andamento, o início é RECUSADO
         // (409) e a Hunt anterior continua. A conferência e a criação ficam sob o mesmo portão do personagem.
         using var startGate =
@@ -131,12 +141,16 @@ public sealed class ExecuteHuntHandler
         _encounterStateStore.Add(
             encounter);
 
+        // PV-RUNTIME-013 (R-054): iniciar Hunt é comando de jogo explícito — encerra a marca de logout.
+        await _loggedOut.ClearAsync(character.Id, hunt.RuntimeId, cancellationToken);
+
         // PV-RUNTIME-010: o jogador está online e esta é a última Hunt escolhida (checkpoint mínimo).
         _activity.MarkActive(character.Id);
 
+        // PV-RUNTIME-013 (R-051): grava a área escolhida DE VERDADE (antes: sempre a padrão).
         await _runtimeRepository.SaveLastHuntAsync(
             hunt.RuntimeId,
-            _areas.GetDefault().Name,
+            area.Name,
             cancellationToken);
 
         // PV-PERSIST-011: checkpoint de início da Hunt (cópia do Runtime antes do primeiro combate).
@@ -164,5 +178,26 @@ public sealed class ExecuteHuntHandler
                 target.Name,
                 target.CurrentHealth,
                 target.MaximumHealth));
+    }
+
+    // PV-RUNTIME-013 (R-051; R-041): nome do catálogo (sem diferenciar maiúsculas); tier do título do
+    // personagem ≥ RequiredTitleTier da área (DEC-20261106-30). A geração dos encounters continua com o
+    // conteúdo padrão (única área existente) — ver contrato.
+    private HuntAreaDefinition ResolveArea(string? requested, ProjectVictory.Domain.Entities.Character character)
+    {
+        if (string.IsNullOrWhiteSpace(requested))
+        {
+            return _areas.GetDefault();
+        }
+
+        var area = _areas.GetAll().FirstOrDefault(
+            candidate => string.Equals(candidate.Name, requested.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        if (area is null || character.TitleUnder(_levelTitles.Current).Tier < area.RequiredTitleTier)
+        {
+            throw new InvalidHuntAreaException(requested);
+        }
+
+        return area;
     }
 }

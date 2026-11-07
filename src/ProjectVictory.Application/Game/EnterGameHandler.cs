@@ -14,6 +14,7 @@ public sealed class EnterGameHandler
     private readonly IRuntimeRepository _runtimeRepository;
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
     private readonly ProjectVictory.Application.Progression.ILevelTitleProvider _levelTitles;
+    private readonly ProjectVictory.Application.GameSession.LoggedOutMarker _loggedOut;
 
     public EnterGameHandler(
         ICharacterRepository characterRepository,
@@ -21,8 +22,11 @@ public sealed class EnterGameHandler
         CreateRuntimeExecutionHandler createRuntimeExecutionHandler,
         IRuntimeRepository runtimeRepository,
         IRuntimeExecutionStateStore runtimeExecutionStateStore,
-        ProjectVictory.Application.Progression.ILevelTitleProvider levelTitles)
+        ProjectVictory.Application.Progression.ILevelTitleProvider levelTitles,
+        // PV-RUNTIME-013 (R-054): "entrar no jogo" encerra a marca de logout.
+        ProjectVictory.Application.GameSession.LoggedOutMarker loggedOut)
     {
+        _loggedOut = loggedOut;
         _levelTitles = levelTitles;
         _characterRepository = characterRepository;
         _currentPlayerContext = currentPlayerContext;
@@ -70,6 +74,9 @@ public sealed class EnterGameHandler
                 _runtimeExecutionStateStore.Store(
                     RuntimeReconstruction.FromCheckpoint(runtime, character));
             }
+
+            // PV-RUNTIME-013 (R-054): entrar de novo encerra a marca de logout (memória e checkpoint).
+            await _loggedOut.ClearAsync(character.Id, runtime.RuntimeId, cancellationToken);
         }
         else
         {

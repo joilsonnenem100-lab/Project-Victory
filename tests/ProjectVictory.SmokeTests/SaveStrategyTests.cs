@@ -68,6 +68,12 @@ public sealed class SaveStrategyTests
         public Task<IReadOnlyList<RuntimeRecoveryData>> GetAllAsync(CancellationToken cancellationToken = default) =>
             inner.GetAllAsync(cancellationToken);
 
+        public Task SaveLoggedOutAsync(Guid runtimeId, bool loggedOut, CancellationToken cancellationToken = default)
+        {
+            counter.RuntimeWrites++;
+            return inner.SaveLoggedOutAsync(runtimeId, loggedOut, cancellationToken);
+        }
+
         public Task SaveLastHuntAsync(Guid runtimeId, string huntArea, CancellationToken cancellationToken = default)
         {
             counter.RuntimeWrites++;

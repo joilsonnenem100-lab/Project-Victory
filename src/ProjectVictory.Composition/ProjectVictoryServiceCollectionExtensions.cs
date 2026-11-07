@@ -171,6 +171,8 @@ public static class ProjectVictoryServiceCollectionExtensions
         services.AddSingleton<IHuntLock, HuntLock>();
         // PV-HUNT-013: portão de início de Hunt por personagem (DEC-20261106-46).
         services.AddSingleton<IHuntStartGate, HuntStartGate>();
+        // PV-RUNTIME-013: marca de logout (R-054).
+        services.AddScoped<ProjectVictory.Application.GameSession.LoggedOutMarker>();
         services.AddSingleton<IActiveSpawnRegistry, ActiveSpawnRegistry>();
         services.AddScoped<EncounterGenerator>(provider => new EncounterGenerator(
             provider.GetRequiredService<IHuntAreaCatalog>(),

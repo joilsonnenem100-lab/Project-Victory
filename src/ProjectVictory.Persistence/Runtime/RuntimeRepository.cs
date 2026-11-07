@@ -61,7 +61,8 @@ public sealed class RuntimeRepository : IRuntimeRepository
             state.Initialized,
             state.Health,
             state.Mana,
-            state.LastHuntArea);
+            state.LastHuntArea,
+            state.LoggedOut);
     }
 
     // PV-PERSIST-011: atualiza a cópia persistida do Runtime só em checkpoint (nunca por rodada).
@@ -112,6 +113,29 @@ public sealed class RuntimeRepository : IRuntimeRepository
             cancellationToken);
     }
 
+    // PV-RUNTIME-013 (R-054): grava a marca de logout no checkpoint do Runtime.
+    public async Task SaveLoggedOutAsync(
+        Guid runtimeId,
+        bool loggedOut,
+        CancellationToken cancellationToken = default)
+    {
+        var state =
+            await _context.RuntimeStates
+                .FirstOrDefaultAsync(
+                    x => x.RuntimeId == runtimeId,
+                    cancellationToken);
+
+        if (state is null || state.LoggedOut == loggedOut)
+        {
+            return;
+        }
+
+        state.LoggedOut = loggedOut;
+
+        await _context.SaveChangesAsync(
+            cancellationToken);
+    }
+
     public async Task<IReadOnlyList<RuntimeRecoveryData>> GetAllAsync(
         CancellationToken cancellationToken = default) =>
         await _context.RuntimeStates
@@ -125,6 +149,7 @@ public sealed class RuntimeRepository : IRuntimeRepository
                 state.Initialized,
                 state.Health,
                 state.Mana,
-                state.LastHuntArea))
+                state.LastHuntArea,
+                state.LoggedOut))
             .ToListAsync(cancellationToken);
 }

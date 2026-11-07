@@ -87,7 +87,13 @@ public sealed class RuntimeRecoveryService
                 _store.Store(RuntimeReconstruction.FromCheckpoint(runtime, character));
                 recovered++;
 
-                if (runtime.LastHuntArea is not null)
+                // PV-RUNTIME-013 (R-054): quem fez logout antes do reinício continua deslogado e NÃO
+                // recebe o retorno automático (DEC-20261106-49 prevalece sobre o DEC-20261106-47).
+                if (runtime.LoggedOut)
+                {
+                    _presence.MarkLoggedOut(character.Id);
+                }
+                else if (runtime.LastHuntArea is not null)
                 {
                     _presence.MarkDroppedByRestart(character.AccountId.Value, character.Id, now);
                     returns++;

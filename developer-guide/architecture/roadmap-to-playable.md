@@ -165,6 +165,7 @@ Levantadas na leitura de `roadmap.md` (Fase 2), `knowledge-base/training.md` e `
 - ✅ `PV-GOV-012` — `docs/INDEX.md` (uma página), leitura obrigatória pelo INDEX, economia de contexto e uma fila por sessão no `CLAUDE.md`; relatórios das Filas 2–7 em `docs/architecture/historico/`.
 - ✅ `PV-HUNT-013` — 2ª Hunt com outra em andamento → 409, sem encerrar a anterior (R-052); logout = saída manual confirmado; R-053 não limpo (sem teste funcional), registrado.
 - ✅ `PV-RUNTIME-012` — reinício = queda (retorno após > 10 s online, `DEC-20261106-47`); vida 0 → cheia (`DEC-20261106-48`, PROVISÓRIO); `EnterGame` reusa a reconstrução do Recovery (R-055); Recovery em lote e ordem determinística (R-056).
+- ✅ `PV-RUNTIME-013` — área escolhida validada (existência e tier, R-041), gravada e usada no retorno (R-051); marca de deslogado: heartbeat pós-logout ignorado, sobrevive ao reinício (R-054). Migration nova e aditiva `RuntimeLoggedOut`.
 
 ## M8 — Experiência do jogador e Primeiro Teste Jogável
 

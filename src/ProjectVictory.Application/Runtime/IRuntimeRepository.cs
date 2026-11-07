@@ -27,6 +27,12 @@ public interface IRuntimeRepository
         string huntArea,
         CancellationToken cancellationToken = default);
 
+    // PV-RUNTIME-013 (R-054): marca de logout no checkpoint do Runtime (sobrevive ao reinício).
+    Task SaveLoggedOutAsync(
+        Guid runtimeId,
+        bool loggedOut,
+        CancellationToken cancellationToken = default);
+
     // PV-RUNTIME-011: todos os checkpoints de Runtime (Recovery ao iniciar o servidor).
     Task<IReadOnlyList<RuntimeRecoveryData>> GetAllAsync(
         CancellationToken cancellationToken = default);

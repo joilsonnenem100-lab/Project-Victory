@@ -94,4 +94,36 @@ public sealed class HuntLeaveHttpTests
 
         Assert.Equal("Completed", body.GetProperty("ending").GetProperty("huntState").GetString());
     }
+
+    // PV-RUNTIME-013 (R-051/R-041): área escolhida inexistente → 400; a área existente é aceita.
+    [Fact]
+    public async Task ChosenHuntArea_UnknownIs400_KnownIsAccepted()
+    {
+        using var factory = new ApiFactory();
+        var client = factory.CreateClient();
+        ApiFactory.WithToken(client, await factory.RegisterAndLoginAsync(client, $"area-{Guid.NewGuid():N}@test.com"));
+        var created = await client.PostAsJsonAsync("/api/character", new { name = $"A{Guid.NewGuid():N}"[..16], characterClass = "Knight" });
+        created.EnsureSuccessStatusCode();
+        var characterId = await created.Content.ReadFromJsonAsync<Guid>();
+        var runtimeId = (await (await client.PostAsync("/api/game/enter", null)).Content.ReadFromJsonAsync<JsonElement>()).GetProperty("runtimeId").GetGuid();
+
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsJsonAsync("/api/hunt/execute", new { characterId, runtimeId, huntArea = "Nowhere" })).StatusCode);
+        (await client.PostAsJsonAsync("/api/hunt/execute", new { characterId, runtimeId, huntArea = "Spider Cave" })).EnsureSuccessStatusCode();
+    }
+
+    // PV-RUNTIME-013 (R-054): heartbeat depois do logout → "LoggedOut" (presença não recriada).
+    [Fact]
+    public async Task HeartbeatAfterLogout_ReportsLoggedOut_UntilEnter()
+    {
+        using var factory = new ApiFactory();
+        var (client, _) = await PlayerInHunt(factory);
+
+        (await client.PostAsync("/api/game/logout", null)).EnsureSuccessStatusCode();
+        var late = await (await client.PostAsync("/api/game/heartbeat", null)).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("LoggedOut", late.GetProperty("status").GetString());
+
+        (await client.PostAsync("/api/game/enter", null)).EnsureSuccessStatusCode();
+        var back = await (await client.PostAsync("/api/game/heartbeat", null)).Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Online", back.GetProperty("status").GetString());
+    }
 }

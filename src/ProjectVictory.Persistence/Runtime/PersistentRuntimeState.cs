@@ -16,4 +16,7 @@ public sealed class PersistentRuntimeState
 
     // PV-RUNTIME-010 (ADR-057 v1.2): última Hunt escolhida — checkpoint mínimo do Runtime State.
     public string? LastHuntArea { get; set; }
+
+    // PV-RUNTIME-013 (R-054): logout explícito até o próximo comando de jogo (migration aditiva).
+    public bool LoggedOut { get; set; }
 }

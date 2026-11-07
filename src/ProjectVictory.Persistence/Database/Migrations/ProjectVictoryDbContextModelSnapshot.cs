@@ -226,6 +226,9 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.Property<string>("LastHuntArea")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("LoggedOut")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Mana")
                         .HasColumnType("INTEGER");
 
