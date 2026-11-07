@@ -13,6 +13,9 @@ using Xunit;
 
 namespace ProjectVictory.SmokeTests;
 
+// PV-LEGACY-002 (PO-61): o caminho legado (ExplorationDecision → GameplayActionDispatcher →
+// StartEncounterCombat) saiu; este teste não dependia dele. Continua usando CreateCombatContextHandler +
+// ExecuteCombatActionHandler (mantidos; ver CLEANUP-MANIFEST-2026-11-06, seção PV-LEGACY-002).
 public sealed class CoreGameplayFlowSmokeTest
 {
     [Fact]

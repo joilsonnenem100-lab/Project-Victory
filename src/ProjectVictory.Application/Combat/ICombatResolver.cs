@@ -6,8 +6,8 @@ namespace ProjectVictory.Application.Combat;
 
 public interface ICombatResolver
 {
-    // Contrato anterior (combate inteiro por ids; usado pelo fluxo de gameplay/action). Mantido
-    // pela Regra Aditiva.
+    // Contrato anterior (combate inteiro por ids). O fluxo gameplay/action que o usava saiu
+    // (PV-LEGACY-001/002); mantido pela Regra Aditiva (implementado pelo CombatResolver).
     CombatResult Resolve(
         CombatRequest request);
 

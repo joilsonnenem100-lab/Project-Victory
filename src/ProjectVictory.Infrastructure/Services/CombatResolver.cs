@@ -20,7 +20,7 @@ public sealed class CombatResolver : ICombatResolver
         _supplyEffects = supplyEffects;
     }
 
-    // Contrato antigo (fluxo gameplay/action), mantido pela Regra Aditiva: o atacante vence.
+    // Contrato antigo (o fluxo gameplay/action saiu, PV-LEGACY-001/002), mantido pela Regra Aditiva: o atacante vence.
     // Não é o combate real do jogo, que passa por ResolveAction (registrado no contrato).
     public CombatResult Resolve(
         CombatRequest request)

@@ -258,12 +258,10 @@ public static class ProjectVictoryServiceCollectionExtensions
         services.AddScoped<UpdateRuntimeActivityHandler>();
         services.AddScoped<ChangeRuntimeLocationHandler>();
         services.AddScoped<ResolveLocationActionsHandler>();
-        services.AddScoped<BindEncounterToCombatHandler>();
-        services.AddScoped<StartEncounterCombatHandler>();
+        // PV-LEGACY-002 (PO-61, DEC-20261107-04/05): saíram ExplorationDecision*, GameplayActionDispatcher,
+        // StartEncounterCombat*, BindEncounterToCombat*, ResolveCombat* (manifesto 2026-11-06). Fica o
+        // CreateCombatContextHandler, usado pelo CoreGameplayFlowSmokeTest com o ExecuteCombatActionHandler.
         services.AddScoped<CreateCombatContextHandler>();
-        services.AddScoped<ResolveCombatHandler>();
-        services.AddScoped<GameplayActionDispatcher>();
-        // PV-LEGACY-001 (DEC-20261107-04, R-053): GameplayActionExecutionHandler retirado com o POST api/gameplay/action.
         services.AddSingleton<ILocationActionCatalog, LocationActionCatalog>();
         services.AddSingleton<IWorldDefinitionStore, WorldDefinitionStore>();
 

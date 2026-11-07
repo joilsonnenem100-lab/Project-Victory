@@ -83,3 +83,18 @@ Apagados:
 Alterados no mesmo commit: o registro de DI do `GameplayActionExecutionHandler` (`ProjectVictoryServiceCollectionExtensions.cs`, trocado por comentário); `AuthorizationHttpTests` (saíram a linha `POST /api/gameplay/action` do 401 e a asserção 403 do `gameplay/action`); `LegacyGameplayActionHttpTests` (o teste do legado passa a provar 404). O `ControllerAuthorizationConventionTests` perde sozinho a linha do `GameplayController` (teoria gerada por reflexão).
 
 **Mantidos** (usados fora da cadeia; a ordem proíbe apagar arquivo fora dela): `GameplayActionDispatcher`, `ExecuteLocationActionCommand/Result` (referenciados por `World/ExplorationDecisionHandler`, código morto fora da cadeia), `StartEncounterCombatHandler/Command/Result`, `BindEncounterToCombat*`, `ResolveCombat*` (só o dispatcher os usa) e `CreateCombatContextHandler/Command/Result` (usado também pelo `SmokeTests/CoreGameplayFlowSmokeTest`). Ficam sem caminho HTTP; a remoção deles fica para um `PV-LEGACY-002` com autorização própria.
+
+## PV-LEGACY-002 (Fila 10, 2026-11-07) — órfãos do caminho legado `gameplay/action` — branch `feature/f10-legacy-002`
+
+Autorização: **PO-61** (`DEC-20261107-05`) para o `ExplorationDecisionHandler`, que é código morto fora da cadeia. Para o resto da cadeia, vale o **`DEC-20261107-04`** (correção do Arquiteto no `PV-LEGACY-001`). O commit é isolado. Nada disto estava registrado na DI com chamador nem tinha caminho HTTP.
+
+**Apagados (15 arquivos, `git rm`):**
+- `Application/World/ExplorationDecisionHandler.cs`, `ExplorationDecisionCommand.cs`, `ExplorationDecisionResult.cs` (PO-61);
+- `Application/World/GameplayActionDispatcher.cs`, `ExecuteLocationActionCommand.cs`, `ExecuteLocationActionResult.cs`;
+- `Application/Encounter/StartEncounterCombatHandler.cs`, `StartEncounterCombatCommand.cs`, `StartEncounterCombatResult.cs`;
+- `Application/Encounter/BindEncounterToCombatHandler.cs`, `BindEncounterToCombatCommand.cs`, `BindEncounterToCombatResult.cs`;
+- `Application/Combat/ResolveCombatHandler.cs`, `ResolveCombatCommand.cs`, `ResolveCombatResult.cs`.
+
+**Alterados no mesmo commit:** os registros de DI desses handlers e a linha de lápide do `GameplayActionExecutionHandler` (`ProjectVictoryServiceCollectionExtensions.cs`), e os comentários "fluxo gameplay/action" em `ICombatResolver.cs`/`CombatResolver.cs`.
+
+**Mantidos:** `CreateCombatContextHandler/Command/Result`. O `CoreGameplayFlowSmokeTest` ainda os usa junto com o `ExecuteCombatActionHandler`, e esse caminho de teste não faz parte da autorização. O teste só ganhou um comentário. `ICombatResolver.Resolve(CombatRequest)` também fica, pela Regra Aditiva. O `LegacyGameplayActionHttpTests` (404) e as linhas de lápide do `AuthorizationHttpTests` ficam, porque documentam a retirada.
