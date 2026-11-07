@@ -33,3 +33,5 @@ Resultado: build com 0 avisos; **378 aprovados, 0 ignorados, 0 falhas** (Applica
 3. A senha dos testes virou a constante `ApiFactory.TestPassword`.
 4. O relógio manual começa na hora real.
 5. Linha de escopo no contrato.
+
+**Dependência conhecida (revisão do `PV-GOV-011`, ressalva 9):** este E2E e o `SmokeTests/EventBusTests` afirmam desfechos ("Victory") que dependem da semente fixa **e** do balanceamento atual (fórmula de dano e dados da Spider Cave, PROVISÓRIOS). Mudar o balanceamento pode exigir nova semente ou novo desfecho esperado. O 500 do ataque a um encounter descartado também está fixado aqui (**R-061**).

@@ -97,7 +97,7 @@ public sealed class EventBusTests
         {
             var counter = scope.ServiceProvider.GetRequiredService<ProjectVictory.Application.Spawn.SpawnLifecycleCounter>();
             var hunt = await scope.ServiceProvider.GetRequiredService<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(characterId, runtimeId));
-            
+
             AttackEncounterResult? last = null;
             for (var i = 0; i < 300 && last?.CombatFinished != true; i++)
             {

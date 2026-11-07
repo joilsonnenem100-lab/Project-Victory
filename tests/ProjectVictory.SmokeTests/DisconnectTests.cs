@@ -58,7 +58,7 @@ public sealed class DisconnectTests
 
     private static async Task<long> WinOneEncounter(World world, Guid encounterId)
     {
-                AttackEncounterResult? last = null;
+        AttackEncounterResult? last = null;
 
         for (var i = 0; i < 300 && last?.CombatFinished != true; i++)
         {
@@ -152,17 +152,20 @@ public sealed class DisconnectTests
 
     // Revisão do PV-EVENT-010/011 (ressalva 7b): o logout encerra TODAS as Hunts em andamento.
     [Fact]
-    public async Task Logout_EndsEveryRunningHunt_ReportsTheFirst()
+    public async Task Logout_EndsEveryRunningHunt()
     {
         await using var world = await NewWorld();
         var first = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
-        await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+        var second = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
 
         var result = await world.Get<LogoutHandler>().Handle(new LogoutCommand());
 
         Assert.True(result.HuntEnded);
-        Assert.Null(await world.Get<IHuntRepository>().GetRunningByCharacterIdAsync(world.CharacterId));
-        Assert.Contains(result.Ending!.HuntId, new[] { first.HuntId, result.Ending.HuntId });
+        Assert.Equal(HuntEndReason.Logout, result.Ending!.Reason);
+        Assert.Contains(result.Ending.HuntId, new[] { first.HuntId, second.HuntId }); // é uma das duas
+        // As DUAS foram encerradas e saíram da memória (revisão do PV-GOV-011, ressalva 4).
+        Assert.Null(await world.Get<IHuntRepository>().GetByIdAsync(first.HuntId));
+        Assert.Null(await world.Get<IHuntRepository>().GetByIdAsync(second.HuntId));
     }
 
     // Revisão do PV-HUNT-011 (ressalva 5b): conta sem personagem.

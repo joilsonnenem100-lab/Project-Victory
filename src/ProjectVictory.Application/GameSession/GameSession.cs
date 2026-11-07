@@ -184,6 +184,7 @@ public sealed class GameSessionCoordinator
     // Uma varredura: detecta as quedas (sem sinal por MAIS que o limite) e as entrega aos handlers.
     public async Task<IReadOnlyList<PresenceSnapshot>> SweepAsync(CancellationToken cancellationToken = default)
     {
+        _errors.Clear(); // só os erros DESTA varredura (revisão do PV-GOV-011, ressalva 7)
         var dropped = _presence.CollectDropped(_time.GetUtcNow(), _settings.DisconnectTimeout);
 
         var handled = new List<PresenceSnapshot>();

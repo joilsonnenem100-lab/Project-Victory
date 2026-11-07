@@ -30,7 +30,7 @@ Os módulos novos do M6/M7 não estavam nas fases do `roadmap.md`. A revisão os
   - retorno depois de **mais** de 10 s online com uma nova Hunt na última Hunt;
   - reinício sem Hunt.
 - **Fechados na fila:** R-036, R-044, R-046, R-048 e R-029 (este, para `api/hunt/*`).
-- **Build e testes:** 0 avisos, **380 aprovados** (executado, depois das ressalvas finais).
+- **Build e testes:** 0 avisos, **380 aprovados** (executado também pelo revisor); **381** depois das ressalvas da revisão final.
 
 ## Alterações feitas por esta revisão
 

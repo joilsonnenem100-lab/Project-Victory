@@ -48,7 +48,7 @@ public sealed class HuntLoopTests
         return new World(provider, scope, characterId, enter.RuntimeId, clock);
     }
 
-    private static async Task<AttackEncounterResult> FightEncounter(World world, Guid encounterId, int startingHealth = 10_000)
+    private static async Task<AttackEncounterResult> FightEncounter(World world, Guid encounterId)
     {
         AttackEncounterResult? last = null;
 
@@ -125,7 +125,7 @@ public sealed class HuntLoopTests
     {
         await using var world = await NewWorld(1);
         var hunt = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
-        
+
         async Task<AttackEncounterResult> AttackInOwnScope()
         {
             using var scope = world.Provider.CreateScope();

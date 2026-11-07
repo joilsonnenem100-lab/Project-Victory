@@ -41,7 +41,8 @@ Nada travou nem foi pulado.
 | RUNTIME-011 | 0 avisos | 371 |
 | EVENT-010/011 | 0 avisos | 375 (3 execuções seguidas) |
 | QA-006 | 0 avisos | 378 |
-| **Final** | **0 avisos, 0 erros** | **380 aprovados, 0 ignorados, 0 falhas** (Application 31, Domain 120, Runtime 17, Smoke 111, Api 101), em 2 execuções seguidas |
+| GOV-011 (revisão final, executada pelo revisor) | 0 avisos | 380 |
+| **Final** (após as ressalvas da revisão final) | **0 avisos, 0 erros** | **381 aprovados, 0 ignorados, 0 falhas** (Application 31, Domain 120, Runtime 17, Smoke 112, Api 101) |
 
 ## Migrations criadas
 
@@ -128,6 +129,17 @@ Critério único: LOCK só quando o documento de domínio está cumprido. **Nenh
 
 **Fechados nesta fila:** R-036, R-044, R-046, R-048, R-029 (para `api/hunt/*`).
 
+**Revisão final do `PV-GOV-011`: APROVADO COM RESSALVAS** (o revisor executou build e testes: 0 avisos, 380 aprovados). As ressalvas foram aplicadas:
+- R-060 e R-061 no `roadmap.md`;
+- "Situação Atual" do roadmap atualizada;
+- R-058 com a ação já feita marcada;
+- asserção real no teste de logout com duas Hunts;
+- teste do limite da mana acima do máximo;
+- `Errors` só da última varredura;
+- limpeza de testes;
+- dependência da semente documentada;
+- "Event System" distinguido dos eventos de jogo da Fase 10.
+
 ## PROVISÓRIO e onde trocar
 
 | Item | Onde |
@@ -135,6 +147,7 @@ Critério único: LOCK só quando o documento de domínio está cumprido. **Nenh
 | Queda (60 s), retorno (10 s), varredura (5 s) | `appsettings.json` → `GameSession` |
 | Área da última Hunt (sempre a padrão, R-051) | `ExecuteHuntHandler` / `IHuntAreaCatalog` |
 | Logout como saída manual (`Completed`) | `EndHuntHandler` (switch do motivo) |
+| Desfechos afirmados nos testes com semente fixa (dependem do balanceamento PROVISÓRIO) | `Api.Tests/ContinuousHuntEndToEndTests`, `SmokeTests/EventBusTests` (trocar semente/desfecho ao rebalancear) |
 
 ## Perguntas ao PO
 

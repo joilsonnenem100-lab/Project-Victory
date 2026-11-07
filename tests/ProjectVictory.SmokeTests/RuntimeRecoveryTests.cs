@@ -70,4 +70,40 @@ public sealed class RuntimeRecoveryTests
             Assert.Null(await scope.ServiceProvider.GetRequiredService<IHuntRepository>().GetRunningByCharacterIdAsync(characterId));
         }
     }
+
+    // Revisão do PV-GOV-011 (ressalva 5): mana ACIMA do máximo também é limitada.
+    [Fact]
+    public async Task Recover_ClampsManaAboveTheMaximum()
+    {
+        var databaseName = $"recovery-mana-{Guid.NewGuid():N}";
+        Guid characterId;
+
+        {
+            var services = new ServiceCollection();
+            services.AddProjectVictorySmokeTestServices();
+            services.AddDbContext<ProjectVictoryDbContext>(o => o.UseInMemoryDatabase(databaseName));
+            await using var provider = services.BuildServiceProvider();
+            using var scope = provider.CreateScope();
+            scope.ServiceProvider.GetRequiredService<TestCurrentPlayerContext>().SetAccount(Guid.NewGuid());
+            characterId = await scope.ServiceProvider.GetRequiredService<CreateCharacterHandler>()
+                .Handle(new CreateCharacterCommand("M" + Guid.NewGuid().ToString("N")[..10], CharacterClass.Sorcerer));
+            var runtimeId = (await scope.ServiceProvider.GetRequiredService<EnterGameHandler>().Handle(new EnterGameCommand())).RuntimeId;
+            await scope.ServiceProvider.GetRequiredService<IRuntimeRepository>().SaveCheckpointAsync(runtimeId, 1, 99_999);
+        }
+
+        {
+            var services = new ServiceCollection();
+            services.AddProjectVictorySmokeTestServices();
+            services.AddDbContext<ProjectVictoryDbContext>(o => o.UseInMemoryDatabase(databaseName));
+            await using var provider = services.BuildServiceProvider();
+            using var scope = provider.CreateScope();
+
+            await scope.ServiceProvider.GetRequiredService<RuntimeRecoveryService>().RecoverAsync();
+
+            Assert.True(scope.ServiceProvider.GetRequiredService<IRuntimeExecutionStateStore>().TryGetByCharacterId(characterId, out var runtime));
+            var character = await scope.ServiceProvider.GetRequiredService<ICharacterRepository>().GetByIdAsync(characterId);
+            Assert.Equal(1, runtime.CharacterState!.CurrentHealth);                          // abaixo do máximo: preservada
+            Assert.Equal(character!.MaximumMana.Value, runtime.CharacterState.CurrentMana);  // acima do máximo: limitada
+        }
+    }
 }

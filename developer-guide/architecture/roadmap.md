@@ -152,9 +152,9 @@ Status: REVIEW (revisão de fechamento da Fila 7, `docs/architecture/REVISAO-FEC
 Módulos (implementados; nenhum LOCKED):
 
 - Game Session + Runtime Coordinator (REVIEW — `PV-RUNTIME-010`; falta R-051, R-054, R-055)
-- Hunt Loop + encerramento por queda (REVIEW — `PV-HUNT-011/012`; falta R-059, R-052, R-053, R-027, R-030)
+- Hunt Loop + encerramento por queda (REVIEW — `PV-HUNT-011/012`; falta R-059, R-052, R-053, R-027, R-030, R-060, R-061)
 - Recovery do Runtime (REVIEW — `PV-RUNTIME-011`; falta R-055, R-056)
-- Event System: Typed Event Bus e Domain Events (REVIEW — `PV-EVENT-010/011`; falta R-058)
+- Event System: Typed Event Bus e Domain Events — **infraestrutura de Engine Events**, não confundir com o módulo "Events" (eventos de jogo) da Fase 10 (REVIEW — `PV-EVENT-010/011`; falta R-058)
 
 ---
 
@@ -247,8 +247,8 @@ Gameplay Foundation
 
 Objetivo:
 
-~~Consolidar a documentação oficial do módulo Monsters, finalizar sua revisão arquitetural e prosseguir para os próximos módulos da Gameplay Foundation.~~ *(Atualizado na revisão de fechamento do M4, 2026-11-06.)* Monster AI, Experience Distribution e Spawn System estão implementados e em REVIEW; cada LOCK depende das pendências listadas na revisão de fechamento do M4 (R-050/R-043, R-045, R-044/R-046).
+~~Consolidar a documentação oficial do módulo Monsters, finalizar sua revisão arquitetural e prosseguir para os próximos módulos da Gameplay Foundation.~~ *(Atualizado na revisão de fechamento do M4, 2026-11-06.)* Monster AI, Experience Distribution e Spawn System estão implementados e em REVIEW; cada LOCK depende das pendências listadas na revisão de fechamento do M4 (R-050/R-043, R-045, ~~R-044/R-046~~). *(Fila 7, `REVISAO-FECHAMENTO-FILA-7.md`: R-044/R-046 fechados; o Spawn agora depende do R-057; os módulos novos do M6/M7 estão na seção "Capacidades de Runtime e Eventos", todos em REVIEW.)*
 
 Próximo módulo:
 
-~~Monster AI~~ Fechamento da Fase 6 (Spawn com o M6, `PV-HUNT-011`; Monster AI com as skills de monstro; Experience Distribution com a Hunt em grupo)
+~~Monster AI~~ Fechamento da Fase 6 (~~Spawn com o M6, `PV-HUNT-011`~~ Spawn com o R-057 — Respawn Policy, Spawn Delay, Spawn Definition versionada; Monster AI com as skills de monstro; Experience Distribution com a Hunt em grupo) e das capacidades de Runtime e Eventos (R-051 a R-061)
