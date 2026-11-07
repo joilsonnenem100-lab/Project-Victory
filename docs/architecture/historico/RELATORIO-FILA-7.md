@@ -113,7 +113,7 @@ A vitória de um encounter deixou de encerrar a Hunt (fecha o R-036). Seis teste
   - senha como constante;
   - relógio a partir da hora real.
 
-## Fechamento (`docs/architecture/REVISAO-FECHAMENTO-FILA-7.md`)
+## Fechamento (`docs/architecture/historico/REVISAO-FECHAMENTO-FILA-7.md`)
 
 Critério único: LOCK só quando o documento de domínio está cumprido. **Nenhum módulo foi travado.**
 

@@ -819,7 +819,7 @@ Status: **Accepted (Arquiteto)** — implementa o Handbook §19 no `PV-PERSIST-0
 
 ## DEC-20261106-38 — Fechamento do M4 (decisão do Arquiteto, Fila 6)
 
-Status: **Accepted (Arquiteto)** — revisão documentada em `docs/architecture/REVISAO-FECHAMENTO-M4.md`
+Status: **Accepted (Arquiteto)** — revisão documentada em `docs/architecture/historico/REVISAO-FECHAMENTO-M4.md`
 
 - **LOCKED:** Monster AI e Experience Distribution (regra de grupo PROVISÓRIA do PO).
 - **REVIEW:** Spawn System — LOCK no M6, depois do descarte no fim da Hunt (R-044) e dos Engine Events (R-046).
@@ -868,8 +868,40 @@ Status: **Accepted (Arquiteto)** — implementa ADR-049/050 no `PV-EVENT-010/011
 
 ## DEC-20261106-44 — Fechamento da Fila 7 (decisão do Arquiteto)
 
-Status: **Accepted (Arquiteto)** — revisão documentada em `docs/architecture/REVISAO-FECHAMENTO-FILA-7.md` (`PV-GOV-011`)
+Status: **Accepted (Arquiteto)** — revisão documentada em `docs/architecture/historico/REVISAO-FECHAMENTO-FILA-7.md` (`PV-GOV-011`)
 
 - Critério único (LOCK só com o documento de domínio cumprido) aplicado a todos: **nenhum módulo travado**.
 - Fase 6: Monster AI, Experience Distribution e Spawn continuam REVIEW (Spawn: R-044/R-046 fechados; falta R-057).
 - Módulos novos do M6/M7 (Game Session, Hunt Loop/queda, Recovery, Event System) registrados no `roadmap.md` em REVIEW, com o que falta para cada LOCK.
+
+## DEC-20261106-45 — Economia de contexto e uma fila por sessão (decisão do PO, Fila 8)
+
+Status: **Accepted (PO)** — aplicada no `PV-GOV-012`
+
+- Leitura obrigatória: `CLAUDE.md` → `docs/INDEX.md` (uma página); ADRs, contratos e documentos de domínio só quando o item os cita.
+- Subagentes recebem só os documentos do seu contrato; o revisor lê o diff e o contrato; relatório final de fila com no máximo uma página.
+- Uma fila por sessão. Relatórios de filas encerradas em `docs/architecture/historico/` (`git mv`, registro no manifesto).
+
+## DEC-20261106-46 — Segunda Hunt com outra em andamento é recusada (decisão do Arquiteto, Fila 8)
+
+Status: **Accepted (Arquiteto, ordem da Fila 8, item a)** — resolve a pergunta do R-052; aplicada no `PV-HUNT-013`
+
+- Iniciar uma Hunt quando o personagem já tem uma Hunt em andamento responde **409 Conflict** e **não** encerra a anterior.
+
+## DEC-20261106-47 — Reinício do servidor vale como queda de conexão (decisão do Arquiteto, Fila 8)
+
+Status: **Accepted (Arquiteto, ordem da Fila 8, item b)** — emenda o `DEC-20261106-42`; aplicada no `PV-RUNTIME-012`
+
+- O Recovery do startup agenda, para quem tinha "última Hunt escolhida", o **mesmo** retorno da queda: depois de mais de 10 s online, nova Hunt (nova Hunt Session) na última Hunt escolhida. A Hunt anterior continua não sendo recuperada (ADR-057).
+
+## DEC-20261106-48 — Vida 0 no checkpoint volta com vida e Mana cheias (decisão do Arquiteto, Fila 8, PROVISÓRIO)
+
+Status: **Accepted (Arquiteto, ordem da Fila 8, item c) — PROVISÓRIO até confirmação do PO** — resolve a pergunta do R-055; aplicada no `PV-RUNTIME-012`
+
+- Personagem com vida 0 no checkpoint volta na cidade com vida e Mana no máximo. Vida > 0 continua como estava (limitada ao máximo).
+
+## DEC-20261106-49 — Logout conta como saída manual (decisão do Arquiteto, Fila 8)
+
+Status: **Accepted (Arquiteto, ordem da Fila 8, item d)** — confirma o comportamento do `DEC-20261106-41`; aplicada no `PV-HUNT-013`
+
+- `POST api/game/logout` encerra a Hunt como saída manual (status `Completed`), sem retorno automático à última Hunt.

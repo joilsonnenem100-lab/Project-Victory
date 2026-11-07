@@ -7,13 +7,17 @@ MMORPG Idle inspirado em Tibia: progressão automática por Hunts. Backend ASP.N
 - **Equipe** (subagentes em `.claude/agents/`): `pv-domain-engineer`, `pv-application-engineer`, `pv-persistence-engineer`, `pv-api-security-engineer`, `pv-frontend-engineer`, `pv-qa-engineer`, `pv-docs-contracts-keeper`, `pv-architecture-reviewer`.
 - **Dono do produto (Product Owner) = o usuário.** Por `decision-log.md` (ADR-016): PO decide Game Design, mecânicas, experiência do jogador e universo; o Arquiteto (Claude) decide arquitetura, engenharia, organização dos módulos, roadmap, documentação e revisões arquiteturais. Questões que misturam as duas (ex.: a Hunt sobrevive à desconexão? — ADR-057) têm a parte de mecânica decidida pelo PO.
 
-## Ordem de leitura ao iniciar qualquer sessão
+## Ordem de leitura ao iniciar qualquer sessão (`PV-GOV-012`, `DEC-20261106-45`)
 1. `CLAUDE.md` (este arquivo)
-2. `developer-guide/architecture/project-state.md` (estado oficial — v2.0, verificado contra o código)
-3. `developer-guide/architecture/roadmap-to-playable.md` (roadmap de execução) e `developer-guide/architecture/roadmap.md` (ordem oficial dos módulos)
-4. `developer-guide/architecture/architecture-rules.md` (20 regras LOCKED)
-5. `docs/architecture/master/PROJECT-VICTORY-ARCHITECTURE-HANDBOOK-V3.md` + `docs/architecture/master/PROJECT-VICTORY-ARCHITECTURE-RULES.md`
-6. ADRs relevantes em `developer-guide/adr/` e o contrato da tarefa.
+2. **`docs/INDEX.md`** (uma página: estado atual, regras vivas, últimas decisões, onde está cada coisa, próxima fila)
+3. Só o que o item de trabalho cita: o contrato, os ADRs e os documentos de domínio nomeados nele; trechos de `project-state.md` / `roadmap-to-playable.md` / `roadmap.md` que o item vai atualizar.
+4. Referência, quando o item exigir: `developer-guide/architecture/architecture-rules.md` (20 regras LOCKED), `docs/architecture/master/PROJECT-VICTORY-ARCHITECTURE-HANDBOOK-V3.md` + `PROJECT-VICTORY-ARCHITECTURE-RULES.md`.
+
+## Economia de contexto (regra do PO, desde a Fila 8 — `DEC-20261106-45`)
+- Leia só o que o item cita; não releia documentos inteiros sem necessidade (use busca e trechos).
+- Subagentes recebem **somente** os documentos do seu contrato; o `pv-architecture-reviewer` lê o diff e o contrato.
+- Relatório final de fila: **no máximo uma página** (o resto vai em anexo).
+- **Uma fila por sessão:** cada fila (MODO FILA) roda numa sessão própria; ao terminar, o resumo fica no relatório e no `docs/INDEX.md`, não na conversa.
 
 `docs/CURRENT_CONTEXT.md` é **histórico** (ele mesmo declara isso). As referências antigas a ele em `docs/PROJECT_CONTEXT.md`, `docs/AI_WORKFLOW.md`, `README_DEVELOPMENT.md` e `docs/checklists/architecture-checklist.md` foram corrigidas no `PV-GOV-007` (`DEC-20261106-13`) e hoje apontam para `project-state.md` (texto antigo tachado).
 
@@ -60,5 +64,5 @@ Protocolo usado quando o PO manda executar uma fila de contratos sem parar (orde
 - **Branches empilhadas:** a primeira nasce da última branch pronta; cada seguinte nasce da anterior. Push de cada branch; **nunca** `push --force`, nunca alterar a `main` (o merge é do PO), nunca apagar arquivos sem autorização explícita, nunca editar migrations existentes, nunca escrever segredos.
 - **Por contrato:** plano curto → implementação → `dotnet build` → `dotnet test ProjectVictory.sln` → `pv-architecture-reviewer` → aplicar ressalvas (podem entrar na branch seguinte, se a revisão chegar depois) → atualizar `project-state.md` e `roadmap-to-playable.md` → commits `PV-<ID> - <resumo>` → confirmar que não restou processo `dotnet`.
 - **Se travar** por decisão de PO, ação destrutiva ou conflito com ADR/LOCKED sem solução documental: registrar no relatório, pular e seguir. Não inventar solução.
-- **Relatório final** em `docs/architecture/` na última branch (ex.: `RELATORIO-NOITE-2026-11-06.md`, `RELATORIO-M2.md`, `RELATORIO-FILA-2.md`), com status de cada contrato, build/testes, achados do revisor, o que travou e decisões de PO pendentes; depois push e um resumo curto ao PO.
+- **Relatório final** em `docs/architecture/RELATORIO-FILA-N.md` na última branch, com **no máximo uma página** (status de cada contrato, build/testes, migrations, provisórios, perguntas ao PO; detalhes em anexo); atualizar o `docs/INDEX.md`; depois push e um resumo curto ao PO. Relatórios de filas encerradas vão para `docs/architecture/historico/` (`git mv`, registro no manifesto).
 - **Worktrees:** se o checkout principal for trocado por fora da sessão (já aconteceu com uma IDE aberta), trabalhar num `git worktree` separado (`git -c core.longpaths=true worktree add ...`).

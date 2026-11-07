@@ -26,7 +26,7 @@ Lastro: Definition of Done (`CLAUDE.md`: build e testes verdes); `TESTING-STRATE
   - `dotnet test -c Release`: 173 aprovados, 0 ignorados;
   - `npm run build`: verde (`PV-PLATFORM-005`).
 - **No GitHub:** só depois do push.
-  - O resultado da primeira execução está no `RELATORIO-FILA-2.md`.
+  - O resultado da primeira execução está no `docs/architecture/historico/RELATORIO-FILA-2.md`.
   - **Riscos de Linux não testados localmente:** diferença de maiúsculas e minúsculas em nomes de arquivo (ex.: `character/` × `Character/` no cliente, hoje só em telas inalcançáveis) e caminhos temporários do SQLite.
 
 ## Fora do escopo

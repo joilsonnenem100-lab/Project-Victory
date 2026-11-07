@@ -46,5 +46,5 @@ Resultado: build com 0 avisos; **317 aprovados, 0 ignorados, 0 falhas** (Applica
 2. Teste de que a DI usa a `IMonsterAI` registrada.
 3. Comentários nos construtores antigos.
 4. Validação testada no `Domain.Tests`.
-5/6. Registrados no `docs/architecture/RELATORIO-FILA-6.md`, seção "Notas de processo" (roadmap marcado no modo fila; contrato derivado da ordem do PO).
+5/6. Registrados no `docs/architecture/historico/RELATORIO-FILA-6.md`, seção "Notas de processo" (roadmap marcado no modo fila; contrato derivado da ordem do PO).
 7. R-043 mantido.

@@ -33,4 +33,4 @@ Resultado: build com 0 avisos; **371 aprovados, 0 ignorados, 0 falhas** (Applica
 3. e 7. **R-056:** escalabilidade do Recovery no startup e ordem com mais de um Runtime por personagem.
 4. O teste agora confere também o limite da **mana** (a). A vida 0 (b) está no R-055. A falha do Recovery sem derrubar o host (c) é coberta pelo try/catch; um teste com repositório que falha fica para o contrato do R-056.
 5. Comentário do `Program.cs` corrigido.
-6. A pergunta "o reinício deve disparar o retorno à última Hunt?" está no `RELATORIO-FILA-7.md`. O Recovery já cumpre a condição `Contains`; só falta a presença.
+6. A pergunta "o reinício deve disparar o retorno à última Hunt?" está no `docs/architecture/historico/RELATORIO-FILA-7.md`. O Recovery já cumpre a condição `Contains`; só falta a presença.

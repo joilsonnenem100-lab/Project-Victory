@@ -53,3 +53,15 @@ Autorização: PO, `DEC-20261106-31`. Antes da remoção, grep de cada nome em `
 - `src/ProjectVictory.Application/Hunt/ProcessHuntExecutionResult.cs`
 - `src/ProjectVictory.Application/Hunt/ResolveHuntResultCommand.cs`
 - `src/ProjectVictory.Application/Hunt/ResolveHuntResultResult.cs`
+
+## PV-GOV-012 (Fila 8) — relatórios de filas encerradas movidos (nada apagado)
+
+Autorização: ordem do PO da Fila 8 (item 1, `DEC-20261106-45`). Movidos com `git mv` de `docs/architecture/` para `docs/architecture/historico/`, conteúdo inalterado (exceto a linha de caminho dentro de `RELATORIO-FILA-6.md` e `RELATORIO-FILA-7.md`, que citavam outro relatório movido):
+
+| Arquivo | Novo caminho |
+|---|---|
+| `RELATORIO-FILA-2.md` … `RELATORIO-FILA-7.md` (6 arquivos) | `docs/architecture/historico/` |
+| `RELATORIO-M2.md`, `RELATORIO-NOITE-2026-11-06.md` | `docs/architecture/historico/` |
+| `REVISAO-FECHAMENTO-M4.md`, `REVISAO-FECHAMENTO-FILA-7.md` | `docs/architecture/historico/` |
+
+Referências atualizadas para o novo caminho em `CLAUDE.md`, `project-state.md`, `roadmap-to-playable.md`, `roadmap.md`, `decision-log.md` e nos contratos `PV-CI-001`, `PV-COMBAT-013`, `PV-MONSTER-010`, `PV-RUNTIME-011`. Ficam em `docs/architecture/`: análises e inventários (`PV-ANALYSIS-…`, `PV-GOV-005-…`, `PV-GOV-010-…`), manifestos e o relatório da fila em curso.

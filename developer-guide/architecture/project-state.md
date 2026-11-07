@@ -20,8 +20,9 @@ O código está **à frente** da documentação de estado anterior: o Vertical S
 
 # Sprint Atual
 
-Nome: **Fila 2** (ordem do PO de 2026-11-06): fechamento do M1 e governança — `PV-GOV-007/008`, `PV-QA-003`, `PV-ARCH-001`, `PV-PLATFORM-004/005`, `PV-CI-001`, `PV-CLEAN-001`. Depois: **M3 — Combate real**.
-*Histórico:* M0 — Baseline e Governança (2026-11-05); M1 (2026-11-05/06); M2 (2026-11-06, `docs/architecture/RELATORIO-M2.md`).
+Nome: **Fila 8** (ordem do PO e do Arquiteto, 2026-11-06, modo econômico): `PV-GOV-012` (INDEX de uma página), `PV-HUNT-013`, `PV-RUNTIME-012`, `PV-RUNTIME-013`, `PV-EVENT-012`, `PV-QA-007`, `PV-GOV-013`. Decisões `DEC-20261106-45…49`. Resumo vivo: `docs/INDEX.md`.
+~~Nome: **Fila 2** (ordem do PO de 2026-11-06): fechamento do M1 e governança — `PV-GOV-007/008`, `PV-QA-003`, `PV-ARCH-001`, `PV-PLATFORM-004/005`, `PV-CI-001`, `PV-CLEAN-001`. Depois: **M3 — Combate real**.~~ (Filas 2–7 encerradas; relatórios em `docs/architecture/historico/`.)
+*Histórico:* M0 — Baseline e Governança (2026-11-05); M1 (2026-11-05/06); M2 (2026-11-06, `docs/architecture/historico/RELATORIO-M2.md`).
 
 ---
 
@@ -56,7 +57,7 @@ Nome: **Fila 2** (ordem do PO de 2026-11-06): fechamento do M1 e governança —
 | Fase | Declarado | Observação verificada |
 |---|---|---|
 | 0–5 | LOCKED | Arquitetura LOCKED; **implementação em código divergente/parcial** (ver revisões) |
-| 6 Gameplay Foundation | IN PROGRESS (Monsters LOCKED; **Monster AI, Experience Distribution e Spawn System em REVIEW** — implementados na Fila 6; a revisão de fechamento do M4 (`docs/architecture/REVISAO-FECHAMENTO-M4.md`) lista o que falta para cada LOCK: R-050/R-043, R-045, R-044/R-046) | ~~Mantido: Monster AI continua sendo o próximo módulo **de arquitetura**.~~ Próximo: fechar os três módulos (skills de monstro, Hunt em grupo, Hunt Loop do M6). O código avançou por Vertical Slice (contratos `PV-VS-*`) |
+| 6 Gameplay Foundation | IN PROGRESS (Monsters LOCKED; **Monster AI, Experience Distribution e Spawn System em REVIEW** — implementados na Fila 6; a revisão de fechamento do M4 (`docs/architecture/historico/REVISAO-FECHAMENTO-M4.md`) lista o que falta para cada LOCK: R-050/R-043, R-045, R-044/R-046) | ~~Mantido: Monster AI continua sendo o próximo módulo **de arquitetura**.~~ Próximo: fechar os três módulos (skills de monstro, Hunt em grupo, Hunt Loop do M6). O código avançou por Vertical Slice (contratos `PV-VS-*`) |
 | 7–10 | PLANNED | Inalterado |
 
 ---

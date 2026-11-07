@@ -88,7 +88,7 @@ Foi gerada com `dotnet ef migrations add`, usando `Jwt__Key` aleatória só no a
   - R-049 (invariante do inventário).
 - **Fechamento do M4:** o critério estava **inconsistente**. Eu tinha travado Monster AI e Experience Distribution e deixado só o Spawn em REVIEW por causa do `spawn.md`, mas os documentos de domínio dos outros dois também não estão cumpridos. Agora vale um **critério único**: os três ficam em **REVIEW**, com o que falta para cada LOCK. Também foram corrigidos a contagem de testes, o tachado no `roadmap.md` e a linha da Fase 6 no `project-state.md`.
 
-## Fechamento do M4 (`docs/architecture/REVISAO-FECHAMENTO-M4.md`)
+## Fechamento do M4 (`docs/architecture/historico/REVISAO-FECHAMENTO-M4.md`)
 
 | Módulo | Estado | Falta para o LOCK |
 |---|---|---|
