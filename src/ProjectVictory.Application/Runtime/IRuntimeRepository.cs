@@ -26,4 +26,8 @@ public interface IRuntimeRepository
         Guid runtimeId,
         string huntArea,
         CancellationToken cancellationToken = default);
+
+    // PV-RUNTIME-011: todos os checkpoints de Runtime (Recovery ao iniciar o servidor).
+    Task<IReadOnlyList<RuntimeRecoveryData>> GetAllAsync(
+        CancellationToken cancellationToken = default);
 }

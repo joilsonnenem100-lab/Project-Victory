@@ -109,4 +109,17 @@ public sealed class RuntimeRepository : IRuntimeRepository
         await _context.SaveChangesAsync(
             cancellationToken);
     }
+
+    public async Task<IReadOnlyList<RuntimeRecoveryData>> GetAllAsync(
+        CancellationToken cancellationToken = default) =>
+        await _context.RuntimeStates
+            .AsNoTracking()
+            .Select(state => new RuntimeRecoveryData(
+                state.RuntimeId,
+                state.CharacterId,
+                state.Initialized,
+                state.Health,
+                state.Mana,
+                state.LastHuntArea))
+            .ToListAsync(cancellationToken);
 }

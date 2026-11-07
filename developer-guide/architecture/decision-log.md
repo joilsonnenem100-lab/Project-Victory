@@ -850,3 +850,10 @@ Status: **Accepted (Arquiteto)** — implementa ADR-057 v1.2 / `DEC-20261106-20`
 - Queda > 1 min: o `GameSessionCoordinator` encerra a Hunt pelo pipeline único com o motivo `Disconnect` (sob o lock da Hunt), volta à "Victoria" e grava o checkpoint de logout.
 - `POST api/game/logout` (novo): encerra com o motivo novo `Logout` (aditivo), grava o checkpoint e remove a presença (não gera retorno automático).
 - Saída manual: Hunt desconhecida/alheia → 403; já encerrada → 409.
+
+## DEC-20261106-42 — Recovery do Runtime no startup (decisão do Arquiteto, Fila 7)
+
+Status: **Accepted (Arquiteto)** — `PV-RUNTIME-011`, Handbook §18, ADR-057
+
+- No startup, depois das migrations: recarrega personagem + Runtime dos checkpoints e reconstrói o contexto na tela inicial (Idle), vida/mana limitadas ao máximo; Runtime órfão é ignorado; falha registrada sem derrubar o servidor.
+- Hunt Session não é recuperada; reinício do servidor não dispara o retorno automático à última Hunt (pergunta ao PO).

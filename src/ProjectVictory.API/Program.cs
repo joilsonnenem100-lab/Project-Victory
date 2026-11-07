@@ -235,6 +235,27 @@ using (var scope = app.Services.CreateScope())
 
     await ItemDefinitionSeed.ExecuteAsync(
         context);
+
+    // PV-RUNTIME-011 (Handbook §18; ADR-057): recarrega personagem + Runtime dos checkpoints e
+    // reconstrói o contexto em memória (tela inicial, Idle). Hunt Session NÃO é recuperada. Uma falha
+    // aqui (ex.: schema desatualizado fora de Development) é registrada e não derruba o servidor —
+    // o "entrar no jogo" continua reconstruindo o Runtime sob demanda.
+    try
+    {
+        var recovery =
+            await scope.ServiceProvider
+                .GetRequiredService<ProjectVictory.Application.Runtime.RuntimeRecoveryService>()
+                .RecoverAsync();
+
+        app.Logger.LogInformation(
+            "Recovery do Runtime: {Recovered} recuperado(s), {Skipped} sem personagem.",
+            recovery.Recovered,
+            recovery.SkippedWithoutCharacter);
+    }
+    catch (Exception exception)
+    {
+        app.Logger.LogError(exception, "Falha no Recovery do Runtime ao iniciar o servidor.");
+    }
 }
 
 app.UseExceptionHandler();

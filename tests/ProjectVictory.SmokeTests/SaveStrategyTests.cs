@@ -65,6 +65,9 @@ public sealed class SaveStrategyTests
         public Task<RuntimeRecoveryData?> GetByCharacterIdAsync(Guid characterId, CancellationToken cancellationToken = default) =>
             inner.GetByCharacterIdAsync(characterId, cancellationToken);
 
+        public Task<IReadOnlyList<RuntimeRecoveryData>> GetAllAsync(CancellationToken cancellationToken = default) =>
+            inner.GetAllAsync(cancellationToken);
+
         public Task SaveLastHuntAsync(Guid runtimeId, string huntArea, CancellationToken cancellationToken = default)
         {
             counter.RuntimeWrites++;

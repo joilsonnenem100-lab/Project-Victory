@@ -167,6 +167,9 @@ public static class ProjectVictoryServiceCollectionExtensions
         // PV-HUNT-012: queda (> 1 min) encerra a Hunt pelo pipeline único; logout explícito.
         services.AddScoped<ProjectVictory.Application.GameSession.IDisconnectHandler, DisconnectHuntHandler>();
         services.AddScoped<LogoutHandler>();
+
+        // PV-RUNTIME-011: Recovery do Runtime ao iniciar o servidor (sem Hunt, ADR-057).
+        services.AddScoped<ProjectVictory.Application.Runtime.RuntimeRecoveryService>();
         services.AddScoped<ExecuteHuntHandler>();
         services.AddScoped<StartHuntSessionHandler>();
         services.AddScoped<StopHuntSessionHandler>();
