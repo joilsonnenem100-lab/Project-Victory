@@ -1,0 +1,136 @@
+### Project-Victory — playtest pela API (extensão REST Client do VS Code)
+### PV-QA-010. Ordem = docs/playtest/ROTEIRO-PLAYTEST.md. Sem Swagger no projeto.
+### Antes: Jwt:Key nos user-secrets (developer-guide/guides/configuracao-local.md) e
+###        dotnet run --project src/ProjectVictory.API
+### EXEMPLO: e-mail e senha abaixo são genéricos, só para teste local. Troque o e-mail a cada playtest.
+
+@baseUrl = http://localhost:5250
+@email = jogador.exemplo@example.com
+@password = SenhaDeExemplo123
+@token = {{login.response.body.$.token}}
+# characterId vem da resposta do enter (objeto JSON); o 3c só resolve depois do passo 4.
+@characterId = {{enter.response.body.$.characterId}}
+@runtimeId = {{enter.response.body.$.runtimeId}}
+@huntId = {{hunt.response.body.$.huntId}}
+# Atualize à mão a cada encounter: comece por encounter.id do "hunt"; depois de uma vitória use nextEncounterId.
+@encounterId = {{hunt.response.body.$.encounter.id}}
+
+### 1. Registro (público) -> 200, Id da conta
+POST {{baseUrl}}/api/account
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### 2. Login (público) -> 200 { accountId, token }
+# @name login
+POST {{baseUrl}}/api/account/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### 3. Criar personagem -> 200, Id do personagem (Knight | Paladin | Sorcerer | Druid | Monk)
+POST {{baseUrl}}/api/character
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Exemplo",
+  "characterClass": "Knight"
+}
+
+### 3b. Listar personagens -> level, experience, title
+GET {{baseUrl}}/api/character
+Authorization: Bearer {{token}}
+
+### 3c. Inventário (kit inicial e loot) — rode depois do passo 4 (enter)
+GET {{baseUrl}}/api/inventory/{{characterId}}
+Authorization: Bearer {{token}}
+
+### 4. Entrar no mundo -> 200 { runtimeId, ... }
+# @name enter
+POST {{baseUrl}}/api/game/enter
+Authorization: Bearer {{token}}
+
+### 5. Heartbeat (repita a cada 20-30 s durante a Hunt) -> status "Online"
+POST {{baseUrl}}/api/game/heartbeat
+Authorization: Bearer {{token}}
+
+### 6. Iniciar Hunt na Spider Cave -> 200 { huntId, encounter }; 2a Hunt -> 409; área desconhecida -> 400
+# @name hunt
+POST {{baseUrl}}/api/hunt/execute
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "characterId": "{{characterId}}",
+  "runtimeId": "{{runtimeId}}",
+  "huntArea": "Spider Cave"
+}
+
+### 7. Atacar (repita; leia turns[], combatState, nextEncounterId)
+# @name attack
+POST {{baseUrl}}/api/hunt/attack
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "encounterId": "{{encounterId}}"
+}
+
+### 8. Configurar poções (1-100 ou null) -> 200 appliesFrom "NextTurn"; inválido -> 400
+POST {{baseUrl}}/api/hunt/supplies
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "characterId": "{{characterId}}",
+  "healthPotionBelowPercent": 60,
+  "manaPotionBelowPercent": 40
+}
+
+### 9. Cura por spell: automática (turno kind "UseHealingSpell" na resposta do ataque). Sem requisição própria.
+
+### 10. Analyzer em tempo real -> hasActiveHunt true, analyzer {...}
+GET {{baseUrl}}/api/hunt/analyzer/{{characterId}}
+Authorization: Bearer {{token}}
+
+### 11. Sair da Hunt -> reason "Manual", returnedToCity true; repetir -> 409
+POST {{baseUrl}}/api/hunt/leave
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "huntId": "{{huntId}}"
+}
+
+### 12. Histórico do Analyzer -> [{ huntId, endReason, endedAt, analyzer }]
+GET {{baseUrl}}/api/hunt/analyzer/{{characterId}}/history
+Authorization: Bearer {{token}}
+
+### 13. Logout -> returnCity "Victoria"; heartbeat seguinte -> status "LoggedOut"
+POST {{baseUrl}}/api/game/logout
+Authorization: Bearer {{token}}
+
+### --- Administrador do XP rate ---
+### Pré-requisito: o accountId desta conta em user-secrets e API reiniciada:
+###   dotnet user-secrets set "Admin:Accounts:0" "<accountId>" --project src/ProjectVictory.API
+### Jogador comum -> 403; sem token -> 401.
+
+### A1. Ler XP rate -> { value, configuredValue, isOverridden, changedAt, maximum }
+GET {{baseUrl}}/api/admin/xp-rate
+Authorization: Bearer {{token}}
+
+### A2. Alterar XP rate (0 < value <= 100) -> 200; inválido -> 400
+PUT {{baseUrl}}/api/admin/xp-rate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "value": 2.5
+}
