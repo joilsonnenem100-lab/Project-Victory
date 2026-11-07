@@ -15,7 +15,7 @@ Lastro:
    - As poções continuam sendo usadas pela política e saindo do inventário.
    - Sem poção, o personagem segue **sem cura** até a morte (não existe outra cura).
 
-> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-53 em `docs/product/PO-DECISOES-BASE.md`): sem poção ainda há a cura por spell (gasta Mana); ainda não implementada (R-065).*
+      > *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-53 em `docs/product/PO-DECISOES-BASE.md`): sem poção ainda há a cura por spell (gasta Mana); ainda não implementada (R-065).*
    - `CombatSupplyContext.IsOutOfSupplies` continua só como informação.
    - O valor `HuntEndReason.OutOfSupplies` foi mantido no enum (Regra Aditiva), mas nunca mais é produzido.
 2. **A morte continua encerrando a Hunt** pelo pipeline único (`EndHuntHandler`) e volta à **tela inicial**:

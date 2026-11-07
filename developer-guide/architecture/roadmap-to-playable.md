@@ -174,7 +174,7 @@ Levantadas na leitura de `roadmap.md` (Fase 2), `knowledge-base/training.md` e `
 - ✅ `PV-RUNTIME-013` — área escolhida validada (existência e tier, R-041), gravada e usada no retorno (R-051); marca de deslogado: heartbeat pós-logout ignorado, sobrevive ao reinício (R-054). Migration nova e aditiva `RuntimeLoggedOut`. *Pendência do cliente (UI-1):* tratar `status = "LoggedOut"` no heartbeat e o campo `huntArea`.
 - ✅ `PV-EVENT-012` — `ADR-058` (bus síncrono = aguardado; assinante obrigatório é da composição; notificação pós-commit isolada) fecha o R-058; um escopo de DI por queda fecha o R-060.
 - ✅ `PV-QA-007` — E2E pela API real: 2ª Hunt 409, reinício volta à última Hunt com vida/Mana cheias, logout sem retorno (heartbeat atrasado e reinício); ressalvas do `PV-EVENT-012` (retorno automático cancelado após logout).
-- ✅ `PV-GOV-013` — revisão de LOCK: **Event System e Recovery LOCKED**; Game Session + Runtime Coordinator em REVIEW (Handbook §10, documento de domínio, R-051 resto, R-062). Relatório: `docs/architecture/RELATORIO-FILA-8.md`.
+- ✅ `PV-GOV-013` — revisão de LOCK: **Event System e Recovery LOCKED**; Game Session + Runtime Coordinator em REVIEW (Handbook §10, documento de domínio, R-051 resto, R-062). Relatório: `docs/architecture/historico/RELATORIO-FILA-8.md`.
 
 ## M8 — Experiência do jogador e Primeiro Teste Jogável
 
@@ -210,7 +210,7 @@ Fonte: `docs/product/PO-DECISOES-BASE.md` v1.1, seção "Backlog derivado" (`DEC
 | Candidato | PO / R | Fase | Observação |
 |---|---|---|---|
 | Spell de cura por vocação + seletor automático | PO-53, PO-01; R-065 | Antes do Primeiro Teste Jogável (M8) | 1 spell por vocação, % fixa da vida (hipótese: vida máxima, confirmar), gasta Mana; o seletor automático escolhe curar. Valores PROVISÓRIOS |
-| Retirada do caminho legado `POST api/gameplay/action` | R-053 | Dívida do M6 | **Começar por teste funcional** do fluxo atual; depois remover (remoção autorizada pelo PO na ordem da Fila 9) |
+| Retirada do caminho legado `POST api/gameplay/action` | R-053 | Dívida do M6 | **Começar por teste funcional** do fluxo atual; depois remover (remoção autorizada pelo PO, `DEC-20261107-04`) |
 | Cliente UI-1: botão de sair da Hunt, seletor de área (`huntArea`), status `LoggedOut` no heartbeat | `RELATORIO-FILA-8` (pendências de cliente); PO-46 | M8 | Sem o botão de sair o cliente atual recebe 409 até morte/logout/queda |
 | Tier da área só informativo | PO-55, PO-09; R-064 | M8 | Retirar o 400 do `ExecuteHuntHandler`; expor o nível recomendado ao cliente |
 

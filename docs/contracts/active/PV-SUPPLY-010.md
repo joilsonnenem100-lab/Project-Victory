@@ -28,7 +28,7 @@ Lastro:
    - ao fim da rodada, as instâncias usadas **saem do inventário** do personagem (persistido).
 5. **Sem suprimento não há cura:** não existe regeneração nem outra cura durante a Hunt. A única outra recomposição de vida é a da morte, na cidade (`knowledge-base/character.md`).
 
-> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-53 em `docs/product/PO-DECISOES-BASE.md`): "não existe outra cura" fica superado: todas as vocações têm spell de cura que gasta Mana (ainda não implementada, R-065).*
+   > *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-53 em `docs/product/PO-DECISOES-BASE.md`): "não existe outra cura" fica superado: todas as vocações têm spell de cura que gasta Mana (ainda não implementada, R-065).*
 6. **Fim de suprimento** → `EndHuntHandler(OutOfSupplies)`, o **mesmo pipeline** (`PV-HUNT-010`): o encounter fica `Cancelled`, a Hunt fica `Completed`, e o jogador volta à cidade e aguarda comando.
    - **Interpretação PROVISÓRIA:** "fim de suprimento" = uma poção que a política manda usar chegou a **0** unidades.
 7. **Como o jogador obtém poções — PROVISÓRIO:** a configuração do servidor `Supplies:StarterHealthPotions` / `Supplies:StarterManaPotions` dá poções na criação do personagem. O **padrão é 0**: nada muda para jogadores. Compra no NPC é Fase 7/8.

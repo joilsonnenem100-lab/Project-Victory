@@ -15,7 +15,7 @@ O Handbook V3 §10 descreve um "Runtime Coordinator" que coordena Hunt → Encou
 
 # Decisão
 
-1. **Emendar o documento, não refatorar o código.** O papel do "Runtime Coordinator" do Handbook §10 é cumprido pela **composição** de dois mecanismos já LOCKED/revisados:
+1. **Emendar o documento, não refatorar o código.** O papel do "Runtime Coordinator" do Handbook §10 é cumprido pela **composição** de dois mecanismos existentes — o Event Bus **LOCKED** e o Hunt Loop em **REVIEW** (o LOCK do Hunt Loop segue o próprio critério):
    - **Hunt Loop** (`PV-HUNT-011`, `DEC-20261106-40`): Hunt → Encounter → Combat (turno, vitória, próximo encounter pelo Spawn), com serialização por Hunt.
    - **Event Bus** (ADR-049/050/058, LOCKED): Combat → Reward → Progression por `CombatCompletedEvent` aguardado. O Combat não conhece o Reward.
 2. **Game Session = presença** (ADR-057 v1.2, `DEC-20261106-39/41/47/49`): heartbeat, detecção de queda, encerramento pelo pipeline único, retorno à última Hunt, logout e marca de deslogado. Ele **não** encadeia combate.

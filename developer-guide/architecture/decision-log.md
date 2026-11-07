@@ -926,7 +926,7 @@ Status: **Accepted (Arquiteto, ADR-016: arquitetura)** — `ADR-058` (novo, ACCE
 
 ## DEC-20261106-51 — Revisão de LOCK da Fila 8 (decisão do Arquiteto)
 
-Status: **Accepted (Arquiteto)** — `PV-GOV-013`; revisão em `docs/architecture/REVISAO-FECHAMENTO-FILA-8.md`; critério do `DEC-20261106-44`
+Status: **Accepted (Arquiteto)** — `PV-GOV-013`; revisão em `docs/architecture/historico/REVISAO-FECHAMENTO-FILA-8.md`; critério do `DEC-20261106-44`
 
 - **LOCKED:** Event System (Typed Event Bus + Domain Events; `events.md` + `ADR-058`) e Recovery do Runtime (Handbook §18/§19, ADR-057 Parte A).
 - **REVIEW:** Game Session + Runtime Coordinator — falta decisão sobre o Handbook §10 (Coordinator da cadeia Hunt→Combat→Reward), documento de domínio, encounters por área (R-051 resto) e R-062.
@@ -954,4 +954,11 @@ Status: **Accepted (Arquiteto, ADR-016: arquitetura)** — `PV-GOV-019`; `ADR-05
 
 - Responde à pergunta 2 do `RELATORIO-FILA-8.md`: **emendar o documento, sem refatorar o código**. Hunt Loop + Event Bus fazem Hunt → Combat → Reward; Game Session = presença.
 - LOCK do Game Session + Runtime Coordinator: item 1 (Handbook §10 × código) **cumprido**. Faltam: documento de domínio `developer-guide/domain/game-session.md`; R-051 (resto: encounters pela área escolhida, depende de 2ª área); R-062 (decidir a premissa de servidor único antes de escalar). Módulo continua **REVIEW**.
+
+## DEC-20261107-04 — Remoção autorizada do caminho legado `POST api/gameplay/action` (ordem do PO, Fila 9)
+
+Status: **Accepted (Product Owner, ordem da Fila 9, item 4: "retirada do caminho legado gameplay/action (R-053, começando por teste funcional; remoção autorizada)")** — exceção à Regra Aditiva no mesmo rito do `DEC-20261106-25/31`; ainda **não aplicada** (só candidato a contrato no `roadmap-to-playable.md`)
+
+- Autoriza retirar `POST api/gameplay/action` e a cadeia `GameplayActionDispatcher` → `StartEncounterCombatHandler` → `CreateCombatContextHandler` (R-053).
+- Condição: o contrato de código **começa por teste funcional** que prove que o fluxo validado (`api/hunt/*`) cobre o que o caminho legado fazia; a lista exata do que sai vai no contrato e no `CLEANUP-MANIFEST`.
 

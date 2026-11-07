@@ -65,3 +65,7 @@ Autorização: ordem do PO da Fila 8 (item 1, `DEC-20261106-45`). Movidos com `g
 | `REVISAO-FECHAMENTO-M4.md`, `REVISAO-FECHAMENTO-FILA-7.md` | `docs/architecture/historico/` |
 
 Referências atualizadas para o novo caminho em `CLAUDE.md`, `project-state.md`, `roadmap-to-playable.md`, `roadmap.md`, `decision-log.md` e nos contratos `PV-CI-001`, `PV-COMBAT-013`, `PV-MONSTER-010`, `PV-RUNTIME-011`. Ficam em `docs/architecture/`: análises e inventários (`PV-ANALYSIS-…`, `PV-GOV-005-…`, `PV-GOV-010-…`), manifestos e o relatório da fila em curso.
+
+## PV-GOV-019 (Fila 9, 2026-11-07) — relatórios da Fila 8 movidos (nada apagado)
+
+Movidos com `git mv` de `docs/architecture/` para `docs/architecture/historico/`, conteúdo inalterado: `RELATORIO-FILA-8.md`, `REVISAO-FECHAMENTO-FILA-8.md`. Referências com o caminho completo atualizadas em `docs/INDEX.md`, `developer-guide/` e contratos.
