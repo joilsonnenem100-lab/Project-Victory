@@ -6,7 +6,7 @@ using Xunit;
 namespace ProjectVictory.Api.Tests;
 
 // PV-ADMIN-010 pela API real: GET/PUT api/admin/xp-rate. Sem token → 401; jogador comum → 403;
-// conta configurada em Admin:Accounts → 200 (leitura e alteração); valor inválido → 400; a nova
+// conta configurada em Admin:Accounts (só Id — ressalva R1) → 200 (leitura e alteração); valor inválido → 400; a nova
 // recompensa usa o rate gravado (Rat = 10 XP × 3 = 30).
 [Collection("Api")]
 public sealed class AdminExperienceRateHttpTests
@@ -62,20 +62,51 @@ public sealed class AdminExperienceRateHttpTests
         Assert.Equal(HttpStatusCode.Forbidden, (await client.PutAsJsonAsync("/api/admin/xp-rate", new { value = 2 })).StatusCode);
     }
 
+    // Ressalva R1: e-mail em Admin:Accounts é ignorado — quem se cadastra com ele continua jogador (403).
+    [Fact]
+    public async Task ConfiguredEmail_IsIgnored_StillForbidden()
+    {
+        var email = $"admin-{Guid.NewGuid():N}@test.com";
+        var previousAdmin = Environment.GetEnvironmentVariable(AdminVariable);
+        Environment.SetEnvironmentVariable(AdminVariable, email);
+
+        try
+        {
+            using var factory = new ApiFactory();
+            using var client = factory.CreateClient();
+            ApiFactory.WithToken(client, await factory.RegisterAndLoginAsync(client, email));
+
+            Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync("/api/admin/xp-rate")).StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, (await client.PutAsJsonAsync("/api/admin/xp-rate", new { value = 2 })).StatusCode);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(AdminVariable, previousAdmin);
+        }
+    }
+
     [Fact]
     public async Task ConfiguredAdministrator_ReadsAndChanges_NewRewardUsesNewRate()
     {
         var adminEmail = $"admin-{Guid.NewGuid():N}@test.com";
         var previousAdmin = Environment.GetEnvironmentVariable(AdminVariable);
         var previousSeed = Environment.GetEnvironmentVariable(SeedVariable);
-        Environment.SetEnvironmentVariable(AdminVariable, adminEmail);
         Environment.SetEnvironmentVariable(SeedVariable, SeedForRatEncounter().ToString());
 
         try
         {
-            using var factory = new ApiFactory();
+            // Ressalva R1: Admin:Accounts aceita só o Id da conta. O Id nasce no cadastro, então a
+            // conta é criada num primeiro servidor (sem administrador) e o segundo sobe no mesmo
+            // banco com Admin__Accounts__0 = esse Id. O papel continua resolvido pelo token.
+            Environment.SetEnvironmentVariable(AdminVariable, null);
+            using var setup = new ApiFactory();
+            using var setupClient = setup.CreateClient();
+            var (adminAccountId, _) = await setup.RegisterAndLoginWithAccountAsync(setupClient, adminEmail);
+
+            Environment.SetEnvironmentVariable(AdminVariable, adminAccountId.ToString());
+            using var factory = new ApiFactory(sharingDatabaseWith: setup);
             using var admin = factory.CreateClient();
-            ApiFactory.WithToken(admin, await factory.RegisterAndLoginAsync(admin, adminEmail));
+            ApiFactory.WithToken(admin, (await factory.LoginWithAccountAsync(admin, adminEmail)).Token);
 
             // Leitura: sem valor gravado, vale a configuração (1x).
             var initial = await admin.GetFromJsonAsync<JsonElement>("/api/admin/xp-rate");

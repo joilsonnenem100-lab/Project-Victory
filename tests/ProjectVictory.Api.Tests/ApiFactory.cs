@@ -22,8 +22,11 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     // Revisão do PV-QA-006 (ressalva 3): senha única dos testes (não é segredo: só existe no banco temporário).
     public const string TestPassword = "Senha123!";
 
-    private readonly string _databaseDirectory =
-        Path.Combine(Path.GetTempPath(), "pv-api-tests-" + Guid.NewGuid().ToString("N"));
+    private readonly string _databaseDirectory;
+
+    // Ressalva R1 do PV-ADMIN-010: um segundo servidor pode reutilizar o banco de outro fixture
+    // (ex.: subir de novo com Admin:Accounts = Id da conta já cadastrada); só o dono apaga a pasta.
+    private readonly bool _ownsDatabaseDirectory;
 
 
     private readonly string? _previousJwtKey =
@@ -50,8 +53,23 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
     // PV-PLATFORM-004: permite subir a API em outro ambiente (ex.: Production).
     internal ApiFactory(string environment)
+        : this(environment, Path.Combine(Path.GetTempPath(), "pv-api-tests-" + Guid.NewGuid().ToString("N")), ownsDatabaseDirectory: true)
+    {
+    }
+
+
+    // Ressalva R1 do PV-ADMIN-010: mesmo banco SQLite de outro fixture (que continua dono da pasta).
+    internal ApiFactory(ApiFactory sharingDatabaseWith)
+        : this(sharingDatabaseWith._environment, sharingDatabaseWith._databaseDirectory, ownsDatabaseDirectory: false)
+    {
+    }
+
+
+    private ApiFactory(string environment, string databaseDirectory, bool ownsDatabaseDirectory)
     {
         _environment = environment;
+        _databaseDirectory = databaseDirectory;
+        _ownsDatabaseDirectory = ownsDatabaseDirectory;
 
         Directory.CreateDirectory(_databaseDirectory);
 
@@ -73,11 +91,29 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
     public async Task<string> RegisterAndLoginAsync(
         HttpClient client,
+        string email) =>
+        (await RegisterAndLoginWithAccountAsync(client, email)).Token;
+
+
+    // Ressalva R1 do PV-ADMIN-010: devolve também o Id da conta (o login já o informa).
+    public async Task<(Guid AccountId, string Token)> RegisterAndLoginWithAccountAsync(
+        HttpClient client,
         string email)
     {
         var body = new { email, password = TestPassword };
 
         (await client.PostAsJsonAsync("/api/account", body)).EnsureSuccessStatusCode();
+
+        return await LoginWithAccountAsync(client, email);
+    }
+
+
+    // Ressalva R1 do PV-ADMIN-010: só login (conta já cadastrada, ex.: em banco compartilhado).
+    public async Task<(Guid AccountId, string Token)> LoginWithAccountAsync(
+        HttpClient client,
+        string email)
+    {
+        var body = new { email, password = TestPassword };
 
         var login =
             await client.PostAsJsonAsync("/api/account/login", body);
@@ -87,7 +123,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         var payload =
             await login.Content.ReadFromJsonAsync<LoginPayload>();
 
-        return payload!.Token;
+        return (payload!.AccountId, payload.Token);
     }
 
 
@@ -111,6 +147,11 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         Environment.SetEnvironmentVariable("ConnectionStrings__ProjectVictory", _previousConnectionString);
 
         // Só a pasta temporária criada por este fixture.
+        if (!_ownsDatabaseDirectory)
+        {
+            return;
+        }
+
         try
         {
             Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();

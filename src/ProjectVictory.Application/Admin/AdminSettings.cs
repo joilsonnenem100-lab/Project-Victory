@@ -3,9 +3,12 @@ using ProjectVictory.Domain.Account;
 namespace ProjectVictory.Application.Admin;
 
 // PV-ADMIN-010 (DEC-20261106-12): quem é administrador vem da configuração do servidor
-// "Admin:Accounts" (appsettings, user-secrets ou variável de ambiente). Cada entrada é o Id da conta
-// (Guid) ou o e-mail de login (PROVISÓRIO). Padrão: lista vazia = ninguém é administrador.
-// Nunca gravar Id/e-mail real no repositório.
+// "Admin:Accounts" (appsettings, user-secrets ou variável de ambiente). Cada entrada é SOMENTE o Id
+// da conta (Guid). Ressalva R1 da revisão: e-mail deixou de ser aceito, porque o cadastro não
+// verifica e-mail (quem se cadastrasse primeiro com o e-mail configurado viraria administrador).
+// Entradas que não são Guid são ignoradas e contadas em IgnoredEntryCount (o Program.cs avisa no log
+// da inicialização, sem escrever o valor). Padrão: lista vazia = ninguém é administrador.
+// Nunca gravar Id real no repositório.
 public sealed class AdminSettings
 {
     public const string AccountsKey = "Admin:Accounts";
@@ -14,14 +17,15 @@ public sealed class AdminSettings
 
     public IReadOnlySet<Guid> AccountIds { get; }
 
-    public IReadOnlyList<string> AccountEmails { get; }
+    // Entradas não vazias que não são Guid válido (ex.: e-mail) ou são Guid.Empty: ignoradas.
+    public int IgnoredEntryCount { get; }
 
     public AdminSettings(IEnumerable<string?> accounts)
     {
         ArgumentNullException.ThrowIfNull(accounts);
 
         var ids = new HashSet<Guid>();
-        var emails = new List<string>();
+        var ignored = 0;
 
         foreach (var raw in accounts)
         {
@@ -32,27 +36,20 @@ public sealed class AdminSettings
                 continue;
             }
 
-            if (Guid.TryParse(entry, out var id))
+            if (Guid.TryParse(entry, out var id) && id != Guid.Empty)
             {
-                if (id != Guid.Empty)
-                {
-                    ids.Add(id);
-                }
-
+                ids.Add(id);
                 continue;
             }
 
-            if (!emails.Contains(entry, StringComparer.Ordinal))
-            {
-                emails.Add(entry);
-            }
+            ignored++;
         }
 
         AccountIds = ids;
-        AccountEmails = emails;
+        IgnoredEntryCount = ignored;
     }
 
-    public bool IsEmpty => AccountIds.Count == 0 && AccountEmails.Count == 0;
+    public bool IsEmpty => AccountIds.Count == 0;
 }
 
 // PV-ADMIN-010: papel da conta autenticada (identidade sempre do token — Server Authority).
@@ -61,42 +58,23 @@ public interface IAccountRoleResolver
     Task<AccountRole> GetRoleAsync(Guid accountId, CancellationToken cancellationToken = default);
 }
 
-// PV-ADMIN-010 (PROVISÓRIO): papel pela configuração. E-mails são resolvidos pelo repositório de
-// contas já existente (GetByEmailAsync, comparação exata como no login).
+// PV-ADMIN-010 (PROVISÓRIO): papel pela configuração — só pelo Id da conta (ressalva R1).
 public sealed class ConfiguredAccountRoleResolver : IAccountRoleResolver
 {
     private readonly AdminSettings _settings;
-    private readonly IAccountRepository _accounts;
 
-    public ConfiguredAccountRoleResolver(AdminSettings settings, IAccountRepository accounts)
+    public ConfiguredAccountRoleResolver(AdminSettings settings)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        _accounts = accounts ?? throw new ArgumentNullException(nameof(accounts));
     }
 
-    public async Task<AccountRole> GetRoleAsync(Guid accountId, CancellationToken cancellationToken = default)
+    public Task<AccountRole> GetRoleAsync(Guid accountId, CancellationToken cancellationToken = default)
     {
-        if (accountId == Guid.Empty || _settings.IsEmpty)
-        {
-            return AccountRole.Player;
-        }
+        var role = accountId != Guid.Empty && _settings.AccountIds.Contains(accountId)
+            ? AccountRole.Administrator
+            : AccountRole.Player;
 
-        if (_settings.AccountIds.Contains(accountId))
-        {
-            return AccountRole.Administrator;
-        }
-
-        foreach (var email in _settings.AccountEmails)
-        {
-            var account = await _accounts.GetByEmailAsync(new Email(email), cancellationToken);
-
-            if (account is not null && account.Id == accountId)
-            {
-                return AccountRole.Administrator;
-            }
-        }
-
-        return AccountRole.Player;
+        return Task.FromResult(role);
     }
 }
 

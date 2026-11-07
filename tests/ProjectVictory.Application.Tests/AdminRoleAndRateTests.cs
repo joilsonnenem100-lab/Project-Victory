@@ -3,27 +3,12 @@ using ProjectVictory.Application.Reward;
 using ProjectVictory.Domain.Account;
 using ProjectVictory.Domain.Reward;
 using Xunit;
-using DomainAccount = ProjectVictory.Domain.Account.Account;
 
 namespace ProjectVictory.Application.Tests;
 
-// PV-ADMIN-010: papel pela configuração (Id ou e-mail; padrão ninguém) e XP rate efetivo.
+// PV-ADMIN-010: papel pela configuração (só Id da conta — ressalva R1; padrão ninguém) e XP rate efetivo.
 public sealed class AdminRoleAndRateTests
 {
-    private sealed class Accounts : IAccountRepository
-    {
-        private readonly Dictionary<string, DomainAccount> _byEmail = new(StringComparer.Ordinal);
-
-        public Task AddAsync(DomainAccount account, CancellationToken cancellationToken = default)
-        {
-            _byEmail[account.Email.Value] = account;
-            return Task.CompletedTask;
-        }
-
-        public Task<DomainAccount?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default) =>
-            Task.FromResult(_byEmail.GetValueOrDefault(email.Value));
-    }
-
     private sealed class Store : IExperienceRateStore
     {
         private readonly ExperienceRateOverride? _value;
@@ -38,31 +23,31 @@ public sealed class AdminRoleAndRateTests
         public Task SaveAsync(ExperienceRateOverride saved, CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
+    // Ressalva R1 da revisão: só o Id (Guid) vale; e-mail e Guid.Empty são ignorados e contados.
     [Fact]
-    public void Settings_ParseIdsAndEmails_IgnoringBlanks()
+    public void Settings_AcceptOnlyGuid_IgnoringBlanksAndCountingInvalid()
     {
         var id = Guid.NewGuid();
-        var settings = new AdminSettings([id.ToString(), " ", null, "admin@example.test", Guid.Empty.ToString()]);
+        var settings = new AdminSettings([id.ToString(), " ", null, "admin@example.test", Guid.Empty.ToString(), "não-é-guid"]);
 
         Assert.Equal([id], settings.AccountIds);
-        Assert.Equal(["admin@example.test"], settings.AccountEmails);
+        Assert.Equal(3, settings.IgnoredEntryCount);
+        Assert.False(settings.IsEmpty);
         Assert.True(AdminSettings.Default.IsEmpty);
+        Assert.Equal(0, AdminSettings.Default.IgnoredEntryCount);
+        Assert.True(new AdminSettings(["admin@example.test"]).IsEmpty);
     }
 
     [Fact]
-    public async Task Resolver_ById_ByEmail_AndDefaultIsPlayer()
+    public async Task Resolver_ById_EmailNeverGrants_AndDefaultIsPlayer()
     {
         var byId = Guid.NewGuid();
-        var accounts = new Accounts();
-        var emailAccount = DomainAccount.Create(new AccountId(Guid.NewGuid()), new Email("admin@example.test"), new PasswordHash("x"));
-        await accounts.AddAsync(emailAccount);
-
-        var resolver = new ConfiguredAccountRoleResolver(new AdminSettings([byId.ToString(), "admin@example.test"]), accounts);
+        var resolver = new ConfiguredAccountRoleResolver(new AdminSettings([byId.ToString(), "admin@example.test"]));
 
         Assert.Equal(AccountRole.Administrator, await resolver.GetRoleAsync(byId));
-        Assert.Equal(AccountRole.Administrator, await resolver.GetRoleAsync(emailAccount.Id));
         Assert.Equal(AccountRole.Player, await resolver.GetRoleAsync(Guid.NewGuid()));
-        Assert.Equal(AccountRole.Player, await new ConfiguredAccountRoleResolver(AdminSettings.Default, accounts).GetRoleAsync(byId));
+        Assert.Equal(AccountRole.Player, await resolver.GetRoleAsync(Guid.Empty));
+        Assert.Equal(AccountRole.Player, await new ConfiguredAccountRoleResolver(AdminSettings.Default).GetRoleAsync(byId));
     }
 
     [Fact]

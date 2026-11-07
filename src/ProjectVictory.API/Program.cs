@@ -221,11 +221,13 @@ Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorE
     ServiceDescriptor.Singleton(new ProjectVictory.Domain.Combat.Rules.HealingSpellPolicy(healingSpellBelowPercent)));
 
 // PV-ADMIN-010 (DEC-20261106-12): contas administradoras vêm só da configuração do servidor
-// ("Admin:Accounts": Id da conta ou e-mail de login; user-secrets/variável de ambiente). Padrão: ninguém.
+// ("Admin:Accounts": SOMENTE o Id da conta (Guid) — ressalva R1; user-secrets/variável de ambiente).
+// Padrão: ninguém. Entradas que não são Guid são ignoradas e avisadas no log depois do Build().
+var adminSettings = new ProjectVictory.Application.Admin.AdminSettings(
+    builder.Configuration.GetSection(ProjectVictory.Application.Admin.AdminSettings.AccountsKey).Get<string[]>() ?? []);
 Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace(
     builder.Services,
-    ServiceDescriptor.Singleton(new ProjectVictory.Application.Admin.AdminSettings(
-        builder.Configuration.GetSection(ProjectVictory.Application.Admin.AdminSettings.AccountsKey).Get<string[]>() ?? [])));
+    ServiceDescriptor.Singleton(adminSettings));
 
 // PV-PROG-013 (DEC-20261106-30): títulos por Level lidos da configuração ("LevelTitles") a cada
 // consulta — trocar rótulos/faixas no appsettings.json não exige recompilar nem reiniciar.
@@ -239,6 +241,15 @@ Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorE
 
 var app =
     builder.Build();
+
+// PV-ADMIN-010 (ressalva R1): aviso sem escrever o valor da entrada (pode ser um e-mail).
+if (adminSettings.IgnoredEntryCount > 0)
+{
+    app.Logger.LogWarning(
+        "{Key}: {Count} entrada(s) ignorada(s) — só o Id da conta (Guid) é aceito; e-mail não vale mais.",
+        ProjectVictory.Application.Admin.AdminSettings.AccountsKey,
+        adminSettings.IgnoredEntryCount);
+}
 
 using (var scope = app.Services.CreateScope())
 {
