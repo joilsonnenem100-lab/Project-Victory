@@ -37,7 +37,9 @@ public sealed class CombatantFactory
             runtimeState.CurrentMana,
             ClassCombatProfileTable.ForCharacter(character.CharacterClass, character.Skills),
             // PV-COMBAT-013: as 4 skills da classe já desbloqueadas pelo Level (dados).
-            ClassSkillTable.UnlockedFor(character.CharacterClass, character.Level.Value));
+            ClassSkillTable.UnlockedFor(character.CharacterClass, character.Level.Value),
+            // PV-COMBAT-014 (PO-53): a spell de cura da vocação (dados).
+            ClassHealingSpellTable.ForClass(character.CharacterClass));
     }
 
     public Combatant CreateMonster(EncounterMonsterState monster)

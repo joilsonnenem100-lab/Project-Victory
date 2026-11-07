@@ -208,6 +208,18 @@ Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorE
         builder.Configuration.GetValue<int?>(ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerSettings.HistorySizeKey)
         ?? ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerSettings.DefaultHistorySize)));
 
+// PV-COMBAT-014 (PO-53): spell de cura quando a vida fica abaixo de X% da máxima (PROVISÓRIO, padrão 50;
+// 0 desliga a cura por spell; fora de 0..100 derruba o startup).
+var healingSpellBelowPercent = builder.Configuration.GetValue<int?>(ProjectVictory.Domain.Combat.Rules.HealingSpellPolicy.BelowPercentKey)
+    ?? ProjectVictory.Domain.Combat.Rules.HealingSpellPolicy.DefaultBelowPercent;
+if (healingSpellBelowPercent is < 0 or > 100)
+{
+    throw new InvalidOperationException($"{ProjectVictory.Domain.Combat.Rules.HealingSpellPolicy.BelowPercentKey} deve ficar entre 0 e 100.");
+}
+Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace(
+    builder.Services,
+    ServiceDescriptor.Singleton(new ProjectVictory.Domain.Combat.Rules.HealingSpellPolicy(healingSpellBelowPercent)));
+
 // PV-ADMIN-010 (DEC-20261106-12): contas administradoras vêm só da configuração do servidor
 // ("Admin:Accounts": Id da conta ou e-mail de login; user-secrets/variável de ambiente). Padrão: ninguém.
 Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace(

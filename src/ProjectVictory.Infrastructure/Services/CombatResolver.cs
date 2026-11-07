@@ -73,6 +73,23 @@ public sealed class CombatResolver : ICombatResolver
                     true,
                     skill.DamageType);
 
+            // PV-COMBAT-014 (PO-53): spell de cura da vocação. Regra AQUI (ADR-051), não no orquestrador:
+            // cura = % da vida MÁXIMA pela faixa de Level (dados), limitada ao que falta para o máximo;
+            // gasta a Mana da spell. Sem spell, morto ou sem Mana: não executa. Não consome aleatoriedade
+            // (o combate segue determinístico com a semente do encontro).
+            case CombatActionKind.UseHealingSpell:
+                if (action.Actor.HealingSpell is not { } spell
+                    || action.Actor.IsDead
+                    || action.Actor.CurrentMana < spell.ManaCost)
+                {
+                    return CombatActionOutcome.NotExecuted;
+                }
+
+                var missing = action.Actor.MaximumHealth - action.Actor.CurrentHealth;
+                var healing = Math.Min(spell.RawHealingFor(action.Actor.Level, action.Actor.MaximumHealth), missing);
+
+                return new CombatActionOutcome(0, healing, 0, spell.ManaCost, true);
+
             case CombatActionKind.UseHealthPotion:
                 return new CombatActionOutcome(0, _supplyEffects.HealthPotionHealing, 0, 0, true);
 

@@ -49,6 +49,9 @@ public sealed class Combatant
     // PV-COMBAT-013: skills disponíveis (já desbloqueadas pelo Level); vazio para monstros.
     public IReadOnlyList<ProjectVictory.Domain.Combat.Rules.SkillDefinition> Skills { get; }
 
+    // PV-COMBAT-014 (PO-53): spell de cura da vocação (dados); null para monstros.
+    public ProjectVictory.Domain.Combat.Rules.HealingSpellDefinition? HealingSpell { get; }
+
     public bool IsDead => CurrentHealth <= 0;
 
     public Combatant(
@@ -62,9 +65,12 @@ public sealed class Combatant
         int maximumMana,
         int currentMana,
         CombatProfile profile,
-        IReadOnlyList<ProjectVictory.Domain.Combat.Rules.SkillDefinition>? skills = null)
+        IReadOnlyList<ProjectVictory.Domain.Combat.Rules.SkillDefinition>? skills = null,
+        // PV-COMBAT-014 (aditivo, opcional).
+        ProjectVictory.Domain.Combat.Rules.HealingSpellDefinition? healingSpell = null)
     {
         Skills = skills ?? Array.Empty<ProjectVictory.Domain.Combat.Rules.SkillDefinition>();
+        HealingSpell = healingSpell;
         if (id == Guid.Empty)
         {
             throw new ArgumentException("Combatant id is required.", nameof(id));

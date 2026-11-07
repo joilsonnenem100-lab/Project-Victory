@@ -95,6 +95,9 @@ public static class ProjectVictoryServiceCollectionExtensions
         // PV-COMBAT-010/011: Combat Orchestrator, ordem de turnos e seleção da Secondary Action.
         services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.ITurnScheduler, ProjectVictory.Application.Combat.TurnBased.SequentialTurnScheduler>();
         services.AddScoped<ProjectVictory.Application.Combat.TurnBased.ICombatActionSelector, ProjectVictory.Application.Supply.SupplyAwareCombatActionSelector>();
+        // PV-COMBAT-014 (PO-53): limite de vida para a spell de cura (PROVISÓRIO, padrão 50%; o host pode substituir).
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(
+            services, ProjectVictory.Domain.Combat.Rules.HealingSpellPolicy.Default);
 
         // PV-MONSTER-010 (ADR-005): Monster AI única, orientada pelos dados de cada monstro.
         services.AddSingleton<ProjectVictory.Application.Combat.TurnBased.IMonsterBehaviorProvider, ProjectVictory.Infrastructure.Combat.MonsterBehaviorProvider>();

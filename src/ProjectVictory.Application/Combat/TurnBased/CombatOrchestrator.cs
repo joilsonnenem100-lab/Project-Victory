@@ -153,7 +153,8 @@ public sealed class CombatOrchestrator
 
         // *** PROVISÓRIO *** (revisão do PV-COMBAT-010): poções miram o próprio ator e cura/mana
         // vão para o ator; cura em aliado e escolha de alvo por IA ficam para o M4.
-        var secondaryTarget = choice.Kind is CombatActionKind.UseHealthPotion or CombatActionKind.UseManaPotion
+        // PV-COMBAT-014: a spell de cura também mira o próprio ator (a regra da cura fica no resolver).
+        var secondaryTarget = choice.Kind is CombatActionKind.UseHealthPotion or CombatActionKind.UseManaPotion or CombatActionKind.UseHealingSpell
             ? actor
             : session.DefaultTargetFor(actor);
 

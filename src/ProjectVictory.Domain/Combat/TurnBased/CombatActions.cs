@@ -10,7 +10,9 @@ public enum CombatActionKind
     UseHealthPotion,
     UseManaPotion,
     // PV-COMBAT-013: uma das 4 skills da classe (ver ClassSkillTable).
-    UseSkill
+    UseSkill,
+    // PV-COMBAT-014 (PO-53): spell de cura da vocação (dados em ClassHealingSpellTable); mira o ator.
+    UseHealingSpell
 }
 
 public sealed record CombatTurnAction(

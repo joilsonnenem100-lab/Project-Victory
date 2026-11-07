@@ -121,10 +121,15 @@ public sealed class CombatSupplyContext
 // PV-SUPPLY-010: Secondary Action do jogador conforme a política (ADR-006: a Secondary é opcional).
 // Ordem: poção de vida (se abaixo do limite e houver poção) → poção de mana → habilidade da classe.
 // Sem poção não há cura (DEC-20261106-04): não existe outra fonte de vida durante a Hunt.
+// PV-COMBAT-014 (PO-53, emenda do DEC-20261106-04: "sem suprimento não há cura" vale só para poções):
+// nova ordem = spell de cura (vida abaixo do limite da HealingSpellPolicy E Mana suficiente) → poção
+// de vida (reserva: sem Mana, ou vida abaixo do limite da poção mas acima do da spell) → poção de
+// Mana (repõe a Mana que a spell gasta) → skill da classe.
 public sealed class SupplyAwareCombatActionSelector : ICombatActionSelector
 {
     private readonly CombatSupplyContext _supplies;
     private readonly DefaultCombatActionSelector _fallback;
+    private readonly ProjectVictory.Domain.Combat.Rules.HealingSpellPolicy _healing;
 
     // Compatibilidade/testes de unidade: monstros só com ataque básico. Produção (DI) usa o construtor
     // com IMonsterAI, que lê os dados do catálogo.
@@ -134,9 +139,15 @@ public sealed class SupplyAwareCombatActionSelector : ICombatActionSelector
     }
 
     // PV-MONSTER-010: monstros escolhem pela Monster AI orientada a dados (ADR-005).
-    public SupplyAwareCombatActionSelector(CombatSupplyContext supplies, IMonsterAI monsterAI)
+    // PV-COMBAT-014: sem HealingSpellPolicy (testes de unidade antigos), a cura por spell fica DESLIGADA;
+    // a composição (DI) registra a política configurada (padrão 50%).
+    public SupplyAwareCombatActionSelector(
+        CombatSupplyContext supplies,
+        IMonsterAI monsterAI,
+        ProjectVictory.Domain.Combat.Rules.HealingSpellPolicy? healingPolicy = null)
     {
         _supplies = supplies;
+        _healing = healingPolicy ?? ProjectVictory.Domain.Combat.Rules.HealingSpellPolicy.Disabled;
         _fallback = new DefaultCombatActionSelector(
             ProjectVictory.Domain.Combat.Rules.SkillSelectionPolicy.Default,
             monsterAI);
@@ -152,6 +163,14 @@ public sealed class SupplyAwareCombatActionSelector : ICombatActionSelector
 
         if (actor.Side == CombatSide.Player)
         {
+            // PV-COMBAT-014: a spell de cura vem primeiro quando há Mana; a poção de vida é a reserva.
+            if (actor.HealingSpell is { } spell
+                && actor.CurrentMana >= spell.ManaCost
+                && _healing.WantsHealing(actor.CurrentHealth, actor.MaximumHealth))
+            {
+                return new CombatTurnChoice(CombatActionKind.UseHealingSpell);
+            }
+
             var policy = _supplies.Policy;
 
             if (policy.HealthPotionBelowPercent is { } hp
