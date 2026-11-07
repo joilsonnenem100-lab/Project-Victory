@@ -948,3 +948,10 @@ Status: **Accepted (Arquiteto, com autorização do PO na ordem da Fila 9 para "
 - Conflitos com **código** viram revisões pendentes: **R-064** (`RequiredTitleTier` ainda bloqueia a entrada, × PO-55), **R-065** (spell de cura ainda não implementada, × PO-53), **R-066** (sem limite de personagens por conta nem "um por classe", × PO-36).
 - Pastas históricas e arquivadas (`docs/architecture/historico/`, `archive/`, `docs/character e conceitos/`, `docs/expansion/`, `docs/vertical-slice/`, `docs/Visual-Identity/Antigos/`) **não** recebem nota uma a uma: vale a regra 3 do `PO-DECISOES-BASE.md` (em conflito, vale o arquivo do PO).
 
+## DEC-20261107-03 — Handbook §10 emendado: Hunt Loop + Event Bus fazem a cadeia; Game Session continua em REVIEW (decisão do Arquiteto, Fila 9)
+
+Status: **Accepted (Arquiteto, ADR-016: arquitetura)** — `PV-GOV-019`; `ADR-059` (novo, ACCEPTED); revisão formal do Handbook V3 §10 (nota de emenda, texto mantido); critério de LOCK do `DEC-20261106-44`
+
+- Responde à pergunta 2 do `RELATORIO-FILA-8.md`: **emendar o documento, sem refatorar o código**. Hunt Loop + Event Bus fazem Hunt → Combat → Reward; Game Session = presença.
+- LOCK do Game Session + Runtime Coordinator: item 1 (Handbook §10 × código) **cumprido**. Faltam: documento de domínio `developer-guide/domain/game-session.md`; R-051 (resto: encounters pela área escolhida, depende de 2ª área); R-062 (decidir a premissa de servidor único antes de escalar). Módulo continua **REVIEW**.
+

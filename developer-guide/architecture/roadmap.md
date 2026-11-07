@@ -151,7 +151,7 @@ Status: REVIEW (revisão de fechamento da Fila 7, `docs/architecture/historico/R
 
 Módulos (implementados; LOCKED onde indicado):
 
-- Game Session + Runtime Coordinator (REVIEW — `PV-RUNTIME-010`; ~~falta R-051, R-054, R-055~~ fechados na Fila 8; **falta (PV-GOV-013):** Handbook §10 × código (o Coordinator do Handbook encadeia Hunt→Encounter→Combat→Reward), documento de domínio `game-session.md`, R-051 resto (encounters por área), R-062)
+- Game Session + Runtime Coordinator (REVIEW — `PV-RUNTIME-010`; ~~falta R-051, R-054, R-055~~ fechados na Fila 8; **falta (PV-GOV-013):** Handbook §10 × código (o Coordinator do Handbook encadeia Hunt→Encounter→Combat→Reward), documento de domínio `game-session.md`, R-051 resto (encounters por área), R-062) *Fila 9 (`PV-GOV-019`, `ADR-059`, `DEC-20261107-03`): Handbook §10 emendado — item cumprido; faltam `game-session.md`, R-051 (resto) e R-062; continua REVIEW.*
 - Hunt Loop + encerramento por queda (REVIEW — `PV-HUNT-011/012`; falta R-059, ~~R-052~~, R-053, R-027, R-030, ~~R-060~~, R-061; R-052 e R-060 fechados na Fila 8)
 - Recovery do Runtime — **LOCKED** (Fila 8, `PV-GOV-013`, `docs/architecture/REVISAO-FECHAMENTO-FILA-8.md`: Handbook §18/§19 e ADR-057 Parte A cumpridos; R-055/R-056 fechados). ~~(REVIEW — `PV-RUNTIME-011`; falta R-055, R-056)~~
 - Event System: Typed Event Bus e Domain Events — **infraestrutura de Engine Events**, não confundir com o módulo "Events" (eventos de jogo) da Fase 10 — **LOCKED** (Fila 8, `PV-GOV-013`: `events.md` cumprido com a emenda do `ADR-058`; R-058 fechado). ~~(REVIEW — `PV-EVENT-010/011`; falta R-058)~~

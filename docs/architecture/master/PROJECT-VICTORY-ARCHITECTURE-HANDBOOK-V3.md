@@ -196,6 +196,8 @@ Orquestrar experiências.
 
 # 10. Runtime Coordinator
 
+> **Emenda (2026-11-07, `ADR-059`, `DEC-20261107-03`, revisão formal do Arquiteto — `PV-GOV-019`):** o papel do Runtime Coordinator é cumprido pela composição do **Hunt Loop** (Hunt → Encounter → Combat, próximo encounter pelo Spawn) com o **Event Bus** (Combat → Reward → Progression por `CombatCompletedEvent`, ADR-058). O **Game Session** cuida só da presença (heartbeat, queda, retorno, logout — ADR-057). Não existe coordenador central que chame os domínios em sequência (ADR-045, ADR-051). O texto abaixo fica como histórico; "não contém regras profundas" continua valendo.
+
 O Coordinator não contém regras profundas.
 
 Ele coordena:

@@ -28,7 +28,7 @@ Server Authority (identidade do token) · Aggregate Ownership · Clean Architect
 | Estado oficial, revisões pendentes (R-xxx), testes | `developer-guide/architecture/project-state.md` |
 | Roadmap de execução (M0–M8) / ordem oficial dos módulos | `developer-guide/architecture/roadmap-to-playable.md` / `roadmap.md` |
 | Decisões datadas (DEC-) | `developer-guide/architecture/decision-log.md` |
-| ADRs (próximo livre: ADR-059) | `developer-guide/adr/` |
+| ADRs (próximo livre: ADR-060) | `developer-guide/adr/` |
 | Contratos | `docs/contracts/active/PV-<ÁREA>-NNN.md` |
 | Documentos de domínio (critério de LOCK) | `developer-guide/domain/` |
 | Relatórios de filas encerradas | `docs/architecture/historico/` |
