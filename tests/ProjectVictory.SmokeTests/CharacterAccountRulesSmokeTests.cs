@@ -132,6 +132,9 @@ public sealed class CharacterAccountRulesSmokeTests
         clock.Advance(TimeSpan.FromSeconds(1));
         Assert.Empty(await server.List(account));
         await Assert.ThrowsAsync<OwnershipViolationException>(() => server.Cancel(account, id));
+        // Ressalva 1 da revisão: o excluído não passa mais na posse em nenhum endpoint (ex.: inventário, Hunt).
+        await Assert.ThrowsAsync<OwnershipViolationException>(() =>
+            server.As(account, async sp => { await sp.GetRequiredService<PlayerOwnershipGuard>().EnsureCharacterAsync(id); return 0; }));
         await server.Create(account, name, CharacterClass.Knight);
     }
 

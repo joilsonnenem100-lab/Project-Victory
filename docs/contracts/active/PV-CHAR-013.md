@@ -45,5 +45,12 @@ As consultas da conta (`GetByAccountIdAsync`, `GetAllByAccountIdAsync`) ignoram 
 - O `enter` continua escolhendo o primeiro personagem da conta (`GetByAccountIdAsync`). Escolher o personagem no enter fica para um contrato futuro (R-072).
 - Não há destrave dos 2 slots bloqueados, que depende da loja de gemas (Fase 8).
 
+## Revisão (pv-architecture-reviewer): APROVADO COM RESSALVAS
+- R1 (aplicada): `GetByIdAsync`/`GetByIdsAsync` ignoram o personagem com exclusão finalizada, e a posse (`PlayerOwnershipGuard`) devolve 403 em todo endpoint. Há teste.
+- R3 (aplicada): a lista da conta e os slots seguem a ordem do nome (`OrderBy`).
+- R2 (registrada, **R-073**, pergunta ao PO): a finalização não encerra Hunt nem runtime ativos do personagem. Falta definir se a exclusão pode ser pedida durante uma Hunt. Hoje a Hunt termina na queda ou no logout (ADR-057), e a finalização só acontece 7 dias depois.
+- R4 (registrada): `GET api/character` e `GET api/character/slots` gravam no banco ao finalizar exclusões vencidas (finalização preguiçosa, por decisão do contrato). Um varredor periódico fica para um contrato futuro.
+- R5 (registrada): as regras dependem do registro na DI (`CharacterCreationPolicy`), e a composição oficial registra.
+
 ## Resultado
 Build sem avisos. **526 testes verdes** (Application 34, Runtime 17, Domain 156, Smoke 187, Api 132).

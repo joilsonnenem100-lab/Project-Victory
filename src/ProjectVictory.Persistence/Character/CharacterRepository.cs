@@ -83,8 +83,10 @@ public sealed class CharacterRepository : ICharacterRepository
         var state =
             await _context.Characters
                 .Include(x => x.InventoryItems)
+                // Revisão do PV-CHAR-013 (ressalva 1): exclusão finalizada = personagem inexistente (a posse
+                // pelo PlayerOwnershipGuard passa a negar, 403, em todo endpoint que recebe o characterId).
                 .FirstOrDefaultAsync(
-                    x => x.Id == id,
+                    x => x.Id == id && x.DeletedAtUnixMilliseconds == null,
                     cancellationToken);
 
 
@@ -113,7 +115,7 @@ public sealed class CharacterRepository : ICharacterRepository
             await _context.Characters
                 .AsNoTracking()
                 .Include(x => x.InventoryItems)
-                .Where(x => ids.Contains(x.Id))
+                .Where(x => ids.Contains(x.Id) && x.DeletedAtUnixMilliseconds == null)
                 .ToListAsync(cancellationToken);
 
         return states.Select(RestoreCharacter).ToList();
@@ -153,7 +155,8 @@ public sealed class CharacterRepository : ICharacterRepository
             await _context.Characters
                 .Include(x => x.InventoryItems)
                 .Where(x => x.AccountId == accountId && x.DeletedAtUnixMilliseconds == null)
-                // PV-CHAR-013: ordem estável dos slots (sem coluna de criação: pela ordem de inserção do SQLite).
+                // PV-CHAR-013 (ressalva 3 da revisão): ordem estável dos slots, pelo nome.
+                .OrderBy(x => x.Name)
                 .ToListAsync(
                     cancellationToken);
 
