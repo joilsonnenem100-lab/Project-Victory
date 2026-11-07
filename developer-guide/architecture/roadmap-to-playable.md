@@ -209,7 +209,7 @@ Fonte: `docs/product/PO-DECISOES-BASE.md` v1.1, seção "Backlog derivado" (`DEC
 ### Próxima fila de código (candidatos prioritários)
 | Candidato | PO / R | Fase | Observação |
 |---|---|---|---|
-| Spell de cura por vocação + seletor automático | PO-53, PO-01; R-065 | Antes do Primeiro Teste Jogável (M8) | 1 spell por vocação, % fixa da vida (hipótese: vida máxima, confirmar), gasta Mana; o seletor automático escolhe curar. Valores PROVISÓRIOS |
+| Spell de cura por vocação + seletor automático — **servidor implementado (`PV-COMBAT-014`, Fila Noturna 1, 2026-11-07; contrato `docs/contracts/active/PV-COMBAT-014.md`); cliente pendente** | PO-53, PO-01; R-065 | Antes do Primeiro Teste Jogável (M8) | 1 spell por vocação, % fixa da vida (hipótese: vida máxima, confirmar), gasta Mana; o seletor automático escolhe curar. Valores PROVISÓRIOS |
 | Retirada do caminho legado `POST api/gameplay/action` | R-053 | Dívida do M6 | **Começar por teste funcional** do fluxo atual; depois remover (remoção autorizada pelo PO, `DEC-20261107-04`) |
 | Cliente UI-1: botão de sair da Hunt, seletor de área (`huntArea`), status `LoggedOut` no heartbeat | `RELATORIO-FILA-8` (pendências de cliente); PO-46 | M8 | Sem o botão de sair o cliente atual recebe 409 até morte/logout/queda |
 | Tier da área só informativo | PO-55, PO-09; R-064 | M8 | Retirar o 400 do `ExecuteHuntHandler`; expor o nível recomendado ao cliente |
