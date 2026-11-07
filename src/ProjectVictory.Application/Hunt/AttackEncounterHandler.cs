@@ -41,6 +41,7 @@ public sealed class AttackEncounterHandler
     private readonly ProjectVictory.Application.Spawn.ISpawnSystem _spawnSystem;
     private readonly TimeProvider _time;
     private readonly ProjectVictory.Application.Events.IEventBus _eventBus;
+    private readonly ProjectVictory.Application.HuntAnalyzer.IHuntAnalyzerTally? _analyzerTally;
 
 
     public AttackEncounterHandler(
@@ -68,8 +69,11 @@ public sealed class AttackEncounterHandler
         ProjectVictory.Application.Spawn.ISpawnSystem spawnSystem,
         TimeProvider time,
         // PV-EVENT-011: Combat → Reward por Domain Event.
-        ProjectVictory.Application.Events.IEventBus eventBus)
+        ProjectVictory.Application.Events.IEventBus eventBus,
+        // PV-HUD-ANALYZER-010 (aditivo, opcional): apuração do Hunt Analyzer (só leitura dos fatos da rodada).
+        ProjectVictory.Application.HuntAnalyzer.IHuntAnalyzerTally? analyzerTally = null)
     {
+        _analyzerTally = analyzerTally;
         _time = time;
         _eventBus = eventBus;
         _activity = activity;
@@ -211,6 +215,10 @@ public sealed class AttackEncounterHandler
         // mas a rodada é "ação pequena" — o consumo fica PENDENTE e é gravado no próximo checkpoint
         // (recompensa ou conclusão). Antes: gravava o personagem a cada rodada com poção.
         _pendingSupplies.Add(character.Id, _supplies.HealthPotionsUsed, _supplies.ManaPotionsUsed);
+
+        // PV-HUD-ANALYZER-010: o Analyzer LÊ as poções usadas na rodada (débito); abre a apuração da
+        // Hunt antes do Reward, para o loot desta rodada também ser contado.
+        _analyzerTally?.RecordSupplies(hunt.Id, character.Id, _supplies.HealthPotionsUsed, _supplies.ManaPotionsUsed);
 
         // Monstros mortos nesta rodada → Reward Pipeline (um CombatResult de vitória por monstro).
         var killed = session.Monsters.Where(m => m.IsDead && aliveBefore.Contains(m.Id)).ToList();

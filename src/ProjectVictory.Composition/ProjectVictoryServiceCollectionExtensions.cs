@@ -210,6 +210,18 @@ public static class ProjectVictoryServiceCollectionExtensions
         // PV-HUNT-010: pipeline único de encerramento da Hunt (ADR-012).
         services.AddScoped<EndHuntHandler>();
 
+        // PV-HUD-ANALYZER-010: Hunt Analyzer (apuração em memória, histórico persistido pelo assinante
+        // do HuntEndedEvent, consultas). Tamanho do histórico PROVISÓRIO (o host pode substituir).
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(
+            services, ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerSettings.Default);
+        services.AddSingleton<ProjectVictory.Application.HuntAnalyzer.IHuntAnalyzerTally, ProjectVictory.Application.HuntAnalyzer.InMemoryHuntAnalyzerTally>();
+        services.AddScoped<IRewardDeliveryObserver, ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerLootObserver>();
+        services.AddScoped<ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerPricing>();
+        services.AddScoped<ProjectVictory.Application.HuntAnalyzer.IHuntAnalyzerHistoryStore, ProjectVictory.Persistence.HuntAnalyzer.HuntAnalyzerHistoryStore>();
+        services.AddScoped<ProjectVictory.Application.HuntAnalyzer.GetHuntAnalyzerHandler>();
+        services.AddScoped<ProjectVictory.Application.HuntAnalyzer.GetHuntAnalyzerHistoryHandler>();
+        services.AddScoped<ProjectVictory.Application.Events.IAsyncEventHandler<ProjectVictory.Domain.Events.HuntEndedEvent>, ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerOnHuntEnded>();
+
         // Runtime, World e Gameplay.
         services.AddScoped<CreateRuntimeExecutionHandler>();
         services.AddScoped<UpdateRuntimeActivityHandler>();

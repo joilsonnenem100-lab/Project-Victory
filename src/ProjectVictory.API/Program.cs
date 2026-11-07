@@ -186,6 +186,13 @@ Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorE
         TimeSpan.FromSeconds(builder.Configuration.GetValue<double?>(ProjectVictory.Application.GameSession.GameSessionSettings.SweepIntervalKey) ?? 5))));
 builder.Services.AddHostedService<ProjectVictory.API.Configuration.GameSessionSweepService>();
 
+// PV-HUD-ANALYZER-010: tamanho do histórico do Hunt Analyzer (PROVISÓRIO, padrão 10; < 1 derruba o startup).
+Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace(
+    builder.Services,
+    ServiceDescriptor.Singleton(new ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerSettings(
+        builder.Configuration.GetValue<int?>(ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerSettings.HistorySizeKey)
+        ?? ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerSettings.DefaultHistorySize)));
+
 // PV-PROG-013 (DEC-20261106-30): títulos por Level lidos da configuração ("LevelTitles") a cada
 // consulta — trocar rótulos/faixas no appsettings.json não exige recompilar nem reiniciar.
 // Revisão: registrado pela DI (recebe IConfiguration e ILogger); substitui o padrão da composição.

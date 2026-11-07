@@ -34,6 +34,10 @@ public sealed class ProjectVictoryDbContext : DbContext
     public DbSet<ProjectVictory.Persistence.Supply.PersistentSupplyPolicyState> SupplyPolicies =>
         Set<ProjectVictory.Persistence.Supply.PersistentSupplyPolicyState>();
 
+    // PV-HUD-ANALYZER-010: histórico do Hunt Analyzer (últimas Hunts por personagem).
+    public DbSet<ProjectVictory.Persistence.HuntAnalyzer.PersistentHuntAnalyzerSummaryState> HuntAnalyzerSummaries =>
+        Set<ProjectVictory.Persistence.HuntAnalyzer.PersistentHuntAnalyzerSummaryState>();
+
 
     public ProjectVictoryDbContext(
         DbContextOptions<ProjectVictoryDbContext> options)
@@ -179,6 +183,16 @@ public sealed class ProjectVictoryDbContext : DbContext
             entity.ToTable("SupplyPolicies");
             entity.HasKey(x => x.CharacterId);
             entity.Property(x => x.CharacterId).ValueGeneratedNever();
+        });
+
+        // PV-HUD-ANALYZER-010: uma linha por Hunt encerrada; consulta por personagem.
+        modelBuilder.Entity<ProjectVictory.Persistence.HuntAnalyzer.PersistentHuntAnalyzerSummaryState>(entity =>
+        {
+            entity.ToTable("HuntAnalyzerSummaries");
+            entity.HasKey(x => x.HuntId);
+            entity.Property(x => x.HuntId).ValueGeneratedNever();
+            entity.Property(x => x.EndReason).IsRequired().HasMaxLength(32);
+            entity.HasIndex(x => new { x.CharacterId, x.EndedAtUnixMilliseconds });
         });
     }
 }

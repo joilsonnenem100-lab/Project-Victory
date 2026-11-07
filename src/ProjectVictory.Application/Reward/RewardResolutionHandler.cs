@@ -13,6 +13,7 @@ public sealed class RewardResolutionHandler
     private readonly ILootDefinitionProvider _lootDefinitionProvider;
     private readonly RewardSettings _settings;
     private readonly IExperienceDistributor _experienceDistributor;
+    private readonly IRewardDeliveryObserver? _deliveryObserver;
 
 
     public RewardResolutionHandler(
@@ -34,8 +35,11 @@ public sealed class RewardResolutionHandler
         ApplyLootToCharacterInventoryHandler applyLootHandler,
         ILootDefinitionProvider lootDefinitionProvider,
         RewardSettings settings,
-        IExperienceDistributor experienceDistributor)
+        IExperienceDistributor experienceDistributor,
+        // PV-HUD-ANALYZER-010 (aditivo, opcional): quem quiser LER o loot entregue (ex.: Hunt Analyzer).
+        IRewardDeliveryObserver? deliveryObserver = null)
     {
+        _deliveryObserver = deliveryObserver;
         _experienceDistributor =
             experienceDistributor ?? throw new ArgumentNullException(nameof(experienceDistributor));
         _lootDefinitionProvider =
@@ -70,6 +74,9 @@ public sealed class RewardResolutionHandler
             combatResult.CharacterId,
             lootResult,
             cancellationToken);
+
+        // PV-HUD-ANALYZER-010: avisa o observador (só leitura) do loot e do ouro entregues.
+        _deliveryObserver?.OnLootDelivered(combatResult, lootResult);
 
 
         // PV-REWARD-010: XP da definição do monstro × XP rate do servidor (DEC-20261106-12).

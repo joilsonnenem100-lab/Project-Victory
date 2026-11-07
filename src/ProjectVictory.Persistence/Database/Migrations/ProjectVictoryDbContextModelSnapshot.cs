@@ -107,6 +107,59 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.ToTable("HuntSessions");
                 });
 
+            modelBuilder.Entity("ProjectVictory.Persistence.HuntAnalyzer.PersistentHuntAnalyzerSummaryState", b =>
+                {
+                    b.Property<Guid>("HuntId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CharacterId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Debit")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ElapsedSeconds")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("EndReason")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("EndedAtUnixMilliseconds")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ExperienceGained")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ExperiencePerHour")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Gold")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ItemsLooted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("LootValue")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("NetProfit")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Profit")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SuppliesUsed")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("HuntId");
+
+                    b.HasIndex("CharacterId", "EndedAtUnixMilliseconds");
+
+                    b.ToTable("HuntAnalyzerSummaries", (string)null);
+                });
+
             modelBuilder.Entity("ProjectVictory.Persistence.Item.PersistentItemState", b =>
                 {
                     b.Property<Guid>("Id")
