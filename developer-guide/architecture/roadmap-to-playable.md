@@ -183,7 +183,7 @@ Levantadas na leitura de `roadmap.md` (Fase 2), `knowledge-base/training.md` e `
 | `PV-FRONTEND-GAME-HUD-FOUNDATION-001` (ativo) | Refazer HUD aprovado (o anterior estava "NOT APPROVED") | contrato ativo |
 | `PV-UI-0xx` Navegação | Router real no client no lugar de `useState` por string; tipar `any`; estados de loading/erro. **Entrada do baseline `PV-QA-002` (2026-11-06):** `vite build` verde, mas `tsc --noEmit` = 443 erros (426 por falta de `@types/react*`), 2 imports quebrados em `WorldScenePage`/`PlayerStatePanel`, `GamePage` órfão, sem lint, `npm audit` 6 vulnerabilidades de build (ver `project-state.md`) | Análise §4.5; contratos `PV-UI-001/002` (histórico git: "Page Composition Rules") |
 | `PV-QA-010` Playtest | Roteiro de playtest, matriz de regressão, critérios de aceite | `ACCEPTANCE_CRITERIA.md`, `PV-VS-2.0-045` |
-| `PV-CONTENT-010` Conteúdo mínimo | Monstros, itens e loot suficientes para ~30 min de jogo | `FIRST_FUN.md`, `PROJECT-VICTORY-CONTENT-PIPELINE-ARCHITECTURE.md` |
+| `PV-CONTENT-010` Conteúdo mínimo — **Spider Cave: `PV-CONTENT-012` implementado (Fila Noturna 1, 2026-11-07; poções em 3 níveis, kit inicial, preços NPC, loot; contrato `docs/contracts/active/PV-CONTENT-012.md`); recompensa diária pendente (R-068)** | Monstros, itens e loot suficientes para ~30 min de jogo | `FIRST_FUN.md`, `PROJECT-VICTORY-CONTENT-PIPELINE-ARCHITECTURE.md` |
 | `PV-HUD-ANALYZER-010` Hunt Analyzer — **servidor implementado (Fila Noturna 1, 2026-11-07; endpoints `GET api/hunt/analyzer/{characterId}` e `/history`, contrato `docs/contracts/active/PV-HUD-ANALYZER-010.md`); cliente pendente** | Aba "Analyzer" do Game HUD: XP obtido, XP/hora, débito, lucro e lucro líquido da Hunt, em tempo real durante a Hunt e resumo ao final, **calculados no servidor** e só exibidos pelo cliente | `DEC-20261106-01` (PO); ADR-002; `PV-FRONTEND-GAME-HUD-FOUNDATION-001` |
 | `PV-ADMIN-010` Ferramenta de administração — **servidor implementado (Fila Noturna 1, 2026-11-07; `GET/PUT api/admin/xp-rate`, policy `Administrator`, admins em `Admin:Accounts`; contrato `docs/contracts/active/PV-ADMIN-010.md`); tela no cliente pendente** | Tela de ajuste do **XP rate** restrita a uma **conta administradora**: papel de administrador na Account, autorização por papel no servidor, endpoint protegido; jogador comum e cliente comum nunca alteram o valor | `DEC-20261106-12` (PO); Server Authority (`CLAUDE.md`) |
 | `PV-HUD-BATTLE-VIEW-010` Representação visual | Animação central por local (ex.: Spider Cave), duelo automático decorativo, **sem efeito no resultado** | `DEC-20261106-01` (PO); ADR-002 |
@@ -217,8 +217,8 @@ Fonte: `docs/product/PO-DECISOES-BASE.md` v1.1, seção "Backlog derivado" (`DEC
 ### Antes do Primeiro Teste Jogável (M8)
 | Candidato | PO |
 |---|---|
-| Poções em três níveis (pequena, média, grande) | PO-15 |
-| Kit inicial e recompensa diária simples (ouro e poções) | PO-16, PO-28 |
+| Poções em três níveis (pequena, média, grande) — **servidor implementado (`PV-CONTENT-012`, Fila Noturna 1, 2026-11-07)** | PO-15 |
+| Kit inicial e recompensa diária simples (ouro e poções) — **kit de poções implementado (`PV-CONTENT-012`); recompensa diária e ouro pendentes (R-068)** | PO-16, PO-28 |
 | Opção Trancar item | PO-24 |
 | Hunt Analyzer com histórico das últimas Hunts | PO-47 |
 | Mute visível e opção de desligar sons; música ambiente | PO-48 |
