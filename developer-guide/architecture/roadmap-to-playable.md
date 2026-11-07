@@ -75,6 +75,8 @@ Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (
 | `PV-COMBAT-012` Regras de dano e ação | ✅ **Implementado em 2026-11-06** (branch `chief/m3-combat-012`; fórmula PROVISÓRIA atrás de `IDamageFormula`). — Dano do atacante e do inimigo; ação básica + secundária; vida do jogador; resultado (vitória/derrota) substitui `CombatResolver` stub atrás de `ICombatResolver` | ADR-006; Snapshot "Próximos Objetivos" |
 | `PV-HUNT-010` Derrota | ✅ **Implementado em 2026-11-06** (branch `chief/m3-hunt-010`). — Morte encerra a Hunt pelo **mesmo** pipeline de encerramento; jogador volta à cidade e aguarda comando; **nenhuma perda de loot ou XP** | ADR-012; `DEC-20261106-04` |
 | `PV-SUPPLY-010` Suprimentos (poções) | ✅ **Servidor implementado em 2026-11-06** (branch `chief/m3-supply-010`; endpoint `POST api/hunt/supplies`). **A "tela própria" do cliente está pendente** → `PV-UI-0xx` (M8). — Só **poção de vida** e **poção de mana**; uso configurado pelo jogador em tela própria, inclusive durante a Hunt; servidor valida e aplica **a partir do próximo turno**; **sem suprimento não há cura**; **fim de suprimento encerra a Hunt** pelo mesmo pipeline | `DEC-20261106-02/03/04`; ADR-012; ADR-052 |
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-15/PO-16/PO-53 em `docs/product/PO-DECISOES-BASE.md`): poções em **três níveis** (pequena, média, grande), obtidas por kit inicial e recompensa diária; "sem suprimento não há cura" vale **só para poções** — todas as vocações têm spell de cura que gasta Mana.*
 | `PV-CONTENT-011` Spider Cave | ✅ **Implementado em 2026-11-06** (branch `chief/m3-content-011`). — Primeira Hunt: **Spider Cave** com 5 monstros — **Rat** e **Cave Rat** (já existem em `EncounterGenerator.cs`) + **Spider**, **Poison Spider** e **Giant Spider** (novos). Atributos entregues como **BALANCEAMENTO PROVISÓRIO** para o PO ajustar; definições por dados (base para o `PV-MONSTER-010`) | `DEC-20261106-09`; ADR-005/006 |
 
 **Saída:** combate com resultado não trivial, determinístico e coberto por testes de Domain/Application; cliente continua consumindo o mesmo contrato de resultado.
@@ -127,6 +129,8 @@ Decisões do PO que orientam o M2 (`PV-GOV-006`): curva de XP `XP(L) = 50/3 × (
 >   3. o Monk treina Fist Fighting (**PROVISÓRIO**, confirmar);
 >   4. vale a fórmula do Tibia, sem progresso offline;
 >   5. Free × Premium continua aberta;
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-27/PO-26 em `docs/product/PO-DECISOES-BASE.md`): Free × Premium **resolvida**: Premium treina um pouco mais rápido; item de treino por NPC, recompensa e donate.*
 >   6. a tolerância é de 1 min (Hunt) e 5 min (treino).
 
 Decisão do PO (`DEC-20261106-05`, ADR-057): **enquanto conectado**, a Hunt roda em loop; **ao desconectar**, termina pelo pipeline único (ADR-012); **offline**, só o Offline Training de skills progride. A Hunt nunca é recuperada.
@@ -150,6 +154,8 @@ Levantadas na leitura de `roadmap.md` (Fase 2), `knowledge-base/training.md` e `
 3. **Skill do Monk:** o `training.md` lista "First Fighting"; o código tem `Fist`. Confirmar que o Monk treina **Fist Fighting** e se treina mais alguma skill.
 4. **Velocidade e teto:** quanto mais lento que a Hunt (regra "Hunt > Training") e se existe limite de horas offline acumuladas.
 5. **Free × Premium:** existe diferença no Training nesta fase, ou fica para depois?
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-26/PO-27 em `docs/product/PO-DECISOES-BASE.md`): respondidas as dúvidas 1 (NPC, recompensa e donate) e 5 (Premium treina um pouco mais rápido).*
 6. **Tolerância de queda de conexão:** uma queda curta de rede já encerra a Hunt, ou há uma janela de reconexão (ex.: alguns segundos) antes do encerramento?
 
 ## M7 — Event System

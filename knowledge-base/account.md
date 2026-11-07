@@ -74,6 +74,8 @@ História dentro do mundo
 
 # Character Slots
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-36/PO-54 em `docs/product/PO-DECISOES-BASE.md`): **até 5 personagens por conta, um por classe**; ao criar a conta, 3 slots livres e 2 bloqueados, destravados com **gemas**. Substitui "3 por conta, compra com VC Points até 10".*
+
 Configuração inicial:
 
 ```
@@ -175,6 +177,8 @@ A recuperação utiliza:
 A Account não pode ser excluída inicialmente.
 
 Personagens possuem solicitação de exclusão.
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-39 em `docs/product/PO-DECISOES-BASE.md`): a espera da exclusão de personagem é de **7 dias** (não 30).*
 
 Fluxo:
 

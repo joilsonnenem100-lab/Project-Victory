@@ -2,6 +2,8 @@
 
 Origem: MODO FILA 8, item 4 (2026-11-06). Lastro: ADR-057 v1.2 (última Hunt escolhida), `DEC-20261106-20/47/49`, `DEC-20261106-30` (tier das áreas), revisões R-051, R-054 (e R-041).
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-55): a validação do tier do título contra a área (400 se acima) contradiz a decisão do PO — o `RequiredTitleTier` é informativo. Mantida no código até contrato (R-064).*
+
 ## Escopo
 - **D1 (R-051):** `ExecuteHuntCommand.HuntArea` (opcional, aditivo; corpo `huntArea` de `POST api/hunt/execute`). Ausente → área padrão (comportamento anterior). O servidor valida: nome do catálogo (sem diferenciar maiúsculas) e tier do título ≥ `RequiredTitleTier` (fecha o R-041) → senão `InvalidHuntAreaException` → **400**. Grava o **nome do catálogo** escolhido como última Hunt.
 - **D2 (R-051):** o retorno automático (queda/reinício) inicia a Hunt **na área guardada**; se ela deixou de existir/estar disponível, o retorno é consumido sem Hunt.

@@ -178,6 +178,8 @@ A arquitetura não deve limitar o crescimento do sistema.
 
 # VC Points
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-19/PO-54 em `docs/product/PO-DECISOES-BASE.md`): a moeda premium chama-se **gemas** e vem de donates. Uso: loja de **cosméticos visíveis** a outros jogadores e aceleração paga com **custo alto** (item de treino, slots extras de personagem, passes). Princípio: **dinheiro real compra tempo, não poder exclusivo**.*
+
 VC Points representam uma fonte de monetização externa do projeto.
 
 Serão utilizados para manutenção dos custos do servidor e possíveis sistemas futuros.
@@ -187,6 +189,8 @@ Serão utilizados para manutenção dos custos do servidor e possíveis sistemas
 # Controle de Inflação
 
 O servidor remove Gold através de:
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-17/PO-23/PO-12 em `docs/product/PO-DECISOES-BASE.md`): sumidouros de ouro aprovados: **poções, taxas de mercado e serviços da cidade**. Upgrade e Craft não existem até a Fase 9; Bosses só na Fase 9.*
 
 - Market Tax;
 - Repair;
@@ -246,6 +250,8 @@ Este valor deve ser configurável.
 ## Taxa
 
 A taxa do Market é cobrada ao criar o anúncio.
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-18 em `docs/product/PO-DECISOES-BASE.md`): a taxa do mercado universal é **pequena e fixa**.*
 
 ---
 

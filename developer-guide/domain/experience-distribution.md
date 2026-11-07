@@ -130,6 +130,8 @@ Ver também:
 
 > Status do documento continua DRAFT: a regra de grupo é decisão do PO.
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-07 em `docs/product/PO-DECISOES-BASE.md`): **sem grupo até a Fase 9**: a Hunt é solo; a regra de XP em grupo (R-045) fica adiada para quando houver conteúdo de Party.*
+
 - `IExperienceDistributor.Distribute(finalExperience, participants)` (`src/ProjectVictory.Application/Reward/ExperienceDistribution.cs`) recebe só a Experience **final** (já com XP rate) e devolve as partes (`ExperienceShare`); não altera Experience.
 - O Reward Pipeline (`RewardResolutionHandler`) aplica cada parte pelo `ApplyResolvedRewardToCharacterHandler` (ADR-024).
 - Regra **PROVISÓRIA** (`EvenSplitExperienceDistributor`): divisão igual; o resto vai 1 a 1 aos primeiros participantes; com 1 participante (hoje), recebe tudo.

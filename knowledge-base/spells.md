@@ -236,6 +236,8 @@ Aplicar em outra Spell
 
 # Elementos
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-03 em `docs/product/PO-DECISOES-BASE.md`): elementos só **depois da Fase 7 (World)**.*
+
 Spells podem possuir elementos:
 
 - Fire;
@@ -264,6 +266,8 @@ Fire Spell Damage
 ---
 
 # Critical Mágico
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-04 em `docs/product/PO-DECISOES-BASE.md`): **Critical não existe**, nem em spells.*
 
 Spells podem causar Critical.
 
@@ -320,6 +324,8 @@ Exemplo:
 ---
 
 # Uso de Spell por Turno
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-53 em `docs/product/PO-DECISOES-BASE.md`): **todas as vocações** têm 1 spell de cura que melhora com o Level; cura uma **porcentagem fixa da vida** (hipótese: vida máxima, a confirmar) e gasta Mana. Valores PROVISÓRIOS. Ainda não implementada (R-065).*
 
 Regra:
 

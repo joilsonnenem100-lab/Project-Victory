@@ -6,6 +6,8 @@ Version: 1.2
 
 > **Emenda v1.2 (2026-11-06, Fila 5, `DEC-20261106-30`, revisão formal autorizada pelo PO e pelo Arquiteto-Chefe):** a regra da v1.1 ("Ascension 1 inicial; nova a cada 500; máximo 4") foi **SUPERADA** pelos **títulos por Level**: Level 1–499 **Novice** (tier 0) · 500–999 **Ascension 1** (tier 1) · 1000–1499 **Ascension 2** (tier 2) · 1500–1999 **Ascension 3** (tier 3) · 2000–2499 **Ascension 4** (tier 4) · 2500 em diante **Legend** (tier 5, permanente, sem teto de Level). Tier numérico 0 a 5, derivado do Level; rótulos e faixas em **configuração**. Hunt areas exigem tier mínimo (Spider Cave = tier 0). O Level nunca reseta e não tem teto. Resolve R-034. Implementação: `PV-PROG-013`.
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-09/PO-55/PO-34/PO-52 em `docs/product/PO-DECISOES-BASE.md`): a Ascension **não bloqueia** regiões: são livres, com nível recomendado; o Legend dá título e moldura ou aura visual; depois da Ascension 4, regiões novas por etapa. Onde abaixo se lê "desbloqueia", leia "recomenda".*
+
 > **Emenda v1.1 (2026-11-06, `DEC-20261106-19`, revisão formal autorizada pelo Arquiteto-Chefe):** o modelo abaixo foi **SUPERADO** quanto ao Level. **A Ascension é DERIVADA do Level**: Ascension 1 inicial; uma nova a cada 500 Levels (2 no 500, 3 no 1000, 4 no 1500). O máximo atual é 4, com máximo e passo em configuração e conteúdo por dados. **O Level nunca volta a 1 e não há Level máximo**; o desbloqueio é automático e o jogador escolhe a Ascension em que caça. Os itens "Level retorna para 1", "limite de Level 500" e "Em aberto: como o Level volta a 1" deixam de valer (R-022 sem efeito). O texto original foi mantido por histórico.
 
 Data: 2026-11-06 · Aceite: Product Owner (ordem de 2026-11-06, registrada em `PV-GOV-006`)

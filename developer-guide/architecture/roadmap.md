@@ -160,6 +160,8 @@ Módulos (implementados; LOCKED onde indicado):
 
 # Fase 7 — World
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-03/PO-13 em `docs/product/PO-DECISOES-BASE.md`): o combate elemental entra **depois** desta fase; o Primeiro Teste Jogável tem uma região (Spider Cave).*
+
 Status: PLANNED
 
 Módulos:
@@ -201,6 +203,8 @@ Módulos:
 ---
 
 # Fase 10 — Endgame
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-12/PO-50 em `docs/product/PO-DECISOES-BASE.md`): **Bosses** entram na **Fase 9**, não na 10; **Seasons não existem** (progressão permanente).*
 
 Status: PLANNED
 

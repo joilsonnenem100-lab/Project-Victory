@@ -347,6 +347,8 @@ Ice Dragon
 
 # Monster Skills
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-06/PO-12 em `docs/product/PO-DECISOES-BASE.md`): monstros comuns **sem habilidades por enquanto** (veneno por segundo fica para depois); Bosses só na Fase 9.*
+
 Somente Bosses possuem Skills especiais.
 
 Monstros comuns utilizam comportamento simples.

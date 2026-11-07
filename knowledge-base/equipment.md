@@ -192,6 +192,8 @@ Tier influencia:
 
 # Upgrade
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-23 em `docs/product/PO-DECISOES-BASE.md`): melhoria e craft **não existem até a Fase 9**.*
+
 Upgrade aumenta:
 
 ```

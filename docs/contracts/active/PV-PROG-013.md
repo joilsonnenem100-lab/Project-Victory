@@ -60,6 +60,8 @@ Também nesta branch: as ressalvas da revisão do `PV-GOV-010` (ver o contrato `
 2. **Aplicada:** `EnterGameHandler` e `GetCharactersHandler` leem a tabela uma vez e calculam o título uma vez (rótulo e tier sempre da mesma tabela).
 3. **Sem mudança (conferido):** o `AuthorizationHttpTests` já está na coleção `"Api"` (`ApiCollection.Name`), então não roda em paralelo com o teste que muda `LevelTitles__0__Label`.
 4. **Registrada:** **R-041** — o tier mínimo da Hunt area ainda não é checado no servidor ao iniciar a Hunt (só existe a Spider Cave, tier 0).
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-55 em `docs/product/PO-DECISOES-BASE.md`): o tier da área é **informativo**; o servidor não deve bloquear (conflito com o código atual: R-064).*
 5. **Aplicada:** a chave `"LevelTitles"` saiu do Domain (`ConfigurationLevelTitleProvider.SectionKey`).
 6. **Aplicada:** nota de superação no contrato `PV-PROG-012`; nota no `DEC-20261106-30` sobre a remoção do código substituído.
 

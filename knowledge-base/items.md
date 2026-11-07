@@ -181,6 +181,8 @@ Exemplo:
 
 # Raridade
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-21 em `docs/product/PO-DECISOES-BASE.md`): a raridade tem **cinco níveis (comum a lendário)**; a ordem Normal → Magic → Rare → Unique abaixo fica superada (nomes finais a definir em dados).*
+
 Ordem:
 
 ```
@@ -365,6 +367,8 @@ Não existe inicialmente:
 # Trade
 
 Todos os itens são negociáveis inicialmente.
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-24 em `docs/product/PO-DECISOES-BASE.md`): nenhum item é ligado à conta; existe a opção **Trancar item** (o jogador evita vender o que não quer) e, no futuro, a aba **Recomprar** no NPC.*
 
 Não existem:
 

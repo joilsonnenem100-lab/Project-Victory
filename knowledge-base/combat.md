@@ -249,6 +249,8 @@ Dano máximo
 
 # Cálculo Elemental
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-03 em `docs/product/PO-DECISOES-BASE.md`): o combate elemental só entra **depois da Fase 7 (World)**; hoje o dano é só físico.*
+
 Ordem:
 
 ```
@@ -287,6 +289,8 @@ Exemplos:
 ---
 
 # Critical
+
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-04 em `docs/product/PO-DECISOES-BASE.md`): **Critical e Dodge não existem**.*
 
 Critical é calculado no final.
 

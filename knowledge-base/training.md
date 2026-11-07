@@ -255,6 +255,8 @@ TrainingService comunica com:
 
 # Pendências futuras
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-26/PO-27 em `docs/product/PO-DECISOES-BASE.md`): o item de treino é obtido por compra em NPC, recompensa **e donate (preço alto)**; **Premium treina um pouco mais rápido** (valor a definir).*
+
 Definir:
 
 - fórmula de progresso;

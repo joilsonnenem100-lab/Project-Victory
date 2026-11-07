@@ -48,6 +48,8 @@ Cada Ascension possui limite de Level 500.
 >
 > *Emenda (2026-11-06, Fila 5, `DEC-20261106-30`): a regra acima de Ascension foi **SUPERADA** pelos títulos por Level, em configuração: Level 1–499 **Novice** (tier 0) · 500–999 **Ascension 1** (tier 1) · 1000–1499 **Ascension 2** (tier 2) · 1500–1999 **Ascension 3** (tier 3) · 2000–2499 **Ascension 4** (tier 4) · 2500 em diante **Legend** (tier 5, permanente, sem teto de Level). Hunt areas exigem tier mínimo (Spider Cave = tier 0).*
 
+> *Nota de superação (2026-11-07, `DEC-20261107-02`, PO-09/PO-55 em `docs/product/PO-DECISOES-BASE.md`): o tier de título **não exige** mais nada para entrar numa Hunt: as regiões são livres e o `RequiredTitleTier` é só o **nível recomendado** (informativo). Onde acima se lê "novas regiões são desbloqueadas", leia "novas regiões recomendadas". Conteúdo depois da Ascension 4: regiões novas por etapa (PO-52).*
+
 Após atingir este limite o jogador poderá evoluir gratuitamente para a próxima Ascension.
 
 ---

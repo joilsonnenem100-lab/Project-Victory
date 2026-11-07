@@ -466,6 +466,8 @@ Status: **Accepted (Product Owner)**
 
 Nesta fase, os únicos suprimentos de Hunt são **poção de vida** e **poção de mana**. O combate será aprimorado depois (novos suprimentos entram por novas decisões do PO).
 
+*Nota de superação (2026-11-07, `DEC-20261107-02`, PO-15/PO-16): poções em **três níveis** (pequena, média, grande), obtidas por kit inicial e recompensa diária.*
+
 ## DEC-20261106-03 — Uso de poção configurável pelo jogador
 
 Status: **Accepted (Product Owner)**
@@ -773,6 +775,8 @@ Status: **Accepted (Product Owner)** — Fila 5; **supera** a regra de Ascension
 
 Implementação: `PV-PROG-013`.
 
+*Nota de superação (2026-11-07, `DEC-20261107-02`, PO-09/PO-55): "Hunt areas passam a exigir tier mínimo" fica **superado** — o `RequiredTitleTier` é **informativo** (nível recomendado), sem bloquear. Títulos e faixas continuam valendo. O código ainda bloqueia (R-064).*
+
 *Nota do Arquiteto (revisão do `PV-PROG-013`):* como esta decisão **supera** a regra de Ascension da Fila 4, o código que a implementava (`AscensionRules`, `RequiredAscension`, chaves `Ascension:*`) foi **substituído** pelo equivalente novo, com cada item listado no `CLEANUP-MANIFEST-2026-11-06.md`. Nenhum DTO publicado perdeu campo (a Ascension nunca foi exposta). Se o PO preferir manter o código antigo, a reversão é um `git revert` do `PV-PROG-013`.
 
 ## DEC-20261106-31 — Remoção autorizada (R-038)
@@ -935,3 +939,12 @@ Status: **Accepted (Product Owner, ADR-016)** — `PV-GOV-014`; fonte: `docs/pro
 - **PO-53 — Spell de cura para todas as vocações:** 1 spell de cura por vocação, que melhora com o Level; cura = porcentagem fixa da vida (hipótese de trabalho: vida **máxima**, a confirmar); cada uso gasta Mana. **Emenda o `DEC-20261106-03`** (o texto da regra está no `DEC-20261106-04` e no `DEC-20261106-22`, que recebem nota): "sem suprimento não há cura" passa a valer **só para poções**. Valores da % e custo de Mana: **PROVISÓRIOS**.
 - **PO-54 — Dinheiro real compra tempo, não poder exclusivo:** aceleração paga com custo alto (item de treino por donate, slots extras com gemas, passes) é intencional; gemas compram cosméticos visíveis a outros jogadores.
 - **PO-55 — `RequiredTitleTier` informativo:** vira nível recomendado e não bloqueia a entrada (com PO-09: regiões livres).
+
+## DEC-20261107-02 — Varredura de consistência com o PO-DECISOES-BASE (revisão formal, Fila 9)
+
+Status: **Accepted (Arquiteto, com autorização do PO na ordem da Fila 9 para "alterar ou remover o que for necessário, sempre listado")** — `PV-GOV-015`; mesmo rito do `DEC-20261106-13` (revisão formal de documentos LOCKED)
+
+- Esta é a **revisão formal documentada** que autoriza **notas de superação** (sem apagar texto) nos documentos LOCKED da `knowledge-base/` e nos ADRs/contratos que contradizem o `docs/product/PO-DECISOES-BASE.md` (PO-01 a PO-55). Lista completa dos achados: `docs/architecture/RELATORIO-FILA-9.md` (anexo A).
+- Conflitos com **código** viram revisões pendentes: **R-064** (`RequiredTitleTier` ainda bloqueia a entrada, × PO-55), **R-065** (spell de cura ainda não implementada, × PO-53), **R-066** (sem limite de personagens por conta nem "um por classe", × PO-36).
+- Pastas históricas e arquivadas (`docs/architecture/historico/`, `archive/`, `docs/character e conceitos/`, `docs/expansion/`, `docs/vertical-slice/`, `docs/Visual-Identity/Antigos/`) **não** recebem nota uma a uma: vale a regra 3 do `PO-DECISOES-BASE.md` (em conflito, vale o arquivo do PO).
+
