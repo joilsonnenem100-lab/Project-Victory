@@ -400,8 +400,9 @@ public sealed class HeartbeatHandler
             }
             catch (InvalidHuntAreaException)
             {
-                // PV-RUNTIME-013: a área guardada deixou de existir/estar disponível — o retorno é
-                // consumido sem Hunt (o jogador escolhe outra na tela inicial).
+                // PV-RUNTIME-013: a área guardada deixou de existir — o retorno é consumido sem Hunt (o
+                // jogador escolhe outra na tela inicial). PV-HUNT-014 (R-064): o tier não bloqueia mais,
+                // então este caso é só o de área retirada do catálogo.
                 return new HeartbeatResult(character.Id, "Online", null, false, runtime.LastHuntArea, null);
             }
         }

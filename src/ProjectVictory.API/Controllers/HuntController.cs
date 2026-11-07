@@ -47,6 +47,18 @@ public sealed class HuntController : BaseApiController
 
 
 
+    // PV-HUNT-014 (PO-09/PO-10/PO-55/PO-56): catálogo somente leitura de regiões e Hunts (nome, tier/
+    // título/Level recomendados — só informativos — e monstros). Exige token; sem dados do jogador.
+    [HttpGet("catalog")]
+    public IActionResult Catalog(
+        [FromServices] GetHuntCatalogHandler catalog)
+    {
+        return Success(
+            catalog.Handle());
+    }
+
+
+
     [HttpPost("attack")]
     public async Task<IActionResult> Attack(
         [FromBody] AttackEncounterCommand command)

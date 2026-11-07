@@ -45,7 +45,7 @@ Origem: rodada de 52 perguntas respondidas pelo Product Owner (documento `Pergun
 | PO-16 | Como obter poções antes de existir comércio? | **A**: Kit inicial e recompensa diária. | — | Kit inicial e recompensa diária (resolve a pendência de como obter poções). Formato da recompensa diária: PO-60. |
 | PO-17 | O que consome ouro (sumidouros)? | **C**: Poções, taxas de mercado e serviços da cidade. | — | Sumidouros de ouro: poções, taxas de mercado e serviços da cidade. |
 | PO-18 | Taxa no mercado universal: | **B**: Taxa pequena fixa. | — | — |
-| PO-19 | Moeda premium (gemas): | **B**: Existe, só para cosméticos (exceções: slots extras e passes, PO-57). | Faremos uma loja para uso das moedas com donates do jogador para personalizar seu personagem, e exploraremos de alguma forma para que ele mostre seus cosmeticos para outros players para ter incentivo de donates para manter o projeto, que é uma das nossas preocupações. | Gemas: loja de cosméticos paga com donates; cosméticos visíveis a outros jogadores. Ver PO-54 (dinheiro compra tempo). |
+| PO-19 | Moeda premium (gemas): | **B**: Existe, só para cosméticos. | Faremos uma loja para uso das moedas com donates do jogador para personalizar seu personagem, e exploraremos de alguma forma para que ele mostre seus cosmeticos para outros players para ter incentivo de donates para manter o projeto, que é uma das nossas preocupações. | Gemas: loja de cosméticos paga com donates; cosméticos visíveis a outros jogadores. Ver PO-54 (dinheiro compra tempo). Exceção confirmada (PO-57): também 2 slots extras de personagem e passes. |
 | PO-20 | Venda de loot ao NPC: | **A**: Preço fixo. | — | — |
 
 ## Itens e equipamentos

@@ -2,7 +2,7 @@
 
 Status: DRAFT
 
-> *Nota de superação (2026-11-07, `DEC-20261107-05`, PO-58 em `docs/product/PO-DECISOES-BASE.md`): a Monster AI atual (só ataque básico, ação escolhida por dados) é o comportamento **oficial desta fase**; o módulo está **LOCKED** (`DEC-20261107-06`). Cooldowns, pesos e condições abaixo valem para a fase com habilidades de monstro (R-050/R-043 suspensos).*
+> *Nota de superação (2026-11-07, `DEC-20261107-05`, PO-58 em `docs/product/PO-DECISOES-BASE.md`): a Monster AI atual (só ataque básico, ação escolhida por dados) é o comportamento **oficial desta fase**; o módulo está **LOCKED** (`DEC-20261107-06`). Cooldowns, pesos e condições abaixo valem para a fase com habilidades de monstro (R-050/R-043 suspensos). O "Status: DRAFT" acima descreve este documento-alvo da fase com habilidades; o **módulo** (código) é que está LOCKED.*
 
 Version: 1.0
 

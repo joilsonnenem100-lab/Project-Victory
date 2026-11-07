@@ -212,6 +212,8 @@ public static class ProjectVictoryServiceCollectionExtensions
         // PV-RUNTIME-011: Recovery do Runtime ao iniciar o servidor (sem Hunt, ADR-057).
         services.AddScoped<ProjectVictory.Application.Runtime.RuntimeRecoveryService>();
         services.AddScoped<ExecuteHuntHandler>();
+        // PV-HUNT-014: catálogo de regiões e Hunts (somente leitura).
+        services.AddScoped<GetHuntCatalogHandler>();
         services.AddScoped<StartHuntSessionHandler>();
         services.AddScoped<StopHuntSessionHandler>();
         services.AddScoped<FinalizeHuntAfterCombatHandler>();

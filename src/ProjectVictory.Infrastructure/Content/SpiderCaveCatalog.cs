@@ -30,7 +30,12 @@ public static class SpiderCaveCatalog
     public const string AreaName = "Spider Cave";
 
     // PV-PROG-013 (DEC-20261106-30): a Spider Cave exige tier 0 (Novice).
+    // PV-HUNT-014 (PO-55): tier RECOMENDADO (informativo).
     public const int RequiredTitleTier = 0;
+
+    // PV-HUNT-014: região do catálogo (PO-13: a única região do Primeiro Teste Jogável é a Spider Cave).
+    // PROVISÓRIO: nome da região = nome da Hunt até existir o conteúdo de World/regiões.
+    public const string RegionName = "Spider Cave";
 
     public static readonly Guid RatId = Guid.Parse("10000000-0000-0000-0000-000000000001");
     public static readonly Guid CaveRatId = Guid.Parse("10000000-0000-0000-0000-000000000002");
@@ -108,5 +113,6 @@ public sealed class SpiderCaveHuntArea : IHuntAreaCatalog
                     .Select(m => new EncounterSpawn(m.Id, m.Name, m.MaximumHealth))
                     .ToList())
                 .ToList(),
-            SpiderCaveCatalog.RequiredTitleTier);
+            SpiderCaveCatalog.RequiredTitleTier,
+            SpiderCaveCatalog.RegionName);
 }

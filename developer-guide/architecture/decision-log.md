@@ -940,7 +940,7 @@ Status: **Accepted (Product Owner, ADR-016)** — `PV-GOV-014`; fonte: `docs/pro
 - **PO-54 — Dinheiro real compra tempo, não poder exclusivo:** aceleração paga com custo alto (item de treino por donate, slots extras com gemas, passes) é intencional; gemas compram cosméticos visíveis a outros jogadores.
 - **PO-55 — `RequiredTitleTier` informativo:** vira nível recomendado e não bloqueia a entrada (com PO-09: regiões livres).
 
-*Nota de superação (2026-11-07, `DEC-20261107-05`): PO-53 "vida máxima" confirmada e igual para todas as vocações (PO-59); o Continente também é livre (PO-56).*
+> *Nota de superação (2026-11-07, `DEC-20261107-05`, PO-56/PO-59 em `docs/product/PO-DECISOES-BASE.md`): PO-53 "vida máxima" confirmada e igual para todas as vocações (PO-59); o Continente também é livre (PO-56).*
 
 ## DEC-20261107-02 — Varredura de consistência com o PO-DECISOES-BASE (revisão formal, Fila 9)
 

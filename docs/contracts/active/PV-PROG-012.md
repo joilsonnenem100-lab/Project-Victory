@@ -32,6 +32,7 @@ Lastro:
 5. **Conteúdo por Ascension (dados):**
    - `HuntAreaDefinition.RequiredAscension` (padrão 1);
    - `IHuntAreaCatalog.GetAll()` e `GetAvailable(ascension)`: áreas com Ascension mínima ≤ a do jogador, a nova e as antigas;
+   > *Nota de superação (2026-11-07, `DEC-20261107-05`, PO-09/PO-55/PO-56 em `docs/product/PO-DECISOES-BASE.md`): nenhuma área nem Continente exige Ascension/tier mínimo; o tier é só recomendado (`PV-HUNT-014`).*
    - a Spider Cave é conteúdo da Ascension 1.
 
    **Escolher a área** pelo jogador entra junto com a "última Hunt escolhida" do M6 (`DEC-20261106-20`).

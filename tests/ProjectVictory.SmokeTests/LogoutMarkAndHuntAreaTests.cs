@@ -177,9 +177,11 @@ public sealed class LogoutMarkAndHuntAreaTests
         Assert.Equal("Rat Sewers", (await server.Get<IRuntimeRepository>().GetByCharacterIdAsync(characterId))!.LastHuntArea);
     }
 
-    // R-051/R-041 (Server Authority): área inexistente ou acima do tier → recusada, nada gravado; sem área → padrão.
+    // R-051 (Server Authority): área inexistente → recusada, nada gravado; sem área → padrão.
+    // PV-HUNT-014 (R-064, PO-55/PO-56): área acima do tier do título deixou de ser recusada (tier só
+    // recomendado) — o caso "Dragon Lair" saiu deste teste e foi para AboveTierArea_IsAllowed_TierIsInformative.
     [Fact]
-    public async Task UnknownOrAboveTierArea_IsRefused_NoAreaMeansTheDefault()
+    public async Task UnknownArea_IsRefused_NoAreaMeansTheDefault()
     {
         var clock = new ManualTimeProvider();
         await using var server = new Server($"area-refused-{Guid.NewGuid():N}", clock, twoAreas: true);
@@ -187,12 +189,35 @@ public sealed class LogoutMarkAndHuntAreaTests
         var execute = server.Get<ExecuteHuntHandler>();
 
         await Assert.ThrowsAsync<InvalidHuntAreaException>(() => execute.Handle(new ExecuteHuntCommand(characterId, runtimeId, "Nowhere")));
-        await Assert.ThrowsAsync<InvalidHuntAreaException>(() => execute.Handle(new ExecuteHuntCommand(characterId, runtimeId, "Dragon Lair")));
         Assert.Null(await server.Get<IHuntRepository>().GetRunningByCharacterIdAsync(characterId));
         Assert.Null((await server.Get<IRuntimeRepository>().GetByCharacterIdAsync(characterId))!.LastHuntArea);
 
         await execute.Handle(new ExecuteHuntCommand(characterId, runtimeId));
         Assert.Equal(SpiderCaveCatalog.AreaName, (await server.Get<IRuntimeRepository>().GetByCharacterIdAsync(characterId))!.LastHuntArea);
+    }
+
+    // PV-HUNT-014 (R-064; PO-55/PO-56): Novice (tier 0) entra numa área de tier 5 — o tier é só recomendação;
+    // a área fica gravada e o retorno automático depois de uma queda a usa (sem o antigo tratamento por tier).
+    [Fact]
+    public async Task AboveTierArea_IsAllowed_TierIsInformative_AndTheReturnUsesIt()
+    {
+        var clock = new ManualTimeProvider();
+        await using var server = new Server($"area-tier-{Guid.NewGuid():N}", clock, twoAreas: true);
+        var (_, characterId, runtimeId) = await Enter(server);
+
+        var hunt = await server.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(characterId, runtimeId, "Dragon Lair"));
+        Assert.NotEqual(Guid.Empty, hunt.HuntId);
+        Assert.Equal("Dragon Lair", (await server.Get<IRuntimeRepository>().GetByCharacterIdAsync(characterId))!.LastHuntArea);
+
+        clock.Advance(TimeSpan.FromSeconds(61));
+        Assert.Single(await server.Get<GameSessionCoordinator>().SweepAsync());
+        var heartbeat = server.Get<HeartbeatHandler>();
+        await heartbeat.Handle(new HeartbeatCommand());
+        clock.Advance(TimeSpan.FromSeconds(11));
+        var returned = await heartbeat.Handle(new HeartbeatCommand());
+
+        Assert.True(returned.ReturnedToLastHunt);
+        Assert.Equal("Dragon Lair", returned.LastHuntArea);
     }
 
     // Revisão do PV-EVENT-012 (ressalva 1): retorno automático que chega depois do logout é cancelado sob o

@@ -190,9 +190,10 @@ public sealed class ExecuteHuntHandler
                 target.MaximumHealth));
     }
 
-    // PV-RUNTIME-013 (R-051; R-041): nome do catálogo (sem diferenciar maiúsculas); tier do título do
-    // personagem ≥ RequiredTitleTier da área (DEC-20261106-30). A geração dos encounters continua com o
-    // conteúdo padrão (única área existente) — ver contrato.
+    // PV-RUNTIME-013 (R-051): nome do catálogo (sem diferenciar maiúsculas). A geração dos encounters
+    // continua com o conteúdo padrão (única área existente) — ver contrato.
+    // PV-HUNT-014 (R-064; PO-55/PO-56): o tier do título NÃO bloqueia mais a entrada — RequiredTitleTier
+    // é só recomendação. Área inexistente continua recusada (400).
     private HuntAreaDefinition ResolveArea(string? requested, ProjectVictory.Domain.Entities.Character character)
     {
         if (string.IsNullOrWhiteSpace(requested))
@@ -203,7 +204,7 @@ public sealed class ExecuteHuntHandler
         var area = _areas.GetAll().FirstOrDefault(
             candidate => string.Equals(candidate.Name, requested.Trim(), StringComparison.OrdinalIgnoreCase));
 
-        if (area is null || character.TitleUnder(_levelTitles.Current).Tier < area.RequiredTitleTier)
+        if (area is null)
         {
             throw new InvalidHuntAreaException(requested);
         }
