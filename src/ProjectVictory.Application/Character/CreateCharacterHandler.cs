@@ -69,20 +69,17 @@ public sealed class CreateCharacterHandler
 
 
         // PV-SUPPLY-010: poções iniciais por configuração do servidor (PROVISÓRIO; padrão 0).
-        for (var i = 0; i < _supplySettings.StarterHealthPotions; i++)
+        // PV-CONTENT-012 (PO-16): kit inicial por nível de poção ("Supplies:StarterKit") + as chaves
+        // antigas (nível pequeno), somados em SupplySettings.StarterItems().
+        foreach (var (itemDefinitionId, quantity) in _supplySettings.StarterItems())
         {
-            character.Inventory.AddItem(
-                new global::ItemInstance(
-                    Guid.NewGuid(),
-                    ProjectVictory.Application.Supply.SupplyCatalog.HealthPotionId));
-        }
-
-        for (var i = 0; i < _supplySettings.StarterManaPotions; i++)
-        {
-            character.Inventory.AddItem(
-                new global::ItemInstance(
-                    Guid.NewGuid(),
-                    ProjectVictory.Application.Supply.SupplyCatalog.ManaPotionId));
+            for (var i = 0; i < quantity; i++)
+            {
+                character.Inventory.AddItem(
+                    new global::ItemInstance(
+                        Guid.NewGuid(),
+                        itemDefinitionId));
+            }
         }
 
         await _characterRepository.AddAsync(

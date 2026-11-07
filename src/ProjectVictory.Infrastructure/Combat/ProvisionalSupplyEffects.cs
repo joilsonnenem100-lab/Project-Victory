@@ -6,7 +6,8 @@ namespace ProjectVictory.Infrastructure.Combat;
 // Trocar = trocar estes dados (ou a implementação registrada de ISupplyEffects).
 public sealed class ProvisionalSupplyEffects : ISupplyEffects
 {
-    public int HealthPotionHealing => 75;
+    // PV-CONTENT-012: os valores agora vêm do PotionCatalog (nível pequeno; os mesmos 75/50 de antes).
+    public int HealthPotionHealing => ProjectVictory.Application.Supply.PotionCatalog.SmallHealthAmount;
 
-    public int ManaPotionRestore => 50;
+    public int ManaPotionRestore => ProjectVictory.Application.Supply.PotionCatalog.SmallManaAmount;
 }

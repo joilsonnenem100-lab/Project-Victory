@@ -90,11 +90,12 @@ public sealed class CombatResolver : ICombatResolver
 
                 return new CombatActionOutcome(0, healing, 0, spell.ManaCost, true);
 
+            // PV-CONTENT-012 (PO-15): o efeito depende do nível da poção escolhida (dados).
             case CombatActionKind.UseHealthPotion:
-                return new CombatActionOutcome(0, _supplyEffects.HealthPotionHealing, 0, 0, true);
+                return new CombatActionOutcome(0, _supplyEffects.HealthRestoreFor(action.PotionItemId), 0, 0, true);
 
             case CombatActionKind.UseManaPotion:
-                return new CombatActionOutcome(0, 0, _supplyEffects.ManaPotionRestore, 0, true);
+                return new CombatActionOutcome(0, 0, _supplyEffects.ManaRestoreFor(action.PotionItemId), 0, true);
 
             default:
                 return CombatActionOutcome.NotExecuted;

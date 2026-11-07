@@ -68,8 +68,9 @@ public static class SpiderCaveCatalog
             new MonsterLootDefinition(15, 2, 8, [new LootDropDefinition(Cheese, 0.5)]),
             BasicAttackOnly),
 
+        // PV-CONTENT-012 (PROVISÓRIO): a Spider passa a dar Spider Fang (10%) — antes só ouro.
         new(SpiderId, "Spider", 2, 30, new CombatProfile(12, 8, 2, 1),
-            new MonsterLootDefinition(12, 1, 6, []),
+            new MonsterLootDefinition(12, 1, 6, [new LootDropDefinition(SpiderFang, 0.1)]),
             BasicAttackOnly),
 
         new(PoisonSpiderId, "Poison Spider", 4, 60, new CombatProfile(14, 10, 3, 2),

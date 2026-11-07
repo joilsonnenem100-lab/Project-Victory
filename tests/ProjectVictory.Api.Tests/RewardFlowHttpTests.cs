@@ -48,6 +48,8 @@ public sealed class RewardFlowHttpTests
 
         try
         {
+            // PV-CONTENT-012: sem o kit inicial — o teste conta "exatamente 1 item" no inventário.
+            using var noKit = ApiFactory.WithoutStarterKit();
             using var factory = new ApiFactory();
             await DefeatRat(factory);
         }

@@ -30,7 +30,9 @@ public interface ICombatActionSelector
 // PV-COMBAT-013: a Secondary Action escolhida, com a skill quando Kind = UseSkill.
 public sealed record CombatTurnChoice(
     CombatActionKind Kind,
-    ProjectVictory.Domain.Combat.Rules.SkillDefinition? Skill = null);
+    ProjectVictory.Domain.Combat.Rules.SkillDefinition? Skill = null,
+    // PV-CONTENT-012: o nível da poção escolhido (Id do item; só com UseHealthPotion/UseManaPotion).
+    Guid? PotionItemId = null);
 
 // Hook opcional chamado depois que uma Secondary Action é executada (ex.: consumir a poção do
 // inventário — PV-SUPPLY-010). Não altera o combate.
@@ -163,7 +165,7 @@ public sealed class CombatOrchestrator
             return;
         }
 
-        Apply(session, new CombatTurnAction(actor, secondaryTarget, choice.Kind, choice.Skill), log);
+        Apply(session, new CombatTurnAction(actor, secondaryTarget, choice.Kind, choice.Skill, choice.PotionItemId), log);
     }
 
     // PV-COMBAT-013 (revisão B1/B2, ADR-051): o orquestrador NÃO decide a regra da skill em área.

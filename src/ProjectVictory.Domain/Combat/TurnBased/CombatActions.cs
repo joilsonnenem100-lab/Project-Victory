@@ -20,7 +20,9 @@ public sealed record CombatTurnAction(
     Combatant Target,
     CombatActionKind Kind,
     // PV-COMBAT-013: a skill usada (só com Kind = UseSkill).
-    ProjectVictory.Domain.Combat.Rules.SkillDefinition? Skill = null);
+    ProjectVictory.Domain.Combat.Rules.SkillDefinition? Skill = null,
+    // PV-CONTENT-012: a poção usada (Id do item; só com UseHealthPotion/UseManaPotion). null = nível pequeno.
+    Guid? PotionItemId = null);
 
 // Resultado calculado pelas regras (ICombatResolver/IDamageFormula); o orquestrador só aplica.
 public sealed record CombatActionOutcome(

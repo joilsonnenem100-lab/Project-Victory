@@ -34,6 +34,7 @@ public sealed class SpiderCaveEndToEndTests
     private sealed class Server : IDisposable
     {
         private readonly Dictionary<string, string?> _previous = new();
+        private readonly IDisposable _noStarterKit;
 
         public ApiFactory Factory { get; }
 
@@ -42,6 +43,8 @@ public sealed class SpiderCaveEndToEndTests
             Set(SeedVariable, seed.ToString());
             Set(StarterHealthVariable, starterHealthPotions.ToString());
             Set(StarterManaVariable, starterManaPotions.ToString());
+            // PV-CONTENT-012: cenários escritos antes do kit inicial (contam itens e poções exatas).
+            _noStarterKit = ApiFactory.WithoutStarterKit();
             Factory = new ApiFactory();
         }
 
@@ -54,6 +57,7 @@ public sealed class SpiderCaveEndToEndTests
         public void Dispose()
         {
             Factory.Dispose();
+            _noStarterKit.Dispose();
             foreach (var (name, value) in _previous)
             {
                 Environment.SetEnvironmentVariable(name, value);

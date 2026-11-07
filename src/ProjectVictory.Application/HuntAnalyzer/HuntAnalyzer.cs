@@ -57,6 +57,9 @@ public interface IHuntAnalyzerTally
     // Abre a apuração (se preciso) e soma as poções usadas na rodada.
     void RecordSupplies(Guid huntId, Guid characterId, int healthPotionsUsed, int manaPotionsUsed);
 
+    // PV-CONTENT-012: poções usadas por nível (Id do item → quantidade); o débito usa o preço de cada nível.
+    void RecordSupplyItems(Guid huntId, Guid characterId, IReadOnlyDictionary<Guid, int> used);
+
     // Soma loot e ouro SÓ de Hunts com apuração aberta (o loot fora de Hunt não é contado).
     void RecordLoot(Guid huntId, LootResolutionResult loot);
 
@@ -88,6 +91,22 @@ public sealed class InMemoryHuntAnalyzerTally : IHuntAnalyzerTally
         {
             Add(entry.Supplies, ProjectVictory.Application.Supply.SupplyCatalog.HealthPotionId, healthPotionsUsed);
             Add(entry.Supplies, ProjectVictory.Application.Supply.SupplyCatalog.ManaPotionId, manaPotionsUsed);
+        }
+    }
+
+    // PV-CONTENT-012: abre a apuração (como RecordSupplies) e soma cada nível de poção.
+    public void RecordSupplyItems(Guid huntId, Guid characterId, IReadOnlyDictionary<Guid, int> used)
+    {
+        ArgumentNullException.ThrowIfNull(used);
+
+        var entry = _entries.GetOrAdd(huntId, _ => new Entry { CharacterId = characterId });
+
+        lock (entry)
+        {
+            foreach (var (itemId, quantity) in used)
+            {
+                Add(entry.Supplies, itemId, quantity);
+            }
         }
     }
 

@@ -256,6 +256,38 @@ namespace ProjectVictory.Persistence.Database.Migrations
                             Name = "Mana Potion",
                             NpcBuyPrice = 50,
                             NpcSellPrice = 10
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-0000000000a3"),
+                            Description = "Restaura mais vida (suprimento de Hunt).",
+                            Name = "Strong Health Potion",
+                            NpcBuyPrice = 100,
+                            NpcSellPrice = 20
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-0000000000a4"),
+                            Description = "Restaura muita vida (suprimento de Hunt).",
+                            Name = "Great Health Potion",
+                            NpcBuyPrice = 190,
+                            NpcSellPrice = 38
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-0000000000a5"),
+                            Description = "Restaura mais mana (suprimento de Hunt).",
+                            Name = "Strong Mana Potion",
+                            NpcBuyPrice = 93,
+                            NpcSellPrice = 18
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-0000000000a6"),
+                            Description = "Restaura muita mana (suprimento de Hunt).",
+                            Name = "Great Mana Potion",
+                            NpcBuyPrice = 144,
+                            NpcSellPrice = 28
                         });
                 });
 

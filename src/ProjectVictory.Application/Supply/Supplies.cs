@@ -21,8 +21,9 @@ public static class SupplyCatalog
     public static ItemDefinition ManaPotion { get; } =
         new(ManaPotionId, "Mana Potion", new ItemCharacteristics("Restaura mana (suprimento de Hunt)."), npcSellPrice: 10, npcBuyPrice: 50);
 
+    // PV-CONTENT-012: qualquer nível de poção (pequena, média, grande — PotionCatalog).
     public static bool IsPotion(Guid itemDefinitionId) =>
-        itemDefinitionId == HealthPotionId || itemDefinitionId == ManaPotionId;
+        PotionCatalog.Find(itemDefinitionId) is not null;
 }
 
 // PV-SUPPLY-010: configuração do jogador (DEC-20261106-03). "Usar a poção quando a vida/mana ficar
@@ -76,39 +77,90 @@ public sealed class SupplyPolicyStore : ISupplyPolicyStore
 }
 
 // PV-SUPPLY-010: suprimentos disponíveis na rodada de combate em andamento (escopo da requisição).
+// PV-CONTENT-012: contagem POR NÍVEL de poção (Id do item); HealthPotions/ManaPotions e os "Used"
+// continuam existindo como totais do tipo (Regra Aditiva).
 public sealed class CombatSupplyContext
 {
+    private readonly Dictionary<Guid, int> _available = new();
+    private readonly Dictionary<Guid, int> _used = new();
+
     public SupplyPolicy Policy { get; private set; } = SupplyPolicy.None;
 
-    public int HealthPotions { get; private set; }
+    public int HealthPotions => Total(_available, PotionKind.Health);
 
-    public int ManaPotions { get; private set; }
+    public int ManaPotions => Total(_available, PotionKind.Mana);
 
-    public int HealthPotionsUsed { get; private set; }
+    public int HealthPotionsUsed => Total(_used, PotionKind.Health);
 
-    public int ManaPotionsUsed { get; private set; }
+    public int ManaPotionsUsed => Total(_used, PotionKind.Mana);
 
-    public void Load(SupplyPolicy policy, int healthPotions, int manaPotions)
+    // PV-CONTENT-012: poções disponíveis / usadas na rodada, por Id do item.
+    public IReadOnlyDictionary<Guid, int> Available => _available;
+
+    public IReadOnlyDictionary<Guid, int> Used => _used;
+
+    // Compatibilidade (PV-SUPPLY-010): contagens sem nível = nível pequeno.
+    public void Load(SupplyPolicy policy, int healthPotions, int manaPotions) =>
+        Load(policy, new Dictionary<Guid, int>
+        {
+            [SupplyCatalog.HealthPotionId] = healthPotions,
+            [SupplyCatalog.ManaPotionId] = manaPotions
+        });
+
+    // PV-CONTENT-012: contagem por nível (itens que não são poção são ignorados).
+    public void Load(SupplyPolicy policy, IReadOnlyDictionary<Guid, int> potionsByItem)
     {
+        ArgumentNullException.ThrowIfNull(potionsByItem);
+
         Policy = policy ?? SupplyPolicy.None;
-        HealthPotions = healthPotions;
-        ManaPotions = manaPotions;
-        HealthPotionsUsed = 0;
-        ManaPotionsUsed = 0;
+        _available.Clear();
+        _used.Clear();
+
+        foreach (var (itemId, count) in potionsByItem)
+        {
+            if (count > 0 && PotionCatalog.Find(itemId) is not null)
+            {
+                _available[itemId] = count;
+            }
+        }
     }
 
-    public void Consume(CombatActionKind kind)
+    // PV-CONTENT-012: o nível que o seletor usaria agora (regra em PotionCatalog.Choose).
+    public PotionDefinition? Choose(PotionKind kind, int missing) =>
+        PotionCatalog.Choose(kind, missing, _available);
+
+    // Compatibilidade: sem nível informado = a menor poção do tipo que houver.
+    public void Consume(CombatActionKind kind) => Consume(kind, null);
+
+    public void Consume(CombatActionKind kind, Guid? potionItemId)
     {
-        if (kind == CombatActionKind.UseHealthPotion && HealthPotions > 0)
+        PotionKind? potionKind = kind switch
         {
-            HealthPotions--;
-            HealthPotionsUsed++;
-        }
-        else if (kind == CombatActionKind.UseManaPotion && ManaPotions > 0)
+            CombatActionKind.UseHealthPotion => PotionKind.Health,
+            CombatActionKind.UseManaPotion => PotionKind.Mana,
+            _ => null
+        };
+
+        if (potionKind is null)
         {
-            ManaPotions--;
-            ManaPotionsUsed++;
+            return;
         }
+
+        Guid? itemId = potionItemId is { } id && PotionCatalog.Find(id)?.Kind == potionKind
+            ? id
+            : PotionCatalog.All
+                .Where(p => p.Kind == potionKind && _available.GetValueOrDefault(p.ItemId) > 0)
+                .OrderBy(p => p.Size)
+                .Select(p => (Guid?)p.ItemId)
+                .FirstOrDefault();
+
+        if (itemId is not { } chosen || _available.GetValueOrDefault(chosen) <= 0)
+        {
+            return;
+        }
+
+        _available[chosen]--;
+        _used[chosen] = _used.GetValueOrDefault(chosen) + 1;
     }
 
     // PV-SUPPLY-010: "acabou uma poção que a política manda usar". PV-SUPPLY-011 (DEC-20261106-22):
@@ -116,6 +168,9 @@ public sealed class CombatSupplyContext
     public bool IsOutOfSupplies =>
         (Policy.HealthPotionBelowPercent is not null && HealthPotions == 0)
         || (Policy.ManaPotionBelowPercent is not null && ManaPotions == 0);
+
+    private static int Total(Dictionary<Guid, int> counts, PotionKind kind) =>
+        counts.Where(x => PotionCatalog.Find(x.Key)?.Kind == kind).Sum(x => x.Value);
 }
 
 // PV-SUPPLY-010: Secondary Action do jogador conforme a política (ADR-006: a Secondary é opcional).
@@ -173,19 +228,22 @@ public sealed class SupplyAwareCombatActionSelector : ICombatActionSelector
 
             var policy = _supplies.Policy;
 
+            // PV-CONTENT-012: o nível da poção sai de PotionCatalog.Choose (menor que resolve; senão a maior).
             if (policy.HealthPotionBelowPercent is { } hp
                 && _supplies.HealthPotions > 0
-                && actor.CurrentHealth * 100 < hp * actor.MaximumHealth)
+                && actor.CurrentHealth * 100 < hp * actor.MaximumHealth
+                && _supplies.Choose(PotionKind.Health, actor.MaximumHealth - actor.CurrentHealth) is { } healthPotion)
             {
-                return new CombatTurnChoice(CombatActionKind.UseHealthPotion);
+                return new CombatTurnChoice(CombatActionKind.UseHealthPotion, PotionItemId: healthPotion.ItemId);
             }
 
             if (policy.ManaPotionBelowPercent is { } mp
                 && _supplies.ManaPotions > 0
                 && actor.MaximumMana > 0
-                && actor.CurrentMana * 100 < mp * actor.MaximumMana)
+                && actor.CurrentMana * 100 < mp * actor.MaximumMana
+                && _supplies.Choose(PotionKind.Mana, actor.MaximumMana - actor.CurrentMana) is { } manaPotion)
             {
-                return new CombatTurnChoice(CombatActionKind.UseManaPotion);
+                return new CombatTurnChoice(CombatActionKind.UseManaPotion, PotionItemId: manaPotion.ItemId);
             }
         }
 
@@ -209,7 +267,7 @@ public sealed class SupplyConsumptionObserver : ICombatActionObserver
         if (action.Actor.Side == CombatSide.Player
             && action.Kind is CombatActionKind.UseHealthPotion or CombatActionKind.UseManaPotion)
         {
-            _supplies.Consume(action.Kind);
+            _supplies.Consume(action.Kind, action.PotionItemId);
         }
     }
 }
@@ -217,24 +275,104 @@ public sealed class SupplyConsumptionObserver : ICombatActionObserver
 // PV-SUPPLY-010: configuração do servidor — poções iniciais dadas na criação do personagem.
 // *** PROVISÓRIO *** — o PO ainda não definiu como o jogador obtém poções (compra no NPC é Fase 7/8).
 // Padrão 0: sem mudança de comportamento; ambientes de teste podem ligar.
+// PV-CONTENT-012 (PO-16: kit inicial): kit por nível de poção em "Supplies:StarterKit:<Key>" (Key do
+// PotionCatalog, ex.: "StrongHealthPotion"). As chaves antigas continuam valendo e SOMAM ao kit
+// (nível pequeno). Os valores do kit ficam no appsettings.json (PROVISÓRIOS).
 public sealed class SupplySettings
 {
     public const string StarterHealthPotionsKey = "Supplies:StarterHealthPotions";
 
     public const string StarterManaPotionsKey = "Supplies:StarterManaPotions";
 
+    public const string StarterKitKey = "Supplies:StarterKit";
+
     public int StarterHealthPotions { get; }
 
     public int StarterManaPotions { get; }
 
+    // PV-CONTENT-012: quantidade por Id do item (só poções do PotionCatalog).
+    public IReadOnlyDictionary<Guid, int> StarterKit { get; }
+
     public SupplySettings(int starterHealthPotions = 0, int starterManaPotions = 0)
+        : this(starterHealthPotions, starterManaPotions, null)
+    {
+    }
+
+    public SupplySettings(
+        int starterHealthPotions,
+        int starterManaPotions,
+        IReadOnlyDictionary<Guid, int>? starterKit)
     {
         if (starterHealthPotions < 0 || starterManaPotions < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(starterHealthPotions), "Starter potions cannot be negative.");
         }
 
+        var kit = new Dictionary<Guid, int>();
+
+        foreach (var (itemId, quantity) in starterKit ?? new Dictionary<Guid, int>())
+        {
+            if (PotionCatalog.Find(itemId) is null)
+            {
+                throw new ArgumentException($"Starter kit item {itemId} is not a potion.", nameof(starterKit));
+            }
+
+            if (quantity < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(starterKit), "Starter kit quantities cannot be negative.");
+            }
+
+            if (quantity > 0)
+            {
+                kit[itemId] = quantity;
+            }
+        }
+
         StarterHealthPotions = starterHealthPotions;
         StarterManaPotions = starterManaPotions;
+        StarterKit = kit;
+    }
+
+    // PV-CONTENT-012: kit por nome de poção (Key do PotionCatalog; maiúsculas/minúsculas indiferentes).
+    // Nome desconhecido ou quantidade negativa → erro (o startup falha, como as demais configurações).
+    public static IReadOnlyDictionary<Guid, int> ParseStarterKit(IEnumerable<KeyValuePair<string, int>> entries)
+    {
+        ArgumentNullException.ThrowIfNull(entries);
+
+        var kit = new Dictionary<Guid, int>();
+
+        foreach (var (key, quantity) in entries)
+        {
+            var potion = PotionCatalog.FindByKey(key)
+                ?? throw new InvalidOperationException(
+                    $"{StarterKitKey}:{key} não é uma poção conhecida ({string.Join(", ", PotionCatalog.All.Select(p => p.Key))}).");
+
+            if (quantity < 0)
+            {
+                throw new InvalidOperationException($"{StarterKitKey}:{key} não pode ser negativo.");
+            }
+
+            kit[potion.ItemId] = kit.GetValueOrDefault(potion.ItemId) + quantity;
+        }
+
+        return kit;
+    }
+
+    // PV-CONTENT-012: tudo o que o personagem novo recebe, por Id do item (kit + chaves antigas).
+    public IReadOnlyDictionary<Guid, int> StarterItems()
+    {
+        var items = new Dictionary<Guid, int>(StarterKit);
+
+        if (StarterHealthPotions > 0)
+        {
+            items[SupplyCatalog.HealthPotionId] = items.GetValueOrDefault(SupplyCatalog.HealthPotionId) + StarterHealthPotions;
+        }
+
+        if (StarterManaPotions > 0)
+        {
+            items[SupplyCatalog.ManaPotionId] = items.GetValueOrDefault(SupplyCatalog.ManaPotionId) + StarterManaPotions;
+        }
+
+        return items;
     }
 }

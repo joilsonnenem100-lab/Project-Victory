@@ -187,9 +187,18 @@ builder.Services.AddProjectVictoryCore(
         new ProjectVictory.Domain.Reward.ExperienceRate(experienceRateValue)),
     new ProjectVictory.Application.Combat.TurnBased.CombatSettings(fixedCombatSeed),
     // PV-SUPPLY-010: poções iniciais (PROVISÓRIO; padrão 0 = nenhuma).
+    // PV-CONTENT-012 (PO-16): + kit por nível em "Supplies:StarterKit:<Key>" (appsettings.json; PROVISÓRIO).
     new ProjectVictory.Application.Supply.SupplySettings(
         builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterHealthPotionsKey) ?? 0,
-        builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterManaPotionsKey) ?? 0));
+        builder.Configuration.GetValue<int?>(ProjectVictory.Application.Supply.SupplySettings.StarterManaPotionsKey) ?? 0,
+        ProjectVictory.Application.Supply.SupplySettings.ParseStarterKit(
+            builder.Configuration.GetSection(ProjectVictory.Application.Supply.SupplySettings.StarterKitKey)
+                .GetChildren()
+                .Select(entry => new KeyValuePair<string, int>(
+                    entry.Key,
+                    int.TryParse(entry.Value, out var quantity)
+                        ? quantity
+                        : throw new InvalidOperationException($"{ProjectVictory.Application.Supply.SupplySettings.StarterKitKey}:{entry.Key} deve ser um número inteiro."))))));
 
 // PV-RUNTIME-010 (ADR-057 v1.2; DEC-20261106-20): tempos da sessão de jogo em configuração
 // (queda > 1 min encerra a Hunt; retorno depois de > 10 s online) e varredura periódica de quedas.

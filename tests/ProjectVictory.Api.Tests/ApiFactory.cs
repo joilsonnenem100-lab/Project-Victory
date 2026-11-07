@@ -127,6 +127,36 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     }
 
 
+    // PV-CONTENT-012: o appsettings.json agora dá um kit inicial de poções (PO-16). Cenários antigos
+    // que contam itens do inventário ou poções exatas (escritos antes do kit) sobem o servidor SEM o
+    // kit — mesmo cenário de antes; as chaves antigas (StarterHealthPotions/ManaPotions) continuam.
+    public static IDisposable WithoutStarterKit() => new StarterKitOff();
+
+
+    private sealed class StarterKitOff : IDisposable
+    {
+        private readonly Dictionary<string, string?> _previous = new();
+
+        public StarterKitOff()
+        {
+            foreach (var potion in ProjectVictory.Application.Supply.PotionCatalog.All)
+            {
+                var name = "Supplies__StarterKit__" + potion.Key;
+                _previous[name] = Environment.GetEnvironmentVariable(name);
+                Environment.SetEnvironmentVariable(name, "0");
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var (name, value) in _previous)
+            {
+                Environment.SetEnvironmentVariable(name, value);
+            }
+        }
+    }
+
+
     public static HttpClient WithToken(
         HttpClient client,
         string token)

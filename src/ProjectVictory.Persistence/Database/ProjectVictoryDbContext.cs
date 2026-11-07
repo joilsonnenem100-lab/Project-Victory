@@ -159,7 +159,12 @@ public sealed class ProjectVictoryDbContext : DbContext
                 new PersistentItemState { Id = Guid.Parse("00000000-0000-0000-0000-000000000003"), Name = "Spider Fang", Description = "Presa de aranha.", NpcSellPrice = 8, NpcBuyPrice = 0 },
                 new PersistentItemState { Id = Guid.Parse("00000000-0000-0000-0000-000000000004"), Name = "Spider Silk", Description = "Seda de aranha gigante.", NpcSellPrice = 25, NpcBuyPrice = 0 },
                 new PersistentItemState { Id = Guid.Parse("00000000-0000-0000-0000-0000000000a1"), Name = "Health Potion", Description = "Restaura vida (suprimento de Hunt).", NpcSellPrice = 10, NpcBuyPrice = 50 },
-                new PersistentItemState { Id = Guid.Parse("00000000-0000-0000-0000-0000000000a2"), Name = "Mana Potion", Description = "Restaura mana (suprimento de Hunt).", NpcSellPrice = 10, NpcBuyPrice = 50 });
+                new PersistentItemState { Id = Guid.Parse("00000000-0000-0000-0000-0000000000a2"), Name = "Mana Potion", Description = "Restaura mana (suprimento de Hunt).", NpcSellPrice = 10, NpcBuyPrice = 50 },
+                // PV-CONTENT-012 (PO-15): níveis médio e grande das poções (espelham PotionCatalog; preços PROVISÓRIOS).
+                new PersistentItemState { Id = Guid.Parse("00000000-0000-0000-0000-0000000000a3"), Name = "Strong Health Potion", Description = "Restaura mais vida (suprimento de Hunt).", NpcSellPrice = 20, NpcBuyPrice = 100 },
+                new PersistentItemState { Id = Guid.Parse("00000000-0000-0000-0000-0000000000a4"), Name = "Great Health Potion", Description = "Restaura muita vida (suprimento de Hunt).", NpcSellPrice = 38, NpcBuyPrice = 190 },
+                new PersistentItemState { Id = Guid.Parse("00000000-0000-0000-0000-0000000000a5"), Name = "Strong Mana Potion", Description = "Restaura mais mana (suprimento de Hunt).", NpcSellPrice = 18, NpcBuyPrice = 93 },
+                new PersistentItemState { Id = Guid.Parse("00000000-0000-0000-0000-0000000000a6"), Name = "Great Mana Potion", Description = "Restaura muita mana (suprimento de Hunt).", NpcSellPrice = 28, NpcBuyPrice = 144 });
         });
 
 

@@ -186,12 +186,16 @@ public sealed class AttackEncounterHandler
 
         // PV-PERSIST-011: poções já usadas e ainda não gravadas (pendentes até o próximo checkpoint)
         // não estão mais disponíveis.
-        var unsaved = _pendingSupplies.Peek(character.Id);
+        // PV-CONTENT-012: por nível de poção (Id do item).
+        var unsaved = _pendingSupplies.PeekItems(character.Id);
 
         _supplies.Load(
             policy,
-            Math.Max(0, potions.Count(item => item.ItemDefinitionId == SupplyCatalog.HealthPotionId) - unsaved.HealthPotions),
-            Math.Max(0, potions.Count(item => item.ItemDefinitionId == SupplyCatalog.ManaPotionId) - unsaved.ManaPotions));
+            potions
+                .GroupBy(item => item.ItemDefinitionId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => Math.Max(0, group.Count() - unsaved.GetValueOrDefault(group.Key))));
         var aliveBefore = session.Monsters.Where(m => !m.IsDead).Select(m => m.Id).ToHashSet();
 
         var report = _orchestrator.ExecuteRound(session);
@@ -214,11 +218,11 @@ public sealed class AttackEncounterHandler
         // PV-SUPPLY-010 + PV-PERSIST-011 (Handbook §19): poções usadas na rodada saem do inventário,
         // mas a rodada é "ação pequena" — o consumo fica PENDENTE e é gravado no próximo checkpoint
         // (recompensa ou conclusão). Antes: gravava o personagem a cada rodada com poção.
-        _pendingSupplies.Add(character.Id, _supplies.HealthPotionsUsed, _supplies.ManaPotionsUsed);
+        _pendingSupplies.AddItems(character.Id, _supplies.Used);
 
         // PV-HUD-ANALYZER-010: o Analyzer LÊ as poções usadas na rodada (débito); abre a apuração da
         // Hunt antes do Reward, para o loot desta rodada também ser contado.
-        _analyzerTally?.RecordSupplies(hunt.Id, character.Id, _supplies.HealthPotionsUsed, _supplies.ManaPotionsUsed);
+        _analyzerTally?.RecordSupplyItems(hunt.Id, character.Id, _supplies.Used);
 
         // Monstros mortos nesta rodada → Reward Pipeline (um CombatResult de vitória por monstro).
         var killed = session.Monsters.Where(m => m.IsDead && aliveBefore.Contains(m.Id)).ToList();
