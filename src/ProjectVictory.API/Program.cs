@@ -200,6 +200,28 @@ builder.Services.AddProjectVictoryCore(
                         ? quantity
                         : throw new InvalidOperationException($"{ProjectVictory.Application.Supply.SupplySettings.StarterKitKey}:{entry.Key} deve ser um número inteiro."))))));
 
+// PV-DAILY-010 (PO-60): recompensa diária por conta — itens ("DailyReward:Items:<Key do PotionCatalog>"),
+// ouro ("DailyReward:Gold") e horário do reset em UTC ("DailyReward:ResetTimeUtc", "HH:mm"). PROVISÓRIOS
+// no appsettings.json. Valor inválido derruba o startup (como o kit inicial).
+Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace(
+    builder.Services,
+    ServiceDescriptor.Singleton(new ProjectVictory.Application.DailyReward.DailyRewardSettings(
+        ProjectVictory.Application.DailyReward.DailyRewardSettings.ParseItems(
+            builder.Configuration.GetSection(ProjectVictory.Application.DailyReward.DailyRewardSettings.ItemsKey)
+                .GetChildren()
+                .Select(entry => new KeyValuePair<string, int>(
+                    entry.Key,
+                    int.TryParse(entry.Value, out var quantity)
+                        ? quantity
+                        : throw new InvalidOperationException($"{ProjectVictory.Application.DailyReward.DailyRewardSettings.ItemsKey}:{entry.Key} deve ser um número inteiro.")))),
+        builder.Configuration.GetValue<long?>(ProjectVictory.Application.DailyReward.DailyRewardSettings.GoldKey) ?? 0,
+        TimeSpan.TryParse(
+            builder.Configuration[ProjectVictory.Application.DailyReward.DailyRewardSettings.ResetTimeUtcKey] ?? "00:00",
+            System.Globalization.CultureInfo.InvariantCulture,
+            out var dailyResetTime)
+            ? dailyResetTime
+            : throw new InvalidOperationException($"{ProjectVictory.Application.DailyReward.DailyRewardSettings.ResetTimeUtcKey} deve estar no formato HH:mm."))));
+
 // PV-RUNTIME-010 (ADR-057 v1.2; DEC-20261106-20): tempos da sessão de jogo em configuração
 // (queda > 1 min encerra a Hunt; retorno depois de > 10 s online) e varredura periódica de quedas.
 Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace(

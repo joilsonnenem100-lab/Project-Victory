@@ -130,6 +130,8 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     // PV-CONTENT-012: o appsettings.json agora dá um kit inicial de poções (PO-16). Cenários antigos
     // que contam itens do inventário ou poções exatas (escritos antes do kit) sobem o servidor SEM o
     // kit — mesmo cenário de antes; as chaves antigas (StarterHealthPotions/ManaPotions) continuam.
+    // PV-DAILY-010 (PO-60): a recompensa diária do appsettings.json também entra no inventário no "enter";
+    // os mesmos cenários antigos (escritos antes dela) sobem sem ela — itens e ouro zerados.
     public static IDisposable WithoutStarterKit() => new StarterKitOff();
 
 
@@ -144,7 +146,14 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
                 var name = "Supplies__StarterKit__" + potion.Key;
                 _previous[name] = Environment.GetEnvironmentVariable(name);
                 Environment.SetEnvironmentVariable(name, "0");
+
+                var daily = "DailyReward__Items__" + potion.Key;
+                _previous[daily] = Environment.GetEnvironmentVariable(daily);
+                Environment.SetEnvironmentVariable(daily, "0");
             }
+
+            _previous["DailyReward__Gold"] = Environment.GetEnvironmentVariable("DailyReward__Gold");
+            Environment.SetEnvironmentVariable("DailyReward__Gold", "0");
         }
 
         public void Dispose()

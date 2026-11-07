@@ -42,6 +42,10 @@ public sealed class ProjectVictoryDbContext : DbContext
     public DbSet<ProjectVictory.Persistence.Admin.PersistentServerExperienceRateState> ServerExperienceRate =>
         Set<ProjectVictory.Persistence.Admin.PersistentServerExperienceRateState>();
 
+    // PV-DAILY-010: recebimentos da recompensa diária (conta + ciclo).
+    public DbSet<ProjectVictory.Persistence.DailyReward.PersistentDailyRewardClaimState> DailyRewardClaims =>
+        Set<ProjectVictory.Persistence.DailyReward.PersistentDailyRewardClaimState>();
+
 
     public ProjectVictoryDbContext(
         DbContextOptions<ProjectVictoryDbContext> options)
@@ -211,6 +215,13 @@ public sealed class ProjectVictoryDbContext : DbContext
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Id).ValueGeneratedNever();
             entity.Property(x => x.Value).HasPrecision(18, 4);
+        });
+
+        // PV-DAILY-010 (PO-60): no máximo um recebimento por conta e ciclo diário (chave composta).
+        modelBuilder.Entity<ProjectVictory.Persistence.DailyReward.PersistentDailyRewardClaimState>(entity =>
+        {
+            entity.ToTable("DailyRewardClaims");
+            entity.HasKey(x => new { x.AccountId, x.CycleStartUnixMilliseconds });
         });
     }
 }

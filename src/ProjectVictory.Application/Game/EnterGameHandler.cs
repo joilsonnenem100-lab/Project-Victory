@@ -15,6 +15,7 @@ public sealed class EnterGameHandler
     private readonly IRuntimeExecutionStateStore _runtimeExecutionStateStore;
     private readonly ProjectVictory.Application.Progression.ILevelTitleProvider _levelTitles;
     private readonly ProjectVictory.Application.GameSession.LoggedOutMarker _loggedOut;
+    private readonly ProjectVictory.Application.DailyReward.GrantDailyRewardHandler? _dailyReward;
 
     public EnterGameHandler(
         ICharacterRepository characterRepository,
@@ -24,8 +25,11 @@ public sealed class EnterGameHandler
         IRuntimeExecutionStateStore runtimeExecutionStateStore,
         ProjectVictory.Application.Progression.ILevelTitleProvider levelTitles,
         // PV-RUNTIME-013 (R-054): "entrar no jogo" encerra a marca de logout.
-        ProjectVictory.Application.GameSession.LoggedOutMarker loggedOut)
+        ProjectVictory.Application.GameSession.LoggedOutMarker loggedOut,
+        // PV-DAILY-010 (PO-60, aditivo e opcional): recompensa diária na primeira entrada do ciclo.
+        ProjectVictory.Application.DailyReward.GrantDailyRewardHandler? dailyReward = null)
     {
+        _dailyReward = dailyReward;
         _loggedOut = loggedOut;
         _levelTitles = levelTitles;
         _characterRepository = characterRepository;
@@ -104,6 +108,11 @@ public sealed class EnterGameHandler
                         Guid.Empty)));
         }
 
+        // PV-DAILY-010 (PO-60): conta do token; no máximo uma vez por ciclo diário (decidido no servidor).
+        var dailyReward = _dailyReward is null
+            ? null
+            : await _dailyReward.TryGrantAsync(accountId, character, cancellationToken);
+
         // Revisão do PV-PROG-013: uma leitura da tabela (rótulo e tier da mesma configuração).
         var title =
             character.TitleUnder(_levelTitles.Current);
@@ -116,6 +125,7 @@ public sealed class EnterGameHandler
             character.Level.Value,
             character.Experience.Value,
             title.Label,
-            title.Tier);
+            title.Tier,
+            dailyReward);
     }
 }

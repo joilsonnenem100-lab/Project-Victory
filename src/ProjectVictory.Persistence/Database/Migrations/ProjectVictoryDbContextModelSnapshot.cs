@@ -100,6 +100,25 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.ToTable("Characters");
                 });
 
+            modelBuilder.Entity("ProjectVictory.Persistence.DailyReward.PersistentDailyRewardClaimState", b =>
+                {
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("CycleStartUnixMilliseconds")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("CharacterId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("ClaimedAtUnixMilliseconds")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("AccountId", "CycleStartUnixMilliseconds");
+
+                    b.ToTable("DailyRewardClaims", (string)null);
+                });
+
             modelBuilder.Entity("ProjectVictory.Persistence.Hunt.PersistentHuntSessionState", b =>
                 {
                     b.Property<Guid>("Id")

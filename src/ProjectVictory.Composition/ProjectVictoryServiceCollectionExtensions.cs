@@ -120,6 +120,12 @@ public static class ProjectVictoryServiceCollectionExtensions
         // PV-ADMIN-010 (DEC-20261106-12): XP rate alterado pelo administrador (persistido) e XP rate efetivo
         // usado pelo Reward Pipeline; papel de administrador pela configuração (padrão: ninguém; o host substitui).
         services.AddScoped<IExperienceRateStore, ProjectVictory.Persistence.Admin.ExperienceRateStore>();
+        // PV-DAILY-010 (PO-60): recompensa diária por conta (desligada sem configuração).
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(
+            services, ProjectVictory.Application.DailyReward.DailyRewardSettings.Disabled);
+        services.AddSingleton<ProjectVictory.Application.DailyReward.DailyRewardGate>();
+        services.AddScoped<ProjectVictory.Application.DailyReward.IDailyRewardClaimStore, ProjectVictory.Persistence.DailyReward.DailyRewardClaimStore>();
+        services.AddScoped<ProjectVictory.Application.DailyReward.GrantDailyRewardHandler>();
         services.AddScoped<IExperienceRateProvider, ExperienceRateProvider>();
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(
             services, ProjectVictory.Application.Admin.AdminSettings.Default);
