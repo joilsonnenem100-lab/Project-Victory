@@ -8,7 +8,7 @@ Worktree `C:/pv10`; branches empilhadas a partir da `main` (`05128f0`).
 | 2 | PV-HUNT-014 — Tier/Continente informativo + catálogo | CONCLUÍDO (483 verdes; revisão: aprovado c/ ressalvas, aplicadas em `9c69102`) | `feature/f10-hunt-014` | `f6f7a40` |
 | 3 | PV-COMBAT-015 — Cura sem bônus do Druid | CONCLUÍDO (483 verdes; revisão: aprovado c/ ressalvas — project-state atualizado no item 4) | `feature/f10-combat-015` | `0e7388b` |
 | 4 | PV-DAILY-010 — Recompensa diária | CONCLUÍDO (494 verdes; migration aditiva `DailyRewardClaims`; revisão: aprovado c/ ressalvas → R-070/R-071 no fechamento) | `feature/f10-daily-010` | `b1ee0bf` |
-| 5 | PV-CHAR-013 — Regras de personagem da conta | CONCLUÍDO (526 verdes; migration aditiva `CharacterAccountRules`) | `feature/f10-char-013` | `84ec5dd` |
-| 6 | PV-LEGACY-002 — Remoção do ExplorationDecisionHandler | PENDENTE | | |
+| 5 | PV-CHAR-013 — Regras de personagem da conta | CONCLUÍDO (526 verdes; migration aditiva `CharacterAccountRules`; revisão: aprovado c/ ressalvas, R1/R3 aplicadas em `5a79631`) | `feature/f10-char-013` | `84ec5dd` |
+| 6 | PV-LEGACY-002 — Remoção do ExplorationDecisionHandler | CONCLUÍDO (15 arquivos, commit isolado, manifesto; 526 verdes) | `feature/f10-legacy-002` | `c18cc85` |
 | 7 | PV-FIX-001 — 500 do enter (R-069) | PENDENTE | | |
 | 8 | PV-GOV-021 — Fechamento | PENDENTE | | |
