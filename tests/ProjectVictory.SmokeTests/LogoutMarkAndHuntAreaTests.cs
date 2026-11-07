@@ -194,4 +194,21 @@ public sealed class LogoutMarkAndHuntAreaTests
         await execute.Handle(new ExecuteHuntCommand(characterId, runtimeId));
         Assert.Equal(SpiderCaveCatalog.AreaName, (await server.Get<IRuntimeRepository>().GetByCharacterIdAsync(characterId))!.LastHuntArea);
     }
+
+    // Revisão do PV-EVENT-012 (ressalva 1): retorno automático que chega depois do logout é cancelado sob o
+    // portão — sem Hunt e a marca continua.
+    [Fact]
+    public async Task AutomaticReturnAfterLogout_IsCancelled_MarkKept()
+    {
+        var clock = new ManualTimeProvider();
+        await using var server = new Server($"return-logout-{Guid.NewGuid():N}", clock);
+        var (_, characterId, runtimeId) = await Enter(server);
+        await server.Get<LogoutHandler>().Handle(new LogoutCommand());
+
+        await Assert.ThrowsAsync<AutomaticReturnCancelledException>(() => server.Get<ExecuteHuntHandler>()
+            .Handle(new ExecuteHuntCommand(characterId, runtimeId, null, AutomaticReturn: true)));
+
+        Assert.True(server.Get<IPresenceTracker>().IsLoggedOut(characterId));
+        Assert.Null(await server.Get<IHuntRepository>().GetRunningByCharacterIdAsync(characterId));
+    }
 }

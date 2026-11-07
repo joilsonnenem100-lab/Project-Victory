@@ -30,6 +30,7 @@ public sealed class ExecuteHuntHandler
     private readonly IHuntStartGate _startGate;
     private readonly ILevelTitleProvider _levelTitles;
     private readonly ProjectVictory.Application.GameSession.LoggedOutMarker _loggedOut;
+    private readonly ProjectVictory.Application.GameSession.IPresenceTracker _presence;
 
     public ExecuteHuntHandler(
         IHuntRepository huntRepository,
@@ -51,8 +52,10 @@ public sealed class ExecuteHuntHandler
         IHuntStartGate startGate,
         // PV-RUNTIME-013: tier do personagem para a área escolhida (R-041) e fim da marca de logout (R-054).
         ILevelTitleProvider levelTitles,
-        ProjectVictory.Application.GameSession.LoggedOutMarker loggedOut)
+        ProjectVictory.Application.GameSession.LoggedOutMarker loggedOut,
+        ProjectVictory.Application.GameSession.IPresenceTracker presence)
     {
+        _presence = presence;
         _levelTitles = levelTitles;
         _loggedOut = loggedOut;
         _time = time;
@@ -106,6 +109,13 @@ public sealed class ExecuteHuntHandler
             await _startGate.AcquireAsync(
                 character.Id,
                 cancellationToken);
+
+        // Revisão do PV-EVENT-012 (ressalva 1): o logout também passa por este portão; um retorno automático
+        // que chegou depois do logout é cancelado (sem Hunt e sem limpar a marca).
+        if (command.AutomaticReturn && _presence.IsLoggedOut(character.Id))
+        {
+            throw new AutomaticReturnCancelledException();
+        }
 
         var alreadyRunning =
             await _huntRepository.GetRunningByCharacterIdAsync(

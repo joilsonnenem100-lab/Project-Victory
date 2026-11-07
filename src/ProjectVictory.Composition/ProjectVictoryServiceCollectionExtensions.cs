@@ -133,7 +133,8 @@ public static class ProjectVictoryServiceCollectionExtensions
             provider.GetRequiredService<ProjectVictory.Application.GameSession.IPresenceTracker>(),
             provider.GetRequiredService<ProjectVictory.Application.GameSession.GameSessionSettings>(),
             provider.GetRequiredService<TimeProvider>(),
-            provider.GetServices<ProjectVictory.Application.GameSession.IDisconnectHandler>(),
+            // Revisão do PV-EVENT-012 (ressalva 4): os handlers vêm do escopo de cada queda, não daqui.
+            Array.Empty<ProjectVictory.Application.GameSession.IDisconnectHandler>(),
             provider.GetRequiredService<ProjectVictory.Application.GameSession.IDisconnectScopeFactory>()));
         services.AddScoped<ProjectVictory.Application.GameSession.HeartbeatHandler>();
 

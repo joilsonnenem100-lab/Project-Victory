@@ -167,6 +167,7 @@ Levantadas na leitura de `roadmap.md` (Fase 2), `knowledge-base/training.md` e `
 - ✅ `PV-RUNTIME-012` — reinício = queda (retorno após > 10 s online, `DEC-20261106-47`); vida 0 → cheia (`DEC-20261106-48`, PROVISÓRIO); `EnterGame` reusa a reconstrução do Recovery (R-055); Recovery em lote e ordem determinística (R-056).
 - ✅ `PV-RUNTIME-013` — área escolhida validada (existência e tier, R-041), gravada e usada no retorno (R-051); marca de deslogado: heartbeat pós-logout ignorado, sobrevive ao reinício (R-054). Migration nova e aditiva `RuntimeLoggedOut`. *Pendência do cliente (UI-1):* tratar `status = "LoggedOut"` no heartbeat e o campo `huntArea`.
 - ✅ `PV-EVENT-012` — `ADR-058` (bus síncrono = aguardado; assinante obrigatório é da composição; notificação pós-commit isolada) fecha o R-058; um escopo de DI por queda fecha o R-060.
+- ✅ `PV-QA-007` — E2E pela API real: 2ª Hunt 409, reinício volta à última Hunt com vida/Mana cheias, logout sem retorno (heartbeat atrasado e reinício); ressalvas do `PV-EVENT-012` (retorno automático cancelado após logout).
 
 ## M8 — Experiência do jogador e Primeiro Teste Jogável
 

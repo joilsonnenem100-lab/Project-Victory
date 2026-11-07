@@ -20,6 +20,7 @@ O `events.md` (DRAFT) pede um Event Bus **síncrono** ("o Publisher somente cont
 3. **Dois modos de publicação:**
    - `PublishAsync` — fato cuja reação faz parte do mesmo caso de uso (ex.: `CombatCompletedEvent` → Reward). A falha de um assinante **volta** ao publisher.
    - `PublishNotificationAsync` — **notificação** de um fato já gravado (ex.: `HuntEndedEvent`). Também aguarda todos, mas a falha de um assinante é **isolada**: vai para o `IEventFailureSink` (log do host) e não impede os demais. Sem destino configurado, comporta-se como `PublishAsync` (nunca engole erro em silêncio).
+   - Limites do isolamento (revisão do `PV-EVENT-012`): uma falha ao **resolver** os assinantes pela DI é erro de composição e volta ao publisher; um **cancelamento** (token cancelado) também volta ao publisher, mesmo depois do commit — o fato continua gravado e quem cancelou é que abandona a resposta.
 4. `Publish` (sem `Async`) continua para publicadores de código síncrono (Spawn) e recusa tipos com handler assíncrono (erro de composição).
 
 # Consequências

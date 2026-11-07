@@ -382,7 +382,7 @@ public sealed class HeartbeatHandler
             {
                 // PV-RUNTIME-013 (R-051): volta à área da última Hunt escolhida, não à padrão.
                 var started = await _executeHunt.Handle(
-                    new ExecuteHuntCommand(character.Id, runtime.RuntimeId, runtime.LastHuntArea),
+                    new ExecuteHuntCommand(character.Id, runtime.RuntimeId, runtime.LastHuntArea, AutomaticReturn: true),
                     cancellationToken);
 
                 return new HeartbeatResult(character.Id, "Online", started.HuntId, true, runtime.LastHuntArea, started.Encounter);
@@ -392,6 +392,11 @@ public sealed class HeartbeatHandler
                 // PV-HUNT-013: o jogador iniciou uma Hunt entre a conferência e o retorno — o retorno é
                 // consumido (como na ressalva 2 do PV-RUNTIME-010) e a Hunt dele continua.
                 return new HeartbeatResult(character.Id, "Online", conflict.RunningHuntId, false, runtime.LastHuntArea, null);
+            }
+            catch (AutomaticReturnCancelledException)
+            {
+                // Revisão do PV-EVENT-012 (ressalva 1): logout entre a conferência e o início.
+                return new HeartbeatResult(character.Id, "LoggedOut", null, false, null, null);
             }
             catch (InvalidHuntAreaException)
             {

@@ -11,6 +11,10 @@ public sealed class InvalidHuntAreaException(string? area)
     public string? Area { get; } = area;
 }
 
+// Revisão do PV-EVENT-012 (ressalva 1): retorno automático cancelado porque houve logout.
+public sealed class AutomaticReturnCancelledException()
+    : InvalidOperationException("Automatic return cancelled by logout.");
+
 // PV-HUNT-013 (DEC-20261106-46, fecha o R-052): iniciar uma Hunt com outra em andamento → 409, e a
 // anterior NÃO é encerrada.
 public sealed class HuntAlreadyRunningException(Guid runningHuntId)
