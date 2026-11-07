@@ -4,8 +4,8 @@ Worktree `C:/pv10`; branches empilhadas a partir da `main` (`05128f0`).
 
 | # | Item | Status | Branch | Commit |
 |---|---|---|---|---|
-| 1 | PV-GOV-020 — Decisões PO-56 a PO-61 | CONCLUÍDO | `feature/f10-gov-020` | (ver git log) |
-| 2 | PV-HUNT-014 — Tier/Continente informativo + catálogo | PENDENTE | | |
+| 1 | PV-GOV-020 — Decisões PO-56 a PO-61 | CONCLUÍDO (revisão: aprovado c/ ressalvas R1–R5, aplicadas no item 2) | `feature/f10-gov-020` | `29d479f` |
+| 2 | PV-HUNT-014 — Tier/Continente informativo + catálogo | CONCLUÍDO (483 verdes) | `feature/f10-hunt-014` | `f6f7a40` |
 | 3 | PV-COMBAT-015 — Cura sem bônus do Druid | PENDENTE | | |
 | 4 | PV-DAILY-010 — Recompensa diária | PENDENTE | | |
 | 5 | PV-CHAR-013 — Regras de personagem da conta | PENDENTE | | |
