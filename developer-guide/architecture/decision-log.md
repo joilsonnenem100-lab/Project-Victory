@@ -472,6 +472,8 @@ Status: **Accepted (Product Owner)**
 
 O jogador configura o uso de poções em **tela própria**, inclusive **durante a Hunt**. O cliente só **solicita** a mudança; o servidor **valida e aplica a partir do próximo turno** (Server Authority — `CLAUDE.md`; combate por turnos — ADR-052). A configuração nunca altera um turno já em andamento.
 
+*Nota de superação (2026-11-07, `DEC-20261107-01` / PO-53): o PO cita este DEC como o que contém "sem suprimento não há cura"; o texto da regra está no `DEC-20261106-04` e no `DEC-20261106-22`, que receberam a mesma nota. A configuração de uso de poção continua valendo.*
+
 ## DEC-20261106-04 — Fim da Hunt
 
 Status: **Accepted (Product Owner)**
@@ -484,6 +486,8 @@ Status: **Accepted (Product Owner)**
 Consequência de arquitetura: "fim de suprimento" é um novo **motivo** de encerramento e passa pelo **mesmo pipeline** de encerramento da Hunt (ADR-012: "Todo encerramento utilizará exatamente o mesmo pipeline, independentemente do motivo"; fluxo termina em "Cidade Principal"). Não cria caminho alternativo.
 
 *Emenda (2026-11-06, `DEC-20261106-22`): **SUPERADO** o trecho "**fim de suprimento** encerra a sessão de Hunt". Sem poção o personagem segue sem cura até morrer; a Hunt termina só por morte, saída manual ou queda de conexão. Toda morte vai à tela inicial com mensagem orientando a checar poções, runas ou o level da Hunt. O restante (volta à cidade, sem cura sem suprimento, sem perda) continua valendo.*
+
+*Nota de superação (2026-11-07, `DEC-20261107-01` / PO-53): "sem suprimento não há cura" passa a valer **só para poções**. Todas as vocações têm 1 spell de cura (porcentagem fixa da vida, gasta Mana), permitida durante a Hunt. Fonte: `docs/product/PO-DECISOES-BASE.md`.*
 
 ## DEC-20261106-05 — Desconexão durante a Hunt (ADR-057, Parte B)
 
@@ -689,6 +693,8 @@ Status: **Accepted (Product Owner)** — **supera** o trecho "fim de suprimento 
 - **Toda morte** envia o personagem à **tela inicial**, com uma **mensagem** orientando a verificar **poções, runas ou o level da Hunt** antes de voltar.
 
 Implementação: `PV-SUPPLY-011`. A tela da mensagem é do M8.
+
+*Nota de superação (2026-11-07, `DEC-20261107-01` / PO-53): "segue sem cura até morrer" vale só para poções; a cura por spell (gasta Mana) é permitida. Ainda não implementada (ver `project-state.md`, Revisões Pendentes).*
 
 ## DEC-20261106-23 — Skills de classe (4 por classe)
 
@@ -921,3 +927,11 @@ Status: **Accepted (Arquiteto)** — `PV-GOV-013`; revisão em `docs/architectur
 - **LOCKED:** Event System (Typed Event Bus + Domain Events; `events.md` + `ADR-058`) e Recovery do Runtime (Handbook §18/§19, ADR-057 Parte A).
 - **REVIEW:** Game Session + Runtime Coordinator — falta decisão sobre o Handbook §10 (Coordinator da cadeia Hunt→Combat→Reward), documento de domínio, encounters por área (R-051 resto) e R-062.
 
+## DEC-20261107-01 — Adoção do PO-DECISOES-BASE como fonte da verdade de Game Design (decisão do PO, Fila 9)
+
+Status: **Accepted (Product Owner, ADR-016)** — `PV-GOV-014`; fonte: `docs/product/PO-DECISOES-BASE.md` v1.1 (PO-01 a PO-55)
+
+- **`docs/product/PO-DECISOES-BASE.md` é a fonte da verdade de Game Design.** Só o PO altera. Toda alteração atualiza esse arquivo, este `decision-log.md` (um `DEC-` novo), os documentos afetados (por nota de superação, sem apagar histórico) e o `docs/INDEX.md`. Conflito com documento antigo: vale o arquivo; conflito com código: `project-state.md` (Revisões Pendentes) e contrato.
+- **PO-53 — Spell de cura para todas as vocações:** 1 spell de cura por vocação, que melhora com o Level; cura = porcentagem fixa da vida (hipótese de trabalho: vida **máxima**, a confirmar); cada uso gasta Mana. **Emenda o `DEC-20261106-03`** (o texto da regra está no `DEC-20261106-04` e no `DEC-20261106-22`, que recebem nota): "sem suprimento não há cura" passa a valer **só para poções**. Valores da % e custo de Mana: **PROVISÓRIOS**.
+- **PO-54 — Dinheiro real compra tempo, não poder exclusivo:** aceleração paga com custo alto (item de treino por donate, slots extras com gemas, passes) é intencional; gemas compram cosméticos visíveis a outros jogadores.
+- **PO-55 — `RequiredTitleTier` informativo:** vira nível recomendado e não bloqueia a entrada (com PO-09: regiões livres).

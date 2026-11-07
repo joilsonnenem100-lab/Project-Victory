@@ -21,6 +21,10 @@ MMORPG Idle inspirado em Tibia: progressão automática por Hunts. Backend ASP.N
 
 `docs/CURRENT_CONTEXT.md` é **histórico** (ele mesmo declara isso). As referências antigas a ele em `docs/PROJECT_CONTEXT.md`, `docs/AI_WORKFLOW.md`, `README_DEVELOPMENT.md` e `docs/checklists/architecture-checklist.md` foram corrigidas no `PV-GOV-007` (`DEC-20261106-13`) e hoje apontam para `project-state.md` (texto antigo tachado).
 
+## Fonte da verdade de Game Design (`DEC-20261107-01`)
+- **`docs/product/PO-DECISOES-BASE.md` é a fonte da verdade de Game Design; só o PO altera; toda alteração atualiza este arquivo, o `decision-log.md`, os documentos afetados (por nota de superação, sem apagar histórico) e o `INDEX.md`.** Use o comando `/po-decisao` para aplicar uma mudança do PO.
+- Consulte-o antes de qualquer contrato que toque mecânica, economia, conteúdo ou conta.
+
 ## Hierarquia da fonte da verdade (do próprio projeto)
 1. Código oficial aprovado → 2. Contratos e decisões arquiteturais (ADRs) → 3. Documentação oficial → 4. Master Architecture Map.
 Se duas fontes conflitam, **não escolha por intuição**: registre o conflito em `project-state.md` (seção Revisões Pendentes) e resolva por ADR.

@@ -1,6 +1,6 @@
 # Project-Victory — INDEX (leia primeiro)
 
-Uma página. Atualizado em 2026-11-06 (Fila 8, `PV-GOV-012`). Detalhe só quando o item de trabalho o citar.
+Uma página. Atualizado em 2026-11-07 (Fila 9, `PV-GOV-014`). Detalhe só quando o item de trabalho o citar.
 
 ## Estado atual
 - **Jogável pela API:** conta → login → personagem → entrar → Hunt contínua (combate por turnos, IA de monstro, Spawn) → XP/loot reais → Level derivado → queda/logout/reinício sem perda.
@@ -9,9 +9,11 @@ Uma página. Atualizado em 2026-11-06 (Fila 8, `PV-GOV-012`). Detalhe só quando
 - O que falta para cada LOCK fica no `roadmap.md` (seção "Capacidades de Runtime e Eventos") e em `docs/architecture/REVISAO-FECHAMENTO-FILA-8.md`.
 
 ## Regras vivas (resumo; texto completo no `CLAUDE.md`)
+**Game Design:** `docs/product/PO-DECISOES-BASE.md` é a fonte da verdade de Game Design; só o PO altera; toda alteração atualiza este arquivo, o `decision-log.md`, os documentos afetados (por nota de superação, sem apagar histórico) e o `INDEX.md` (`DEC-20261107-01`; comando `/po-decisao`).
 Server Authority (identidade do token) · Aggregate Ownership · Clean Architecture · Regra Aditiva · Contrato antes de código · Experience é a verdade, Level derivado · Referência Tibia (`DEC-20261106-15`) · Nada de achismo (cite a fonte) · Economia de contexto e uma fila por sessão (`DEC-20261106-45`).
 
 ## Últimas decisões (`developer-guide/architecture/decision-log.md`)
+- `DEC-20261107-01` — Adoção do `PO-DECISOES-BASE.md` (PO-01 a PO-55); PO-53 cura por spell em todas as vocações ("sem suprimento não há cura" só para poções); PO-54 dinheiro compra tempo; PO-55 `RequiredTitleTier` informativo.
 - `DEC-20261106-46` — Segunda Hunt com outra em andamento → **409**, sem encerrar a anterior (R-052).
 - `DEC-20261106-47` — Reinício do servidor = queda: retorno à última Hunt após 10 s online, nova Hunt Session.
 - `DEC-20261106-48` — Vida 0 no checkpoint → volta com vida e Mana cheias na cidade (**PROVISÓRIO**, R-055).
@@ -22,6 +24,7 @@ Server Authority (identidade do token) · Aggregate Ownership · Clean Architect
 ## Onde está cada coisa
 | O quê | Onde |
 |---|---|
+| **Decisões de Game Design do PO (fonte da verdade)** | `docs/product/PO-DECISOES-BASE.md` |
 | Estado oficial, revisões pendentes (R-xxx), testes | `developer-guide/architecture/project-state.md` |
 | Roadmap de execução (M0–M8) / ordem oficial dos módulos | `developer-guide/architecture/roadmap-to-playable.md` / `roadmap.md` |
 | Decisões datadas (DEC-) | `developer-guide/architecture/decision-log.md` |
