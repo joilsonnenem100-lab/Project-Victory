@@ -183,7 +183,7 @@ Levantadas na leitura de `roadmap.md` (Fase 2), `knowledge-base/training.md` e `
 | `PV-FRONTEND-GAME-HUD-FOUNDATION-001` (ativo) | Refazer HUD aprovado (o anterior estava "NOT APPROVED") | contrato ativo |
 | `PV-UI-0xx` Navegação | Router real no client no lugar de `useState` por string; tipar `any`; estados de loading/erro. **Entrada do baseline `PV-QA-002` (2026-11-06):** `vite build` verde, mas `tsc --noEmit` = 443 erros (426 por falta de `@types/react*`), 2 imports quebrados em `WorldScenePage`/`PlayerStatePanel`, `GamePage` órfão, sem lint, `npm audit` 6 vulnerabilidades de build (ver `project-state.md`) | Análise §4.5; contratos `PV-UI-001/002` (histórico git: "Page Composition Rules") |
 | `PV-QA-010` Playtest — **roteiro, matriz de aceite e `api.http` pela API entregues (Fila Noturna 1, 2026-11-07; `docs/playtest/`); playtest com o PO e cliente pendentes** | Roteiro de playtest, matriz de regressão, critérios de aceite | `ACCEPTANCE_CRITERIA.md`, `PV-VS-2.0-045` |
-| `PV-CONTENT-010` Conteúdo mínimo — **Spider Cave: `PV-CONTENT-012` implementado (Fila Noturna 1, 2026-11-07; poções em 3 níveis, kit inicial, preços NPC, loot; contrato `docs/contracts/active/PV-CONTENT-012.md`); recompensa diária pendente (R-068)** | Monstros, itens e loot suficientes para ~30 min de jogo | `FIRST_FUN.md`, `PROJECT-VICTORY-CONTENT-PIPELINE-ARCHITECTURE.md` |
+| `PV-CONTENT-010` Conteúdo mínimo — **Spider Cave: `PV-CONTENT-012` implementado (Fila Noturna 1, 2026-11-07; poções em 3 níveis, kit inicial, preços NPC, loot; contrato `docs/contracts/active/PV-CONTENT-012.md`); recompensa diária ~~pendente (R-068)~~ implementada em `PV-DAILY-010` (Fila 10)** | Monstros, itens e loot suficientes para ~30 min de jogo | `FIRST_FUN.md`, `PROJECT-VICTORY-CONTENT-PIPELINE-ARCHITECTURE.md` |
 | `PV-HUD-ANALYZER-010` Hunt Analyzer — **servidor implementado (Fila Noturna 1, 2026-11-07; endpoints `GET api/hunt/analyzer/{characterId}` e `/history`, contrato `docs/contracts/active/PV-HUD-ANALYZER-010.md`); cliente pendente** | Aba "Analyzer" do Game HUD: XP obtido, XP/hora, débito, lucro e lucro líquido da Hunt, em tempo real durante a Hunt e resumo ao final, **calculados no servidor** e só exibidos pelo cliente | `DEC-20261106-01` (PO); ADR-002; `PV-FRONTEND-GAME-HUD-FOUNDATION-001` |
 | `PV-ADMIN-010` Ferramenta de administração — **servidor implementado (Fila Noturna 1, 2026-11-07; `GET/PUT api/admin/xp-rate`, policy `Administrator`, admins em `Admin:Accounts`; contrato `docs/contracts/active/PV-ADMIN-010.md`); tela no cliente pendente** | Tela de ajuste do **XP rate** restrita a uma **conta administradora**: papel de administrador na Account, autorização por papel no servidor, endpoint protegido; jogador comum e cliente comum nunca alteram o valor | `DEC-20261106-12` (PO); Server Authority (`CLAUDE.md`) |
 | `PV-HUD-BATTLE-VIEW-010` Representação visual | Animação central por local (ex.: Spider Cave), duelo automático decorativo, **sem efeito no resultado** | `DEC-20261106-01` (PO); ADR-002 |
@@ -209,22 +209,22 @@ Fonte: `docs/product/PO-DECISOES-BASE.md` v1.1, seção "Backlog derivado" (`DEC
 ### Próxima fila de código (candidatos prioritários)
 | Candidato | PO / R | Fase | Observação |
 |---|---|---|---|
-| Spell de cura por vocação + seletor automático — **servidor implementado (`PV-COMBAT-014`, Fila Noturna 1, 2026-11-07; contrato `docs/contracts/active/PV-COMBAT-014.md`); cliente pendente** | PO-53, PO-01; R-065 | Antes do Primeiro Teste Jogável (M8) | 1 spell por vocação, % fixa da vida (hipótese: vida máxima, confirmar), gasta Mana; o seletor automático escolhe curar. Valores PROVISÓRIOS |
-| Retirada do caminho legado `POST api/gameplay/action` — **endpoint retirado (`PV-LEGACY-001`, Fila Noturna 1, 2026-11-07; contrato `docs/contracts/active/PV-LEGACY-001.md`); órfãos internos pendentes (`PV-LEGACY-002`, precisa de autorização)** | R-053 | Dívida do M6 | **Começar por teste funcional** do fluxo atual; depois remover (remoção autorizada pelo PO, `DEC-20261107-04`). Feito: teste funcional, rota 404; mantidos `GameplayActionDispatcher` → `StartEncounterCombatHandler` → `CreateCombatContextHandler` (usados fora da cadeia) |
+| Spell de cura por vocação + seletor automático — **servidor implementado (`PV-COMBAT-014`, Fila Noturna 1, 2026-11-07; contrato `docs/contracts/active/PV-COMBAT-014.md`); cliente pendente** | PO-53, PO-01; R-065 | Antes do Primeiro Teste Jogável (M8) | 1 spell por vocação, % fixa da vida (hipótese: vida máxima, confirmar), gasta Mana; o seletor automático escolhe curar. Valores PROVISÓRIOS. *Fila 10 (`PV-COMBAT-015`, PO-59): vida máxima confirmada; mesma % para todas as vocações (sem +5 do Druid).* |
+| Retirada do caminho legado `POST api/gameplay/action` — **endpoint retirado (`PV-LEGACY-001`, Fila Noturna 1, 2026-11-07; contrato `docs/contracts/active/PV-LEGACY-001.md`); ~~órfãos internos pendentes~~ órfãos apagados em `PV-LEGACY-002` (Fila 10, PO-61; fica `CreateCombatContext*`, R-074)** | R-053 | Dívida do M6 | **Começar por teste funcional** do fluxo atual; depois remover (remoção autorizada pelo PO, `DEC-20261107-04`). Feito: teste funcional, rota 404; mantidos `GameplayActionDispatcher` → `StartEncounterCombatHandler` → `CreateCombatContextHandler` (usados fora da cadeia) |
 | Cliente UI-1: botão de sair da Hunt, seletor de área (`huntArea`), status `LoggedOut` no heartbeat | `RELATORIO-FILA-8` (pendências de cliente); PO-46 | M8 | Sem o botão de sair o cliente atual recebe 409 até morte/logout/queda |
-| Tier da área só informativo | PO-55, PO-09; R-064 | M8 | Retirar o 400 do `ExecuteHuntHandler`; expor o nível recomendado ao cliente |
+| Tier da área só informativo — **feito no servidor (`PV-HUNT-014`, Fila 10; PO-56: Continente livre; catálogo `GET api/hunt/catalog`); exibir no cliente** | PO-55, PO-09; R-064 | M8 | Retirar o 400 do `ExecuteHuntHandler`; expor o nível recomendado ao cliente |
 
 ### Antes do Primeiro Teste Jogável (M8)
 | Candidato | PO |
 |---|---|
 | Poções em três níveis (pequena, média, grande) — **servidor implementado (`PV-CONTENT-012`, Fila Noturna 1, 2026-11-07)** | PO-15 |
-| Kit inicial e recompensa diária simples (ouro e poções) — **kit de poções implementado (`PV-CONTENT-012`); recompensa diária e ouro pendentes (R-068)** | PO-16, PO-28 |
+| Kit inicial e recompensa diária simples (ouro e poções) — **kit de poções implementado (`PV-CONTENT-012`); ~~recompensa diária e ouro pendentes (R-068)~~ recompensa diária (poções e ouro) implementada em `PV-DAILY-010` (Fila 10, PO-60)** | PO-16, PO-28 |
 | Opção Trancar item | PO-24 |
 | Hunt Analyzer com histórico das últimas Hunts | PO-47 |
 | Mute visível e opção de desligar sons; música ambiente | PO-48 |
 | Interface responsiva (desktop e celular pelo navegador) | PO-44 |
 | Avisos dentro da página (Hunt terminou, morreu) | PO-46 |
-| Limite de personagens: até 5, um por classe (slots com gemas depois da loja) | PO-36; R-066 |
+| Limite de personagens: até 5, um por classe (slots com gemas depois da loja) — **feito no servidor (`PV-CHAR-013`, Fila 10: 3 + 2 bloqueados, nome Tibia, exclusão em 7 dias, gênero/aparência); falta seleção de personagem no enter (R-072) e cliente** | PO-36; R-066 |
 
 ### Fase 7 (World) em diante
 | Candidato | PO |

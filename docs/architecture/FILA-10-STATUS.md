@@ -10,5 +10,5 @@ Worktree `C:/pv10`; branches empilhadas a partir da `main` (`05128f0`).
 | 4 | PV-DAILY-010 — Recompensa diária | CONCLUÍDO (494 verdes; migration aditiva `DailyRewardClaims`; revisão: aprovado c/ ressalvas → R-070/R-071 no fechamento) | `feature/f10-daily-010` | `b1ee0bf` |
 | 5 | PV-CHAR-013 — Regras de personagem da conta | CONCLUÍDO (526 verdes; migration aditiva `CharacterAccountRules`; revisão: aprovado c/ ressalvas, R1/R3 aplicadas em `5a79631`) | `feature/f10-char-013` | `84ec5dd` |
 | 6 | PV-LEGACY-002 — Remoção do ExplorationDecisionHandler | CONCLUÍDO (15 arquivos, commit isolado, manifesto; 526 verdes; revisão: aprovado) | `feature/f10-legacy-002` | `c18cc85` |
-| 7 | PV-FIX-001 — 500 do enter (R-069) | CONCLUÍDO (404 tipado; 528 verdes) | `feature/f10-fix-001` | `337c4eb` |
-| 8 | PV-GOV-021 — Fechamento | PENDENTE | | |
+| 7 | PV-FIX-001 — 500 do enter (R-069) | CONCLUÍDO (404 tipado; 528 verdes; revisão: aprovado c/ ressalvas, aplicadas no item 8) | `feature/f10-fix-001` | `337c4eb` |
+| 8 | PV-GOV-021 — Fechamento | CONCLUÍDO (INDEX, project-state, roadmap, R-064/066/068/069 fechados, R-070 a R-074 novos; RELATORIO-FILA-10) | `feature/f10-gov-021` | (este) |

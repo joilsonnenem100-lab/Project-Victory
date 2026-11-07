@@ -4,13 +4,16 @@ Uma página. Atualizado em 2026-11-07 (Fila 9, Fila Noturna 1 e Fila 10). Detalh
 
 ## Estado atual
 - **Jogável pela API:** conta → login → personagem → entrar → Hunt contínua (combate por turnos, IA de monstro, Spawn) → XP/loot reais → Level derivado → queda/logout/reinício sem perda.
-- **Marcos:** M0–M5 concluídos; M6/M7 entregues — **Recovery e Event System LOCKED** (Fila 8); Game Session e Hunt Loop em REVIEW; `PV-TRAIN-010` e M8 (UI/Primeiro Teste Jogável) pendentes.
-- **Baseline:** build 0 avisos; **410 testes** verdes no fim da Fila 8 (contagem oficial em `project-state.md`). Migrations: 20 (a última, `RuntimeLoggedOut`, aditiva).
+- **Marcos:** M0–M5 concluídos; M6/M7 entregues — **Recovery e Event System LOCKED** (Fila 8); **Monster AI LOCKED** (Fila 10, `DEC-20261107-06`); Game Session e Hunt Loop em REVIEW; `PV-TRAIN-010` e M8 (UI/Primeiro Teste Jogável) pendentes.
+- **Baseline:** build 0 avisos; **528 testes** verdes no fim da Fila 10 (contagem oficial em `project-state.md`). Migrations: 25 (a última, `CharacterAccountRules`, aditiva).
 - O que falta para cada LOCK fica no `roadmap.md` (seção "Capacidades de Runtime e Eventos") e em `docs/architecture/historico/REVISAO-FECHAMENTO-FILA-8.md`.
 
 ## Regras vivas (resumo; texto completo no `CLAUDE.md`)
 **Game Design:** `docs/product/PO-DECISOES-BASE.md` é a fonte da verdade de Game Design; só o PO altera; toda alteração atualiza este arquivo, o `decision-log.md`, os documentos afetados (por nota de superação, sem apagar histórico) e o `INDEX.md` (`DEC-20261107-01`; comando `/po-decisao`).
 Server Authority (identidade do token) · Aggregate Ownership · Clean Architecture · Regra Aditiva · Contrato antes de código · Experience é a verdade, Level derivado · Referência Tibia (`DEC-20261106-15`) · Nada de achismo (cite a fonte) · Economia de contexto e uma fila por sessão (`DEC-20261106-45`).
+
+## Fila 10 (2026-11-07)
+PO-56 a PO-61 registrados (`PO-DECISOES-BASE.md` v1.2); **Monster AI LOCKED**. Servidor: tier/Continente informativos + `GET api/hunt/catalog` (R-064), cura igual para todas as vocações (PO-59), recompensa diária por conta no `enter` (R-068), regras de personagem da conta — 5 slots (3+2 bloqueados), um por classe, nome Tibia, exclusão em 7 dias (R-066), `ExplorationDecisionHandler` e órfãos do legado apagados, `enter` sem personagem → 404 (R-069). **528 testes**, 2 migrations aditivas novas (`DailyRewardClaims`, `CharacterAccountRules`; total 25). Relatório: `docs/architecture/RELATORIO-FILA-10.md`.
 
 ## Fila Noturna 1 (2026-11-07)
 Servidor: Hunt Analyzer (`api/hunt/analyzer`), admin do XP rate (`api/admin/xp-rate`, admin só por Id em `Admin:Accounts`), spell de cura das 5 classes (PO-53), poções em 3 níveis e kit inicial (PO-15/16), `api/gameplay/action` retirado. **480 testes**, 3 migrations aditivas novas (`HuntAnalyzerSummaries`, `ServerExperienceRate`, `PotionTiers`). Playtest: `docs/playtest/`. Relatório: `docs/architecture/RELATORIO-FILA-NOTURNA-1.md`.
@@ -44,4 +47,4 @@ Servidor: Hunt Analyzer (`api/hunt/analyzer`), admin do XP rate (`api/admin/xp-r
 | Código | `src/` (Domain, Application, Infrastructure, Persistence, Composition, API, Client) · testes em `tests/` |
 
 ## Próxima fila
-Fila Noturna 1 **concluída** (a branch `feature/n1-qa-010` traz a Fila 9 e a Noturna 1). Candidatos (decide o PO): cliente (aba Analyzer, UI-1, exibição da cura, admin), recompensa diária (R-068), `PV-LEGACY-002`, tier informativo (R-064), limite de personagens (R-066), `PV-TRAIN-010`.
+Fila 10 **concluída** (branches empilhadas `feature/f10-*`; a última, `feature/f10-gov-021`, traz tudo). Candidatos (decide o PO): seleção de personagem no `enter` (R-072), cliente (catálogo de Hunts, slots/criação/exclusão, recompensa diária, Analyzer, cura), R-073 (exclusão × Hunt ativa, pergunta ao PO), `PV-TRAIN-010`.
