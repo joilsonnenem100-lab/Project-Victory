@@ -29,7 +29,8 @@ public sealed class GetHuntCatalogHandler(IHuntAreaCatalog areas, ILevelTitlePro
                 region.Key,
                 region.Select(area =>
                 {
-                    // Tier sem título configurado → o maior título existente (leitura informativa).
+                    // Tier sem título configurado → o maior título existente (leitura informativa). A tabela
+                    // nunca é vazia: LevelTitleTable recusa lista vazia no construtor (ressalva R3 da revisão).
                     var title = titles.FirstOrDefault(t => t.Tier == area.RequiredTitleTier) ?? titles[^1];
 
                     return new HuntCatalogAreaView(

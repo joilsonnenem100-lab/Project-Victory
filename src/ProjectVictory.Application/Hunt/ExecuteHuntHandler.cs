@@ -28,6 +28,8 @@ public sealed class ExecuteHuntHandler
     private readonly IRuntimeRepository _runtimeRepository;
     private readonly TimeProvider _time;
     private readonly IHuntStartGate _startGate;
+    // PV-HUNT-014 (ressalva R1): sem uso desde que o tier deixou de bloquear; mantido para não mudar a
+    // assinatura do construtor nesta fila (retirada num contrato de limpeza futuro).
     private readonly ILevelTitleProvider _levelTitles;
     private readonly ProjectVictory.Application.GameSession.LoggedOutMarker _loggedOut;
     private readonly ProjectVictory.Application.GameSession.IPresenceTracker _presence;

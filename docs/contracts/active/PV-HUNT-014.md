@@ -15,5 +15,9 @@ Status: IMPLEMENTADO (2026-11-07) · Lastro: `PO-DECISOES-BASE.md` PO-09, PO-10,
 - Novo `HuntCatalogHttpTests` (401 sem token; Spider Cave com recomendação e monstros sem repetição).
 - `AscensionContentTests` (`GetAvailable`) mantido: o filtro continua existindo como leitura informativa.
 
+## Revisão (pv-architecture-reviewer): APROVADO COM RESSALVAS
+- R1 `_levelTitles` sem uso em `ExecuteHuntHandler`: mantido e comentado (limpeza futura). R3: tabela de títulos nunca vazia (construtor recusa) — comentado. R4: INDEX no fechamento (`PV-GOV-021`).
+- R2: o commit `f6f7a40` levou as ressalvas R1–R5 do `PV-GOV-020`; a edição do PO-19 no `PO-DECISOES-BASE.md` só **devolveu a coluna Decisão ao texto literal do PO** e moveu a exceção (PO-57, já decidida pelo PO) para a coluna Aplicação — origem: ressalva R4 aprovada do `PV-GOV-020`.
+
 ## Resultado
 Build 0 avisos; testes 483 verdes (Runtime 17, Domain 136, Application 34, Smoke 170, Api 126). Sem migration.
