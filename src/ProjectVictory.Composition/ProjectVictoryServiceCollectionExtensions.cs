@@ -249,7 +249,7 @@ public static class ProjectVictoryServiceCollectionExtensions
         services.AddScoped<CreateCombatContextHandler>();
         services.AddScoped<ResolveCombatHandler>();
         services.AddScoped<GameplayActionDispatcher>();
-        services.AddScoped<GameplayActionExecutionHandler>();
+        // PV-LEGACY-001 (DEC-20261107-04, R-053): GameplayActionExecutionHandler retirado com o POST api/gameplay/action.
         services.AddSingleton<ILocationActionCatalog, LocationActionCatalog>();
         services.AddSingleton<IWorldDefinitionStore, WorldDefinitionStore>();
 

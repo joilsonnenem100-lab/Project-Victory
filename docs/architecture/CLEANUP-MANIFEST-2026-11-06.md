@@ -69,3 +69,17 @@ Referências atualizadas para o novo caminho em `CLAUDE.md`, `project-state.md`,
 ## PV-GOV-019 (Fila 9, 2026-11-07) — relatórios da Fila 8 movidos (nada apagado)
 
 Movidos com `git mv` de `docs/architecture/` para `docs/architecture/historico/`, conteúdo inalterado: `RELATORIO-FILA-8.md`, `REVISAO-FECHAMENTO-FILA-8.md`. Referências com o caminho completo atualizadas em `docs/INDEX.md`, `developer-guide/` e contratos.
+
+## PV-LEGACY-001 (Fila Noturna 1, 2026-11-07) — endpoint legado `POST api/gameplay/action` (R-053) — branch `feature/n1-legacy-001`
+
+Autorização: PO, `DEC-20261107-04` (mesmo rito do `DEC-20261106-25/31`). Antes: teste funcional pela API real (`Api.Tests/LegacyGameplayActionHttpTests`, commit `694217c`) provando o comportamento do legado e a cobertura pelo `api/hunt/*`; o cliente não chama a rota. Grep de cada nome em `src` e `tests` (`*.cs`, `*.csproj`, `*.ts`, `*.tsx`, `*.json`): **zero referências** fora da própria cadeia. Build 0 avisos; 480 testes aprovados depois. Commit isolado; reverter com `git revert` do commit "PV-LEGACY-001 - Remoção do caminho legado api/gameplay/action". Sem migration.
+
+Apagados:
+- `src/ProjectVictory.API/Controllers/GameplayController.cs`
+- `src/ProjectVictory.Application/Gameplay/GameplayActionExecutionHandler.cs`
+- `src/ProjectVictory.Application/Gameplay/GameplayActionExecutionCommand.cs`
+- `src/ProjectVictory.Application/Gameplay/GameplayActionExecutionResult.cs`
+
+Alterados no mesmo commit: o registro de DI do `GameplayActionExecutionHandler` (`ProjectVictoryServiceCollectionExtensions.cs`, trocado por comentário); `AuthorizationHttpTests` (saíram a linha `POST /api/gameplay/action` do 401 e a asserção 403 do `gameplay/action`); `LegacyGameplayActionHttpTests` (o teste do legado passa a provar 404). O `ControllerAuthorizationConventionTests` perde sozinho a linha do `GameplayController` (teoria gerada por reflexão).
+
+**Mantidos** (usados fora da cadeia; a ordem proíbe apagar arquivo fora dela): `GameplayActionDispatcher`, `ExecuteLocationActionCommand/Result` (referenciados por `World/ExplorationDecisionHandler`, código morto fora da cadeia), `StartEncounterCombatHandler/Command/Result`, `BindEncounterToCombat*`, `ResolveCombat*` (só o dispatcher os usa) e `CreateCombatContextHandler/Command/Result` (usado também pelo `SmokeTests/CoreGameplayFlowSmokeTest`). Ficam sem caminho HTTP; a remoção deles fica para um `PV-LEGACY-002` com autorização própria.

@@ -38,7 +38,7 @@ public sealed class AuthorizationHttpTests
         { "POST", "/api/hunt/supplies" }, // PV-SUPPLY-010
         { "POST", "/api/runtime/activity" },
         { "POST", "/api/runtime/location" },
-        { "POST", "/api/gameplay/action" },
+        // PV-LEGACY-001: POST /api/gameplay/action retirado (DEC-20261107-04); o 404 fica no LegacyGameplayActionHttpTests.
         { "POST", "/api/location/actions" },
         { "GET", "/api/playable/status" },
     };
@@ -158,9 +158,7 @@ public sealed class AuthorizationHttpTests
             HttpStatusCode.Forbidden,
             (await otherClient.PostAsJsonAsync("/api/runtime/create", new { runtimeId = Guid.NewGuid(), characterId })).StatusCode);
 
-        Assert.Equal(
-            HttpStatusCode.Forbidden,
-            (await otherClient.PostAsJsonAsync("/api/gameplay/action", new { actionId = Guid.NewGuid(), characterId })).StatusCode);
+        // PV-LEGACY-001: a asserção 403 do POST /api/gameplay/action saiu com o endpoint (DEC-20261107-04).
     }
 
 

@@ -7,6 +7,7 @@ namespace ProjectVictory.Api.Tests;
 
 // PV-LEGACY-001 (DEC-20261107-04, R-053): teste FUNCIONAL do caminho legado POST api/gameplay/action pela
 // API real, antes da retirada, e prova de que o fluxo validado api/hunt/* cobre o mesmo resultado de jogo.
+// Depois da retirada, prova que a rota responde 404 e que o api/hunt/* segue funcionando.
 [Collection(ApiCollection.Name)]
 public sealed class LegacyGameplayActionHttpTests
 {
@@ -33,25 +34,20 @@ public sealed class LegacyGameplayActionHttpTests
         return (client, characterId, runtimeId);
     }
 
-    // Comportamento atual do legado: 200 { actionId, gameplaySystem: "Hunt" }; deixa uma Hunt em andamento
-    // (o api/hunt/execute seguinte → 409); a 2ª chamada do legado → 409 (PV-HUNT-013, sem teste até aqui).
+    // Antes da retirada (commit 694217c), este teste provava o comportamento do legado: 200
+    // { actionId, gameplaySystem: "Hunt" }, Hunt em andamento (api/hunt/execute seguinte → 409) e 2ª chamada → 409.
+    // Depois da retirada: a rota não existe mais (404, com token válido) e não cria Hunt — o api/hunt/execute
+    // seguinte começa normalmente.
     [Fact]
-    public async Task LegacyAction_StartsARunningHunt_SecondCallIsConflict()
+    public async Task LegacyAction_NoLongerExists_Returns404_AndStartsNoHunt()
     {
         var (client, characterId, runtimeId) = await EnterWorld();
         using var _ = client;
-        var actionId = Guid.NewGuid();
 
-        var first = await client.PostAsJsonAsync("/api/gameplay/action", new { actionId, characterId });
+        var legacy = await client.PostAsJsonAsync("/api/gameplay/action", new { actionId = Guid.NewGuid(), characterId });
 
-        Assert.Equal(HttpStatusCode.OK, first.StatusCode);
-        var body = await first.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.Equal(actionId, body.GetProperty("actionId").GetGuid());
-        Assert.Equal("Hunt", body.GetProperty("gameplaySystem").GetString());
-
-        Assert.Equal(HttpStatusCode.Conflict,
-            (await client.PostAsJsonAsync("/api/gameplay/action", new { actionId = Guid.NewGuid(), characterId })).StatusCode);
-        Assert.Equal(HttpStatusCode.Conflict,
+        Assert.Equal(HttpStatusCode.NotFound, legacy.StatusCode);
+        Assert.Equal(HttpStatusCode.OK,
             (await client.PostAsJsonAsync("/api/hunt/execute", new { characterId, runtimeId })).StatusCode);
     }
 
