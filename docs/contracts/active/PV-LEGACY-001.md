@@ -45,3 +45,10 @@ Origem: Fila Noturna 1 (2026-11-07), executada sem o PO. Lastro: **`DEC-20261107
 
 ## Fora do escopo
 Cliente (não alterado); a Hunt Session persistida `api/hunt-session/*` (R-027); limpeza dos `CombatContext` já criados (em memória: somem no reinício).
+
+## Resultado (Fila Noturna 1)
+- Commits: `694217c` (contrato + teste funcional do legado, 482 verdes) → `be9e094` (remoção isolada).
+- **Apagados:** `API/Controllers/GameplayController.cs`; `Application/Gameplay/GameplayActionExecutionHandler.cs`, `…Command.cs`, `…Result.cs`; registro de DI do handler (trocado por comentário). Grep sem referência restante; lista no `CLEANUP-MANIFEST-2026-11-06.md`.
+- **Testes removidos/ajustados:** `AuthorizationHttpTests` — linha `POST /api/gameplay/action` do 401 (1 caso de teoria) e asserção 403 do `gameplay/action`; `ControllerAuthorizationConventionTests` — a linha do `GameplayController` some sozinha (teoria por reflexão); `LegacyGameplayActionHttpTests.LegacyAction_*` passa a provar 404 e que a rota não cria Hunt; `HuntFlow_CoversTheSameGameResult` continua.
+- Build 0 avisos; **480 testes** (`Application.Tests` 34; `Domain.Tests` 136; `Runtime.Tests` 17; `SmokeTests` 169; `Api.Tests` 124), 0 falhas. Sem migration. Cliente não alterado.
+- **Pendência:** `PV-LEGACY-002` (autorização para apagar `ExplorationDecisionHandler/Command/Result` e o resto da cadeia interna; ajustar o `CoreGameplayFlowSmokeTest`).
