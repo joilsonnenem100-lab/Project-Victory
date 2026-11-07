@@ -93,22 +93,44 @@ public sealed class ExperienceRateConfigurationTests
         }
     }
 
+    // PV-ADMIN-010: no M2 nenhum endpoint expunha o rate. O DEC-20261106-12 prevê, no M8, a ferramenta de
+    // administração: agora a ÚNICA rota com "rate"/"admin" é api/admin/xp-rate, protegida pela policy
+    // "Administrator"; nenhuma rota com "progression".
     [Fact]
     public void NoEndpoint_ExposesExperienceRate()
     {
         using var factory = new ApiFactory();
 
-        var routes = factory.Services
+        var endpoints = factory.Services
             .GetRequiredService<EndpointDataSource>()
             .Endpoints
             .OfType<RouteEndpoint>()
+            .ToList();
+
+        var routes = endpoints
             .Select(endpoint => endpoint.RoutePattern.RawText ?? string.Empty)
             .ToList();
 
         Assert.NotEmpty(routes);
         Assert.DoesNotContain(routes, route =>
-            route.Contains("rate", StringComparison.OrdinalIgnoreCase) ||
-            route.Contains("progression", StringComparison.OrdinalIgnoreCase) ||
-            route.Contains("admin", StringComparison.OrdinalIgnoreCase));
+            route.Contains("progression", StringComparison.OrdinalIgnoreCase));
+
+        var exposing = endpoints
+            .Where(endpoint =>
+            {
+                var route = endpoint.RoutePattern.RawText ?? string.Empty;
+                return route.Contains("rate", StringComparison.OrdinalIgnoreCase) ||
+                       route.Contains("admin", StringComparison.OrdinalIgnoreCase);
+            })
+            .ToList();
+
+        Assert.NotEmpty(exposing);
+        Assert.All(exposing, endpoint =>
+        {
+            Assert.Equal("api/admin/xp-rate", endpoint.RoutePattern.RawText);
+            Assert.Contains(
+                endpoint.Metadata.OfType<Microsoft.AspNetCore.Authorization.IAuthorizeData>(),
+                data => data.Policy == ProjectVictory.API.Authentication.AdministratorAuthorizationHandler.PolicyName);
+        });
     }
 }

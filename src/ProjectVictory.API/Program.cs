@@ -114,7 +114,20 @@ builder.Services
             };
     });
 
-builder.Services.AddAuthorization();
+// PV-ADMIN-010: autorização por papel no servidor — policy "Administrator" (sem token → 401;
+// jogador comum → 403). O papel vem da configuração, resolvido pela Application.
+builder.Services.AddScoped<
+    Microsoft.AspNetCore.Authorization.IAuthorizationHandler,
+    AdministratorAuthorizationHandler>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(
+        AdministratorAuthorizationHandler.PolicyName,
+        policy => policy
+            .RequireAuthenticatedUser()
+            .AddRequirements(new AdministratorRequirement()));
+});
 
 // PV-PLATFORM-002: connection string vem de configuração (ConnectionStrings:ProjectVictory).
 var connectionString =
@@ -151,6 +164,8 @@ builder.Services.AddDbContext<ProjectVictoryDbContext>(
 //
 // PV-REWARD-010: XP rate só do servidor (DEC-20261106-12), padrão 1x; valor inválido
 // (<= 0 ou não numérico) derruba o startup. Nenhum endpoint lê ou altera este valor.
+// PV-ADMIN-010: este continua sendo o valor PADRÃO; o administrador pode gravar outro
+// (api/admin/xp-rate), que passa a valer para as novas recompensas.
 var experienceRateValue =
     builder.Configuration.GetValue<decimal?>(RewardSettings.ExperienceRateKey) ?? 1m;
 
@@ -192,6 +207,13 @@ Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorE
     ServiceDescriptor.Singleton(new ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerSettings(
         builder.Configuration.GetValue<int?>(ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerSettings.HistorySizeKey)
         ?? ProjectVictory.Application.HuntAnalyzer.HuntAnalyzerSettings.DefaultHistorySize)));
+
+// PV-ADMIN-010 (DEC-20261106-12): contas administradoras vêm só da configuração do servidor
+// ("Admin:Accounts": Id da conta ou e-mail de login; user-secrets/variável de ambiente). Padrão: ninguém.
+Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.Replace(
+    builder.Services,
+    ServiceDescriptor.Singleton(new ProjectVictory.Application.Admin.AdminSettings(
+        builder.Configuration.GetSection(ProjectVictory.Application.Admin.AdminSettings.AccountsKey).Get<string[]>() ?? [])));
 
 // PV-PROG-013 (DEC-20261106-30): títulos por Level lidos da configuração ("LevelTitles") a cada
 // consulta — trocar rótulos/faixas no appsettings.json não exige recompilar nem reiniciar.

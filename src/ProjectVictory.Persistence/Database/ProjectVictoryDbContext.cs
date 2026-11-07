@@ -38,6 +38,10 @@ public sealed class ProjectVictoryDbContext : DbContext
     public DbSet<ProjectVictory.Persistence.HuntAnalyzer.PersistentHuntAnalyzerSummaryState> HuntAnalyzerSummaries =>
         Set<ProjectVictory.Persistence.HuntAnalyzer.PersistentHuntAnalyzerSummaryState>();
 
+    // PV-ADMIN-010: XP rate alterado pelo administrador (linha única).
+    public DbSet<ProjectVictory.Persistence.Admin.PersistentServerExperienceRateState> ServerExperienceRate =>
+        Set<ProjectVictory.Persistence.Admin.PersistentServerExperienceRateState>();
+
 
     public ProjectVictoryDbContext(
         DbContextOptions<ProjectVictoryDbContext> options)
@@ -193,6 +197,15 @@ public sealed class ProjectVictoryDbContext : DbContext
             entity.Property(x => x.HuntId).ValueGeneratedNever();
             entity.Property(x => x.EndReason).IsRequired().HasMaxLength(32);
             entity.HasIndex(x => new { x.CharacterId, x.EndedAtUnixMilliseconds });
+        });
+
+        // PV-ADMIN-010: linha única (Id = 1) com o XP rate do servidor alterado pelo administrador.
+        modelBuilder.Entity<ProjectVictory.Persistence.Admin.PersistentServerExperienceRateState>(entity =>
+        {
+            entity.ToTable("ServerExperienceRate");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).ValueGeneratedNever();
+            entity.Property(x => x.Value).HasPrecision(18, 4);
         });
     }
 }

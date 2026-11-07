@@ -68,7 +68,9 @@ public sealed class ApiExceptionHandler : IExceptionHandler
         // PV-SUPPLY-010: configuração de suprimentos inválida → 400.
         // PV-RUNTIME-013 (R-051/R-041): área de Hunt inexistente ou acima do tier → 400.
         if (exception is ProjectVictory.Application.Supply.InvalidSupplyPolicyException
-            or ProjectVictory.Application.Hunt.InvalidHuntAreaException)
+            or ProjectVictory.Application.Hunt.InvalidHuntAreaException
+            // PV-ADMIN-010: XP rate fora de (0, máximo] → 400.
+            or ProjectVictory.Application.Admin.InvalidExperienceRateException)
         {
             httpContext.Response.StatusCode =
                 StatusCodes.Status400BadRequest;
@@ -110,7 +112,9 @@ public sealed class ApiExceptionHandler : IExceptionHandler
 
 
         // PV-SEC-001: recurso de outra conta → 403, sem expor detalhes do recurso.
-        if (exception is OwnershipViolationException)
+        // PV-ADMIN-010: conta sem papel de administrador (checagem do caso de uso) → 403.
+        if (exception is OwnershipViolationException
+            or ProjectVictory.Application.Admin.AdministratorRequiredException)
         {
             httpContext.Response.StatusCode =
                 StatusCodes.Status403Forbidden;

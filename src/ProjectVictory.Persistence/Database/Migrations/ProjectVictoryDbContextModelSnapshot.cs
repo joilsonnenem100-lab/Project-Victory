@@ -39,6 +39,26 @@ namespace ProjectVictory.Persistence.Database.Migrations
                     b.ToTable("Accounts");
                 });
 
+            modelBuilder.Entity("ProjectVictory.Persistence.Admin.PersistentServerExperienceRateState", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ChangedAtUnixMilliseconds")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("ChangedByAccountId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Value")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServerExperienceRate", (string)null);
+                });
+
             modelBuilder.Entity("ProjectVictory.Persistence.Character.PersistentCharacterState", b =>
                 {
                     b.Property<Guid>("Id")

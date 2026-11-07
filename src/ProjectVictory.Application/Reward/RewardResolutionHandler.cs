@@ -14,6 +14,7 @@ public sealed class RewardResolutionHandler
     private readonly RewardSettings _settings;
     private readonly IExperienceDistributor _experienceDistributor;
     private readonly IRewardDeliveryObserver? _deliveryObserver;
+    private readonly IExperienceRateProvider? _experienceRateProvider;
 
 
     public RewardResolutionHandler(
@@ -37,8 +38,12 @@ public sealed class RewardResolutionHandler
         RewardSettings settings,
         IExperienceDistributor experienceDistributor,
         // PV-HUD-ANALYZER-010 (aditivo, opcional): quem quiser LER o loot entregue (ex.: Hunt Analyzer).
-        IRewardDeliveryObserver? deliveryObserver = null)
+        IRewardDeliveryObserver? deliveryObserver = null,
+        // PV-ADMIN-010 (aditivo, opcional): XP rate efetivo (valor do administrador ou configuração).
+        // Sem provedor: o XP rate da configuração, como antes.
+        IExperienceRateProvider? experienceRateProvider = null)
     {
+        _experienceRateProvider = experienceRateProvider;
         _deliveryObserver = deliveryObserver;
         _experienceDistributor =
             experienceDistributor ?? throw new ArgumentNullException(nameof(experienceDistributor));
@@ -91,8 +96,13 @@ public sealed class RewardResolutionHandler
 
             if (definition is not null)
             {
+                // PV-ADMIN-010: rate efetivo lido a cada recompensa (vale para as novas recompensas).
+                var rate = _experienceRateProvider is null
+                    ? _settings.ExperienceRate
+                    : await _experienceRateProvider.GetCurrentAsync(cancellationToken);
+
                 experience =
-                    _settings.ExperienceRate.Apply(
+                    rate.Apply(
                         definition.Experience);
             }
         }

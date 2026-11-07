@@ -114,6 +114,16 @@ public static class ProjectVictoryServiceCollectionExtensions
         services.AddSingleton(rewardSettings);
         services.AddSingleton<IRandomSource, SystemRandomSource>();
 
+        // PV-ADMIN-010 (DEC-20261106-12): XP rate alterado pelo administrador (persistido) e XP rate efetivo
+        // usado pelo Reward Pipeline; papel de administrador pela configuração (padrão: ninguém; o host substitui).
+        services.AddScoped<IExperienceRateStore, ProjectVictory.Persistence.Admin.ExperienceRateStore>();
+        services.AddScoped<IExperienceRateProvider, ExperienceRateProvider>();
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(
+            services, ProjectVictory.Application.Admin.AdminSettings.Default);
+        services.AddScoped<ProjectVictory.Application.Admin.IAccountRoleResolver, ProjectVictory.Application.Admin.ConfiguredAccountRoleResolver>();
+        services.AddScoped<ProjectVictory.Application.Admin.GetExperienceRateHandler>();
+        services.AddScoped<ProjectVictory.Application.Admin.SetExperienceRateHandler>();
+
         // Loot, Reward e Progression.
         services.AddScoped<LootResolutionHandler>();
         services.AddScoped<ApplyLootToCharacterInventoryHandler>();

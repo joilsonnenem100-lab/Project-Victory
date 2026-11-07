@@ -9,6 +9,7 @@ public sealed class ApplyRewardHandler
     private readonly ICharacterRepository _characterRepository;
     private readonly RewardSettings _settings;
     private readonly IExperienceDistributor _experienceDistributor;
+    private readonly IExperienceRateProvider? _experienceRateProvider;
 
     public ApplyRewardHandler(
         IRewardProcessor rewardProcessor,
@@ -23,8 +24,11 @@ public sealed class ApplyRewardHandler
         IRewardProcessor rewardProcessor,
         ICharacterRepository characterRepository,
         RewardSettings settings,
-        IExperienceDistributor experienceDistributor)
+        IExperienceDistributor experienceDistributor,
+        // PV-ADMIN-010 (aditivo, opcional): XP rate efetivo; sem provedor, o da configuração (como antes).
+        IExperienceRateProvider? experienceRateProvider = null)
     {
+        _experienceRateProvider = experienceRateProvider;
         _experienceDistributor = experienceDistributor ?? throw new ArgumentNullException(nameof(experienceDistributor));
         _rewardProcessor = rewardProcessor;
         _characterRepository = characterRepository;
@@ -52,8 +56,12 @@ public sealed class ApplyRewardHandler
 
         // PV-REWARD-010: XP × XP rate do servidor (DEC-20261106-12); o Reward Pipeline é o
         // único que muda Experience (ADR-024).
+        var rate = _experienceRateProvider is null
+            ? _settings.ExperienceRate
+            : await _experienceRateProvider.GetCurrentAsync(cancellationToken);
+
         var experience =
-            _settings.ExperienceRate.Apply(
+            rate.Apply(
                 Math.Max(0, reward.Experience));
 
         // PV-XP-010: este handler aplica a recompensa a UM personagem; a distribuição com 1 participante
