@@ -34,7 +34,15 @@ public sealed class GameSessionSweepService : BackgroundService
             try
             {
                 using var scope = _scopes.CreateScope();
-                await scope.ServiceProvider.GetRequiredService<GameSessionCoordinator>().SweepAsync(stoppingToken);
+                var coordinator = scope.ServiceProvider.GetRequiredService<GameSessionCoordinator>();
+                await coordinator.SweepAsync(stoppingToken);
+
+                // Revisão do PV-EVENT-010/011 (ressalva 1): cada queda com erro vai para o log (ela é
+                // desmarcada e tentada de novo na próxima varredura).
+                foreach (var (presence, error) in coordinator.Errors)
+                {
+                    _logger.LogError(error, "Falha ao encerrar a Hunt do personagem {CharacterId} após queda.", presence.CharacterId);
+                }
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {

@@ -23,7 +23,9 @@ public sealed class ContinuousHuntEndToEndTests
 {
     private sealed class ManualClock : TimeProvider
     {
-        private DateTimeOffset _now = new(2026, 11, 6, 20, 0, 0, TimeSpan.Zero);
+        // Revisão do PV-QA-006 (ressalva 4): começa na hora real — o JWT usa o relógio real; um
+        // componente de autenticação que passe a ler o TimeProvider não quebra o teste.
+        private DateTimeOffset _now = DateTimeOffset.UtcNow;
 
         public override DateTimeOffset GetUtcNow() => _now;
 
@@ -60,10 +62,10 @@ public sealed class ContinuousHuntEndToEndTests
                 builder.ConfigureServices(services => services.AddSingleton<TimeProvider>(Clock)));
         }
 
-        public async Task SweepAsync()
+        public async Task<IReadOnlyList<PresenceSnapshot>> SweepAsync()
         {
             using var scope = Factory.Services.CreateScope();
-            await scope.ServiceProvider.GetRequiredService<GameSessionCoordinator>().SweepAsync();
+            return await scope.ServiceProvider.GetRequiredService<GameSessionCoordinator>().SweepAsync();
         }
 
         private void Set(string name, string value)
@@ -140,20 +142,22 @@ public sealed class ContinuousHuntEndToEndTests
         var second = first.GetProperty("nextEncounterId").GetGuid();
         Assert.Equal(huntId, first.GetProperty("nextEncounter").GetProperty("huntId").GetGuid());
 
-        // 2º encounter na MESMA Hunt.
+        // 2º encounter na MESMA Hunt — com a semente fixa, o desfecho é determinístico: vitória, e o 3º já
+        // vem gerado (revisão do PV-QA-006, ressalva 1: sem asserção condicional).
         var secondEnd = await FightEncounter(player, second);
-        Assert.True(secondEnd.GetProperty("huntExperienceGained").GetInt64() > first.GetProperty("huntExperienceGained").GetInt64()
-                    || secondEnd.GetProperty("huntEndReason").GetString() == "Death");
+        Assert.Equal("Victory", secondEnd.GetProperty("combatState").GetString());
+        Assert.Equal(JsonValueKind.Null, secondEnd.GetProperty("huntEndReason").ValueKind);
+        Assert.True(secondEnd.GetProperty("huntExperienceGained").GetInt64() > first.GetProperty("huntExperienceGained").GetInt64());
+        var third = secondEnd.GetProperty("nextEncounterId").GetGuid();
+        Assert.NotEqual(second, third);
+        Assert.Equal(huntId, secondEnd.GetProperty("nextEncounter").GetProperty("huntId").GetGuid());
 
-        if (secondEnd.GetProperty("huntEndReason").ValueKind == JsonValueKind.Null)
-        {
-            Assert.NotEqual(JsonValueKind.Null, secondEnd.GetProperty("nextEncounterId").ValueKind); // e o 3º já existe
-            var leave = await player.Client.PostAsJsonAsync("/api/hunt/leave", new { huntId });
-            leave.EnsureSuccessStatusCode();
-            var ending = await leave.Content.ReadFromJsonAsync<JsonElement>();
-            Assert.Equal("Manual", ending.GetProperty("reason").GetString());
-            Assert.Equal(secondEnd.GetProperty("huntExperienceGained").GetInt64(), ending.GetProperty("experienceGained").GetInt64());
-        }
+        // Saída manual: pipeline único, motivo Manual, XP da Hunt preservada.
+        var leave = await player.Client.PostAsJsonAsync("/api/hunt/leave", new { huntId });
+        leave.EnsureSuccessStatusCode();
+        var ending = await leave.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Manual", ending.GetProperty("reason").GetString());
+        Assert.Equal(secondEnd.GetProperty("huntExperienceGained").GetInt64(), ending.GetProperty("experienceGained").GetInt64());
 
         // Nada perdido: a XP do personagem é a XP ganha na Hunt.
         var character = (await player.Client.GetFromJsonAsync<JsonElement>("/api/character")).EnumerateArray()
@@ -172,15 +176,18 @@ public sealed class ContinuousHuntEndToEndTests
 
         // Queda curta: exatamente 60 s sem sinal → a Hunt segue.
         server.Clock.Advance(TimeSpan.FromSeconds(60));
-        await server.SweepAsync();
+        Assert.Empty(await server.SweepAsync()); // nenhuma queda tratada
         Assert.Equal(huntId, (await Heartbeat(player)).GetProperty("huntId").GetGuid());
         (await player.Client.PostAsJsonAsync("/api/hunt/attack", new { encounterId })).EnsureSuccessStatusCode();
 
         // Queda longa: 61 s sem sinal → a Hunt termina pelo pipeline (Disconnect).
         server.Clock.Advance(TimeSpan.FromSeconds(61));
-        await server.SweepAsync();
+        var dropped = Assert.Single(await server.SweepAsync()); // a queda foi tratada (pipeline, motivo Disconnect)
+        Assert.Equal(player.CharacterId, dropped.CharacterId);
         var attackAfter = await player.Client.PostAsJsonAsync("/api/hunt/attack", new { encounterId });
-        Assert.False(attackAfter.IsSuccessStatusCode); // o encounter foi descartado com a Hunt
+        // O encounter foi descartado com a Hunt: a API responde como erro genérico do servidor (500), sem
+        // detalhe (mesmo comportamento de atacar um encounter inexistente).
+        Assert.Equal(HttpStatusCode.InternalServerError, attackAfter.StatusCode);
 
         // Volta: tela inicial (entra no jogo); o 1º heartbeat não volta à Hunt.
         (await player.Client.PostAsync("/api/game/enter", null)).EnsureSuccessStatusCode();
@@ -216,7 +223,7 @@ public sealed class ContinuousHuntEndToEndTests
         using var restarted = server.Root.WithWebHostBuilder(builder =>
             builder.ConfigureServices(services => services.AddSingleton<TimeProvider>(server.Clock)));
         var client = restarted.CreateClient();
-        var login = await client.PostAsJsonAsync("/api/account/login", new { email = player.Email, password = "Senha123!" });
+        var login = await client.PostAsJsonAsync("/api/account/login", new { email = player.Email, password = ApiFactory.TestPassword });
         login.EnsureSuccessStatusCode();
         ApiFactory.WithToken(client, (await login.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("token").GetString()!);
         var again = player with { Client = client };

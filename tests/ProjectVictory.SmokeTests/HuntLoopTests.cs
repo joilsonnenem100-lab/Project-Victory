@@ -50,8 +50,6 @@ public sealed class HuntLoopTests
 
     private static async Task<AttackEncounterResult> FightEncounter(World world, Guid encounterId, int startingHealth = 10_000)
     {
-        // Vida alta para o teste não depender de morte (a Hunt só acaba quando o teste mandar).
-        world.Get<IRuntimeExecutionStateStore>().Get(world.RuntimeId).CharacterState!.UpdateHealth(startingHealth);
         AttackEncounterResult? last = null;
 
         for (var i = 0; i < 300 && last?.CombatFinished != true; i++)
@@ -127,8 +125,7 @@ public sealed class HuntLoopTests
     {
         await using var world = await NewWorld(1);
         var hunt = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
-        world.Get<IRuntimeExecutionStateStore>().Get(world.RuntimeId).CharacterState!.UpdateHealth(10_000);
-
+        
         async Task<AttackEncounterResult> AttackInOwnScope()
         {
             using var scope = world.Provider.CreateScope();

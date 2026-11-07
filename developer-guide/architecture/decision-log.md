@@ -865,3 +865,11 @@ Status: **Accepted (Arquiteto)** — implementa ADR-049/050 no `PV-EVENT-010/011
 - `IEventBus` em processo, despacho pelo TIPO (handlers síncronos e assíncronos), só Domain Events (`EngineEvent`).
 - `CombatCompletedEvent` → Reward Pipeline (Combat não conhece o Reward); ciclo de vida do Spawn e fim da Hunt publicados.
 - Nenhum contrato público alterado.
+
+## DEC-20261106-44 — Fechamento da Fila 7 (decisão do Arquiteto)
+
+Status: **Accepted (Arquiteto)** — revisão documentada em `docs/architecture/REVISAO-FECHAMENTO-FILA-7.md` (`PV-GOV-011`)
+
+- Critério único (LOCK só com o documento de domínio cumprido) aplicado a todos: **nenhum módulo travado**.
+- Fase 6: Monster AI, Experience Distribution e Spawn continuam REVIEW (Spawn: R-044/R-046 fechados; falta R-057).
+- Módulos novos do M6/M7 (Game Session, Hunt Loop/queda, Recovery, Event System) registrados no `roadmap.md` em REVIEW, com o que falta para cada LOCK.

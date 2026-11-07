@@ -58,8 +58,7 @@ public sealed class DisconnectTests
 
     private static async Task<long> WinOneEncounter(World world, Guid encounterId)
     {
-        world.Get<IRuntimeExecutionStateStore>().Get(world.RuntimeId).CharacterState!.UpdateHealth(10_000);
-        AttackEncounterResult? last = null;
+                AttackEncounterResult? last = null;
 
         for (var i = 0; i < 300 && last?.CombatFinished != true; i++)
         {
@@ -149,6 +148,21 @@ public sealed class DisconnectTests
         await world.Get<GameSessionCoordinator>().SweepAsync();
 
         Assert.Null(await world.Get<IHuntRepository>().GetRunningByCharacterIdAsync(world.CharacterId));
+    }
+
+    // Revisão do PV-EVENT-010/011 (ressalva 7b): o logout encerra TODAS as Hunts em andamento.
+    [Fact]
+    public async Task Logout_EndsEveryRunningHunt_ReportsTheFirst()
+    {
+        await using var world = await NewWorld();
+        var first = await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+        await world.Get<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(world.CharacterId, world.RuntimeId));
+
+        var result = await world.Get<LogoutHandler>().Handle(new LogoutCommand());
+
+        Assert.True(result.HuntEnded);
+        Assert.Null(await world.Get<IHuntRepository>().GetRunningByCharacterIdAsync(world.CharacterId));
+        Assert.Contains(result.Ending!.HuntId, new[] { first.HuntId, result.Ending.HuntId });
     }
 
     // Revisão do PV-HUNT-011 (ressalva 5b): conta sem personagem.

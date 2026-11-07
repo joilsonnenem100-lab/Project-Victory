@@ -225,10 +225,14 @@ public sealed class AttackEncounterHandler
         // PV-EVENT-011 (ADR-049/050): cada monstro morto publica um CombatCompletedEvent; o Reward
         // Pipeline reage ao evento (RewardOnCombatCompleted). O Combat não chama mais o Reward direto.
         // A XP da rodada é a diferença de Experience do personagem (o Reward Pipeline é o único que a
-        // altera, ADR-024) — mesmo valor de antes.
+        // altera, ADR-024) — mesmo valor de antes. INVARIANTE (revisão do PV-EVENT-010/011, ressalva 3):
+        // vale enquanto nenhum outro assinante altera Experience neste escopo, o repositório lê pelo
+        // DbContext do escopo (com rastreamento) e há 1 participante; se isso mudar, o Reward deve
+        // devolver o valor por um evento próprio.
         var experienceBefore = killed.Count == 0
             ? 0
-            : (await _characterRepository.GetByIdAsync(hunt.CharacterId, cancellationToken))!.Experience.Value;
+            : ((await _characterRepository.GetByIdAsync(hunt.CharacterId, cancellationToken))
+                ?? throw new InvalidOperationException("Character not found.")).Experience.Value;
 
         foreach (var monster in killed)
         {
@@ -257,7 +261,8 @@ public sealed class AttackEncounterHandler
         if (killed.Count > 0)
         {
             experienceGained =
-                (await _characterRepository.GetByIdAsync(hunt.CharacterId, cancellationToken))!.Experience.Value
+                ((await _characterRepository.GetByIdAsync(hunt.CharacterId, cancellationToken))
+                    ?? throw new InvalidOperationException("Character not found.")).Experience.Value
                 - experienceBefore;
         }
 

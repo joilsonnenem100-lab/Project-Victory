@@ -4,6 +4,8 @@
 - **Origem:** ordem "MODO FILA 7", item 6.
 - **Lastro:** `DEC-20261106-20/22`, ADR-057 v1.2, ADR-012; contratos `PV-RUNTIME-010`, `PV-HUNT-011`, `PV-HUNT-012` e `PV-RUNTIME-011`.
 
+**Escopo:** somente testes e documentação; nenhuma mudança em `src/`.
+
 ## Como
 
 `tests/ProjectVictory.Api.Tests/ContinuousHuntEndToEndTests.cs`:
@@ -16,10 +18,18 @@
 
 | Pedido da ordem | Teste | O que confere |
 |---|---|---|
-| Hunt contínua com 2 ou mais encounters | `ContinuousHunt_TwoOrMoreEncounters_ThenLeave_KeepsEverything` | vitória no 1º → `nextEncounterId` na **mesma** Hunt; o 2º encounter é lutado; se for vitória, o 3º já existe e a saída manual encerra (`Manual`) com a XP da Hunt; se for morte, encerra por `Death`. A XP do personagem é a XP da Hunt (nada perdido) |
+| Hunt contínua com 2 ou mais encounters | `ContinuousHunt_TwoOrMoreEncounters_ThenLeave_KeepsEverything` | com a semente fixa, o desfecho é **determinístico**: vitória no 1º → `nextEncounterId` na **mesma** Hunt; **vitória no 2º** → o 3º já existe; a saída manual encerra (`Manual`) com a XP da Hunt; a XP do personagem é a XP da Hunt (nada perdido) |
 | Queda curta não encerra | `ShortDrop_DoesNotEnd_…` | **exatamente 60 s** sem sinal → a Hunt segue (heartbeat devolve a mesma Hunt; o ataque funciona) |
-| Queda de mais de 1 min encerra | (mesmo teste) | mais **61 s** → a varredura encerra; o encounter da Hunt foi descartado (o ataque falha) |
+| Queda de mais de 1 min encerra | (mesmo teste) | aos 60 s a varredura não trata nenhuma queda; com mais **61 s** ela trata **exatamente uma** (a do jogador); o encounter da Hunt foi descartado (o ataque responde **500**, como para encounter inexistente) |
 | Retorno depois de 10 s cria uma nova Hunt na última Hunt | (mesmo teste) | volta: entrar no jogo (tela inicial); 1º heartbeat sem Hunt; **exatamente 10 s** ainda não; **11 s** → `returnedToLastHunt`, `lastHuntArea = "Spider Cave"`, `huntId` **novo**, e o encounter novo é atacável |
 | Reinício do servidor | `ServerRestart_CharacterAndRuntimeBack_HuntNot_NoAutomaticReturn` | o primeiro host para no meio da Hunt; o segundo sobe sobre o mesmo banco de teste: login ok, XP mantida, nenhuma Hunt (ADR-057), sem retorno automático (o reinício não é uma "queda" detectada), o "entrar" devolve o **mesmo** Runtime e uma nova Hunt pode começar |
 
 Resultado: build com 0 avisos; **378 aprovados, 0 ignorados, 0 falhas** (Application 31, Domain 120, Runtime 17, Smoke 109, Api 101).
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas na branch `chief/q7-gov-011`
+
+1. Teste contínuo sem asserção condicional: o desfecho do 2º encounter (vitória) foi conferido e é afirmado; o 3º encounter e a saída `Manual` são sempre exercitados.
+2. A varredura do teste devolve as quedas (nenhuma aos 60 s, uma aos 61 s) e o status exato do ataque depois do descarte é conferido.
+3. A senha dos testes virou a constante `ApiFactory.TestPassword`.
+4. O relógio manual começa na hora real.
+5. Linha de escopo no contrato.

@@ -40,7 +40,7 @@
   - a varredura com falha numa queda tenta de novo na varredura seguinte (ressalva 2 do PV-HUNT-012).
 - `Api.Tests/HuntConflictMappingTests`: `HuntAlreadyFinishedException` → **409**.
 - **Todos os testes existentes passam sem mudança**: a XP das vitórias, pelo evento, é a mesma de antes.
-- **Nota:** numa primeira execução, o teste de eventos (com semente aleatória) não recebeu nenhum `CombatCompletedEvent`, e isso não se repetiu. O teste passou a usar semente fixa e a suíte inteira foi executada 3 vezes seguidas, verde. Fica registrado para observação.
+- **Nota (causa encontrada na revisão):** numa primeira execução, o teste de eventos não recebeu nenhum `CombatCompletedEvent`. O `UpdateHealth(10_000)` do teste não tinha efeito, porque o `Combatant` limita a vida ao máximo (`Combatant.cs`). Com semente aleatória, o Knight podia morrer no 1º encounter antes de matar um monstro. Agora o teste usa semente fixa, afirma a vitória, e o `UpdateHealth` enganoso foi removido deste e dos outros testes do loop.
 
 Resultado: build com 0 avisos; **375 aprovados, 0 ignorados, 0 falhas** (Application 31, Domain 120, Runtime 17, Smoke 109, Api 98), em 3 execuções seguidas.
 
@@ -58,3 +58,14 @@ Resultado: build com 0 avisos; **375 aprovados, 0 ignorados, 0 falhas** (Applica
 9. R-030 (Idle gravado direto no store) segue como débito herdado.
 
 **Ressalvas da revisão do `PV-RUNTIME-011`:** ver o contrato `PV-RUNTIME-011` (R-055, R-056, teste da mana, comentário).
+
+## Revisão (`pv-architecture-reviewer`): APROVADO COM RESSALVAS — aplicadas/registradas na branch `chief/q7-gov-011`
+
+1. A varredura volta a mandar os erros para o **log** (`GameSessionCoordinator.Errors` → `GameSessionSweepService`).
+2. **R-060:** um escopo de DI por queda (DbContext compartilhado) e assinantes do `HuntEndedEvent` que não podem falhar.
+3. A invariante da XP pela diferença de Experience está documentada no código; personagem ausente → "Character not found." (sem `!`).
+4. Os assinantes foram movidos para os seus módulos (`Application/Reward/RewardOnCombatCompleted`, `Application/Spawn/SpawnLifecycleCounter`); o `EngineEvent` ganhou **`OccurredAt`**; um **teste de composição** garante o assinante do Reward. O conflito com o `events.md` ("assinante nunca obrigatório", `Reason` em texto) está no **R-058**.
+5. `HuntEndedEvent.Reason` em texto está no R-058.
+6. (a) R-046 vale para a composição oficial (nota no R-046); (b) handler assíncrono de Spawn falharia no `Publish`: hoje não há nenhum (R-058); (c) R-060.
+7. Testes: causa da instabilidade documentada e `UpdateHealth` enganoso removido; teste de **logout com duas Hunts**; mana **abaixo** do máximo preservada no Recovery.
+8. `EndAllAsync` lança erro acima de 100 Hunts (antes parava em silêncio); a queda usa o `RuntimeId` da primeira Hunt em andamento. Impacto praticamente nulo.

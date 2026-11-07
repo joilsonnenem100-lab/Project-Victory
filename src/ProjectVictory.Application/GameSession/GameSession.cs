@@ -176,6 +176,11 @@ public sealed class GameSessionCoordinator
     // Quedas cujo tratamento falhou (observabilidade e testes).
     public int Failures { get; private set; }
 
+    // Revisão do PV-EVENT-010/011 (ressalva 1): os erros da última varredura, para o host registrar no log.
+    public IReadOnlyList<(PresenceSnapshot Presence, Exception Error)> Errors => _errors;
+
+    private readonly List<(PresenceSnapshot Presence, Exception Error)> _errors = [];
+
     // Uma varredura: detecta as quedas (sem sinal por MAIS que o limite) e as entrega aos handlers.
     public async Task<IReadOnlyList<PresenceSnapshot>> SweepAsync(CancellationToken cancellationToken = default)
     {
@@ -196,10 +201,11 @@ public sealed class GameSessionCoordinator
 
                 handled.Add(presence);
             }
-            catch (Exception) when (!cancellationToken.IsCancellationRequested)
+            catch (Exception error) when (!cancellationToken.IsCancellationRequested)
             {
                 _presence.UnmarkDropped(presence.CharacterId);
                 Failures++;
+                _errors.Add((presence, error));
             }
         }
 

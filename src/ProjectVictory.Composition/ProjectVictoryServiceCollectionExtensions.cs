@@ -161,12 +161,12 @@ public static class ProjectVictoryServiceCollectionExtensions
 
         // PV-EVENT-010/011 (ADR-049/050): Event Bus tipado (só Domain Events) e seus handlers.
         services.AddScoped<ProjectVictory.Application.Events.IEventBus, ProjectVictory.Application.Events.InProcessEventBus>();
-        services.AddScoped<ProjectVictory.Application.Events.IAsyncEventHandler<ProjectVictory.Domain.Events.CombatCompletedEvent>, ProjectVictory.Application.Events.RewardOnCombatCompleted>();
-        services.AddSingleton<ProjectVictory.Application.Events.SpawnLifecycleCounter>();
+        services.AddScoped<ProjectVictory.Application.Events.IAsyncEventHandler<ProjectVictory.Domain.Events.CombatCompletedEvent>, ProjectVictory.Application.Reward.RewardOnCombatCompleted>();
+        services.AddSingleton<ProjectVictory.Application.Spawn.SpawnLifecycleCounter>();
         services.AddSingleton<ProjectVictory.Application.Events.IEventHandler<ProjectVictory.Domain.Events.SpawnInstanceActivatedEvent>>(
-            provider => provider.GetRequiredService<ProjectVictory.Application.Events.SpawnLifecycleCounter>());
+            provider => provider.GetRequiredService<ProjectVictory.Application.Spawn.SpawnLifecycleCounter>());
         services.AddSingleton<ProjectVictory.Application.Events.IEventHandler<ProjectVictory.Domain.Events.SpawnInstanceDespawnedEvent>>(
-            provider => provider.GetRequiredService<ProjectVictory.Application.Events.SpawnLifecycleCounter>());
+            provider => provider.GetRequiredService<ProjectVictory.Application.Spawn.SpawnLifecycleCounter>());
         // PV-HUNT-011: Hunt Loop — locks por Hunt e Spawn Instances ativas (despawn no fim, R-044).
         services.AddSingleton<IHuntLock, HuntLock>();
         services.AddSingleton<IActiveSpawnRegistry, ActiveSpawnRegistry>();

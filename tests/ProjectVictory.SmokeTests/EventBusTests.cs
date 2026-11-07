@@ -95,15 +95,16 @@ public sealed class EventBusTests
         await using (provider)
         using (scope)
         {
-            var counter = scope.ServiceProvider.GetRequiredService<SpawnLifecycleCounter>();
+            var counter = scope.ServiceProvider.GetRequiredService<ProjectVictory.Application.Spawn.SpawnLifecycleCounter>();
             var hunt = await scope.ServiceProvider.GetRequiredService<ExecuteHuntHandler>().Handle(new ExecuteHuntCommand(characterId, runtimeId));
-            scope.ServiceProvider.GetRequiredService<IRuntimeExecutionStateStore>().Get(runtimeId).CharacterState!.UpdateHealth(10_000);
-
+            
             AttackEncounterResult? last = null;
             for (var i = 0; i < 300 && last?.CombatFinished != true; i++)
             {
                 last = await scope.ServiceProvider.GetRequiredService<AttackEncounterHandler>().Handle(new AttackEncounterCommand(hunt.Encounter.Id));
             }
+
+            Assert.Equal("Victory", last!.CombatState); // semente 1: vitória no 1º encounter
 
             // Um CombatCompletedEvent por monstro morto; o Reward reagiu (XP no personagem = XP da Hunt).
             Assert.True(combatEvents.Received.Count > 0, $"sem CombatCompletedEvent: state={last!.CombatState} reason={last.HuntEndReason} xp={last.HuntExperienceGained} playerDefeated={last.PlayerDefeated}");
@@ -146,5 +147,20 @@ public sealed class EventBusTests
         Assert.Empty(await coordinator.SweepAsync());   // falhou: não conta como tratada
         Assert.Equal(1, coordinator.Failures);
         Assert.Single(await coordinator.SweepAsync());  // detectada de novo e tratada
+    }
+
+    // Revisão do PV-EVENT-010/011 (ressalva 4): o assinante do Reward é obrigatório hoje — a composição
+    // precisa registrá-lo.
+    [Fact]
+    public void Composition_RegistersTheRewardSubscriber()
+    {
+        var services = new ServiceCollection();
+        services.AddProjectVictorySmokeTestServices();
+        using var provider = services.BuildServiceProvider();
+        using var scope = provider.CreateScope();
+
+        Assert.Contains(
+            scope.ServiceProvider.GetServices<IAsyncEventHandler<CombatCompletedEvent>>(),
+            handler => handler is ProjectVictory.Application.Reward.RewardOnCombatCompleted);
     }
 }

@@ -141,7 +141,20 @@ Módulos:
 - Monsters (LOCKED)
 - Monster AI (~~PLANNED~~ REVIEW — implementado no `PV-MONSTER-010`; LOCK depois do R-050 e do R-043 — revisão de fechamento do M4, 2026-11-06: `docs/architecture/REVISAO-FECHAMENTO-M4.md`)
 - Experience Distribution (~~PLANNED~~ REVIEW — implementado no `PV-XP-010`; LOCK depois do R-045 — mesma revisão)
-- Spawn System (~~PLANNED~~ REVIEW — implementado no `PV-SPAWN-010`; LOCK no M6, depois do R-044/R-046 — mesma revisão)
+- Spawn System (~~PLANNED~~ REVIEW — implementado no `PV-SPAWN-010`; ~~LOCK no M6, depois do R-044/R-046~~ R-044/R-046 fechados na Fila 7; LOCK depois do R-057 — `docs/architecture/REVISAO-FECHAMENTO-FILA-7.md`)
+
+---
+
+# Capacidades de Runtime e Eventos (M6/M7) — fora das fases
+
+Status: REVIEW (revisão de fechamento da Fila 7, `docs/architecture/REVISAO-FECHAMENTO-FILA-7.md`)
+
+Módulos (implementados; nenhum LOCKED):
+
+- Game Session + Runtime Coordinator (REVIEW — `PV-RUNTIME-010`; falta R-051, R-054, R-055)
+- Hunt Loop + encerramento por queda (REVIEW — `PV-HUNT-011/012`; falta R-059, R-052, R-053, R-027, R-030)
+- Recovery do Runtime (REVIEW — `PV-RUNTIME-011`; falta R-055, R-056)
+- Event System: Typed Event Bus e Domain Events (REVIEW — `PV-EVENT-010/011`; falta R-058)
 
 ---
 

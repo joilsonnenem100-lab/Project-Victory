@@ -77,34 +77,3 @@ public sealed class InProcessEventBus : IEventBus
         }
     }
 }
-
-// PV-EVENT-011: CombatCompletedEvent → Reward Pipeline (ADR-024). O Combat não conhece o Reward.
-public sealed class RewardOnCombatCompleted : IAsyncEventHandler<CombatCompletedEvent>
-{
-    private readonly ProjectVictory.Application.Reward.RewardResolutionHandler _reward;
-
-    public RewardOnCombatCompleted(ProjectVictory.Application.Reward.RewardResolutionHandler reward)
-    {
-        _reward = reward;
-    }
-
-    public async Task HandleAsync(CombatCompletedEvent domainEvent, CancellationToken cancellationToken = default) =>
-        await _reward.Handle(domainEvent.ToCombatResult(), cancellationToken);
-}
-
-// PV-EVENT-011 (R-046): observa o ciclo de vida do Spawn pelos Domain Events (contadores; memória fixa).
-public sealed class SpawnLifecycleCounter :
-    IEventHandler<SpawnInstanceActivatedEvent>,
-    IEventHandler<SpawnInstanceDespawnedEvent>
-{
-    private long _activated;
-    private long _despawned;
-
-    public long Activated => Interlocked.Read(ref _activated);
-
-    public long Despawned => Interlocked.Read(ref _despawned);
-
-    public void Handle(SpawnInstanceActivatedEvent domainEvent) => Interlocked.Increment(ref _activated);
-
-    public void Handle(SpawnInstanceDespawnedEvent domainEvent) => Interlocked.Increment(ref _despawned);
-}

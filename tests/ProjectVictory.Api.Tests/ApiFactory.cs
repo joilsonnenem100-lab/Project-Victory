@@ -19,6 +19,9 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
     public const string Audience = "ProjectVictory.Client";
 
+    // Revisão do PV-QA-006 (ressalva 3): senha única dos testes (não é segredo: só existe no banco temporário).
+    public const string TestPassword = "Senha123!";
+
     private readonly string _databaseDirectory =
         Path.Combine(Path.GetTempPath(), "pv-api-tests-" + Guid.NewGuid().ToString("N"));
 
@@ -72,7 +75,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         HttpClient client,
         string email)
     {
-        var body = new { email, password = "Senha123!" };
+        var body = new { email, password = TestPassword };
 
         (await client.PostAsJsonAsync("/api/account", body)).EnsureSuccessStatusCode();
 

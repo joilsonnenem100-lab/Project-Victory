@@ -9,6 +9,9 @@ namespace ProjectVictory.Domain.Events;
 public abstract record EngineEvent
 {
     public Guid EventId { get; init; } = Guid.NewGuid();
+
+    // Revisão do PV-EVENT-010/011 (ressalva 4a; events.md: "possui Timestamp"). Aditivo.
+    public DateTimeOffset OccurredAt { get; init; } = DateTimeOffset.UtcNow;
 }
 
 // PV-EVENT-011 (ADR-050): um combate contra um monstro terminou (hoje: monstro morto = vitória).
