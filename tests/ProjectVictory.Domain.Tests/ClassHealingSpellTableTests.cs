@@ -35,15 +35,20 @@ public sealed class ClassHealingSpellTableTests
         Assert.Equal(expectedPercent, knight.PercentForLevel(level));
     }
 
+    // PV-COMBAT-015 (PO-59): substitui Druid_HealsMorePerBand_PO01 — o bônus de +5 do Druid era inferência
+    // do PO-01 (PV-COMBAT-014, pergunta 1) e o PO decidiu cura IGUAL para todas as vocações.
     [Fact]
-    public void Druid_HealsMorePerBand_PO01()
+    public void AllClasses_HealTheSamePercentPerBand_DruidIncluded_PO59()
     {
-        var druid = ClassHealingSpellTable.ForClass(CharacterClass.Druid)!;
-        var sorcerer = ClassHealingSpellTable.ForClass(CharacterClass.Sorcerer)!;
+        var knight = ClassHealingSpellTable.ForClass(CharacterClass.Knight)!;
 
-        foreach (var level in new[] { 1, 20, 50, 100 })
+        foreach (var spell in ClassHealingSpellTable.All)
         {
-            Assert.Equal(sorcerer.PercentForLevel(level) + 5, druid.PercentForLevel(level));
+            foreach (var level in new[] { 1, 19, 20, 50, 100, 500 })
+            {
+                Assert.Equal(knight.PercentForLevel(level), spell.PercentForLevel(level));
+                Assert.Equal(knight.RawHealingFor(level, 300), spell.RawHealingFor(level, 300));
+            }
         }
     }
 

@@ -45,7 +45,8 @@ public sealed record HealingSpellDefinition(
 // *** PROVISÓRIO *** — nomes (genéricos, estilo Tibia, DEC-20261106-15), custo de Mana e faixas de
 // Level/porcentagem são balanceamento do Arquiteto para o PO ajustar. Trocar = trocar esta tabela.
 // - Todas as vocações: 10% (Level 1), 15% (Level 20), 20% (Level 50), 25% (Level 100); 20 de Mana.
-// - Druid (PO-01: "dano elemental e cura própria"): +5 pontos em cada faixa.
+// - ~~Druid (PO-01: "dano elemental e cura própria"): +5 pontos em cada faixa.~~ PV-COMBAT-015 (PO-59,
+//   DEC-20261107-05): a cura é % da vida MÁXIMA, IGUAL para todas as vocações, Druid incluído.
 public static class ClassHealingSpellTable
 {
     public const int DefaultManaCost = 20;
@@ -58,20 +59,12 @@ public static class ClassHealingSpellTable
         new(100, 25)
     ];
 
-    public static IReadOnlyList<HealingBand> DruidBands { get; } =
-    [
-        new(1, 15),
-        new(20, 20),
-        new(50, 25),
-        new(100, 30)
-    ];
-
     public static IReadOnlyList<HealingSpellDefinition> All { get; } =
     [
         new("knight-wound-mending", "Wound Mending", CharacterClass.Knight, DefaultManaCost, StandardBands),
         new("paladin-divine-mending", "Divine Mending", CharacterClass.Paladin, DefaultManaCost, StandardBands),
         new("sorcerer-arcane-mending", "Arcane Mending", CharacterClass.Sorcerer, DefaultManaCost, StandardBands),
-        new("druid-nature-mending", "Nature Mending", CharacterClass.Druid, DefaultManaCost, DruidBands),
+        new("druid-nature-mending", "Nature Mending", CharacterClass.Druid, DefaultManaCost, StandardBands),
         new("monk-inner-mending", "Inner Mending", CharacterClass.Monk, DefaultManaCost, StandardBands)
     ];
 
